@@ -166,6 +166,27 @@ model Enterprise {
   archivedAt          DateTime?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  // ── Extended Enterprise Profile (institutional due-diligence) ──
+  website             String?  // official company website
+  logoUrl             String?  // enterprise logo URL
+  mission             String?  // enterprise mission statement
+  vision              String?  // enterprise vision statement
+  problem             String?  // problem the enterprise solves
+  solution            String?  // solution the enterprise provides
+  productService      String?  // product/service description
+  targetMarket        String?  // target market description
+  revenueModel        String?  // revenue model description
+  currentCustomers    String?  // current customers (text, evidence-tagged)
+  pitchDeckUrl        String?  // pitch deck URL (PDF/PPT)
+  founderVideoUrl     String?  // optional founder video URL
+  githubUrl           String?  // optional GitHub/GitLab URL
+  linkedinUrl         String?  // optional LinkedIn URL
+  twitterUrl          String?  // optional X/Twitter URL
+  founderBio          String?  // founder professional biography
+  founderStatement    String?  // founder personal statement
+  founderRequest      String?  // what the founder seeks from AURIENTA ecosystem
+  evidenceLevel       String   @default("E0") // E0-E9 evidence level
+  submissionStatus    String   @default("draft") // draft, submitted, under_review, approved, rejected
 
   founderId           String
   founder             User     @relation("EnterpriseFounder", fields: [founderId], references: [id])
@@ -201,6 +222,7 @@ model Enterprise {
   updates             EnterpriseUpdate[]
   engagements         PartnerEngagement[]
   annualReports       AnnualReport[]
+  documents           EnterpriseDocument[]
   @@index([founderId])
   @@index([lawFirmId])
   @@index([accountingFirmId])
@@ -988,4 +1010,36 @@ model AnnualReport {
   enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
   @@unique([enterpriseId, year])
   @@index([enterpriseId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ENTERPRISE DOCUMENT ROOM (institutional due-diligence)
+// ───────────────────────────────────────────────────────────
+/// Constitutional document room — institutional-quality attachments
+/// for enterprise due-diligence. Each document has evidence level,
+/// verification status, and visibility classification.
+model EnterpriseDocument {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  uploadedById    String
+  documentType    String   // pitch_deck, business_plan, financial_model, corporate_registration,
+                           // founder_id, licenses, certifications, contracts, customer_evidence,
+                           // pilot_evidence, letters_of_intent, partnership_docs, product_docs,
+                           // technical_audit, security_audit, ip_documentation, market_research,
+                           // regulatory_correspondence, other
+  title           String
+  description     String?
+  fileUrl         String   // URL to stored file (IPFS CID or secure storage URL)
+  fileName        String
+  mimeType        String
+  sizeBytes       Int
+  // Evidence & verification
+  evidenceLevel   String   @default("E0") // E0-E9
+  verificationStatus String @default("unverified") // unverified, founder_provided, evidence_backed, verified
+  visibilityClass String   @default("enterprise_members") // public, enterprise_members, governance, authorized_reviewers, private_confidential
+  uploadedAt      DateTime @default(now())
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([documentType])
 }

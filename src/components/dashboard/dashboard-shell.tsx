@@ -60,6 +60,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard/governance", label: "Governance", icon: Scale, group: "Enterprise" },
   { href: "/dashboard/manager", label: "Manager Console", icon: Settings2, group: "Enterprise" },
   { href: "/dashboard/founder", label: "Founding Operator Studio", icon: Rocket, group: "Enterprise" },
+  { href: "/dashboard/enterprise-profile", label: "Enterprise Profile", icon: Building2, group: "Enterprise" },
   { href: "/dashboard/pitch-deck", label: "Pitch Deck Generator", icon: Presentation, group: "Enterprise" },
   { href: "/dashboard/milestone-designer", label: "Milestone Designer", icon: Target, group: "Enterprise" },
   { href: "/dashboard/board-member", label: "Board Member Console", icon: Gavel, group: "Enterprise" },
