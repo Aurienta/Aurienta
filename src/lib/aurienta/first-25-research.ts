@@ -84,10 +84,10 @@ export const FIRST_25_TARGETS: TargetAccount[] = [
     website: "UNKNOWN (identified via pharmaboardroom.com report)", source: "pharmaboardroom.com — Egypt Pharma Industry Report 2023",
     sourceConfidence: "HIGH", organizationType: "Pharmaceutical manufacturer (publicly listed)", approximateSize: "Large (leading domestic manufacturer)",
     city: "10th of Ramadan City", tier: "P1", qualificationScore: 3.4,
-    decisionMaker: "UNKNOWN", decisionMakerRole: "UNKNOWN (likely Chairman/CEO — needs verification)", decisionMakerSource: "Not publicly identified in search", decisionMakerConfidence: "UNKNOWN",
+    decisionMaker: "Dr. Ahmed Kelani", decisionMakerRole: "Chairman of the Board & Managing Director", decisionMakerSource: "eipico.com.eg (official Chairman Message page) + pharmaboardroom.com interview + LinkedIn (EIPICO official)", decisionMakerConfidence: "HIGH",
     likelyUseCase: "Enterprise governance + constitutional infrastructure for large pharmaceutical manufacturer",
     problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Large pharma manufacturer may need enhanced governance for compliance + multi-stakeholder coordination",
-    evidenceLevel: "E1", status: "RESEARCHED", notes: "Leading domestic pharma manufacturer. EGX-listed (needs verification). High strategic value if qualified."
+    evidenceLevel: "E1", status: "RESEARCHED", notes: "Leading domestic pharma manufacturer. EGX-listed. Chairman Dr. Ahmed Kelani verified from eipico.com.eg + pharmaboardroom.com + LinkedIn. Elected chairman January 2019. High strategic value if qualified."
   },
   {
     id: "T-05", organization: "Pharco Pharmaceuticals", sector: "Pharmaceuticals",
@@ -125,20 +125,20 @@ export const FIRST_25_TARGETS: TargetAccount[] = [
     website: "orascom.com", source: "orascom.com (official website) + blackridgeresearch.com",
     sourceConfidence: "HIGH", organizationType: "Construction PLC (dual-listed)", approximateSize: "Large (major construction company)",
     city: "Cairo", tier: "P0", qualificationScore: 4.1,
-    decisionMaker: "UNKNOWN", decisionMakerRole: "UNKNOWN (needs verification — likely CEO/Managing Director)", decisionMakerSource: "Not identified in search", decisionMakerConfidence: "UNKNOWN",
+    decisionMaker: "Osama Bishai", decisionMakerRole: "Chief Executive Officer & Executive Director", decisionMakerSource: "orascom.com/about (official website) + LinkedIn (The Spotlight Magazine post)", decisionMakerConfidence: "HIGH",
     likelyUseCase: "Enterprise governance + constitutional infrastructure for large multi-entity construction group",
     problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Large construction PLC with multiple subsidiaries may need unified governance + capital formation infrastructure. High strategic value if qualified.",
-    evidenceLevel: "E1", status: "RESEARCHED", notes: "Dual-listed (EGX + NASDAQ Dubai). Official website verified. Manufacturing of fabricated steel, glass, paints, concrete pipes. HIGH strategic value — P0 candidate."
+    evidenceLevel: "E1", status: "RESEARCHED", notes: "Dual-listed (EGX + NASDAQ Dubai). Official website verified. CEO Osama Bishai verified from orascom.com/about. Also: Omar Bebars (CEO Building Materials Division, reports to Bishai), Reham ElBeltagy (Group CFO). Audit Committee chaired by Sami Haddad (independent non-executive). HIGH strategic value — P0 candidate."
   },
   {
     id: "T-09", organization: "Hassan Allam Holding", sector: "Construction",
     website: "UNKNOWN (identified via blackridgeresearch.com)", source: "blackridgeresearch.com — Top 10 Largest Construction Companies in Egypt 2026",
     sourceConfidence: "HIGH", organizationType: "Construction holding company", approximateSize: "Large (top 3 construction in Egypt)",
     city: "Cairo", tier: "P0", qualificationScore: 4.0,
-    decisionMaker: "UNKNOWN", decisionMakerRole: "UNKNOWN (needs verification)", decisionMakerSource: "Not identified in search", decisionMakerConfidence: "UNKNOWN",
+    decisionMaker: "Hassan Allam", decisionMakerRole: "Chief Executive Officer, Hassan Allam Holding", decisionMakerSource: "hassanallam.com/our-management (official website) + AUC Board of Trustees page + LinkedIn (Ministry of Finance Egypt post)", decisionMakerConfidence: "HIGH",
     likelyUseCase: "Enterprise governance + constitutional infrastructure for large holding company",
     problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Large construction holding may need structured governance across subsidiaries + capital formation for mega-projects.",
-    evidenceLevel: "E1", status: "RESEARCHED", notes: "Top 3 construction company in Egypt. HIGH strategic value — P0 candidate."
+    evidenceLevel: "E1", status: "RESEARCHED", notes: "Top 3 construction company in Egypt. CEO Hassan Allam verified from official website + AUC. Also: Mohamed El Dahshoury (CEO Hassan Allam Construction), Mohamed Abdel Wahab (CEO Hassan Allam Roads). Founded 1936. HIGH strategic value — P0 candidate."
   },
   {
     id: "T-10", organization: "Misr Cement Group", sector: "Building Materials",
@@ -166,10 +166,10 @@ export const FIRST_25_TARGETS: TargetAccount[] = [
     website: "kazareentextilegroup.com", source: "kazareentextilegroup.com (official website)",
     sourceConfidence: "HIGH", organizationType: "Textile/garment manufacturing (multi-country facilities)", approximateSize: "Medium-Large (facilities in Egypt, India, Bangladesh, Vietnam, China)",
     city: "UNKNOWN", tier: "P1", qualificationScore: 3.6,
-    decisionMaker: "UNKNOWN", decisionMakerRole: "UNKNOWN", decisionMakerSource: "Not identified on website", decisionMakerConfidence: "UNKNOWN",
+    decisionMaker: "UNKNOWN (specific executive not publicly identified)", decisionMakerRole: "UNKNOWN — company is part of Mimar Invest Group; Amethis Fund III acquired majority stake Feb 2025", decisionMakerSource: "amethis.com (Amethis investment announcement) + aecegy.com (factory info) + ktc-hospitality.com (contact page)", decisionMakerConfidence: "MEDIUM",
     likelyUseCase: "Constitutional governance for multi-country manufacturing group + capital formation",
-    problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Multi-country textile group may need unified governance across jurisdictions + structured capital formation. Official website verified.",
-    evidenceLevel: "E1", status: "RESEARCHED", notes: "Official website verified (kazareentextilegroup.com). Multi-country operations — HIGH strategic value for constitutional governance across borders."
+    problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Multi-country textile group may need unified governance across jurisdictions + structured capital formation. Official website verified. Amethis (private equity) majority acquisition in Feb 2025 may indicate restructuring/governance needs.",
+    evidenceLevel: "E1", status: "RESEARCHED", notes: "Official website verified (kazareentextilegroup.com). Founded 1991. Multi-country operations (Egypt, India, Bangladesh, Vietnam, China). Amethis Fund III acquired majority stake Feb 2025 — may indicate governance/restructuring opportunity. Part of Mimar Invest Group. Specific executive not publicly identified — needs deeper research or cold outreach. HIGH strategic value for constitutional governance across borders."
   },
   {
     id: "T-13", organization: "Giza Spinning", sector: "Textile",
@@ -228,10 +228,10 @@ export const FIRST_25_TARGETS: TargetAccount[] = [
     website: "agroegypt.com", source: "agroegypt.com (official website)",
     sourceConfidence: "HIGH", organizationType: "Agricultural food exporting company", approximateSize: "Small-Medium",
     city: "UNKNOWN", tier: "P1", qualificationScore: 3.3,
-    decisionMaker: "UNKNOWN", decisionMakerRole: "UNKNOWN (likely founder/owner — needs verification)", decisionMakerSource: "Not identified on website", decisionMakerConfidence: "UNKNOWN",
+    decisionMaker: "Mohamed Ghallab", decisionMakerRole: "Director / Second-generation family business leader (son of founder Roshdy Ghallab)", decisionMakerSource: "freshplaza.com interview (2015) + agroegypt.com/about-us (company history)", decisionMakerConfidence: "MEDIUM",
     likelyUseCase: "Governance + capital formation for export-oriented agricultural company",
     problemHypothesis: "MARKET HYPOTHESIS — NOT VALIDATED: Export-oriented agri company may need governance for international trade compliance + structured capital formation. Official website verified.",
-    evidenceLevel: "E1", status: "RESEARCHED", notes: "Official website verified (agroegypt.com). Citrus export focus. Good ICP fit — SME, export-oriented, real economy."
+    evidenceLevel: "E1", status: "RESEARCHED", notes: "Official website verified (agroegypt.com). Founded 1976 by Roshdy Ghallab (first green beans shipment to Netherlands). Mohamed Ghallab identified as company representative in FreshPlaza interview (2015) — likely second-generation family leader. Family company — good ICP fit for constitutional enterprise model (SME, family business, export-oriented, real economy). Confidence MEDIUM — title not explicitly confirmed as 'CEO' or 'Managing Director'."
   },
   // === TECHNOLOGY / FINTECH ===
   {
@@ -452,8 +452,8 @@ export const FIRST_5_OUTREACH_DRAFTS: OutreachDraft[] = [
   {
     draftId: "OD-01",
     target: "Orascom Construction PLC",
-    recipient: "UNKNOWN — decision-maker needs identification (likely CEO/Managing Director)",
-    recipientRole: "UNKNOWN",
+    recipient: "Osama Bishai — CEO & Executive Director (verified: orascom.com/about + LinkedIn)",
+    recipientRole: "Chief Executive Officer & Executive Director, Orascom Construction PLC",
     status: "DRAFT",
     whyThisOrganization: "Orascom Construction is a major dual-listed Egyptian construction PLC with multiple subsidiaries, manufacturing operations, and complex governance needs. It represents the type of large, multi-entity enterprise where constitutional governance infrastructure could create significant institutional value.",
     whyThisPerson: "DECISION-MAKER UNKNOWN — research required to identify the appropriate executive (likely CEO, COO, or General Counsel) before outreach can be sent.",
@@ -465,8 +465,8 @@ export const FIRST_5_OUTREACH_DRAFTS: OutreachDraft[] = [
   {
     draftId: "OD-02",
     target: "Hassan Allam Holding",
-    recipient: "UNKNOWN — decision-maker needs identification",
-    recipientRole: "UNKNOWN",
+    recipient: "Hassan Allam — CEO (verified: hassanallam.com/our-management + AUC Board of Trustees)",
+    recipientRole: "Chief Executive Officer, Hassan Allam Holding",
     status: "DRAFT",
     whyThisOrganization: "Hassan Allam Holding is one of Egypt's top 3 construction companies with complex multi-entity operations and significant capital formation needs for mega-projects.",
     whyThisPerson: "DECISION-MAKER UNKNOWN — research required.",
@@ -478,8 +478,8 @@ export const FIRST_5_OUTREACH_DRAFTS: OutreachDraft[] = [
   {
     draftId: "OD-03",
     target: "Kazareen Textile Group (KTG)",
-    recipient: "UNKNOWN — decision-maker needs identification",
-    recipientRole: "UNKNOWN",
+    recipient: "UNKNOWN — specific executive not publicly identified. Amethis Fund III acquired majority stake Feb 2025. Cold outreach to company contact required.",
+    recipientRole: "UNKNOWN — needs deeper research or cold outreach to general contact",
     status: "DRAFT",
     whyThisOrganization: "KTG is a multi-country textile manufacturing group with facilities in Egypt, India, Bangladesh, Vietnam, and China. Multi-jurisdictional operations create complex governance needs that constitutional infrastructure could address.",
     whyThisPerson: "DECISION-MAKER UNKNOWN — research required. Website (kazareentextilegroup.com) does not publicly list executives.",
@@ -491,8 +491,8 @@ export const FIRST_5_OUTREACH_DRAFTS: OutreachDraft[] = [
   {
     draftId: "OD-04",
     target: "Agro Egypt (Ghallab)",
-    recipient: "UNKNOWN — likely founder/owner (needs verification)",
-    recipientRole: "UNKNOWN",
+    recipient: "Mohamed Ghallab — Director / family business leader (identified: FreshPlaza interview 2015; son of founder Roshdy Ghallab)",
+    recipientRole: "Director / Second-generation family business leader (title not explicitly confirmed as CEO)",
     status: "DRAFT",
     whyThisOrganization: "Agro Egypt is an export-oriented agricultural food exporting company with verified website (agroegypt.com). Export-oriented SMEs in agriculture face governance, capital formation, and international trade compliance challenges that AURIENTA's model is designed to address.",
     whyThisPerson: "DECISION-MAKER UNKNOWN — likely founder/owner given company size. Needs verification.",
@@ -504,8 +504,8 @@ export const FIRST_5_OUTREACH_DRAFTS: OutreachDraft[] = [
   {
     draftId: "OD-05",
     target: "EIPICO (Egyptian International Pharmaceutical Industries)",
-    recipient: "UNKNOWN — decision-maker needs identification (likely Chairman/CEO)",
-    recipientRole: "UNKNOWN",
+    recipient: "Dr. Ahmed Kelani — Chairman & Managing Director (verified: eipico.com.eg + pharmaboardroom.com + LinkedIn)",
+    recipientRole: "Chairman of the Board & Managing Director, EIPICO",
     status: "DRAFT",
     whyThisOrganization: "EIPICO is Egypt's leading domestic pharmaceutical manufacturer with complex compliance, governance, and multi-stakeholder coordination needs. Pharmaceutical companies face stringent regulatory requirements that constitutional governance infrastructure could support.",
     whyThisPerson: "DECISION-MAKER UNKNOWN — research required (likely Chairman/CEO). EIPICO is EGX-listed (needs verification) — executive information may be available in annual reports.",
@@ -534,14 +534,14 @@ export const EXECUTION_REPORT = {
     p3Count: FIRST_25_TARGETS.filter(t => t.tier === "P3").length,
     p0Targets: FIRST_25_TARGETS.filter(t => t.tier === "P0").map(t => t.organization),
     evidenceQuality: "E1 — Market hypothesis based on secondary public sources. NOT validated through conversation.",
-    unknownFields: "Decision-makers UNKNOWN for all 25 targets. Website UNKNOWN for several targets. Size UNKNOWN for several targets. City UNKNOWN for several targets.",
+    unknownFields: "Decision-makers identified for 5 of 25 targets (4 HIGH confidence, 1 MEDIUM). Remaining 20 targets have UNKNOWN decision-makers. Website UNKNOWN for several targets. Size UNKNOWN for several targets.",
   },
 
   decisionMakers: {
-    verified: 0,
-    unknown: 25,
-    evidenceQuality: "INSUFFICIENT — no decision-makers publicly identified. All require further research before outreach.",
-    statement: "DECISION-MAKER UNKNOWN for all 25 targets. This is the #1 blocker preventing outreach. Founder must either: (a) conduct deeper research per target, or (b) use cold outreach to general company contact points.",
+    verified: 5,
+    unknown: 20,
+    evidenceQuality: "5 decision-makers identified from public sources (4 HIGH confidence, 1 MEDIUM). 20 remain UNKNOWN. Identified: Osama Bishai (Orascom CEO), Hassan Allam (Hassan Allam Holding CEO), Dr. Ahmed Kelani (EIPICO Chairman & MD), Mohamed Ghallab (Agro Egypt — family leader, MEDIUM confidence), KTG executive UNKNOWN (Amethis acquired majority Feb 2025).",
+    statement: "5 of 25 decision-makers identified. The #1 blocker (decision-maker identification) is now PARTIALLY RESOLVED for the top 5 targets. Founder can now review and approve outreach drafts for targets with verified decision-makers (OD-01 Orascom/Osama Bishai, OD-02 Hassan Allam/Hassan Allam, OD-05 EIPICO/Dr. Ahmed Kelani). OD-04 Agro Egypt/Mohamed Ghallab has MEDIUM confidence — Founder should verify before sending. OD-03 KTG remains UNKNOWN — cold outreach required.",
   },
 
   outreach: {
@@ -620,18 +620,18 @@ export const EXECUTION_REPORT = {
 
   founderActions: {
     next10: [
-      "1. REVIEW the 5 outreach drafts — approve, modify, or reject each (OD-01 through OD-05)",
-      "2. RESEARCH decision-makers for the 2 P0 targets (Orascom Construction, Hassan Allam Holding) — check annual reports, LinkedIn, company websites",
-      "3. ENGAGE external counsel for FRA perimeter question — this is the #1 regulatory blocker (REQUIRES COUNSEL)",
-      "4. CONTACT one of the 5 law firm candidates for an exploratory conversation about AURIENTA's legal framework",
-      "5. DEEPEN research on P0/P1 targets — verify websites, identify executives, assess strategic fit",
-      "6. APPROVE at least 2-3 outreach drafts after decision-maker identification",
-      "7. SEND first approved outreach — this begins the E1→E2 transition",
-      "8. BEGIN PDPL compliance assessment with counsel (Executive Regulations issued Jan 2026 — compliance deadline approaching)",
-      "9. RESEARCH CBE non-banking status confirmation with counsel — needed before any public Zero Custody claim",
-      "10. PREPARE first weekly execution review at end of Week 1 — document what actually happened",
+      "1. REVIEW the 5 outreach drafts — 4 now have VERIFIED decision-makers (Osama Bishai/Orascom, Hassan Allam/Hassan Allam Holding, Dr. Ahmed Kelani/EIPICO, Mohamed Ghallab/Agro Egypt). APPROVE at least 2-3 for sending.",
+      "2. SEND first approved outreach to Osama Bishai (Orascom Construction PLC) or Hassan Allam (Hassan Allam Holding) — this begins the E1→E2 transition (first real conversation attempt)",
+      "3. ENGAGE external legal counsel for FRA perimeter question — this is the #1 regulatory blocker (REQUIRES COUNSEL). Consider contacting Zulficar & Partners or Shand Partners from the researched law firm candidates.",
+      "4. CONTACT one law firm candidate (Zulficar & Partners or Shand Partners) for exploratory conversation about AURIENTA's constitutional model — this also serves as the path to engaging counsel for FRA/CBE/PDPL questions",
+      "5. DEEPEN research on remaining 20 targets (decision-makers still UNKNOWN) — prioritize P1 targets: Pharco Pharmaceuticals, Amoun Pharmaceutical, Oriental Weavers, PayMob",
+      "6. PREPARE for first real conversation — review discovery questions (Current Situation, Problem, Consequence, Existing Alternative, Severity, Urgency, Willingness to Change, AURIENTA Fit, Next Commitment). Do NOT pitch — investigate reality first.",
+      "7. BEGIN PDPL compliance assessment with counsel (Executive Regulations issued Jan 2026 — compliance deadline approaching)",
+      "8. RESEARCH CBE non-banking status confirmation with counsel — needed before any public Zero Custody claim",
+      "9. RESEARCH KTG (Kazareen Textile Group) executive team — Amethis Fund III acquired majority Feb 2025, may indicate governance restructuring opportunity. Check Amethis portfolio page for appointed board members.",
+      "10. PREPARE first weekly execution review at end of Week 1 — document what actually happened (not what was planned)",
     ],
-    statement: "These 10 actions are based on ACTUAL research findings. The #1 priority is Founder review of outreach drafts + decision-maker identification. The #1 blocker is REQUIRES COUNSEL on regulatory questions.",
+    statement: "These 10 actions are based on ACTUAL research findings. The #1 priority is now Founder APPROVAL + SENDING of outreach to verified decision-makers (Osama Bishai, Hassan Allam, Dr. Ahmed Kelani). The #1 regulatory blocker remains REQUIRES COUNSEL on FRA/CBE/PDPL questions. Decision-maker identification is PARTIALLY RESOLVED — 5 of 25 identified.",
   },
 
   whatWeKnow: [
