@@ -58,3 +58,12 @@ tool-results/
 db/
 *.db
 blueprint-chunks/
+
+# Local backups (point-in-time archives — never committed)
+.backups/
+
+# Agent context (transient)
+agent-ctx/
+
+# Modified blueprint source chunks (if any)
+blueprint-src/
