@@ -613,3 +613,304 @@ export async function computeGraduationReadiness(enterpriseId: string) {
   const score = Math.round((passedCount / gates.length) * 100);
   return { score, gates };
 }
+
+// ── NOSI 30-day registration enforcement (Add-on 26) ──
+// Blueprint: "All employees must be registered with NOSI within 30 days;
+// the CRE enforces this with penalties (Add-on 26)."
+// Blueprint: "After 60 days, expense approvals frozen until registration."
+//
+// Returns a CRE verdict indicating whether the employee's NOSI status is
+// compliant, approaching deadline, or in violation.
+export function enforceNosiRegistration(params: {
+  hireDate: Date;
+  nosiStatus: string; // registered, pending, missing
+  nosiRegisteredAt?: Date | null;
+}): CreVerdict & {
+  daysSinceHire: number;
+  deadlineState: "compliant" | "approaching" | "overdue" | "frozen" | "unknown";
+} {
+  const policy = "nosi_registration.rego";
+  const now = Date.now();
+  const daysSinceHire = Math.floor((now - params.hireDate.getTime()) / (24 * 60 * 60 * 1000));
+
+  // If already registered → compliant
+  if (params.nosiStatus === "registered") {
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ nosi: params }), allowed: true }),
+      daysSinceHire,
+      deadlineState: "compliant",
+    };
+  }
+
+  // If hire date is unknown or future → unknown
+  if (!params.hireDate || isNaN(params.hireDate.getTime())) {
+    return {
+      allowed: false,
+      reason: "NOSI enforcement: hire date is UNKNOWN — cannot determine registration deadline",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ nosi: params }), allowed: false }),
+      daysSinceHire: -1,
+      deadlineState: "unknown",
+    };
+  }
+
+  // Within 30 days → approaching (warning, not violation)
+  if (daysSinceHire <= 30) {
+    return {
+      allowed: true,
+      reason: `NOSI registration deadline approaching: ${30 - daysSinceHire} day(s) remaining (Add-on 26)`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ nosi: params, days: daysSinceHire }), allowed: true }),
+      daysSinceHire,
+      deadlineState: "approaching",
+    };
+  }
+
+  // 31-60 days → overdue (violation, but expenses not yet frozen)
+  if (daysSinceHire <= 60) {
+    return {
+      allowed: false,
+      reason: `NOSI registration OVERDUE: ${daysSinceHire} days since hire (deadline: 30 days). Expense freeze imminent at 60 days (Add-on 26).`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ nosi: params, days: daysSinceHire }), allowed: false }),
+      daysSinceHire,
+      deadlineState: "overdue",
+    };
+  }
+
+  // 60+ days → frozen (expense approvals blocked)
+  return {
+    allowed: false,
+    reason: `NOSI registration FROZEN: ${daysSinceHire} days since hire without registration. Expense approvals are FROZEN until NOSI registration is completed (Add-on 26, 60-day rule).`,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ nosi: params, days: daysSinceHire }), allowed: false }),
+    daysSinceHire,
+    deadlineState: "frozen",
+  };
+}
+
+// ── NOSI expense freeze check (Add-on 26, 60-day rule) ──
+// Blueprint: "After 60 days, expense approvals frozen until registration."
+//
+// This function is called BEFORE any expense approval to verify that
+// no employee in the enterprise has an active NOSI freeze condition.
+export function enforceNosiExpenseFreeze(params: {
+  employees: { hireDate: Date; nosiStatus: string }[];
+}): CreVerdict & { frozenEmployeeCount: number } {
+  const policy = "nosi_expense_freeze.rego";
+  const now = Date.now();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  const frozenEmployees = params.employees.filter((e) => {
+    if (e.nosiStatus === "registered") return false;
+    const daysSinceHire = Math.floor((now - e.hireDate.getTime()) / DAY_MS);
+    return daysSinceHire > 60;
+  });
+
+  if (frozenEmployees.length > 0) {
+    return {
+      allowed: false,
+      reason: `Expense approval BLOCKED: ${frozenEmployees.length} employee(s) have NOSI registration past 60-day deadline. Expense approvals are frozen until NOSI registration is completed for all affected employees (Add-on 26).`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ frozen: frozenEmployees.length }), allowed: false }),
+      frozenEmployeeCount: frozenEmployees.length,
+    };
+  }
+
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ frozen: 0 }), allowed: true }),
+    frozenEmployeeCount: 0,
+  };
+}
+
+// ── Salary-to-Equity CRE validation (Volume 8, Workforce Capitalization) ──
+// Blueprint rules:
+//   1. "Workforce Partners can convert up to 10% of salary into Equity Units."
+//   2. "at a 15% discount" (to the fundamental/equity unit price)
+//   3. Uses existing enforcePriceBand() and fundamental pricing
+//   4. Result recorded via OwnershipRecord + immutable ledger
+//   5. Prevents double issuance
+//   6. Lock-up: equityUnits have restrictedUntil field in OwnershipRecord
+//
+// This function validates a salary-to-equity conversion request.
+// It does NOT execute the conversion — it returns a verdict that the
+// calling API must check before proceeding.
+export function enforceSalaryToEquity(params: {
+  // Employee/workforce data
+  employeeId: string;
+  monthlySalaryEgp: number;
+  equityConversionPct: number; // 0-10, the percentage of salary to convert
+  // Enterprise pricing
+  equityUnitPriceEgp: number; // the fundamental price (CPP)
+  // Authorization
+  authorizedBy: string; // user ID of the authorizer
+  workforcePartnerConsent: boolean;
+  // Anti-duplicate
+  existingConversionThisCycle: boolean; // true if already converted this pay cycle
+  // Lock-up
+  restrictedUntilMonths: number; // default 12 per blueprint
+}): CreVerdict & {
+  convertedAmountEgp: number;
+  discountedPriceEgp: number;
+  equityUnitsToIssue: number;
+} {
+  const policy = "salary_to_equity.rego";
+
+  // Rule 1: Salary must be known and positive
+  if (!params.monthlySalaryEgp || params.monthlySalaryEgp <= 0) {
+    return {
+      allowed: false,
+      reason: "Salary-to-Equity: monthly salary is UNKNOWN or zero — cannot convert",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 2: Conversion percentage must be 0-10 (blueprint: "up to 10%")
+  if (params.equityConversionPct < 0) {
+    return {
+      allowed: false,
+      reason: `Salary-to-Equity: conversion percentage ${params.equityConversionPct}% is negative — rejected`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+  if (params.equityConversionPct > 10) {
+    return {
+      allowed: false,
+      reason: `Salary-to-Equity: conversion percentage ${params.equityConversionPct}% exceeds constitutional maximum of 10% (Volume 8, Workforce Capitalization)`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 3: Conversion of 0% is valid but produces no units
+  if (params.equityConversionPct === 0) {
+    return {
+      allowed: true,
+      reason: "Salary-to-Equity: 0% conversion — no Equity Units to issue",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: true }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 4: Fundamental price must be known and positive
+  if (!params.equityUnitPriceEgp || params.equityUnitPriceEgp <= 0) {
+    return {
+      allowed: false,
+      reason: "Salary-to-Equity: Equity Unit Price (CPP) is UNKNOWN or zero — cannot calculate conversion",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 5: Workforce Partner consent must be given
+  if (!params.workforcePartnerConsent) {
+    return {
+      allowed: false,
+      reason: "Salary-to-Equity: Workforce Partner consent is required for conversion (Volume 8, Workforce Capitalization)",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 6: Prevent duplicate conversion in the same pay cycle
+  if (params.existingConversionThisCycle) {
+    return {
+      allowed: false,
+      reason: "Salary-to-Equity: conversion already processed for this pay cycle — duplicate conversion rejected (anti-replay)",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp: 0,
+      discountedPriceEgp: 0,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // Rule 7: Calculate conversion at 15% discount to fundamental price
+  // Blueprint: "at a 15% discount" to the Equity Unit Price
+  const convertedAmountEgp = Math.round(params.monthlySalaryEgp * (params.equityConversionPct / 100));
+  const discountedPriceEgp = params.equityUnitPriceEgp * 0.85; // 15% discount
+  const equityUnitsToIssue = Math.floor(convertedAmountEgp / discountedPriceEgp);
+
+  if (equityUnitsToIssue <= 0) {
+    return {
+      allowed: false,
+      reason: `Salary-to-Equity: conversion amount ${convertedAmountEgp} EGP is too small to issue even 1 Equity Unit at discounted price ${discountedPriceEgp.toFixed(2)} EGP`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params }), allowed: false }),
+      convertedAmountEgp,
+      discountedPriceEgp,
+      equityUnitsToIssue: 0,
+    };
+  }
+
+  // All checks passed — conversion is constitutionally valid
+  return {
+    allowed: true,
+    reason: `Salary-to-Equity: ${params.equityConversionPct}% of ${params.monthlySalaryEgp} EGP = ${convertedAmountEgp} EGP → ${equityUnitsToIssue} Equity Units at ${discountedPriceEgp.toFixed(2)} EGP/unit (15% discount). Lock-up: ${params.restrictedUntilMonths} months. Authorized by: ${params.authorizedBy}.`,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ s2e: params, converted: convertedAmountEgp, units: equityUnitsToIssue }), allowed: true }),
+    convertedAmountEgp,
+    discountedPriceEgp,
+    equityUnitsToIssue,
+  };
+}
+
+// ── Salary-to-Equity lock-up enforcement ──
+// Blueprint: Equity Units from salary conversion have a restricted period.
+// The OwnershipRecord model has `restrictedUntil` field.
+// This function checks whether salary-derived Equity Units are still locked.
+export function enforceEquityLockUp(params: {
+  restrictedUntil: Date | null;
+}): CreVerdict {
+  const policy = "equity_lockup.rego";
+
+  if (!params.restrictedUntil) {
+    // No restriction → not locked (e.g., regular Capital Partner units)
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ lock: null }), allowed: true }),
+    };
+  }
+
+  const now = Date.now();
+  if (now < params.restrictedUntil.getTime()) {
+    const daysRemaining = Math.ceil((params.restrictedUntil.getTime() - now) / (24 * 60 * 60 * 1000));
+    return {
+      allowed: false,
+      reason: `Equity lock-up: transfer blocked — ${daysRemaining} day(s) remaining until lock-up expires (${params.restrictedUntil.toISOString().split("T")[0]})`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ lock: params.restrictedUntil }), allowed: false }),
+    };
+  }
+
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ lock: params.restrictedUntil, expired: true }), allowed: true }),
+  };
+}

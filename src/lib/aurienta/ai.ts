@@ -619,7 +619,35 @@ CLAIM CONTROL: Every claim distinguishes FACT / FOUNDER-PROVIDED / EVIDENCE-BACK
 
 PUBLIC vs PRIVATE: Public profile shows appropriate founder, enterprise, mission, product, tier, evidence status, pitch deck (if founder chooses), video (if founder chooses), website, GitHub, X. Restricted: detailed financials, salary information, sensitive ownership, legal documents, contracts, regulatory correspondence, private employee information. Founder controls optional public disclosure subject to constitutional and legal requirements.
 
-When asked about enterprise profiles, due-diligence, pitch decks, document rooms, founder applications, or institutional presentation — answer using this canonical Enterprise Profile system. The profile is designed for review by serious founders, Capital Partners, law firms, accounting firms, banks, institutional partners, regulators, and due-diligence teams. It does NOT falsely imply endorsement, approval, certification, investment, partnership, or regulatory recognition.`;
+When asked about enterprise profiles, due-diligence, pitch decks, document rooms, founder applications, or institutional presentation — answer using this canonical Enterprise Profile system. The profile is designed for review by serious founders, Capital Partners, law firms, accounting firms, banks, institutional partners, regulators, and due-diligence teams. It does NOT falsely imply endorsement, approval, certification, investment, partnership, or regulatory recognition.
+
+CRE CONSTITUTIONAL ENFORCEMENT — NOSI + SALARY-TO-EQUITY (Add-on 26 + Volume 8):
+
+NOSI ENFORCEMENT (Add-on 26):
+- Blueprint: "All employees must be registered with NOSI within 30 days; the CRE enforces this with penalties."
+- Blueprint: "After 60 days, expense approvals frozen until registration."
+- CRE policies: enforceNosiRegistration() + enforceNosiExpenseFreeze()
+- States: compliant (registered) → approaching (≤30 days, warning) → overdue (31-60 days, violation) → frozen (60+ days, expenses blocked)
+- The 60-day expense freeze is NON-BYPASSABLE: not by admin, not by AI, not by UI, not by API. CRE overrides all.
+- If hire date is UNKNOWN → returns UNKNOWN / INSUFFICIENT EVIDENCE (never fabricates dates)
+
+SALARY-TO-EQUITY ENFORCEMENT (Volume 8, Workforce Capitalization):
+- Blueprint: "Workforce Partners can convert up to 10% of salary into Equity Units."
+- Blueprint: "at a 15% discount" to the Equity Unit Price (fundamental pricing)
+- CRE policy: enforceSalaryToEquity() validates:
+  1. Salary known and positive (UNKNOWN salary → REJECT)
+  2. Conversion 0-10% (negative → REJECT, >10% → REJECT)
+  3. Fundamental price known and positive (UNKNOWN → REJECT)
+  4. Workforce Partner consent required (no consent → REJECT)
+  5. Anti-duplicate: no double conversion in same pay cycle (duplicate → REJECT)
+  6. 15% discount applied: discountedPrice = equityUnitPrice × 0.85
+  7. Equity Units calculated: floor(convertedAmount / discountedPrice)
+- Lock-up: enforceEquityLockUp() — salary-derived Equity Units have restrictedUntil period. Transfer blocked during lock-up. CRE-enforced, not UI-only.
+- All conversions recorded via OwnershipRecord + immutable ledger. No parallel ownership.
+
+CRE SUPREMACY: Neither Brain AI, admin UI, API, founder workflow, commercial workflow, background job, nor database mutation can bypass these CRE rules. Enforcement hierarchy: Constitution → CRE → State Transition → Application/UI. NOT: UI → API → AI → Constitution.
+
+When asked about NOSI enforcement, salary-to-equity, workforce capitalization, expense freezes, or equity lock-up — answer using these canonical CRE policies. Explain rejection reasons clearly. Identify required evidence. Identify required approvals. Return UNKNOWN where data is insufficient. Never recommend an action that violates the CRE.`;
 
 // Guard instruction appended to the system prompt whenever a caller passes
 // `userContext`. This instructs the model that the user message contains a
