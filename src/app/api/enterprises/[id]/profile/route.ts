@@ -3,6 +3,11 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { logger } from "@/lib/aurienta/logger";
+import {
+  buildViewerContext,
+  sanitizeEmployeeListForViewer,
+  type ViewerContext,
+} from "@/lib/aurienta/transparency";
 
 export const runtime = "nodejs";
 
@@ -69,43 +74,51 @@ export async function PATCH(
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
-    // Update the enterprise profile
-    const updated = await db.enterprise.update({
-      where: { id: enterpriseId },
-      data: updateData,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        website: true,
-        logoUrl: true,
-        mission: true,
-        vision: true,
-        problem: true,
-        solution: true,
-        productService: true,
-        targetMarket: true,
-        revenueModel: true,
-        currentCustomers: true,
-        pitchDeckUrl: true,
-        founderVideoUrl: true,
-        githubUrl: true,
-        linkedinUrl: true,
-        twitterUrl: true,
-        founderBio: true,
-        founderStatement: true,
-        founderRequest: true,
-        evidenceLevel: true,
-        submissionStatus: true,
-      },
-    });
+    // Update the enterprise profile AND record the ledger event in a single
+    // transaction. appendLedgerEvent requires a PrismaTransaction client (tx)
+    // because it calls tx.ledgerEvent.findFirst + tx.ledgerEvent.create to
+    // maintain the hash-chain integrity. Passing `undefined` would crash at
+    // runtime. (P1-1 fix — CTO/COO audit finding.)
+    const updated = await db.$transaction(async (tx) => {
+      const enterprise = await tx.enterprise.update({
+        where: { id: enterpriseId },
+        data: updateData,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          website: true,
+          logoUrl: true,
+          mission: true,
+          vision: true,
+          problem: true,
+          solution: true,
+          productService: true,
+          targetMarket: true,
+          revenueModel: true,
+          currentCustomers: true,
+          pitchDeckUrl: true,
+          founderVideoUrl: true,
+          githubUrl: true,
+          linkedinUrl: true,
+          twitterUrl: true,
+          founderBio: true,
+          founderStatement: true,
+          founderRequest: true,
+          evidenceLevel: true,
+          submissionStatus: true,
+        },
+      });
 
-    // Record the profile update on the immutable ledger
-    await appendLedgerEvent(undefined, {
-      enterpriseId,
-      eventType: "profile_updated",
-      payload: { fields: Object.keys(updateData), updatedBy: user.id },
-      actorId: user.id,
+      // Record the profile update on the immutable ledger (same tx)
+      await appendLedgerEvent(tx, {
+        enterpriseId,
+        eventType: "profile_updated",
+        payload: { fields: Object.keys(updateData), updatedBy: user.id },
+        actorId: user.id,
+      });
+
+      return enterprise;
     });
 
     logger.info("Enterprise profile updated", {
@@ -190,7 +203,7 @@ export async function GET(
         // Relations
         founder: { select: { id: true, legalName: true, sovereignTrustScore: true } },
         ownershipRecords: { select: { id: true, equityUnits: true, avgPriceEgp: true, userId: true } },
-        employees: { select: { id: true, position: true, department: true, employmentType: true, compensationBand: true, monthlySalaryEgp: true, nosiStatus: true, keyPerson: true, equityConversionPct: true, hireDate: true } },
+        employees: { select: { id: true, userId: true, position: true, department: true, employmentType: true, compensationBand: true, monthlySalaryEgp: true, nosiStatus: true, keyPerson: true, equityConversionPct: true, hireDate: true } },
         documents: { select: { id: true, documentType: true, title: true, description: true, fileUrl: true, fileName: true, evidenceLevel: true, verificationStatus: true, visibilityClass: true, uploadedAt: true } },
         milestones: { select: { id: true, title: true, description: true, amountEgp: true, status: true, dueAt: true, releasedAt: true } },
         _count: { select: { ownershipRecords: true, employees: true, proposals: true, ledgerEvents: true } },
@@ -201,7 +214,45 @@ export async function GET(
       return NextResponse.json({ error: "Enterprise not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ enterprise });
+    // ── AURIENTA Transparency Authorization (§8.6.2) ──
+    // Determine the viewer's role in this enterprise, then sanitize the
+    // employee list so that protected personal data (NOSI number, national ID,
+    // exact salary for non-managers) is never exposed to viewers who lack
+    // constitutional authority to see it. See src/lib/aurienta/transparency.ts.
+    let viewer: ViewerContext | null = buildViewerContext(
+      user.memberships,
+      user.id,
+      enterpriseId,
+    );
+    if (!viewer) {
+      // The viewer is authenticated but has no membership in this enterprise
+      // (e.g. a Capital Partner browsing the Enterprise Registry). They still
+      // see the public Employee Registry — positions, departments, hire dates —
+      // but no salary or band data. Treat them as an external capital_partner
+      // whose enterpriseId deliberately does not match, so canSeeExactSalary
+      // and canSeeSalaryBand both return false for non-managers.
+      viewer = {
+        role: "capital_partner",
+        userId: user.id,
+        enterpriseId: "__external_viewer__",
+        isBoardMember: false,
+        isManager: false,
+      };
+    }
+
+    const sanitizedEmployees = sanitizeEmployeeListForViewer(
+      enterprise.employees.map((e) => ({
+        ...e,
+        // Employee.status is not currently a DB column; default to "active"
+        // so the sanitized output's required `status` field is populated.
+        status: "active",
+      })),
+      viewer,
+    );
+
+    return NextResponse.json({
+      enterprise: { ...enterprise, employees: sanitizedEmployees },
+    });
   } catch (error) {
     logger.error("Enterprise profile fetch failed", {
       err: error instanceof Error ? error.message : String(error),

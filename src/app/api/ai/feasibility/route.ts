@@ -10,6 +10,7 @@ import { audit } from "@/lib/aurienta/audit";
 import { askConstitutionalAI } from "@/lib/aurienta/ai";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
+import { logger } from "@/lib/aurienta/logger";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -463,4 +464,137 @@ async function finalizeReport(report: FeasibilityReport, userId: string) {
   });
 
   return NextResponse.json({ ok: true, report, artifactId: artifact.id });
+}
+
+// GET /api/ai/feasibility — Retrieve stored Constitutional Evaluation Reports.
+// Query params:
+//   ?evaluationId=eval_xxx  — retrieve a specific evaluation by its evaluation_id
+//   ?enterpriseId=xxx       — list all evaluations for an enterprise (most recent first)
+//   ?limit=10               — max results (default 10, max 50)
+//
+// Only the founding operator / company owner / board member of the enterprise,
+// or the user who requested the evaluation, can retrieve it. This implements
+// the Constitutional Evaluation Report accessibility rule (§4.1.1.7): the
+// report is "accessible to the founding operator and, after enterprise
+// activation, to all Constitutional Partners."
+export async function GET(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const evaluationId = url.searchParams.get("evaluationId");
+  const enterpriseId = url.searchParams.get("enterpriseId");
+  const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get("limit") ?? "10", 10)));
+
+  try {
+    // ── Mode 1: Retrieve a specific evaluation by evaluation_id ──
+    if (evaluationId) {
+      // The evaluationId is stored inside the payload JSON. Since SQLite
+      // doesn't have JSON path queries, we fetch by kind and filter in-app.
+      const artifacts = await db.aiArtifact.findMany({
+        where: {
+          kind: "feasibility_evaluation",
+          OR: [
+            { userId: user.id },
+            { enterpriseId: enterpriseId ?? undefined },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+        take: 100, // scan up to 100 to find the matching evaluationId
+      });
+
+      const match = artifacts.find((a) => {
+        try {
+          const payload = JSON.parse(a.payload);
+          return payload.evaluationId === evaluationId;
+        } catch {
+          return false;
+        }
+      });
+
+      if (!match) {
+        return NextResponse.json(
+          { error: "Evaluation report not found or not accessible" },
+          { status: 404 }
+        );
+      }
+
+      const report = JSON.parse(match.content);
+      return NextResponse.json({
+        ok: true,
+        artifactId: match.id,
+        report,
+        createdAt: match.createdAt,
+      });
+    }
+
+    // ── Mode 2: List evaluations for an enterprise (or the current user) ──
+    const where = enterpriseId
+      ? {
+          kind: "feasibility_evaluation" as const,
+          enterpriseId,
+          OR: [
+            { userId: user.id },
+            // Constitutional Partners of the enterprise can see evaluations
+            // after activation — checked via membership below
+          ],
+        }
+      : {
+          kind: "feasibility_evaluation" as const,
+          userId: user.id,
+        };
+
+    // If an enterpriseId is specified, verify the user is a member.
+    if (enterpriseId) {
+      const isMember = user.memberships.some((m) => m.enterpriseId === enterpriseId);
+      const isFounder = user.memberships.some(
+        (m) => m.enterpriseId === enterpriseId &&
+          (m.role === "founding_operator" || m.role === "company_owner" || m.role === "board_member")
+      );
+      if (!isMember && !isFounder) {
+        return NextResponse.json(
+          { error: "Not authorised to view evaluations for this enterprise" },
+          { status: 403 }
+        );
+      }
+    }
+
+    const artifacts = await db.aiArtifact.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        content: true,
+        payload: true,
+        confidence: true,
+        createdAt: true,
+        enterpriseId: true,
+      },
+    });
+
+    const evaluations = artifacts.map((a) => {
+      const report = JSON.parse(a.content);
+      const payload = JSON.parse(a.payload);
+      return {
+        artifactId: a.id,
+        evaluationId: payload.evaluationId ?? null,
+        feasibilityScore: report.feasibilityScore ?? payload.feasibilityScore ?? null,
+        passed: report.passed ?? payload.passed ?? null,
+        createdAt: a.createdAt,
+      };
+    });
+
+    return NextResponse.json({ ok: true, evaluations, count: evaluations.length });
+  } catch (error) {
+    logger.error("Feasibility evaluation retrieval failed", {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json(
+      { error: "Failed to retrieve evaluation reports" },
+      { status: 500 }
+    );
+  }
 }

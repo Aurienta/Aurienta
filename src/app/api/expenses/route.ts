@@ -14,6 +14,133 @@ import {
   getIdempotencyContext,
   storeIdempotency,
 } from "@/lib/aurienta/idempotency";
+import {
+  aggregateExpensesByCategory,
+  buildViewerContext,
+  isSalaryLikeCategory,
+  sanitizeExpenseForViewer,
+  type ViewerContext,
+} from "@/lib/aurienta/transparency";
+import { logger } from "@/lib/aurienta/logger";
+
+export const runtime = "nodejs";
+
+// GET /api/expenses?enterpriseId=xxx
+// Returns the sanitized expense list for the authenticated viewer.
+// Per §8.14.2:
+//   - Board members see ALL individual expense lines (including salaries).
+//   - Non-board enterprise members / Capital Partners see individual lines for
+//     every category EXCEPT salary-like categories (salaries, payroll, wages).
+//     For salary-like categories they see AGGREGATED totals only — never
+//     individual salary line items.
+export async function GET(req: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Not authenticated", code: "unauthenticated" },
+        { status: 401 },
+      );
+    }
+
+    const url = new URL(req.url);
+    const enterpriseId = url.searchParams.get("enterpriseId");
+    if (!enterpriseId) {
+      return NextResponse.json(
+        { error: "enterpriseId query parameter is required", code: "missing_enterprise_id" },
+        { status: 400 },
+      );
+    }
+
+    const enterprise = await db.enterprise.findUnique({
+      where: { id: enterpriseId },
+      select: { id: true, name: true, slug: true },
+    });
+    if (!enterprise) {
+      return NextResponse.json({ error: "Enterprise not found", code: "not_found" }, { status: 404 });
+    }
+
+    const expenses = await db.expense.findMany({
+      where: { enterpriseId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        category: true,
+        description: true,
+        vendor: true,
+        amountEgp: true,
+        status: true,
+        createdAt: true,
+        approver1Id: true,
+      },
+    });
+
+    // Build the viewer context from the user's memberships in this enterprise.
+    let viewer: ViewerContext | null = buildViewerContext(
+      user.memberships,
+      user.id,
+      enterpriseId,
+    );
+    if (!viewer) {
+      // External viewer — sees the public expense summary only (non-salary
+      // individual lines + aggregated salary totals). Treat them as an
+      // external capital_partner.
+      viewer = {
+        role: "capital_partner",
+        userId: user.id,
+        enterpriseId: "__external_viewer__",
+        isBoardMember: false,
+        isManager: false,
+      };
+    }
+
+    // Partition expenses into salary-like (aggregated only for non-board) and
+    // other categories (individual lines visible to all enterprise members).
+    const salaryLike: typeof expenses = [];
+    const otherExpenses: typeof expenses = [];
+    for (const exp of expenses) {
+      if (isSalaryLikeCategory(exp.category)) {
+        salaryLike.push(exp);
+      } else {
+        otherExpenses.push(exp);
+      }
+    }
+
+    // Sanitize each non-salary expense. Non-board viewers get the line item
+    // with `amountEgp` visible; this is consistent with §8.14.2 which lists
+    // every non-salary category as "All shareholders".
+    const sanitizedExpenses = otherExpenses
+      .map((exp) => sanitizeExpenseForViewer(exp, viewer!))
+      .filter((e): e is NonNullable<typeof e> => e !== null);
+
+    // For salary-like categories: board members see individual lines; everyone
+    // else sees aggregated totals only.
+    const isBoard = viewer.isBoardMember || viewer.role === "board_member";
+    const salaryLines = isBoard
+      ? salaryLike
+          .map((exp) => sanitizeExpenseForViewer(exp, viewer!))
+          .filter((e): e is NonNullable<typeof e> => e !== null)
+      : [];
+    const aggregatedSalary = !isBoard
+      ? aggregateExpensesByCategory(salaryLike)
+      : [];
+
+    return NextResponse.json({
+      enterprise: { id: enterprise.id, name: enterprise.name, slug: enterprise.slug },
+      expenses: [...salaryLines, ...sanitizedExpenses],
+      aggregatedByCategory: aggregatedSalary,
+      total: salaryLines.length + sanitizedExpenses.length,
+    });
+  } catch (error) {
+    logger.error("Expense list fetch failed", {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json(
+      { error: "Failed to fetch expenses", code: "internal_error" },
+      { status: 500 },
+    );
+  }
+}
 
 // POST /api/expenses — submit a new expense.
 // CRE authority is enforced: <1% → manager-only, 1-10% → dual signature, >10% → board.

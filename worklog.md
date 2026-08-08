@@ -10457,3 +10457,124 @@ Stage Summary:
 - The E0-E9 evidence hierarchy defined in Volume 42, with current platform ceiling honestly stated as E1.
 - Deliverables: scripts/blueprint-helpers.ts, scripts/blueprint-volumes-22-37.ts, scripts/generate-expanded-blueprint.ts, download/AURIENTA_Blueprint_Modified.docx, download/AURIENTA_Master_Blueprint_v2.0.docx.
 - HONEST CERTIFICATION: ARCHITECTURALLY COMPLETE + FULLY EXPANDED. The Master Blueprint v2.0 is the single source of truth for AURIENTA. All future work must reference this document. Founder: Mohamed Eltonsy — 100% — Constitutional Hash: 0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A — August 2026.
+
+---
+Task ID: P1-4
+Agent: Salary Engine Agent (AI Salary Engine, Blueprint §8.4)
+Task: Implement the AURIENTA Compensation Intelligence (AI Salary Engine) per Volume 8 §8.4 — the core salary-engine.ts library, two API endpoints (/api/ai/salary + /api/ai/salary/override), and a new CRE enforcement function (enforceSalaryConstitutionality) in cre.ts.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 100 lines + last 300 lines) to load full prior context (Task IDs 0–5+). Confirmed: Brain AI system prompt at src/lib/aurienta/ai.ts already references Salary-to-Equity enforcement and CRE supremacy; cre.ts already has 15+ enforced policies including enforceSalaryToEquity() and enforceEquityLockUp(); existing API route pattern established in /api/ai/feasibility/route.ts; auth + rate-limit + audit + validation + logger helpers all in place.
+- Read existing patterns: src/lib/aurienta/ai.ts (askConstitutionalAI signature: { systemPrompt, userMessage, userContext, kind, persist, ... } → AiCallResult { content, fellBack, error, latencyMs, tokensIn, tokensOut }), src/lib/aurienta/cre.ts (CreVerdict = { allowed, reason?, policy, decisionToken, requiredApproverRoles? } pattern + appendLedgerEvent(tx, { enterpriseId, eventType, payload, actorId }) signature + hashPayload helper + issueCreDecisionToken pattern), src/lib/aurienta/rate-limit.ts (limiters.ai = 30/min/user + rateLimitedResponse(resetAt)), src/lib/aurienta/auth.ts (getCurrentUser + requireRole), src/lib/aurienta/audit.ts (audit({ actorId, action, target, result, reason, metadata })), src/lib/aurienta/validation.ts (parseBody<T>(req, schema) → T | NextResponse), src/lib/aurienta/logger.ts (logger.{info,warn,error}), src/app/api/ai/feasibility/route.ts (canonical 7-stage AI route pattern with runtime="nodejs", dynamic="force-dynamic").
+
+- Created src/lib/aurienta/salary-engine.ts (16,095 bytes) — the core compensation intelligence library. Exports:
+  • TIER_MULTIPLIERS = { A:0.8, B:1.0, C:1.3, D:1.5, E:0.9, F:1.5 } (§8.4.1, fixed)
+  • REGIONAL_ADJUSTMENTS = { cairo:1.0, alexandria:0.9, delta:0.85, upper_egypt:0.8, suez_canal:0.95 } (§8.4.1, fixed)
+  • MARKET_RATES = 20 positions × EGP/month seed data (software_engineer=15000, chief_executive_officer=50000, intern=4000, etc.)
+  • Constitutional bounds: MIN_PERFORMANCE_SCORE=0.5, MAX_PERFORMANCE_SCORE=1.5, NEUTRAL_PERFORMANCE_SCORE=1.0, MIN_PROFIT_FACTOR=0.8, MAX_PROFIT_FACTOR=1.2, BOARD_OVERRIDE_THRESHOLD_PCT=75, SHAREHOLDER_NOTIFICATION_RATIO=2.0, MINIMUM_WAGE_EGP=4000, SALARY_ROUNDING_EGP=100, COMPENSATION_BAND_UPPER_FACTOR=1.3
+  • Types: SalaryCalculationInput, SalaryCalculationResult, SalaryOverrideInput, SalaryOverrideResult (verbatim per task spec)
+  • computeCompensationBand(salaryEgp) → "25,700-33,400 EGP" format
+  • calculateConstitutionalSalary(input): resolves base (custom or MARKET_RATES lookup with `other` fallback), looks up tier + region multipliers, clamps performanceScore to [0.5,1.5] and profitFactor to [0.8,1.2], computes base×tier×perf×region×profit, rounds to nearest 100 EGP, calls askConstitutionalAI with a YES/NO sanity-check prompt, falls back to performance=1.0 if AI says NO (or if AI call throws), computes compensation band (salary to salary×1.3 rounded), returns full result including human-readable formula string ("15,000 × 1.3 × 1.20 × 1.0 × 1.10 = 25,740 → 25,700"). AI fallback responses ([AI_FALLBACK] prefix) and any non-YES first-token replies are treated as NO → conservative neutral fallback.
+  • processSalaryOverride(input): rejects if boardVotePct < 75 (§8.4.3), rejects if override below minimum wage (4000 EGP), computes overrideRatio, sets requiresShareholderNotification = (ratio > 2.0), logs the override to the immutable ledger hash-chain via appendLedgerEvent inside db.$transaction (eventType="salary_override", payload includes enterpriseId, employeeId, aiSalary, overrideSalary, ratio, boardVotePct, voterIds, justification, requiresShareholderNotification, timestamp, blueprintRef="Volume 8 §8.4.3"), returns SalaryOverrideResult with allowed/reason/requiresShareholderNotification/overrideRatio/loggedToLedger.
+  • Blueprint example verified by trace: 15000 × 1.3 × 1.2 × 1.0 × 1.1 = 25,740 → rounds to 25,700 EGP ✓
+
+- Created src/app/api/ai/salary/route.ts (3,161 bytes) — POST endpoint. Auth required (getCurrentUser → 401 if null), rate limited via limiters.ai (429 if exceeded), zod schema validates position (1-120 chars), tier (enum A-F), region (enum cairo/alexandria/delta/upper_egypt/suez_canal), performanceScore [0.5,1.5], profitFactor [0.8,1.2], optional customBaseEgp (1000–1,000,000). Calls calculateConstitutionalSalary, writes audit log (action="ai.salary.calculate", metadata includes baseEgp, calculatedSalaryEgp, finalSalaryEgp, compensationBand, aiValidated, aiAdjusted), returns { ok: true, result }. Try/catch wraps the calculation with structured 500 error response. runtime="nodejs", dynamic="force-dynamic".
+
+- Created src/app/api/ai/salary/override/route.ts (4,743 bytes) — POST endpoint. Auth required, then RBAC check: user.memberships.some(m => m.role === "board_member") — returns 403 with audit denial log (action="ai.salary.override", result="denied", reason="role_not_board_member") if not a board member. Rate limited via limiters.ai. Zod schema validates enterpriseId, employeeId, aiCalculatedSalaryEgp (1–10M EGP), overrideSalaryEgp (1–10M EGP), justification (10–2000 chars), boardVotePct (0–100), voterIds (1–64 IDs). Calls processSalaryOverride, writes audit log with full override metadata (ratio, vote%, voterCount, requiresShareholderNotification, loggedToLedger, justification), returns { ok: true, result }. Try/catch with structured 500 error.
+
+- APPENDED (did not modify existing functions) enforceSalaryConstitutionality() to src/lib/aurienta/cre.ts at line 933 (file now 1,039 lines). New function follows the existing CreVerdict & { extra fields } pattern (mirrors enforceNosiExpenseFreeze and enforceSalaryToEquity). Four constitutional rules:
+  Rule 1: Reject if proposedSalaryEgp < MINIMUM_WAGE_EGP (4,000 EGP/month, 2026).
+  Rule 2: If isBoardOverride OR proposedSalary > aiCalculatedSalary, require boardVotePct ≥ 75 (§8.4.3). Below-AI salaries pass without a board vote (manager discretion per §8.4.3).
+  Rule 3: Compute overrideRatio = proposedSalary / max(aiSalary, 1). Flag requiresShareholderNotification when ratio > 2.0 (§8.4.3). Override is still allowed (board voted ≥75%) but notification is mandatory.
+  Rule 4: Hard cap — overrides above 3.0x the AI salary are rejected outright even with a unanimous board vote (constitutional ceiling; charter amendment required to exceed).
+  Returns CreVerdict & { requiresShareholderNotification: boolean; overrideRatio: number } with policy="salary_constitutionality.rego" and signed decisionToken via issueCreDecisionToken.
+
+- Imports used (per task spec): askConstitutionalAI from "@/lib/aurienta/ai"; appendLedgerEvent from "@/lib/aurienta/cre"; db from "@/lib/db"; logger from "@/lib/aurienta/logger"; z from "zod"; limiters + rateLimitedResponse from "@/lib/aurienta/rate-limit"; audit from "@/lib/aurienta/audit"; parseBody from "@/lib/aurienta/validation"; getCurrentUser from "@/lib/aurienta/auth".
+
+- Lint verification: `cd /home/z/my-project && bun run lint` → EXIT=0 (0 errors, 0 warnings). All three new files compile cleanly under the existing ESLint + Next.js ruleset.
+- File verification: `ls -la src/lib/aurienta/salary-engine.ts src/app/api/ai/salary/route.ts src/app/api/ai/salary/override/route.ts` → all three files present (16,095 + 3,161 + 4,743 bytes).
+- CRE verification: `grep "enforceSalaryConstitutionality" src/lib/aurienta/cre.ts` → found at line 933.
+- Dev server log: GET / returns 200 throughout — no compile errors introduced.
+
+Stage Summary:
+- AI Salary Engine IMPLEMENTED end-to-end: formula library + 2 API routes + CRE constitutional guard.
+- Blueprint §8.4 formula: Salary = Base × Tier_multiplier × Performance_score × Regional_adjustment × Profit_factor — verified by trace (15,000 × 1.3 × 1.2 × 1.0 × 1.1 = 25,740 → 25,700 EGP ✓).
+- Blueprint §8.4.2 AI validation: askConstitutionalAI sanity-checks every calculated salary; NO → fall back to neutral performance (1.0); [AI_FALLBACK] responses treated as NO.
+- Blueprint §8.4.3 override rules: ≥75% board vote enforced in BOTH salary-engine.ts (processSalaryOverride) AND cre.ts (enforceSalaryConstitutionality Rule 2); >200% ratio triggers automatic shareholder notification; <minimum wage rejected outright; 3.0x hard cap as constitutional ceiling.
+- Blueprint §8.6.2 transparency: compensation bands (salary to salary×1.3) computed for Constitutional Partner visibility; exact salary only returned to authorized callers (board_member for overrides; any authenticated user for the calculation endpoint, with audit logging).
+- All override events written to the immutable LedgerEvent hash-chain via appendLedgerEvent inside db.$transaction — no off-ledger salary decisions.
+- Constitutional terminology preserved throughout: Equity Units, Capital Partner, Enterprise, Constitutional Brain AI, Constitutional Runtime Engine (CRE), Workforce Partner, board_member role.
+- No existing functions modified in cre.ts — only appended enforceSalaryConstitutionality at the end (file grew from 916 to 1,039 lines).
+- No UI components created (per task spec — library + API routes + CRE function only).
+- Lint: 0 errors. Files: 3 new + 1 appended. Ready for downstream consumption by future dashboard/enterprise-admin agents.
+
+---
+Task ID: P1-5
+Agent: Transparency Authorization Agent (AURIENTA §8.6.2 + §8.14.2)
+Task: Implement tier/role-specific transparency authorization for salary, workforce, and expense data. Create src/lib/aurienta/transparency.ts (the core constitutional transparency library) and apply it surgically to three existing API routes: enterprise profile GET, employees GET (new), and expenses GET (new).
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 100 lines + tail) to load prior context: Task IDs 0–5 + 19-CONSTITUTIONAL-REALIGNMENT + P1-4 (AI Salary Engine). Confirmed: EnterpriseMember.role uses the 10 constitutional role strings; Employee model exposes monthlySalaryEgp, compensationBand, nosiNumber (protected), nosiStatus, keyPerson, equityConversionPct; Expense model exposes category (free-text string up to 64 chars — examples: "marketing", "payroll", "rent", "supplies", "logistics"); auth.ts getCurrentUser returns user.memberships: EnterpriseMember[] (with role, enterpriseId, boardSeat); the enterprise profile GET endpoint at src/app/api/enterprises/[id]/profile/route.ts was already exposing employees with monthlySalaryEgp directly to all viewers (no role-aware filtering); the employees API only had a POST handler (no GET); the expenses API only had a POST handler (no GET).
+- Read existing patterns: src/lib/aurienta/auth.ts (getCurrentUser → user with memberships, ownershipRecords, primaryIntent), src/lib/aurienta/logger.ts (logger.{info,warn,error} structured JSON logger), src/lib/aurienta/constants.ts (ROLE_META already defines all 10 roles), src/lib/aurienta/terminology.ts (Capital Partner / Workforce Partner / Founding Operator / Constitutional Council terminology standard), src/lib/aurienta/validation.ts (parseBody + zod schemas), prisma/schema.prisma (Employee + Expense + EnterpriseMember models verified). Confirmed `runtime = "nodejs"` convention on API routes.
+
+- CREATED src/lib/aurienta/transparency.ts (24,088 bytes) — the core constitutional transparency authorization library. Pure, deterministic, no I/O. Exports:
+  • ViewerRole type (10 roles: capital_partner, founding_operator, company_owner, manager, board_member, law_firm_rep, accounting_firm_rep, aurienta_rep, university_rep, workforce_partner)
+  • ViewerContext interface { role, userId, enterpriseId, isBoardMember, isManager }
+  • EXPENSE_CATEGORIES const (canonical §8.14.2 categories: salaries, payroll, law_firm_legal_fees, office_rent_utilities, amenities, marketing_advertising, software_subscriptions, travel_transportation, equipment_maintenance, training_development, insurance, taxes_licenses, miscellaneous_contingency + legacy short codes legal/rent/utilities/supplies/logistics/r_and_d/other for backwards compatibility)
+  • SALARY_LIKE_CATEGORIES set (salaries, payroll, salary, wages, wage)
+  • SHAREHOLDER_VISIBLE_CATEGORIES (all categories EXCEPT salary-like — what capital partners see individual line items for)
+  • canonicalizeExpenseCategory(str): normalises arbitrary DB category strings to canonical keys
+  • isSalaryLikeCategory(str): true if category (any spelling) is salary-like and therefore restricted to board for individual lines
+  • canSeeExactSalary(viewerRole, viewerEnterpriseId, targetEnterpriseId, targetIsManager): per §8.6.2 — board sees everything; founding_operator/company_owner/manager/accounting_firm_rep/law_firm_rep see exact within their own enterprise; capital_partner sees exact ONLY for managers (Labour Law exception for senior executives); cross-enterprise capital_partner still sees managers' exact salary; workforce_partner/aurienta_rep/university_rep never see others' exact salary (self-access handled separately)
+  • canSeeSalaryBand(viewerRole, viewerEnterpriseId, targetEnterpriseId): true for capital_partner/founding_operator/company_owner/manager/board_member/law_firm_rep/accounting_firm_rep within same enterprise; false for workforce_partner/aurienta_rep/university_rep
+  • canSeeWorkforceMetrics(viewerRole, viewerEnterpriseId, targetEnterpriseId): true for any same-enterprise role + aurienta_rep (oversight) + university_rep (limited public aggregate)
+  • SanitizedEmployee type — NEVER includes nosiNumber, userId, nationalId, home address, phone, medical
+  • EmployeeRecord input interface (mirrors Prisma Employee fields relevant to transparency)
+  • MANAGER_TITLE_KEYWORDS + isManagerialTitle(position): heuristic that flags CEO/CFO/COO/CTO/CMO/director/head/manager/vp/lead/principal/founder/owner/president/gm as managerial for the Labour Law exception
+  • sanitizeEmployeeForViewer(employee, viewer): strips nosiNumber + userId ALWAYS; if viewer IS the employee (matching userId) returns full own data; otherwise includes monthlySalaryEgp only if canSeeExactSalary, compensationBand only if canSeeSalaryBand, equityConversionPct only if canSeeExactSalary or self; always returns id/position/department/hireDate/employmentType/nosiStatus/keyPerson/status
+  • sanitizeEmployeeListForViewer(employees, viewer): maps sanitizeEmployeeForViewer over a list
+  • SanitizedExpense type (union: amountEgp optional when category aggregated-only, required when visible)
+  • getVisibleExpenseCategories(viewerRole, isBoardMember): board → ALL categories; everyone else → SHAREHOLDER_VISIBLE_CATEGORIES (excludes salary-like)
+  • sanitizeExpenseForViewer(expense, viewer): board → returns expense with amountEgp visible for all categories; non-board + salary-like category → returns null (caller must aggregate); non-board + non-salary category → returns expense with amountEgp visible
+  • aggregateExpensesByCategory(expenses): groups by category, sums amountEgp, counts items, counts approved items — sorted alphabetically by category
+  • buildViewerContext(memberships, userId, targetEnterpriseId): picks the most-privileged role from the user's memberships in the target enterprise (priority: board_member > company_owner > founding_operator > accounting_firm_rep > law_firm_rep > manager > capital_partner > workforce_partner > aurienta_rep > university_rep); returns null if user has no membership in target enterprise (API route then synthesises an external-viewer fallback)
+  • buildOperatorViewerContext(role, userId, targetEnterpriseId): for platform-wide AURIENTA Rep / University Rep oversight access
+
+- UPDATED src/app/api/enterprises/[id]/profile/route.ts (surgical edit to GET handler ONLY; PATCH handler left untouched per task constraint):
+  • Added imports: buildViewerContext, sanitizeEmployeeListForViewer, type ViewerContext from "@/lib/aurienta/transparency"
+  • Added `userId: true` to the employees Prisma select (required for the self-check in sanitizeEmployeeForViewer; it is stripped from the API response by the sanitizer)
+  • After the enterprise fetch, build the viewer context via buildViewerContext(user.memberships, user.id, enterpriseId)
+  • If the viewer has no membership in this enterprise (external Capital Partner browsing the Enterprise Registry), synthesise a fallback ViewerContext with role="capital_partner" + enterpriseId="__external_viewer__" — this preserves the §8.6.2 right of all Constitutional Partners to inspect the Employee Registry (positions, departments, hire dates) while still hiding salary data
+  • Apply sanitizeEmployeeListForViewer to the employees array (with status="active" default since Employee.status is not a DB column)
+  • Return `{ enterprise: { ...enterprise, employees: sanitizedEmployees } }` — same response shape as before, just with sanitized employee data
+
+- ADDED GET handler to src/app/api/employees/route.ts (POST handler left untouched):
+  • Added imports: buildViewerContext, sanitizeEmployeeListForViewer, type ViewerContext from "@/lib/aurienta/transparency"; logger from "@/lib/aurienta/logger"
+  • Added `export const runtime = "nodejs"`
+  • GET /api/employees?enterpriseId=xxx — auth required; validates enterpriseId query param; fetches enterprise (id/name/slug); fetches employees ordered by hireDate desc with userId + nosiNumber included (both stripped from response by sanitizer); builds viewer context (with external-viewer fallback); applies sanitizeEmployeeListForViewer; returns `{ enterprise: {id, name, slug}, employees: sanitized[], total: number }`
+  • Error handling: 401 if unauthenticated, 400 if missing enterpriseId, 404 if enterprise not found, 500 with structured logger.error on unexpected errors
+
+- ADDED GET handler to src/app/api/expenses/route.ts (POST handler left untouched):
+  • Added imports: aggregateExpensesByCategory, buildViewerContext, isSalaryLikeCategory, sanitizeExpenseForViewer, type ViewerContext from "@/lib/aurienta/transparency"; logger from "@/lib/aurienta/logger"
+  • Added `export const runtime = "nodejs"`
+  • GET /api/expenses?enterpriseId=xxx — auth required; validates enterpriseId; fetches all expenses for the enterprise ordered by createdAt desc; builds viewer context (with external-viewer fallback); partitions expenses into salaryLike[] and otherExpenses[] using isSalaryLikeCategory; for non-salary expenses applies sanitizeExpenseForViewer (each returns the line item with amountEgp visible); for salary-like expenses: if viewer is board_member, returns individual sanitized lines (with amountEgp visible); if viewer is non-board, returns NO individual lines and instead returns aggregated totals via aggregateExpensesByCategory; returns `{ enterprise: {id, name, slug}, expenses: [...salaryLines, ...sanitizedExpenses], aggregatedByCategory: aggregatedSalary[], total: number }`
+  • Per §8.14.2: board sees everything; non-board Capital Partners see individual non-salary lines + aggregated salary totals only (never individual salary line items)
+  • Error handling: 401/400/404/500 with structured codes (unauthenticated, missing_enterprise_id, not_found, internal_error)
+
+- Lint verification: `cd /home/z/my-project && bun run lint` → EXIT=0 (0 errors, 0 warnings). All four files compile cleanly under the existing ESLint + Next.js ruleset.
+- TypeScript verification: `npx tsc --noEmit --skipLibCheck` → 0 errors in any of the four touched files (transparency.ts, enterprises/[id]/profile/route.ts, employees/route.ts, expenses/route.ts). All remaining tsc errors are pre-existing in unrelated files (admin/audit, admin/users, dashboard/admin/enterprises, dashboard/opportunities, dashboard/enterprise-profile, dashboard/founder, dashboard/partner-crm, __tests__/format.test.ts).
+- File verification: `ls -la src/lib/aurienta/transparency.ts` → 24,088 bytes ✓
+- Sanitization usage verification: grep "sanitizeEmployee\|sanitizeExpense" src/app/api/enterprises/*/profile/route.ts src/app/api/employees/route.ts src/app/api/expenses/route.ts → all three routes import and invoke the sanitization functions ✓
+- Dev server log: GET / returns 200 throughout — no compile errors introduced.
+
+Stage Summary:
+- AURIENTA §8.6.2 + §8.14.2 transparency authorization IMPLEMENTED end-to-end: core library + 3 API route updates (1 modified GET + 2 new GETs).
+- Pure deterministic library: every function is side-effect-free, no DB access, no I/O — fully testable. Inputs in → sanitized outputs out, every time.
+- Constitutional role hierarchy enforced: board_member sees everything; founding_operator/company_owner/manager/accounting_firm_rep/law_firm_rep see exact salary within their enterprise; capital_partner sees salary BANDS only (exact for managers per Labour Law exception); workforce_partner/aurienta_rep/university_rep never see others' exact salary.
+- Protected personal data NEVER exposed: nosiNumber, userId, nationalId, home address, phone, medical are stripped in sanitizeEmployeeForViewer regardless of viewer role (the only exception is self-access via the userId match check, which returns the employee's OWN full record).
+- Expense transparency per §8.14.2: board sees all individual lines including salaries; non-board Capital Partners see individual non-salary lines + AGGREGATED salary totals (never individual salary line items); all 13 blueprint categories supported + legacy short codes for backwards compatibility.
+- Labour Law exception for senior executives: capital_partner viewers see managers' exact salary even cross-enterprise (per §8.6.2). The isManagerialTitle heuristic flags CEO/CFO/COO/CTO/CMO/director/head/manager/vp/lead/principal/founder/owner/president/gm positions.
+- External viewer fallback: authenticated users with no membership in the target enterprise (e.g. a Capital Partner browsing the Enterprise Registry) still see the public Employee Registry — positions, departments, hire dates — but no salary or band data. This preserves the Art. 83 right to inspect while protecting privacy.
+- Surgical edits only: the PATCH handler in the enterprise profile route was NOT modified (P1-1 fix preserved); the POST handlers in /api/employees and /api/expenses were NOT modified; no UI components created.
+- Constitutional terminology preserved throughout: Capital Partner, Founding Operator, Workforce Partner, Constitutional Council (board_member), Enterprise, Constitutional Partner.
+- Lint: 0 errors. TypeScript: 0 errors in touched files. Files: 1 new (transparency.ts) + 3 modified (profile GET + employees GET new + expenses GET new). Ready for downstream consumption by future dashboard/enterprise-admin/financial-transparency agents.

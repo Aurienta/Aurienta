@@ -1,0 +1,62 @@
+{
+  "blueprint_id": "AURIENTA-CONSTITUTIONAL-BLUEPRINT",
+  "canonical_version": "2.0.0",
+  "canonical_edition": "Master Blueprint v2.0 — Fully Expanded",
+  "effective_date": "2026-08-08",
+  "previous_version": "1.0.0",
+  "previous_edition": "Modified Blueprint — Prompt 1 & Prompt 2 Synchronized",
+  "previous_date": "2026-08-07",
+  "original_source": {
+    "file": "AURIENTA_Blueprint_ORIGINAL.docx",
+    "size_bytes": 1280016,
+    "pages": 568,
+    "source_hash": "sha256:to-be-computed-on-import",
+    "received_date": "2026-08-06",
+    "description": "The original AURIENTA Constitutional Blueprint as provided by the Founder. This document is IMMUTABLE and must never be modified."
+  },
+  "current_canonical": {
+    "file": "AURIENTA_Blueprint_CURRENT_CANONICAL.docx",
+    "size_bytes": 351232,
+    "pages": 314,
+    "word_count": 75841,
+    "constitutional_hash": "0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A",
+    "description": "The single source of truth for all AURIENTA implementation. Incorporates the original 20 volumes (terminology replacements applied) plus 22 new volumes (22-42) covering all institutional systems, enforcement, and reference material from Prompts 1-21."
+  },
+  "founder": {
+    "name": "Mohamed Eltonsy",
+    "title": "Founder & Sole Owner",
+    "ownership_pct": 100,
+    "approval_status": "APPROVED"
+  },
+  "amendment_registry_file": "AMENDMENT_REGISTRY.md",
+  "changelog_file": "BLUEPRINT_CHANGELOG.md",
+  "repository_integrity_file": "../../REPOSITORY_INTEGRITY.md",
+  "superseded_provisions": [
+    {
+      "provision": "Original terminology (shares, investor, escrow, startup, etc.)",
+      "superseded_by": "Constitutional Terminology Standard (20 approved terms)",
+      "effective_prompt": "Prompt 1",
+      "migration": "DB fields retained via @map annotations for backward compatibility"
+    }
+  ],
+  "deprecated_provisions": [],
+  "terminology_migration": {
+    "status": "COMPLETE",
+    "original_terms_replaced": 20,
+    "forbidden_patterns_enforced": 10,
+    "db_migration_approach": "@map annotations preserve legacy column names while exposing constitutional names in code",
+    "validation": "src/lib/aurienta/terminology.ts"
+  },
+  "implementation_status": {
+    "cre_functions": 26,
+    "prisma_models": 44,
+    "api_routes": 77,
+    "pages": 93,
+    "components": 187,
+    "institutional_systems": 16,
+    "constitutional_invariants_pass": 17,
+    "constitutional_invariants_fail": 0,
+    "zai_references": 0,
+    "p1_enforcement_functions": 5
+  }
+}

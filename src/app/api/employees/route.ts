@@ -3,6 +3,109 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { employeeSchema, parseBody } from "@/lib/aurienta/validation";
+import {
+  buildViewerContext,
+  sanitizeEmployeeListForViewer,
+  type ViewerContext,
+} from "@/lib/aurienta/transparency";
+import { logger } from "@/lib/aurienta/logger";
+
+export const runtime = "nodejs";
+
+// GET /api/employees?enterpriseId=xxx
+// Returns the sanitized Employee Registry for the authenticated viewer.
+// Per §8.6.2 all Constitutional Partners see the Employee Registry (positions,
+// departments, hire dates). Salary BANDS are visible only to enterprise
+// members; exact salary is gated by canSeeExactSalary. Protected personal
+// data (NOSI number, national ID, home address, phone, medical) is never
+// exposed.
+export async function GET(req: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const enterpriseId = url.searchParams.get("enterpriseId");
+    if (!enterpriseId) {
+      return NextResponse.json(
+        { error: "enterpriseId query parameter is required" },
+        { status: 400 },
+      );
+    }
+
+    const enterprise = await db.enterprise.findUnique({
+      where: { id: enterpriseId },
+      select: { id: true, name: true, slug: true },
+    });
+    if (!enterprise) {
+      return NextResponse.json({ error: "Enterprise not found" }, { status: 404 });
+    }
+
+    // Fetch the raw employee records. `userId` is needed for the self-check
+    // in sanitizeEmployeeForViewer; it is stripped from the response.
+    const employees = await db.employee.findMany({
+      where: { enterpriseId },
+      orderBy: { hireDate: "desc" },
+      select: {
+        id: true,
+        userId: true,
+        position: true,
+        department: true,
+        hireDate: true,
+        employmentType: true,
+        compensationBand: true,
+        monthlySalaryEgp: true,
+        nosiStatus: true,
+        nosiNumber: true,
+        keyPerson: true,
+        equityConversionPct: true,
+      },
+    });
+
+    // Build the viewer context from the user's memberships in this enterprise.
+    let viewer: ViewerContext | null = buildViewerContext(
+      user.memberships,
+      user.id,
+      enterpriseId,
+    );
+    if (!viewer) {
+      // External viewer — sees the public Employee Registry only (no salary
+      // or band data). Treat them as an external capital_partner.
+      viewer = {
+        role: "capital_partner",
+        userId: user.id,
+        enterpriseId: "__external_viewer__",
+        isBoardMember: false,
+        isManager: false,
+      };
+    }
+
+    const sanitized = sanitizeEmployeeListForViewer(
+      employees.map((e) => ({
+        ...e,
+        // Employee.status is not currently a DB column; default to "active".
+        status: "active",
+      })),
+      viewer,
+    );
+
+    return NextResponse.json({
+      enterprise: { id: enterprise.id, name: enterprise.name, slug: enterprise.slug },
+      employees: sanitized,
+      total: sanitized.length,
+    });
+  } catch (error) {
+    logger.error("Employee registry fetch failed", {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json(
+      { error: "Failed to fetch employee registry" },
+      { status: 500 },
+    );
+  }
+}
 
 // POST /api/employees
 // Two modes (detected from body shape):

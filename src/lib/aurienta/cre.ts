@@ -914,3 +914,126 @@ export function enforceEquityLockUp(params: {
     decisionToken: issueCreDecisionToken({ policy, payloadHash: hashPayload({ lock: params.restrictedUntil, expired: true }), allowed: true }),
   };
 }
+
+// ── Salary Enforcement (Blueprint §8.4) ──
+// Validates that a salary complies with constitutional rules:
+// - Must be at least minimum wage (4,000 EGP/month as of 2026)
+// - Board overrides must have ≥75% vote
+// - Overrides >200% of AI salary require shareholder notification
+//
+// This function is the CRE-side constitutional guard for the AI Salary Engine.
+// It returns a CreVerdict (consistent with the other enforce* policies) plus
+// two extra fields specific to salary overrides:
+//   - requiresShareholderNotification: true when overrideRatio > 2.0
+//   - overrideRatio: proposedSalary / aiCalculatedSalary (1.0 when no AI salary)
+//
+// The AI Salary Engine (src/lib/aurienta/salary-engine.ts) performs the full
+// formula calculation + Brain AI validation; THIS function is the deterministic
+// policy gate that every proposed salary must pass before being persisted.
+export function enforceSalaryConstitutionality(params: {
+  proposedSalaryEgp: number;
+  aiCalculatedSalaryEgp?: number;
+  isBoardOverride: boolean;
+  boardVotePct?: number;
+}): CreVerdict & {
+  requiresShareholderNotification: boolean;
+  overrideRatio: number;
+} {
+  const policy = "salary_constitutionality.rego";
+  const MINIMUM_WAGE_EGP = 4000; // 2026 Egyptian minimum wage
+  const BOARD_OVERRIDE_THRESHOLD_PCT = 75; // §8.4.3
+  const SHAREHOLDER_NOTIFICATION_RATIO = 2.0; // §8.4.3 — >200% of AI salary
+
+  // Rule 1: Proposed salary must be at least the 2026 minimum wage.
+  if (!params.proposedSalaryEgp || params.proposedSalaryEgp < MINIMUM_WAGE_EGP) {
+    return {
+      allowed: false,
+      reason: `Salary constitutionality: proposed salary ${params.proposedSalaryEgp} EGP is below the 2026 Egyptian minimum wage of ${MINIMUM_WAGE_EGP} EGP/month (Blueprint §8.4.3)`,
+      policy,
+      decisionToken: issueCreDecisionToken({
+        policy,
+        payloadHash: hashPayload({ sal: params, minWage: MINIMUM_WAGE_EGP }),
+        allowed: false,
+      }),
+      requiresShareholderNotification: false,
+      overrideRatio: 0,
+    };
+  }
+
+  // Rule 2: If this is a board override (above-AI salary), the board vote
+  // threshold must be ≥75%. Below-AI salaries are permitted at manager
+  // discretion without a board vote (Blueprint §8.4.3) — but they still
+  // must clear the minimum-wage check above.
+  const aiSalary = params.aiCalculatedSalaryEgp ?? params.proposedSalaryEgp;
+  const isAboveAi = aiSalary > 0 && params.proposedSalaryEgp > aiSalary;
+
+  if (params.isBoardOverride || isAboveAi) {
+    const vote = params.boardVotePct ?? 0;
+    if (vote < BOARD_OVERRIDE_THRESHOLD_PCT) {
+      return {
+        allowed: false,
+        reason: `Salary constitutionality: board override requires ≥${BOARD_OVERRIDE_THRESHOLD_PCT}% vote — received ${vote}% (Blueprint §8.4.3)`,
+        policy,
+        decisionToken: issueCreDecisionToken({
+          policy,
+          payloadHash: hashPayload({ sal: params, vote }),
+          allowed: false,
+        }),
+        requiresShareholderNotification: false,
+        overrideRatio: 0,
+      };
+    }
+  }
+
+  // Rule 3: Compute the override ratio. If it exceeds 2.0x the AI salary,
+  // flag for automatic shareholder notification. The override is still
+  // allowed (the board voted ≥75%) but the notification is mandatory.
+  const safeAiSalary = Math.max(aiSalary, 1); // guard against /0
+  const overrideRatio = params.proposedSalaryEgp / safeAiSalary;
+  const requiresShareholderNotification = overrideRatio > SHAREHOLDER_NOTIFICATION_RATIO;
+
+  // Rule 4: Hard cap — overrides above 3.0x the AI salary are rejected
+  // outright even with a unanimous board vote. This is the constitutional
+  // ceiling; going higher requires a charter amendment.
+  const SALARY_HARD_CAP_RATIO = 3.0;
+  if (isAboveAi && overrideRatio > SALARY_HARD_CAP_RATIO) {
+    return {
+      allowed: false,
+      reason: `Salary constitutionality: override ratio ${overrideRatio.toFixed(
+        2
+      )}x exceeds the 3.0x constitutional hard cap — requires charter amendment (Blueprint §8.4.3)`,
+      policy,
+      decisionToken: issueCreDecisionToken({
+        policy,
+        payloadHash: hashPayload({ sal: params, ratio: overrideRatio, cap: SALARY_HARD_CAP_RATIO }),
+        allowed: false,
+      }),
+      requiresShareholderNotification,
+      overrideRatio: Number(overrideRatio.toFixed(4)),
+    };
+  }
+
+  // All checks passed — salary is constitutionally valid.
+  const reason = requiresShareholderNotification
+    ? `Salary constitutionality: approved — override ratio ${overrideRatio.toFixed(
+        2
+      )}x exceeds 2.0x threshold, automatic shareholder notification triggered (Blueprint §8.4.3)`
+    : `Salary constitutionality: approved — proposed salary ${params.proposedSalaryEgp} EGP meets minimum wage and override rules (Blueprint §8.4)`;
+
+  return {
+    allowed: true,
+    reason,
+    policy,
+    decisionToken: issueCreDecisionToken({
+      policy,
+      payloadHash: hashPayload({
+        sal: params,
+        ratio: overrideRatio,
+        notify: requiresShareholderNotification,
+      }),
+      allowed: true,
+    }),
+    requiresShareholderNotification,
+    overrideRatio: Number(overrideRatio.toFixed(4)),
+  };
+}
