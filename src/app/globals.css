@@ -1,0 +1,335 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-gold-soft: var(--gold-soft);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ===== AURIENTA — Dark Luxury (default) ===== */
+:root,
+.dark {
+  --radius: 0.75rem;
+
+  /* Brand gold */
+  --gold: #d4af37;
+  --gold-light: #f4d676;
+  --gold-dark: #b8860b;
+  --gold-soft: #c9a03d;
+
+  /* Base surfaces — near-black with warm undertone */
+  --background: #08080a;
+  --foreground: #f3eedd;
+
+  --card: #101014;
+  --card-foreground: #f3eedd;
+
+  --popover: #101014;
+  --popover-foreground: #f3eedd;
+
+  /* Primary = gold */
+  --primary: #d4af37;
+  --primary-foreground: #0a0a0b;
+
+  --secondary: #1a1a1f;
+  --secondary-foreground: #f3eedd;
+
+  --muted: #16161b;
+  --muted-foreground: #a89f86;
+
+  --accent: #1c1a14;
+  --accent-foreground: #f4d676;
+
+  --destructive: #e0584b;
+  --border: rgba(212, 175, 55, 0.14);
+  --input: rgba(212, 175, 55, 0.18);
+  --ring: #d4af37;
+
+  --chart-1: #d4af37;
+  --chart-2: #c9a03d;
+  --chart-3: #f4d676;
+  --chart-4: #b8860b;
+  --chart-5: #8a6d1f;
+
+  --sidebar: #0c0c0f;
+  --sidebar-foreground: #f3eedd;
+  --sidebar-primary: #d4af37;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #1c1a14;
+  --sidebar-accent-foreground: #f4d676;
+  --sidebar-border: rgba(212, 175, 55, 0.14);
+  --sidebar-ring: #d4af37;
+}
+
+/* ===== AURIENTA — Light Luxury ===== */
+.light {
+  --gold: #b8860b;
+  --gold-light: #d4af37;
+  --gold-dark: #8a6d1f;
+  --gold-soft: #c9a03d;
+
+  --background: #fbf8ef;
+  --foreground: #1a1714;
+
+  --card: #ffffff;
+  --card-foreground: #1a1714;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1714;
+
+  --primary: #b8860b;
+  --primary-foreground: #fffdf5;
+
+  --secondary: #f1ead6;
+  --secondary-foreground: #1a1714;
+
+  --muted: #f4efe0;
+  --muted-foreground: #6b6253;
+
+  --accent: #f6efd9;
+  --accent-foreground: #8a6d1f;
+
+  --destructive: #c0392b;
+  --border: rgba(184, 134, 11, 0.22);
+  --input: rgba(184, 134, 11, 0.28);
+  --ring: #b8860b;
+
+  --chart-1: #b8860b;
+  --chart-2: #c9a03d;
+  --chart-3: #d4af37;
+  --chart-4: #8a6d1f;
+  --chart-5: #6b5314;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1714;
+  --sidebar-primary: #b8860b;
+  --sidebar-primary-foreground: #fffdf5;
+  --sidebar-accent: #f6efd9;
+  --sidebar-accent-foreground: #8a6d1f;
+  --sidebar-border: rgba(184, 134, 11, 0.22);
+  --sidebar-ring: #b8860b;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgba(212, 175, 55, 0.28);
+    color: #fff;
+  }
+}
+
+/* ===== Custom scrollbar ===== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.35), rgba(184, 134, 11, 0.25));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.6), rgba(184, 134, 11, 0.45));
+  background-clip: padding-box;
+}
+
+/* ===== Gold text gradient ===== */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f4d676 0%, #d4af37 38%, #b8860b 72%, #f4d676 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(
+    100deg,
+    #b8860b 0%,
+    #d4af37 30%,
+    #f7e9a6 48%,
+    #d4af37 66%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gold-pan 6s linear infinite;
+}
+
+/* ===== Gold fill gradient (buttons, icons) ===== */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #f4d676 0%, #d4af37 45%, #b8860b 100%);
+}
+
+.bg-gold-gradient-soft {
+  background: linear-gradient(135deg, rgba(244, 214, 118, 0.16), rgba(184, 134, 11, 0.08));
+}
+
+/* ===== Glass card ===== */
+.glass {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+}
+.light .glass {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.55));
+  border: 1px solid rgba(184, 134, 11, 0.18);
+}
+
+.glass-gold {
+  background: linear-gradient(160deg, rgba(212, 175, 55, 0.10), rgba(212, 175, 55, 0.02));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+/* ===== Gold glow ===== */
+.gold-glow {
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2), 0 18px 60px -18px rgba(212, 175, 55, 0.45);
+}
+.gold-glow-sm {
+  box-shadow: 0 0 24px -6px rgba(212, 175, 55, 0.5);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 32px rgba(212, 175, 55, 0.35);
+}
+
+/* ===== Hairline gold border ===== */
+.border-gold-faint {
+  border: 1px solid rgba(212, 175, 55, 0.16);
+}
+
+/* ===== Background ornaments ===== */
+.aurienta-grid {
+  background-image:
+    linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.aurienta-radial {
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(212, 175, 55, 0.16), transparent 70%),
+    radial-gradient(700px 400px at 85% 20%, rgba(184, 134, 11, 0.10), transparent 65%),
+    radial-gradient(600px 500px at 10% 80%, rgba(212, 175, 55, 0.07), transparent 70%);
+}
+
+.aurienta-vignette {
+  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Noise overlay for texture */
+.aurienta-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+}
+
+/* ===== Animations ===== */
+@keyframes gold-pan {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-22px) translateX(8px); }
+}
+@keyframes pulse-gold {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer-line {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+.animate-pulse-gold { animation: pulse-gold 4.5s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 28s linear infinite; }
+.animate-shimmer-line { animation: shimmer-line 3.2s ease-in-out infinite; }
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Utility: tracking for wordmark ===== */
+.tracking-wordmark {
+  letter-spacing: 0.42em;
+}
+.tracking-tagline {
+  letter-spacing: 0.34em;
+}

@@ -1,0 +1,991 @@
+// AURIENTA — Constitutional Enterprise Infrastructure
+// Prisma schema (SQLite). Enums stored as String for SQLite compatibility.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────────────────────────────────────
+// IDENTITY (P1)
+// ───────────────────────────────────────────────────────────
+
+model User {
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  mobile                String   @unique
+  legalName             String
+  passwordHash          String
+  // verification: L0 anonymous, L1 email/mobile, L2 basic KYC, L3 enhanced, L4 institutional
+  verificationLevel     String   @default("L2")
+  nationality           String   @default("EG") // EG, resident, abroad
+  nationalIdLast4       String?  // AES-GCM encrypted (see lib/aurienta/encryption)
+  identityHash          String?  @unique // SHA3-256 dup-prevention hash
+  identityAnchor        String?  // Ed25519 public key (hex) — used to verify pledge + CRE tokens
+  identitySecretEnc     String?  // AES-GCM encrypted Ed25519 private key (base64)
+  // 0-100; default 65 (Emerging Participant)
+  sovereignTrustScore   Int      @default(65)
+  tier                  String   @default("Emerging Participant") // Constitutional Pillar, Ecosystem Builder, Trusted Contributor, Active Member, Emerging Participant
+  avatarColor           String   @default("#d4af37")
+  // roles aggregate
+  primaryIntent         String?  // capital_partner, founding_operator, workforce_partner, institution
+  riskProfile           String?  // conservative, balanced, aggressive, founder_aligned
+  familyConsent         Boolean  @default(false)
+  // MFA (TOTP) — base32 secret, AES-GCM encrypted
+  totpSecretEnc         String?
+  mfaEnabled            Boolean  @default(false)
+  // police clearance — per-user, with expiry
+  policeClearanceValid  Boolean  @default(false)
+  policeClearanceExpiresAt DateTime?
+  pledgeSignedAt        DateTime?
+  pledgeSignature       String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  sessions              Session[]
+
+  ownershipRecords      OwnershipRecord[] @relation("UserOwnership")
+  proposals             Proposal[]
+  votes                 Vote[]
+  expensesApproved      Expense[]      @relation("ExpenseApprover")
+  expensesSubmitted     Expense[]      @relation("ExpenseSubmitter")
+  employees             Employee[]
+  reservations          Reservation[]
+  orders                TradeOrder[]
+  tasks                 DashboardTask[]
+  ledEvents             LedgerEvent[]  @relation("LedgerActor")
+  notifications         Notification[]
+  memberships           EnterpriseMember[]
+  copilotChats          CopilotChat[]
+  auditLogs             AuditLog[]
+  foundedEnterprises    Enterprise[]   @relation("EnterpriseFounder")
+  syndicatesLed         Syndicate[]    @relation("SyndicateLead")
+  syndicateMemberships  SyndicateMember[] @relation("SyndicateMember")
+  dripEnrollments       DripEnrollment[]
+  careerLedger          CareerLedgerEntry[]
+  mentorships           Mentorship[]   @relation("MentorshipMentor")
+  skillEquityClaims     SkillEquityClaim[]
+  diasporaProfile       DiasporaProfile?
+  irQuestions           IrQuestion[]
+  aiArtifacts           AiArtifact[]
+  riskDisclosures       RiskDisclosure[]
+  appealCasesFiled      AppealCase[]
+  settings              PlatformSetting[] @relation("SettingUpdater")
+  authoredUpdates       EnterpriseUpdate[] @relation("UpdateAuthor")
+  engagements           PartnerEngagement[] @relation("EngagementUser")
+}
+
+// ───────────────────────────────────────────────────────────
+// PLATFORM SETTINGS (P0) — AURIENTA-rep-administered config knobs
+// ───────────────────────────────────────────────────────────
+// Fee %, tier caps, timing rules, and feature flags — all versioned,
+// audit-logged, and rendered in the Platform Settings console
+// (/dashboard/admin/settings). Values are JSON-encoded strings so we
+// can store numbers, booleans, and short strings in a single column
+// without a per-type migration.
+model PlatformSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g. "fee.platformPct", "fee.consultingPct", "tier.A.maxRaise"
+  value       String   // JSON-encoded value
+  category    String   // fee, tier, timing, feature_flag
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+
+  updatedBy   User?    @relation("SettingUpdater", fields: [updatedById], references: [id])
+
+  @@index([category])
+}
+
+model LawFirm {
+  id              String   @id @default(cuid())
+  name            String
+  frLicenseNumber String
+  insuranceEgp    Int      @default(100000000)
+  expertiseScore  Int      @default(80)
+  status          String   @default("active") // active, probation, suspended
+  createdAt       DateTime @default(now())
+
+  enterprises     Enterprise[]
+}
+
+model AccountingFirm {
+  id            String   @id @default(cuid())
+  name          String
+  esaaLicense   String
+  status        String   @default("active")
+  createdAt     DateTime @default(now())
+
+  enterprises   Enterprise[]
+}
+
+// ───────────────────────────────────────────────────────────
+// ENTERPRISE (P1, P2)
+// ───────────────────────────────────────────────────────────
+
+model Enterprise {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  tagline             String?
+  description         String
+  sector              String   // agriculture, manufacturing, tourism, technology, food, retail, logistics
+  tier                String   // A, B, C, D, E, F
+  stage               String   @default("stage_1") // stage_1..stage_4, graduated
+  stageSince          DateTime @default(now()) // when the current stage was entered
+  legalForm           String   @default("LLC") // LLC, SPV, JSC
+  healthRating        String?  // AAA, AA, A, BBB, BB, B, CCC, CC, C
+  healthScore         Int      @default(75)
+  // fundraising
+  fundraisingGoalEgp  Int
+  raisedEgp           Int      @default(0)
+  minInvestmentEgp    Int      @default(50)
+  investorCap         Int?     // optional max investors
+  equityUnitPriceEgp       Int      @default(50) @map("sharePriceEgp") // CONSTITUTIONAL: Equity Unit Price (CPP). Legacy DB column: sharePriceEgp
+  totalEquityUnits         Int      @map("totalShares") // CONSTITUTIONAL: Total Equity Units. Legacy DB column: totalShares
+  founderEquityPct    Float    @default(5)
+  platformFeePct      Float    @default(5)
+  consultingFeePct    Float    @default(2.5)
+  consultingOptOut    Boolean  @default(false)
+  // financials (for valuation & vital signs)
+  monthlyRevenueEgp   Int      @default(0)
+  monthlyBurnEgp      Int      @default(0)
+  lawFirmClientAccountBalanceEgp    Int      @default(0) @map("escrowBalanceEgp") // CONSTITUTIONAL: Law Firm Client Account balance (Amendment IX). Legacy DB column: escrowBalanceEgp
+  grossMarginPct      Float    @default(30)
+  revenueGrowthPct    Float    @default(20)
+  employeeCount       Int      @default(0)
+  nosiCompliantPct    Float    @default(100)
+  policeClearanceValid Boolean  @default(true)
+  // lifecycle
+  status              String   @default("active") // draft, fundraising_active, fundraising_closed, active, frozen, graduation_pending, graduated
+  frozenAt            DateTime?
+  graduationReadiness Int      @default(0)
+  transparencyScore   Int      @default(0) // 0-100 PDPL-aware public transparency score
+  archivedAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  founderId           String
+  founder             User     @relation("EnterpriseFounder", fields: [founderId], references: [id])
+  lawFirmId           String?
+  lawFirm             LawFirm? @relation(fields: [lawFirmId], references: [id])
+  accountingFirmId    String?
+  accountingFirm      AccountingFirm? @relation(fields: [accountingFirmId], references: [id])
+
+  ownershipRecords   OwnershipRecord[] @relation("EnterpriseOwnership")
+  members             EnterpriseMember[]
+  proposals           Proposal[]
+  milestones          Milestone[]
+  expenses            Expense[]
+  employees           Employee[]
+  reservations        Reservation[]
+  orders              TradeOrder[]
+  valuations          Valuation[]
+  ledgerEvents        LedgerEvent[]
+  notifications       Notification[]
+  syndicates          Syndicate[]
+  careerLedger        CareerLedgerEntry[]
+  mentorships         Mentorship[]
+  skillEquityClaims   SkillEquityClaim[]
+  ipfsEvidence        IpfsEvidence[]
+  survivalDrills      SurvivalDrill[]
+  irQuestions         IrQuestion[]
+  aiArtifacts         AiArtifact[]
+  quarterlyReports    QuarterlyReport[]
+  vendors             Vendor[]
+  whistleblowerReports WhistleblowerReport[]
+  appealCases         AppealCase[]
+  riskDisclosures     RiskDisclosure[]
+  updates             EnterpriseUpdate[]
+  engagements         PartnerEngagement[]
+  annualReports       AnnualReport[]
+  @@index([founderId])
+  @@index([lawFirmId])
+  @@index([accountingFirmId])
+}
+
+model EnterpriseMember {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  role          String   // capital_partner, founding_operator, workforce_partner, manager, board_member, company_owner, law_firm_rep, accounting_firm_rep, aurienta_rep, university_rep
+  boardSeat     Boolean  @default(false)
+  joinedAt      DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([enterpriseId, userId, role])
+  @@index([userId])
+}
+
+model OwnershipRecord {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  equityUnits   Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
+  avgPriceEgp   Float
+  restrictedUntil DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enterprise    Enterprise @relation("EnterpriseOwnership", fields: [enterpriseId], references: [id], onDelete: Restrict)
+  user          User       @relation("UserOwnership", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([enterpriseId, userId])
+  @@map("Shareholding") // CONSTITUTIONAL: OwnershipRecord. Legacy DB table: Shareholding
+}
+
+// ───────────────────────────────────────────────────────────
+// IMMUTABLE LEDGER (P0) — append-only hash chain
+// ───────────────────────────────────────────────────────────
+
+model LedgerEvent {
+  id              String   @id @default(cuid())
+  enterpriseId    String?
+  eventType       String   // share_issued, share_transferred, funds_received, milestone_released, expense_approved, proposal_executed, dividend_paid, graduation, cre_decision, trade_document_release
+  prevHash        String?
+  payloadHash     String
+  payload         String   // JSON
+  creDecisionToken String? // real Ed25519 signature (base64) over payloadHash+prevHash
+  actorId         String?
+  actor           User?    @relation("LedgerActor", fields: [actorId], references: [id])
+  sequence        Int      @default(0) // per-enterprise monotonic sequence
+  timestamp       DateTime @default(now())
+
+  enterprise      Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
+
+  @@unique([enterpriseId, sequence])
+  @@index([enterpriseId, timestamp])
+  @@index([enterpriseId, prevHash])
+  @@index([eventType])
+  @@index([actorId])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String?
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action      String
+  target      String?
+  result      String   // allowed, denied
+  reason      String?
+  metadata    String?  // JSON
+  ip          String?
+  userAgent   String?
+  timestamp   DateTime @default(now())
+  @@index([actorId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+// ───────────────────────────────────────────────────────────
+// GOVERNANCE (P3)
+// ───────────────────────────────────────────────────────────
+
+model Proposal {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  title         String
+  description   String
+  type          String   // budget, manager_appointment, manager_removal, dividend, constitutional_amendment, graduation, consulting_optout, law_firm_replacement, emergency_freeze
+  status        String   @default("voting_open") // draft, published, voting_open, quorum_reached, executed, rejected, expired
+  feeEgp        Int      @default(0)
+  coolingEndsAt DateTime?
+  votingEndsAt  DateTime
+  quorumPct     Float    @default(51)
+  passThreshold Float    @default(50) // simple majority; 75 for amendment/graduation
+  // tallies
+  votesFor      Int      @default(0)
+  votesAgainst  Int      @default(0)
+  votesAbstain  Int      @default(0)
+  totalVotingPower Int
+  // AI risk
+  aiRiskScore   Int      @default(20) // 0-100 lower is better
+  aiRecommendation String? // approve, review, reject
+  aiConfidence  Float    @default(0.8)
+  executedAt    DateTime?
+  createdById   String
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  createdBy     User       @relation(fields: [createdById], references: [id])
+  votes         Vote[]
+  @@index([enterpriseId])
+  @@index([createdById])
+}
+
+model Vote {
+  id            String   @id @default(cuid())
+  proposalId    String
+  userId        String
+  choice        String   // for, against, abstain
+  votingPower   Int
+  reason        String?
+  createdAt     DateTime @default(now())
+
+  proposal      Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// TREASURY / MILESTONES / EXPENSES (P2, P3)
+// ───────────────────────────────────────────────────────────
+
+model Milestone {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  title         String
+  description   String
+  amountEgp     Int
+  status        String   @default("pending") // pending, evidence_submitted, board_review, approved, released, rejected
+  eveConfidence Float    @default(0.85)
+  evidenceNote  String?
+  dueAt         DateTime?
+  releasedAt    DateTime?
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+}
+
+model Expense {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  category      String   // marketing, payroll, rent, utilities, supplies, legal, logistics, r_and_d, other
+  description   String
+  vendor        String
+  amountEgp     Int
+  status        String   @default("pending") // pending, dual_signature_pending, approved, rejected, flagged
+  approver1Id   String?
+  approver2Id   String?
+  submittedById String
+  receiptNote   String?
+  aiRiskFlag    String?  // none, threshold_gaming, related_party, duplicate
+  createdAt     DateTime @default(now())
+  approvedAt    DateTime?
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  approver1     User?      @relation("ExpenseApprover", fields: [approver1Id], references: [id])
+  submitter     User       @relation("ExpenseSubmitter", fields: [submittedById], references: [id])
+  @@index([enterpriseId])
+  @@index([approver1Id])
+  @@index([approver2Id])
+  @@index([submittedById])
+}
+
+model Employee {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  userId          String
+  position        String
+  department      String
+  hireDate        DateTime @default(now())
+  employmentType  String   @default("full_time") // full_time, part_time, contract
+  compensationBand String  // e.g. "8,000-12,000 EGP"
+  monthlySalaryEgp Int
+  nosiStatus      String   @default("registered") // registered, pending, missing
+  nosiNumber      String?  // NOSI social insurance number (gated)
+  nosiRegisteredAt DateTime?
+  keyPerson       Boolean  @default(false)
+  equityConversionPct Float @default(0) // 0-10% of salary
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// FUNDRAISING (P2)
+// ───────────────────────────────────────────────────────────
+
+model Reservation {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  equityUnits   Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
+  amountEgp     Int
+  referenceCode String   @unique // AURI-{year}-{eid}-{uid}-{hash}
+  status        String   @default("reserved") // reserved, pending_validation, confirmed, settled, expired
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// SECONDARY MARKET (P4)
+// ───────────────────────────────────────────────────────────
+
+model TradeOrder {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  side          String   // buy, sell
+  equityUnits   Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
+  priceEgp      Float
+  phase         String   @default("phase_3") // phase_1 pro-rata, phase_2 employee/founder, phase_3 general
+  status        String   @default("open") // open, partially_filled, filled, cancelled
+  filledEquityUnits  Int      @default(0) @map("filledShares") // CONSTITUTIONAL: filled Equity Units. Legacy: filledShares
+  feesEgp       Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+model Valuation {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  preMoneyEgp   Int
+  equityUnitPriceEgp Float @map("sharePriceEgp") // CONSTITUTIONAL: Equity Unit Price. Legacy DB column: sharePriceEgp
+  cppEgp        Float    // per 1% ownership
+  growthMultiplier Float
+  founderPremium Float
+  aiConfidence  Float    @default(0.85)
+  modelVersion  String   @default("JOZOUR v3")
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+}
+
+// ───────────────────────────────────────────────────────────
+// DASHBOARD / NOTIFICATIONS / COPILOT (P5)
+// ───────────────────────────────────────────────────────────
+
+model DashboardTask {
+  id            String   @id @default(cuid())
+  userId        String
+  enterpriseId  String?
+  title         String
+  description   String
+  type          String   // vote, milestone, police_clearance, nosi, review, signature, dividend
+  priority      String   @default("medium") // low, medium, high, urgent
+  dueAt         DateTime?
+  ctaLabel      String?
+  ctaHref       String?
+  done          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([enterpriseId])
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  userId        String
+  enterpriseId  String?
+  title         String
+  body          String
+  category      String   // governance, treasury, compliance, milestone, dividend, system
+  read          Boolean  @default(false)
+  aiPriority    String?  // urgent, high, medium, low (AI triage)
+  aiSummary     String?  // one-line AI summary
+  createdAt     DateTime @default(now())
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterprise    Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([enterpriseId])
+}
+
+model CopilotChat {
+  id            String   @id @default(cuid())
+  userId        String
+  role          String   @default("user") // user, assistant
+  content       String
+  context       String?  // JSON — enterpriseId, action etc.
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// GRADUATION (P6)
+// ───────────────────────────────────────────────────────────
+
+model GraduationRecord {
+  id                String   @id @default(cuid())
+  enterpriseId      String   @unique
+  enterpriseName    String
+  tierAtGraduation  String
+  finalHealthScore  Int
+  finalMaturityScore Int
+  readinessScore    Int
+  graduationDate    DateTime @default(now())
+  sovereignCert     Boolean  @default(true)
+  testimonial       String?
+  website           String?
+  exportHash        String?
+  @@index([enterpriseId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ADVANCED FEATURES — Constitutional Intelligence Layer
+// ───────────────────────────────────────────────────────────
+
+// Generic AI artifact store — used by precedent engine, drift detector,
+// anomaly narration, explain-number, charter diff, graduation coach/simulator,
+// milestone designer, board briefing, succession planner, tax optimizer, IR.
+model AiArtifact {
+  id            String   @id @default(cuid())
+  kind          String   // precedent_match, explain_number, anomaly_narration, drift_report, charter_diff, graduation_coach, graduation_simulation, milestone_design, board_briefing, succession_plan, tax_suggestion, ir_answer, multilingual_explain
+  enterpriseId  String?
+  userId        String?
+  entityId      String?  // generic FK (proposalId, expenseId, milestoneId, etc.)
+  content       String   // the AI-generated text
+  payload       String   @default("{}") // JSON — structured data
+  modelVersion  String   @default("glm-4.6")
+  confidence    Float    @default(0.85)
+  createdAt     DateTime @default(now())
+
+  user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterprise    Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+
+  @@index([kind, enterpriseId])
+  @@index([kind, userId])
+  @@index([entityId])
+}
+
+// Extend Notification with AI triage (additive fields)
+// (Notification model above gains aiPriority + aiSummary via migration)
+
+// ── Constitutional Syndicate Formation (#7) ──
+model Syndicate {
+  id            String   @id @default(cuid())
+  name          String
+  leadPartnerId String
+  enterpriseId  String
+  targetShares  Int
+  committedShares Int   @default(0)
+  riskProfile   String  @default("balanced")
+  status        String  @default("forming") // forming, active, completed, dissolved
+  description   String?
+  createdAt     DateTime @default(now())
+
+  leadPartner   User       @relation("SyndicateLead", fields: [leadPartnerId], references: [id])
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  members       SyndicateMember[]
+  @@index([leadPartnerId])
+  @@index([enterpriseId])
+}
+
+model SyndicateMember {
+  id           String   @id @default(cuid())
+  syndicateId  String
+  userId       String
+  equityUnits  Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
+  amountEgp    Int
+  joinedAt     DateTime @default(now())
+
+  syndicate    Syndicate @relation(fields: [syndicateId], references: [id], onDelete: Cascade)
+  user         User      @relation("SyndicateMember", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([syndicateId, userId])
+}
+
+// ── Dividend Reinvestment Plan (#8) ──
+model DripEnrollment {
+  id            String   @id @default(cuid())
+  userId        String
+  enterpriseId  String
+  reinvestPct   Float    @default(100) // 0-100% of dividends
+  enrolledAt    DateTime @default(now())
+  active        Boolean  @default(true)
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, enterpriseId])
+}
+
+// ── Workforce Partner Career Ledger (#10) ──
+model CareerLedgerEntry {
+  id            String   @id @default(cuid())
+  userId        String
+  enterpriseId  String
+  role          String
+  entryType     String   // milestone, contribution, promotion, equity_grant, training
+  title         String
+  description   String
+  vcCid         String?  // IPFS CID of the W3C Verifiable Credential
+  vcIssuedAt    DateTime @default(now())
+  valueEgp      Int?
+  metadata      String   @default("{}") // JSON
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([enterpriseId])
+}
+
+// ── Constitutional Mentorship Market (#11) ──
+model Mentorship {
+  id              String   @id @default(cuid())
+  mentorId        String
+  menteeEnterpriseId String
+  status          String   @default("proposed") // proposed, active, completed, declined
+  equityGrantPct  Float    @default(0) // from mentee founder pool
+  focusAreas      String   @default("[]") // JSON array
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime @default(now())
+
+  mentor          User       @relation("MentorshipMentor", fields: [mentorId], references: [id])
+  menteeEnterprise Enterprise @relation(fields: [menteeEnterpriseId], references: [id], onDelete: Cascade)
+  @@index([mentorId])
+  @@index([menteeEnterpriseId])
+}
+
+// ── Skill-to-Equity Accelerator (#12, MODIFIED: 2-year tenure + proof/documents) ──
+model SkillEquityClaim {
+  id              String   @id @default(cuid())
+  employeeId      String
+  userId          String
+  enterpriseId    String
+  // Tenure check — must be >= 24 months
+  tenureMonths    Int
+  tenureVerified  Boolean  @default(false)
+  // Credential / proof
+  credentialType  String   // certification, degree, training_course, professional_license
+  credentialName  String
+  issuer          String
+  credentialId    String?
+  issueDate       DateTime
+  // Documents (stored as mock IPFS CIDs)
+  documentCid     String
+  documentName    String
+  documentHash    String
+  // Review
+  status          String   @default("pending") // pending, approved, rejected
+  equityGrantPct  Float    @default(0) // from board discretionary pool (2%)
+  reviewedById    String?
+  reviewedAt      DateTime?
+  aiAssessment    String?  // AI verification summary
+  submittedAt     DateTime @default(now())
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([employeeId])
+  @@index([userId])
+  @@index([enterpriseId])
+  @@index([credentialId])
+  @@index([reviewedById])
+}
+
+// ── Live Evidence Streaming to IPFS (#15) ──
+model IpfsEvidence {
+  id            String   @id @default(cuid())
+  milestoneId   String?
+  enterpriseId  String
+  uploadedById  String
+  cid           String   @unique
+  filename      String
+  mimeType      String
+  sizeBytes     Int
+  description   String?
+  uploadedAt    DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([milestoneId])
+  @@index([enterpriseId])
+  @@index([uploadedById])
+}
+
+// ── Sovereign Survival Drill (#17) ──
+model SurvivalDrill {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  drillDate       DateTime @default(now())
+  result          String   @default("passed") // passed, failed, warning
+  durationHours   Int      @default(168) // 7 days simulated
+  findings        String   @default("{}") // JSON
+  certificateExpiry DateTime?
+  createdAt       DateTime @default(now())
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+}
+
+// ── Diaspora Investment Bridge (#31) ──
+model DiasporaProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  countryOfResidence  String
+  remittanceIntentEgp Int      @default(0)
+  fxLockedRate        Float?
+  fxLockedUntil       DateTime?
+  documentsVerified   Boolean  @default(false)
+  preferredLanguage   String   @default("en") // en, ar, fr, sw
+  sourceOfFundsDeclared Boolean @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+// ── AI-Powered Investor Relations (#27) ──
+model IrQuestion {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  question      String
+  answer        String?
+  sources       String   @default("[]") // JSON array of source references
+  status        String   @default("answered") // pending, answered
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+// RADICAL TRANSPARENCY LAYER
+
+model QuarterlyReport {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  quarter       String
+  year          Int
+  revenueEgp    Int
+  cogsEgp       Int
+  grossProfitEgp Int
+  opexEgp       Int
+  netProfitEgp  Int
+  lawFirmClientAccountBalanceEgp Int @map("escrowBalanceEgp") // CONSTITUTIONAL: Law Firm Client Account balance. Legacy: escrowBalanceEgp
+  monthlyBurnEgp Int
+  runwayMonths  Float
+  grossMarginPct Float
+  revenueGrowthPct Float
+  aiRiskFlag    String?
+  aiAssessment  String?
+  ipfsCid       String?
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@unique([enterpriseId, quarter, year])
+  @@index([enterpriseId, year])
+}
+
+model Vendor {
+  id                  String   @id @default(cuid())
+  enterpriseId        String
+  name                String
+  commercialRegister  String?
+  category            String
+  totalPaidYtdEgp     Int      @default(0)
+  riskScore           Int      @default(10)
+  relatedParty        Boolean  @default(false)
+  uboOverlapNote      String?
+  firstTransactionAt  DateTime @default(now())
+  createdAt           DateTime @default(now())
+  enterprise          Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+}
+
+model WhistleblowerReport {
+  id              String   @id @default(cuid())
+  trackingCode    String   @unique
+  enterpriseId    String?
+  category        String
+  description     String
+  attachmentsCid  String?
+  credibilityScore Float?
+  aiSummary       String?
+  status          String   @default("submitted")
+  bondEgp         Int      @default(0)
+  bountyPaidEgp   Int      @default(0)
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+  enterprise      Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+}
+
+model AppealCase {
+  id            String   @id @default(cuid())
+  filedById     String
+  enterpriseId  String?
+  caseType      String
+  description   String
+  feeEgp        Int      @default(500)
+  stage         Int      @default(1)
+  status        String   @default("filed")
+  aiRuling      String?
+  humanRuling   String?
+  finalRuling   String?
+  precedentNote String?
+  filedAt       DateTime @default(now())
+  resolvedAt    DateTime?
+  filedBy       User       @relation(fields: [filedById], references: [id])
+  enterprise    Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([filedById])
+  @@index([enterpriseId])
+}
+
+model RiskDisclosure {
+  id            String   @id @default(cuid())
+  userId        String
+  enterpriseId  String
+  amountEgp     Int
+  riskProfile   String
+  stressLossEstimateEgp Int
+  stressScenario String
+  coolingEndsAt DateTime
+  acknowledged  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([enterpriseId])
+}
+
+// ───────────────────────────────────────────────────────────
+// SECURITY & RELIABILITY LAYER (CTO-AUDIT remediation)
+// ───────────────────────────────────────────────────────────
+
+/// Server-side session record — replaces bare-cookie userId auth.
+/// Enables revocation, rotation, device tracking, "sign out everywhere".
+model Session {
+  id            String   @id @default(cuid())
+  userId        String
+  tokenHash     String   @unique // SHA3-256 of the session token (never store raw)
+  issuedAt      DateTime @default(now())
+  lastSeenAt    DateTime @default(now())
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  ip            String?
+  userAgent     String?
+  mfaVerifiedAt DateTime?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Idempotency — replay-safe POSTs for all money-moving endpoints.
+model IdempotencyRecord {
+  id              String   @id @default(cuid())
+  key             String   @unique // caller-supplied Idempotency-Key
+  userId          String
+  route           String
+  requestBodyHash String
+  status          Int      // HTTP status of the original response
+  responseBody    String
+  createdAt       DateTime @default(now())
+  @@index([userId])
+  @@index([createdAt])
+}
+
+/// CRE decision ledger — links every governance/money decision to its policy verdict.
+model CreDecision {
+  id              String   @id @default(cuid())
+  policy          String   // e.g. zero_custody.rego, expense_authority.rego
+  allowed         Boolean
+  reason          String?
+  decisionToken   String   @unique // real Ed25519 signature
+  actorId         String?
+  enterpriseId    String?
+  payloadHash     String
+  createdAt       DateTime @default(now())
+  @@index([actorId])
+  @@index([enterpriseId])
+  @@index([policy])
+}
+
+// ───────────────────────────────────────────────────────────
+// ENGAGEMENT LAYER (GoFundMe-inspired, constitutional model)
+// ───────────────────────────────────────────────────────────
+
+/// Enterprise updates feed — founding operators post updates for capital partners.
+/// The Brain AI auto-summarizes each update for different audiences.
+model EnterpriseUpdate {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  authorId      String
+  title         String
+  body          String
+  attachmentsCid String? // IPFS CID for photos/documents
+  // Brain AI generated fields
+  aiSummary     String?  // 1-sentence TL;DR
+  aiAudienceCapital String? // summary for capital partners
+  aiAudienceCompliance String? // summary for FRA/regulators
+  aiSentiment   String?  // positive, neutral, negative
+  // Milestone celebration flag
+  isMilestone   Boolean  @default(false)
+  milestoneType String?  // "25pct", "50pct", "75pct", "100pct", "graduation"
+  createdAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
+  author        User       @relation("UpdateAuthor", fields: [authorId], references: [id])
+  @@index([enterpriseId, createdAt])
+  @@index([authorId])
+}
+
+/// Capital partner engagement tracking — Brain AI computes engagement scores.
+model PartnerEngagement {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  userId        String
+  // Brain AI computed fields
+  engagementScore Int    @default(0) // 0-100
+  churnRisk     String   @default("low") // low, medium, high
+  aiInsight     String?  // Brain AI recommendation
+  lastAiUpdate  DateTime?
+  // Tracking fields (updated by platform events)
+  votesParticipated Int  @default(0)
+  updatesRead   Int      @default(0)
+  copilotQueries Int     @default(0)
+  sessionCount  Int      @default(0)
+  lastActiveAt  DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
+  user          User       @relation("EngagementUser", fields: [userId], references: [id])
+  @@unique([enterpriseId, userId])
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ANNUAL CONSTITUTIONAL REPORT (PDPL-compliant public report)
+// ───────────────────────────────────────────────────────────
+/// Annual report — enterprise-level financial disclosure published
+/// under constitutional charter Article XIV. Brain AI generates the
+/// annual assessment (consensus mode). Audited annually by the
+/// accounting firm. NO personal data — enterprise financials only.
+model AnnualReport {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  year          Int
+  fiscalYearEnd DateTime
+  revenueEgp    Int
+  netProfitEgp  Int
+  totalAssetsEgp Int
+  totalLiabilitiesEgp Int
+  auditStatus   String   @default("pending") // pending, audited, published
+  auditorName   String?
+  auditorLicense String?
+  brainAiAssessment String?
+  ipfsCid       String?
+  publishedAt   DateTime?
+  createdAt     DateTime @default(now())
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Restrict)
+  @@unique([enterpriseId, year])
+  @@index([enterpriseId])
+}
