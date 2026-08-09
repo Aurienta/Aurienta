@@ -78,6 +78,8 @@ export function RegisterWizard() {
         case 3: {
           if (!state.readCharter || !state.consentAI || !state.acknowledgeRisk)
             return "Acknowledge all three constitutional consents.";
+          if (!state.acceptedTerms)
+            return "You must accept the Platform Terms & Legal Disclaimer to continue.";
           if (!state.signature.trim() || state.signature.trim().toLowerCase() !== state.legalName.trim().toLowerCase())
             return "Sign by typing your full legal name exactly as entered in Step 1.";
           return null;

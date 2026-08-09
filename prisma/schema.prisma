@@ -63,6 +63,7 @@ model User {
   auditLogs             AuditLog[]
   foundedEnterprises    Enterprise[]   @relation("EnterpriseFounder")
   syndicatesLed         Syndicate[]    @relation("SyndicateLead")
+  termsAcceptances      TermsAcceptance[]
   syndicateMemberships  SyndicateMember[] @relation("SyndicateMember")
   dripEnrollments       DripEnrollment[]
   careerLedger          CareerLedgerEntry[]
@@ -1042,4 +1043,35 @@ model EnterpriseDocument {
   enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
   @@index([enterpriseId])
   @@index([documentType])
+}
+
+// ───────────────────────────────────────────────────────────
+// TERMS ACCEPTANCE (Legal Disclaimer evidentiary record — §31)
+// ───────────────────────────────────────────────────────────
+/// Records each user's acceptance of the Platform Terms, Constitutional
+/// Participation Agreement & Legal Disclaimer. Per §31 of the disclaimer,
+/// the platform retains an evidentiary package establishing which version
+/// the user accepted. This is NOT a qualified electronic signature under
+/// Law 15/2004 — it is a simple electronic acceptance. Where a qualified
+/// e-signature is legally required, a separate workflow is used.
+model TermsAcceptance {
+  id              String   @id @default(cuid())
+  userId          String
+  // Which document was accepted
+  documentType    String   // platform_terms, capital_partner_agreement, workforce_partner_agreement, founder_enterprise_agreement
+  documentVersion String   // e.g. "1.1"
+  documentHash    String   // SHA-256 hash of the exact accepted text
+  // Evidentiary package (§31)
+  acceptedAt      DateTime @default(now())
+  ipAddress       String?
+  userAgent       String?
+  acceptanceType  String   @default("core_terms") // core_terms, role_specific, qualified_e_signature
+  // The exact text the user affirmed (for auditability)
+  affirmationText String
+  // Whether the checkbox was pre-selected (must be false per §34)
+  preSelected     Boolean  @default(false)
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([documentType, documentVersion])
 }

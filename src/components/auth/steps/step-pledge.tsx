@@ -147,6 +147,25 @@ export function StepPledge({ state, update }: StepPledgeProps) {
           onChange={(v) => update({ acknowledgeRisk: v })}
           label="I acknowledge risk of loss; dividends are not guaranteed; AURIENTA does not guarantee enterprise success."
         />
+        <ConsentRow
+          id="acceptedTerms"
+          checked={state.acceptedTerms}
+          onChange={(v) => update({ acceptedTerms: v })}
+          label={
+            <>
+              I have read, understood and accepted the{" "}
+              <a
+                href="/legal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-gold underline hover:text-gold-light"
+              >
+                Platform Terms, Constitutional Participation Agreement &amp; Legal Disclaimer
+              </a>
+              . I understand that mandatory Egyptian law prevails over any internal platform rule.
+            </>
+          }
+        />
       </div>
 
       {/* Signature */}
@@ -205,7 +224,7 @@ function ConsentRow({
   id: string;
   checked: boolean;
   onChange: (v: boolean) => void;
-  label: string;
+  label: React.ReactNode;
 }) {
   return (
     <label

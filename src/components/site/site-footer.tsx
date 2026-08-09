@@ -39,6 +39,15 @@ const COLUMNS = [
       { label: "Alumni Hall", href: "#sovereignty" },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { label: "Platform Terms & Disclaimer", href: "/legal" },
+      { label: "Constitutional Pledge", href: "/legal" },
+      { label: "Zero Custody (Amendment IX)", href: "/legal" },
+      { label: "Governing Law: Egypt", href: "/legal" },
+    ],
+  },
 ];
 
 export function SiteFooter() {

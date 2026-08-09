@@ -31,6 +31,7 @@ export interface RegisterState {
   readCharter: boolean;
   consentAI: boolean;
   acknowledgeRisk: boolean;
+  acceptedTerms: boolean; // Platform Terms & Legal Disclaimer (§34)
   signature: string;
   // Step 5 — Activation (populated by the real /api/auth/register response)
   identityAnchor: string | null;
@@ -56,6 +57,7 @@ export const INITIAL_REGISTER_STATE: RegisterState = {
   readCharter: false,
   consentAI: false,
   acknowledgeRisk: false,
+  acceptedTerms: false,
   signature: "",
   identityAnchor: null,
 };
