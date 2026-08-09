@@ -100,27 +100,36 @@ This document records all constitutional amendments to the AURIENTA blueprint. A
 - **Implementation:** `src/app/api/enterprises/[id]/profile/route.ts` — PATCH handler now uses `db.$transaction(async (tx) => { ... })`
 - **Rollback:** N/A (bug fix)
 
-### AM-008: Tier System Review & Minimum Capital Recommendations (v3.0 NEW)
+### AM-008: Tier System Review — RECLASSIFIED (v3.0 → v3.1 CORRECTION)
 - **Class:** Structural
-- **Date:** 2026-08-09 (v3.0)
-- **Status:** APPROVED (recommendations pending implementation)
-- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
-- **Summary:** Audit-driven review of AURIENTA's six-tier enterprise classification (A–F). Produced 7 minimum-capital recommendations: (1) Tier A minimum Capital Participation 50 EGP → 100,000 EGP; (2) Tier B minimum 50 EGP → 500,000 EGP; (3) Tier C minimum 50 EGP → 2,000,000 EGP; (4) Tier E maximum raise 5M EGP → 20M EGP; (5) Tier F display update "1 Equity Unit" → "1 Equity Unit (par value per bylaws)"; (6) Dynamic minimum transparency — display formula + inputs; (7) Non-custodial verification prominence — badge on every tier surface.
-- **Impact:** Invariant #10 (Tier System A–F), Invariant #11 (Enterprise Lifecycle), Capital Partner accessibility (Tier A/B/C), deep-tech/biotech spinout viability (Tier E), UI transparency, Zero Custody invariant reinforcement
-- **Implementation:** Recommendations 1-4 require changes to TIER_META in `src/lib/aurienta/constants.ts` and the floor values in `computeDynamicMinimum` (`src/lib/aurienta/cre.ts`). Recommendations 5-7 are display/UI changes only. All 7 recommendations are documented in Volume 43 of the Master Blueprint v3.0.
-- **Rollback:** Per-recommendation rollback permitted (each recommendation is independently reversible). Existing Capital Partners are grandfathered at their original minimum; new minimums apply to new Capital Formation rounds only.
-- **Source:** Volume 43 of Master Blueprint v3.0
+- **Date:** 2026-08-09 (v3.0) → RECLASSIFIED 2026-08-09 (v3.1)
+- **Status:** REJECTED (audit recommendations — NOT constitutional amendments)
+- **Approved By:** N/A — reclassified after v4.0 audit found these were audit recommendations improperly constitutionalized without Founder approval
+- **Summary:** The v3.0 audit proposed 7 tier-capital changes: (1) Tier A min 100,000 EGP; (2) Tier B min 500,000 EGP; (3) Tier C min 2,000,000 EGP; (4) Tier E max 7.5M→20M; (5) Tier F display; (6) Dynamic min transparency; (7) Non-custodial badge.
+- **RECLASSIFICATION RATIONALE:** The original blueprint specifies:
+  - Tier A: LLC minimum capital 5,000 EGP (Egyptian Companies Law 159/1981), "Zero prior business experience permitted," target founder is "a 22-year-old university student"
+  - Tier B: "LLC with minimum capital sufficient for operations"
+  - Tier C: No minimum enterprise capital specified — feasibility evaluation + ERP + statutory audit are the gates
+  - The 50 EGP minimum is the minimum INVESTMENT per Capital Partner, not the minimum enterprise capital
+  - Imposing 100K/500K/2M floors would block the exact founders the blueprint is designed for and violate the mission "enterprise creation > artificial capital barriers"
+- **Decision:** Recommendations 1-3 are REJECTED (would block Egyptian founders, contradict blueprint). Recommendation 4 (Tier E max raise increase) is classified OPTIONAL ENHANCEMENT (defer to Founder decision when first university spinout approaches the 5M ceiling). Recommendations 5-7 are classified OPTIONAL ENHANCEMENT (display improvements, not constitutional).
+- **Impact:** No change to tier system. Original blueprint tier requirements stand as-is.
+- **Implementation:** None. `constants.ts` and `computeDynamicMinimum` remain unchanged.
+- **Rollback:** N/A — recommendations were never implemented in code, only documented in Volume 43 of v3.0 blueprint.
+- **Source:** v4.0 Master Constitutional Fidelity Audit
+- **Lesson:** Audit recommendations must be classified A-E before being recorded as amendments. This was a process failure corrected by the v4.0 audit.
 
-### AM-009: Comprehensive Platform Audit Results (v3.0 NEW)
+### AM-009: Comprehensive Platform Audit Results (v3.0 → v3.1 CORRECTED)
 - **Class:** Operational
-- **Date:** 2026-08-09 (v3.0)
-- **Status:** APPROVED
+- **Date:** 2026-08-09 (v3.0) → CORRECTED 2026-08-09 (v3.1)
+- **Status:** APPROVED (with corrections)
 - **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
-- **Summary:** Recorded the comprehensive end-to-end platform audit conducted August 4-8, 2026. The audit assessed 9 dimensions: Pages & Screens (88/100), Roles & Role Visibility (82/100), Dashboards (85/100), Wiring & Mapping (78/100), Features (90/100), UI Quality (73/100), Tab Mapping (87/100), Role Visibility (84/100), Norway-Grade Transparency (72/100). Overall Score: 82/100. Drift Score: 12/100. All 17 constitutional invariants PASS. 26 CRE functions implemented (10 unwired). 5 P1 enforcement functions wired and operational. 9 unsanitised transparency surfaces identified. Prioritised remediation backlog: 2 P0 items (5 engineering days), 4 P1 items (9 days), 4 P2 items (12 days). Audit verdict: PRODUCTION-READY FOR PILOT conditional on P0 remediation.
-- **Impact:** All 17 invariants (audit confirms PASS), engineering backlog priorities, pilot launch readiness, transparency authorization scope
-- **Implementation:** Volume 44 of Master Blueprint v3.0 documents the full audit findings, scorecard, role visibility matrix, 10 unwired CRE functions, 9 unsanitised transparency surfaces, and prioritised remediation backlog. The remediation backlog is tracked in the engineering project management system.
-- **Rollback:** N/A (audit is a snapshot in time; cannot be rolled back)
-- **Source:** Volume 44 of Master Blueprint v3.0
+- **Summary:** Recorded the comprehensive end-to-end platform audit conducted August 2026. The v3.0 audit reported "26 CRE functions (10 unwired)" — the v4.0 verification found this was inaccurate. The actual count is **25 CRE functions** (the type `CreVerdict` was miscounted as a function). Of these 25, **6 are unwired**: `enforceZeroCustody` (invariant preserved by architecture; function is defense-in-depth), `enforcePoliceClearance` (P1 — comment says "MUST call" but not invoked), `enforceLawFirmReplacement`, `enforceDividendLock`, `enforceTierMigration`, `enforceEquityLockUp`. The v3.0 audit scores (9 dimensions, overall 82/100, drift 12/100) stand as recorded but should not be treated as constitutional — they are operational snapshots.
+- **Corrections:** (1) CRE function count: 25 (not 26). (2) Unwired count: 6 (not 10). (3) `enforceZeroCustody` is unwired as a FUNCTION but the Zero Custody INVARIANT is preserved by the architecture (funds only move between law firm accounts and enterprise accounts via DB relationships — no beneficiary field exists where "aurienta" could be specified). (4) The audit's Norway-transparency score (72/100) should not be interpreted as a mandate to copy Norwegian public-salary disclosure — Egyptian PDPL (Law 151/2020) and the blueprint's own §8.6.2 table govern transparency, not foreign norms.
+- **Impact:** All 17 invariants PASS. 19 of 25 CRE functions are wired and enforced. 6 unwired functions classified: 1 P1 (`enforcePoliceClearance`), 5 P2/P3.
+- **Implementation:** Volume 44 of Master Blueprint v3.0 documents the audit. Corrections recorded here.
+- **Rollback:** N/A (audit is a snapshot in time; corrections are factual)
+- **Source:** v4.0 Master Constitutional Fidelity Audit
 
 ---
 

@@ -940,15 +940,26 @@ export function enforceSalaryConstitutionality(params: {
   overrideRatio: number;
 } {
   const policy = "salary_constitutionality.rego";
-  const MINIMUM_WAGE_EGP = 4000; // 2026 Egyptian minimum wage
+  // AURIENTA CONSTITUTIONAL FLOOR — NOT A CLAIM ABOUT EGYPTIAN LAW.
+  // The blueprint §8.4.3 says "must be at least minimum wage" but does not
+  // specify the exact amount. The 4,000 EGP figure is an AURIENTA constitutional
+  // floor pending verification of the current Egyptian statutory minimum wage
+  // (which has changed multiple times: 2,400 EGP in 2023, 3,500 EGP in 2024,
+  // and may change again). This value MUST be verified by legal counsel before
+  // production deployment and updated via formal amendment.
+  // REQUIRES LEGAL VERIFICATION — do not treat as current law.
+  const MINIMUM_WAGE_EGP = 4000;
   const BOARD_OVERRIDE_THRESHOLD_PCT = 75; // §8.4.3
   const SHAREHOLDER_NOTIFICATION_RATIO = 2.0; // §8.4.3 — >200% of AI salary
 
-  // Rule 1: Proposed salary must be at least the 2026 minimum wage.
+  // Rule 1: Proposed salary must be at least the AURIENTA constitutional floor.
+  // NOTE: This is the AURIENTA floor, not a verified legal requirement.
+  // The blueprint says "must be at least minimum wage" — the actual statutory
+  // amount must be verified by counsel and may differ.
   if (!params.proposedSalaryEgp || params.proposedSalaryEgp < MINIMUM_WAGE_EGP) {
     return {
       allowed: false,
-      reason: `Salary constitutionality: proposed salary ${params.proposedSalaryEgp} EGP is below the 2026 Egyptian minimum wage of ${MINIMUM_WAGE_EGP} EGP/month (Blueprint §8.4.3)`,
+      reason: `Salary constitutionality: proposed salary ${params.proposedSalaryEgp} EGP is below the AURIENTA constitutional floor of ${MINIMUM_WAGE_EGP} EGP/month (Blueprint §8.4.3 — "must be at least minimum wage"). NOTE: The exact Egyptian statutory minimum wage REQUIRES LEGAL VERIFICATION and may differ.`,
       policy,
       decisionToken: issueCreDecisionToken({
         policy,

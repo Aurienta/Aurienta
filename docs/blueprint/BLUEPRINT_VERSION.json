@@ -1,11 +1,17 @@
 {
   "blueprint_id": "AURIENTA-CONSTITUTIONAL-BLUEPRINT",
-  "canonical_version": "3.0.0",
-  "canonical_edition": "Master Blueprint v3.0 — Fully Modified & Updated",
+  "canonical_version": "3.1.0",
+  "canonical_edition": "Master Blueprint v3.1 — v4.0 Audit Corrected",
   "effective_date": "2026-08-09",
-  "previous_version": "2.0.0",
-  "previous_edition": "Master Blueprint v2.0 — Fully Expanded",
-  "previous_date": "2026-08-08",
+  "previous_version": "3.0.0",
+  "previous_edition": "Master Blueprint v3.0 — Fully Modified & Updated",
+  "previous_date": "2026-08-09",
+  "v4_audit_corrections": {
+    "AM-008_reclassified": "REJECTED — tier floor recommendations were audit recommendations improperly constitutionalized. Original blueprint tier requirements stand (Tier A: 5,000 EGP LLC minimum per Egyptian law, 50 EGP minimum investment).",
+    "AM-009_corrected": "CRE function count corrected from 26 to 25. Unwired count corrected from 10 to 6. Zero Custody invariant confirmed preserved by architecture despite enforceZeroCustody function being unwired.",
+    "minimum_wage_reclassified": "4,000 EGP figure in enforceSalaryConstitutionality reclassified from '2026 Egyptian minimum wage' to 'AURIENTA CONSTITUTIONAL FLOOR — REQUIRES LEGAL VERIFICATION'.",
+    "norway_transparency_rejected": "Norway-grade public salary disclosure REJECTED. Blueprint §8.6.2 and Egyptian PDPL (Law 151/2020) govern transparency, not foreign norms."
+  },
   "original_source": {
     "file": "AURIENTA_Blueprint_ORIGINAL.docx",
     "size_bytes": 1280016,
