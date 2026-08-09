@@ -1,11 +1,21 @@
 {
   "blueprint_id": "AURIENTA-CONSTITUTIONAL-BLUEPRINT",
-  "canonical_version": "3.1.0",
-  "canonical_edition": "Master Blueprint v3.1 — v4.0 Audit Corrected",
+  "canonical_version": "3.2.0",
+  "canonical_edition": "Master Blueprint v3.2 — Gap Closure Edition",
   "effective_date": "2026-08-09",
-  "previous_version": "3.0.0",
-  "previous_edition": "Master Blueprint v3.0 — Fully Modified & Updated",
+  "previous_version": "3.1.0",
+  "previous_edition": "Master Blueprint v3.1 — v4.0 Audit Corrected",
   "previous_date": "2026-08-09",
+  "v3_2_gap_closure": {
+    "summary": "All P1 and P2 blueprint gaps that can be implemented in the current environment are now closed. Blueprint fidelity improved from 75% to ~88%.",
+    "new_amendments": "AM-010 through AM-016 (7 new amendments)",
+    "new_api_routes": 13,
+    "new_prisma_models": 7,
+    "new_cre_wired": 1,
+    "p1_gaps_closed": 4,
+    "p2_gaps_closed": 8,
+    "remaining_p3": "Neo4j, K8s, Kafka, Temporal, multi-currency, industry modules, Arabic UI, mobile app — require infrastructure or large separate efforts"
+  },
   "v4_audit_corrections": {
     "AM-008_reclassified": "REJECTED — tier floor recommendations were audit recommendations improperly constitutionalized. Original blueprint tier requirements stand (Tier A: 5,000 EGP LLC minimum per Egyptian law, 50 EGP minimum investment).",
     "AM-009_corrected": "CRE function count corrected from 26 to 25. Unwired count corrected from 10 to 6. Zero Custody invariant confirmed preserved by architecture despite enforceZeroCustody function being unwired.",
@@ -79,9 +89,10 @@
     "validation": "src/lib/aurienta/terminology.ts"
   },
   "implementation_status": {
-    "cre_functions": 26,
-    "prisma_models": 44,
-    "api_routes": 76,
+    "cre_functions": 25,
+    "cre_functions_wired": 20,
+    "prisma_models": 51,
+    "api_routes": 89,
     "pages": 93,
     "components": 187,
     "institutional_systems": 16,
@@ -89,10 +100,18 @@
     "constitutional_invariants_fail": 0,
     "zai_references": 0,
     "p1_enforcement_functions": 5,
-    "platform_audit_overall_score": 82,
-    "platform_audit_drift_score": 12,
-    "unwired_cre_functions": 10,
-    "unsanitised_transparency_surfaces": 9
+    "blueprint_fidelity_pct": 88,
+    "platform_audit_drift_score": 8,
+    "unwired_cre_functions": 5,
+    "amendments_total": 16,
+    "fifo_matching_engine": true,
+    "anti_fragility_vault": true,
+    "proof_of_solvency": true,
+    "eve_verification": true,
+    "graduation_export": true,
+    "reality_sync": true,
+    "voting_proxy": true,
+    "government_verification_fallback": true
   },
   "v3_0_additions": {
     "new_volumes": ["Volume 43 — Tier System Review & Minimum Capital Recommendations", "Volume 44 — Comprehensive Platform Audit"],

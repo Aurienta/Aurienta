@@ -131,6 +131,76 @@ This document records all constitutional amendments to the AURIENTA blueprint. A
 - **Rollback:** N/A (audit is a snapshot in time; corrections are factual)
 - **Source:** v4.0 Master Constitutional Fidelity Audit
 
+### AM-010: FIFO Matching Engine (Blueprint §9.6)
+- **Class:** Operational
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented the strict FIFO (first-in, first-out) matching engine for the constitutional secondary market (Phase 3). Orders are no longer just listed — they now execute. The engine matches buy orders against the oldest sell orders (and vice versa) that satisfy price crossing within the ±5% fundamental pricing band. Partial fills are supported. Each match atomically: creates a Trade record, updates both orders' filled quantities + status, transfers ownership (decrements seller, increments buyer, recalculates buyer avgPrice), appends a `trade_matched` ledger event — all inside one `db.$transaction`.
+- **Impact:** Invariant #3 (Fundamental Pricing), Invariant #4 (No Speculation), secondary market liquidity. The secondary market is now FUNCTIONAL — Capital Partners can sell Equity Units.
+- **Implementation:** `src/lib/aurienta/matching-engine.ts` + `POST /api/orders` (matching runs after order creation) + `GET /api/orders` (order book). Trade model added to Prisma schema.
+- **Rollback:** Not permitted (core market infrastructure)
+
+### AM-011: Government API Verification — Manual Upload Fallback (Blueprint §12.3, §12.6, §12.7)
+- **Class:** Operational
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented the manual upload fallback for government verifications (GAFI commercial registration, GAFI UBO, NOSI social insurance registration, tax clearance, police clearance) with 48h SLA for human review, as specified in the blueprint when automated APIs are unavailable. Institutional roles (`aurienta_rep`, `law_firm_rep`, `accounting_firm_rep`) can review and approve/reject submissions. Police clearance verifications auto-expire after 6 months. On police clearance verification, the User's `policeClearanceValid` and `policeClearanceExpiresAt` fields are updated.
+- **Impact:** Invariant #9 (Constitutional Supremacy — mandatory law compliance), enterprise onboarding compliance, NOSI enforcement chain.
+- **Implementation:** `POST/GET /api/verification`, `GET/PATCH /api/verification/[id]`. GovApiVerification model added to Prisma schema.
+- **Rollback:** Not permitted (legal compliance)
+
+### AM-012: Anti-Fragility Insurance Vault (Blueprint §5.4)
+- **Class:** Additive
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented the collective reserve that provides interest-free loans to enterprises hit by exogenous shocks. Funded by 0.5% of each Capital Formation close. Loans capped at 20% of last raised capital, repayable over 24 months (10% of each milestone release). Non-recourse (forgiven if enterprise fails). Board vote (simple majority) required to request a loan. The vault balance is tracked per-enterprise.
+- **Impact:** Enterprise resilience, anti-fragility doctrine, exogenous shock protection.
+- **Implementation:** `GET/POST /api/vault`, `POST /api/vault/loan`, `GET/PATCH /api/vault/loan/[id]`. InsuranceVault + VaultLoan models added to Prisma schema.
+- **Rollback:** Permitted per-enterprise (vault can be wound down)
+
+### AM-013: Proof-of-Solvency Infrastructure (Blueprint §5.5)
+- **Class:** Operational
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented the 3-level health flag system for Law Firm Client Account reconciliation. Level 1 (>0.1% variance, internal only), Level 2 (>2% variance, all partners notified), Level 3 (>10% variance or unauthorized withdrawal, system freeze + regulator). Level 3 automatically triggers `enforceEmergencyFreeze`. Each assertion records the law firm balance, internal balance, variance, health level, and a SHA-256 assertion hash.
+- **Impact:** Invariant #1 (Zero Custody), financial integrity, partner transparency.
+- **Implementation:** `GET/POST /api/solvency`. SolvencyAssertion model added to Prisma schema.
+- **Rollback:** Not permitted (financial integrity safeguard)
+
+### AM-014: EVE AI Verification + Reality Sync Engine (Blueprint §11.2, §11.8)
+- **Class:** Additive
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented two institutional intelligence features: (1) EVE (Execution Verification Engine) — AI-powered evidence verification that replaces the blueprint's LayoutLM/OCR approach with Brain AI analysis. Verifies vendor consistency, amount reasonableness, date consistency, related-party indicators, and missing documentation. Returns verified/confidence/findings/redFlags. (2) Reality Sync Engine — 6-check internal consistency sync: NOSI compliance, ledger integrity (`verifyLedgerChain`), ownership consistency, milestone staleness, expense freeze condition, health score drift. Returns overall status: healthy/warning/critical.
+- **Impact:** Invariant #2 (CRE), evidence integrity, institutional intelligence.
+- **Implementation:** `POST /api/ai/eve`, `POST /api/reality-sync`.
+- **Rollback:** Not permitted (verification infrastructure)
+
+### AM-015: Graduation Export API + Voting Proxy System (Blueprint §15.11, §16.2)
+- **Class:** Additive
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented two sovereignty features: (1) Graduation Export API — allows a graduated enterprise to extract their full data package: enterprise profile, cap table (OwnershipRecords), full immutable ledger (ordered by sequence), quarterly reports, milestones, employees (anonymised — no nationalId/nosiNumber), proposals+votes, constitutional charter hash. SHA-256 package hash for third-party verification. (2) Voting Proxy System — allows a Constitutional Partner to delegate their voting power to another partner. Scope: all proposals / specific proposal / proposal type. Delegator's voting power = equity units. Delegatee must be an enterprise member. Revocable at any time.
+- **Impact:** Invariant #5 (Graduation Doctrine), Invariant #12 (Constitutional Roles), sovereign independence.
+- **Implementation:** `POST /api/graduation/export`, `GET/POST /api/proxies`, `POST /api/proxies/[id]/revoke`. VotingProxy model added to Prisma schema.
+- **Rollback:** Not permitted (sovereignty infrastructure)
+
+### AM-016: Police Clearance Enforcement + Expenses Dashboard (Blueprint §7.5, §8.14)
+- **Class:** Operational
+- **Date:** 2026-08-09 (v3.2)
+- **Status:** APPROVED + IMPLEMENTED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Implemented two operational features: (1) `enforcePoliceClearance` wired into manager appointment proposal execution — when a `manager_appointment` proposal passes the vote, the CRE verifies the target user has valid police clearance (Add-on 27). If invalid/expired, the proposal is placed in `evidence_submitted` status pending renewal rather than being executed. (2) Constitutional Expenses Dashboard API — provides budget vs actual by category, summary cards (total month/quarter, budget utilization %, pending approvals), category breakdown with role-aware visibility (salary expenses aggregated for non-board), and budget status indicators (🟢 ≤80% / 🟡 80-100% / 🔴 >100%).
+- **Impact:** Invariant #2 (CRE), workforce compliance, financial transparency.
+- **Implementation:** `POST /api/proposals/[id]/vote` (police clearance check), `GET /api/expenses/budget`.
+- **Rollback:** Not permitted (constitutional enforcement + financial transparency)
+
 ---
 
 ## Deprecated Provisions
