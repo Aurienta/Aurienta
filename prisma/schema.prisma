@@ -64,6 +64,11 @@ model User {
   foundedEnterprises    Enterprise[]   @relation("EnterpriseFounder")
   syndicatesLed         Syndicate[]    @relation("SyndicateLead")
   termsAcceptances      TermsAcceptance[]
+  tradesAsBuyer         Trade[] @relation("TradeBuyer")
+  tradesAsSeller        Trade[] @relation("TradeSeller")
+  proxiesDelegated      VotingProxy[] @relation("ProxyDelegator")
+  proxiesReceived       VotingProxy[] @relation("ProxyDelegatee")
+  govVerifications      GovApiVerification[]
   syndicateMemberships  SyndicateMember[] @relation("SyndicateMember")
   dripEnrollments       DripEnrollment[]
   careerLedger          CareerLedgerEntry[]
@@ -224,6 +229,11 @@ model Enterprise {
   engagements         PartnerEngagement[]
   annualReports       AnnualReport[]
   documents           EnterpriseDocument[]
+  trades              Trade[]
+  insuranceVault      InsuranceVault?
+  vaultLoans          VaultLoan[]
+  solvencyAssertions  SolvencyAssertion[]
+  votingProxies       VotingProxy[]
   @@index([founderId])
   @@index([lawFirmId])
   @@index([accountingFirmId])
@@ -1074,4 +1084,157 @@ model TermsAcceptance {
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
   @@index([documentType, documentVersion])
+}
+
+// ───────────────────────────────────────────────────────────
+// SECONDARY MARKET — TRADES (FIFO matching engine output)
+// ───────────────────────────────────────────────────────────
+/// Records each matched trade between a buy order and a sell order.
+/// Created by the FIFO matching engine when orders are matched.
+model Trade {
+  id            String   @id @default(cuid())
+  enterpriseId  String
+  buyOrderId    String
+  sellOrderId   String
+  buyerId       String
+  sellerId      String
+  equityUnits   Int
+  priceEgp      Float
+  grossEgp      Float
+  platformFeeEgp Float
+  cgtEgp        Float   // capital gains tax (seller only)
+  totalEgp      Float   // buyer pays gross + platformFee; seller receives gross - platformFee - cgt
+  phase         String
+  matchedAt     DateTime @default(now())
+
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  buyer         User       @relation("TradeBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller        User       @relation("TradeSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([enterpriseId])
+  @@index([buyOrderId])
+  @@index([sellOrderId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ANTI-FRAGILITY INSURANCE VAULT (Blueprint §5.4)
+// ───────────────────────────────────────────────────────────
+/// Collective reserve funded by 0.5% of each Capital Formation close.
+/// Provides interest-free loans to enterprises hit by exogenous shocks.
+model InsuranceVault {
+  id              String   @id @default(cuid())
+  enterpriseId    String   @unique // one vault balance per enterprise
+  totalContributedEgp Float @default(0) // cumulative 0.5% deductions
+  currentBalanceEgp   Float @default(0) // current available balance
+  totalLoanedEgp      Float @default(0) // cumulative loans issued
+  totalRepaidEgp      Float @default(0) // cumulative loans repaid
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────────────────────────────────────────────────
+// VAULT LOANS (Blueprint §5.4.3)
+// ───────────────────────────────────────────────────────────
+/// Interest-free loans from the Anti-Fragility Vault to enterprises
+/// hit by exogenous shocks. Capped at 20% of last raised capital.
+/// Repayable from future profits over 24 months (10% of each release).
+/// Forgiven if enterprise fails before repayment (non-recourse).
+model VaultLoan {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  amountEgp       Float
+  reason          String   // pandemic, currency_devaluation, war, natural_disaster
+  boardVotePct    Float    // must be >= 50 (simple majority)
+  requestedAt     DateTime @default(now())
+  approvedAt      DateTime?
+  status          String   @default("pending") // pending, approved, repaid, forgiven
+  repaidEgp       Float    @default(0)
+  repaymentDueAt  DateTime? // 24 months from approval
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([status])
+}
+
+// ───────────────────────────────────────────────────────────
+// PROOF-OF-SOLVENCY (Blueprint §5.5)
+// ───────────────────────────────────────────────────────────
+/// 3-level health flag system for Law Firm Client Account reconciliation.
+/// Level 1: Pending Reconcile (>0.1% variance, <4h) — internal only
+/// Level 2: Escrow Health Flag (>2% or >0.1% for >4h) — all partners
+/// Level 3: System Freeze (unauthorized withdrawal or >10%) — all + regulator
+model SolvencyAssertion {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  lawFirmBalanceEgp  Float  // balance reported by law firm
+  internalBalanceEgp  Float  // balance in AURIENTA's internal ledger
+  varianceEgp     Float    // lawFirmBalance - internalBalance
+  variancePct     Float    // variance / internalBalance * 100
+  healthLevel     Int      @default(1) // 1=ok, 2=warning, 3=freeze
+  assertionHash   String   // SHA-256 of the signed balance assertion
+  createdAt       DateTime @default(now())
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  @@index([enterpriseId])
+  @@index([healthLevel])
+}
+
+// ───────────────────────────────────────────────────────────
+// GOVERNMENT API VERIFICATION (Blueprint §12.3, §12.6, §12.7)
+// Manual upload fallback for GAFI, NOSI, Tax Authority, Police Clearance
+// ───────────────────────────────────────────────────────────
+/// Records manual document uploads for government verifications where
+/// automated API integration is not yet available. Per the blueprint,
+/// manual upload fallback has a 48h SLA for human review.
+model GovApiVerification {
+  id              String   @id @default(cuid())
+  enterpriseId    String?
+  userId          String?
+  verificationType String  // gafi_cr, gafi_ubo, nosi_registration, tax_clearance, police_clearance
+  status          String   @default("pending") // pending, under_review, verified, rejected, expired
+  documentUrl     String   // URL to uploaded document (PDF/image)
+  documentHash    String   // SHA-256 hash of the document
+  submittedAt     DateTime @default(now())
+  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewNote      String?
+  expiresAt       DateTime? // for police clearance (6 months)
+
+  user            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([verificationType, status])
+  @@index([enterpriseId])
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// VOTING PROXY (Blueprint §16.2)
+// ───────────────────────────────────────────────────────────
+/// Allows a Constitutional Partner to delegate their voting power
+/// to another partner for a specified period or proposal type.
+model VotingProxy {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  delegatorId     String   // the partner delegating their vote
+  delegateeId     String   // the partner receiving the voting power
+  scope           String   @default("all") // all, specific_proposal, proposal_type
+  proposalId      String?  // if scope = specific_proposal
+  proposalType    String?  // if scope = proposal_type
+  votingPowerDelegated Float // the amount of voting power delegated
+  startsAt        DateTime @default(now())
+  endsAt          DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime @default(now())
+
+  enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  delegator       User       @relation("ProxyDelegator", fields: [delegatorId], references: [id], onDelete: Cascade)
+  delegatee       User       @relation("ProxyDelegatee", fields: [delegateeId], references: [id], onDelete: Cascade)
+
+  @@index([enterpriseId])
+  @@index([delegatorId])
+  @@index([delegateeId])
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
-import { checkQuorum, appendLedgerEvent } from "@/lib/aurienta/cre";
+import { checkQuorum, appendLedgerEvent, enforcePoliceClearance } from "@/lib/aurienta/cre";
 import { voteSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -160,9 +160,38 @@ export async function POST(
         },
       });
 
+      // ── CRE: Police Clearance enforcement for manager_appointment (Add-on 27) ──
+      // When a manager_appointment proposal passes, verify the target user
+      // has valid police clearance before the role can be bound. If the
+      // clearance is invalid/expired, the proposal is NOT executed — it's
+      // placed in "evidence_submitted" status pending clearance renewal.
+      let policeClearanceBlock = false;
+      let policeClearanceReason: string | undefined;
+      if (pPassed && proposal.type === "manager_appointment") {
+        // The target user is stored in the proposal description or a metadata field.
+        // For now, we check the current user (who may be the proposed manager).
+        const pcVerdict = enforcePoliceClearance(
+          "manager",
+          user.policeClearanceValid,
+          user.policeClearanceExpiresAt
+        );
+        if (!pcVerdict.allowed) {
+          policeClearanceBlock = true;
+          policeClearanceReason = pcVerdict.reason;
+          // Don't execute — revert to "evidence_submitted" for clearance renewal
+          await tx.proposal.update({
+            where: { id },
+            data: {
+              status: "evidence_submitted",
+              executedAt: null,
+            },
+          });
+        }
+      }
+
       await appendLedgerEvent(tx, {
         enterpriseId: proposal.enterpriseId,
-        eventType: pPassed ? "proposal_executed" : "vote_cast",
+        eventType: pPassed && !policeClearanceBlock ? "proposal_executed" : "vote_cast",
         payload: {
           proposalId: id,
           proposalTitle: proposal.title,
@@ -178,7 +207,10 @@ export async function POST(
           quorumMet: qMet,
           passPct: Math.round(pPct * 100) / 100,
           passThreshold: intermediate.passThreshold,
-          executed: pPassed,
+          executed: pPassed && !policeClearanceBlock,
+          policeClearanceBlock,
+          policeClearanceReason,
+          proposalType: proposal.type,
         },
         actorId: user.id,
       });

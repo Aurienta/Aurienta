@@ -15,6 +15,7 @@ import {
   getIdempotencyContext,
   storeIdempotency,
 } from "@/lib/aurienta/idempotency";
+import { runFifoMatching } from "@/lib/aurienta/matching-engine";
 
 // POST /api/orders
 // Body: { enterpriseId, side, shares, priceEgp, phase }
@@ -237,15 +238,35 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // ── Run the FIFO matching engine (Blueprint §9.6) ──
+  // After creating the order, attempt to match it against existing
+  // counterparties in the order book. This makes the secondary market
+  // functional — orders are not just listed, they execute.
+  let matchResult = null;
+  try {
+    matchResult = await runFifoMatching(order.id);
+  } catch (matchErr) {
+    // Matching failure should NOT fail the order creation — the order
+    // is already persisted and ledger-logged. Log and continue.
+    console.error("FIFO matching error:", matchErr);
+  }
+
+  // Re-fetch the order to get updated status after matching
+  const updatedOrder = await db.tradeOrder.findUnique({
+    where: { id: order.id },
+    select: { status: true, filledEquityUnits: true },
+  });
+
   const responseBody = {
     ok: true,
     order: {
       id: order.id,
       side: order.side,
       equityUnits: order.equityUnits,
+      filledEquityUnits: updatedOrder?.filledEquityUnits ?? 0,
       priceEgp: order.priceEgp,
       phase: order.phase,
-      status: order.status,
+      status: updatedOrder?.status ?? order.status,
       feesEgp: order.feesEgp,
       enterprise: {
         id: order.enterprise.id,
@@ -254,6 +275,7 @@ export async function POST(req: NextRequest) {
       },
       createdAt: order.createdAt,
     },
+    match: matchResult,
     cre: {
       policy: verdict.policy,
       decisionToken: verdict.decisionToken,
@@ -264,4 +286,120 @@ export async function POST(req: NextRequest) {
     await storeIdempotency(idemCtx, "orders", user.id, status, responseBody);
   }
   return NextResponse.json(responseBody, { status });
+}
+
+// GET /api/orders?enterpriseId=xxx
+// Returns the order book (open buy + sell orders) + recent trades for an enterprise.
+// The order book is opaque to prevent gaming — partners see aggregate
+// available shares, recent trades, and their own orders (per blueprint §9.3.2).
+export async function GET(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated", code: "unauthenticated" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const enterpriseId = url.searchParams.get("enterpriseId");
+  if (!enterpriseId) {
+    return NextResponse.json({ error: "enterpriseId is required" }, { status: 400 });
+  }
+
+  // Open buy orders (oldest first)
+  const buyOrders = await db.tradeOrder.findMany({
+    where: {
+      enterpriseId,
+      side: "buy",
+      status: { in: ["open", "partially_filled"] },
+    },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      priceEgp: true,
+      equityUnits: true,
+      filledEquityUnits: true,
+      phase: true,
+      createdAt: true,
+      userId: true,
+    },
+    take: 50,
+  });
+
+  // Open sell orders (oldest first)
+  const sellOrders = await db.tradeOrder.findMany({
+    where: {
+      enterpriseId,
+      side: "sell",
+      status: { in: ["open", "partially_filled"] },
+    },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      priceEgp: true,
+      equityUnits: true,
+      filledEquityUnits: true,
+      phase: true,
+      createdAt: true,
+      userId: true,
+    },
+    take: 50,
+  });
+
+  // Recent trades (last 20)
+  const recentTrades = await db.trade.findMany({
+    where: { enterpriseId },
+    orderBy: { matchedAt: "desc" },
+    take: 20,
+    select: {
+      id: true,
+      equityUnits: true,
+      priceEgp: true,
+      grossEgp: true,
+      phase: true,
+      matchedAt: true,
+    },
+  });
+
+  // The user's own orders
+  const myOrders = await db.tradeOrder.findMany({
+    where: {
+      enterpriseId,
+      userId: user.id,
+      status: { in: ["open", "partially_filled"] },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+
+  // Aggregate available shares (anonymised — no counterparty identity)
+  const buyAvailable = buyOrders.reduce(
+    (s, o) => s + (o.equityUnits - o.filledEquityUnits),
+    0
+  );
+  const sellAvailable = sellOrders.reduce(
+    (s, o) => s + (o.equityUnits - o.filledEquityUnits),
+    0
+  );
+
+  return NextResponse.json({
+    ok: true,
+    orderBook: {
+      buyOrders: buyOrders.map((o) => ({
+        ...o,
+        remainingUnits: o.equityUnits - o.filledEquityUnits,
+        // Anonymise — don't show which user placed the order
+        isMine: o.userId === user.id,
+        userId: undefined,
+      })),
+      sellOrders: sellOrders.map((o) => ({
+        ...o,
+        remainingUnits: o.equityUnits - o.filledEquityUnits,
+        isMine: o.userId === user.id,
+        userId: undefined,
+      })),
+      buyAvailableShares: buyAvailable,
+      sellAvailableShares: sellAvailable,
+    },
+    recentTrades,
+    myOrders,
+  });
 }

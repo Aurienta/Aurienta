@@ -10828,3 +10828,216 @@ Stage Summary:
 - All 17 constitutional invariants verified PASS. All 26 CRE functions catalogued. All 9 amendments (AM-001 through AM-009) documented.
 - Founder: Mohamed Eltonsy — Founder & Sole Owner — 100%. Constitutional Hash: 0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A.
 - Founding principle preserved: "Your capital, your work, your company — no speculation required."
+
+---
+Task ID: GOV-API-VERIFICATION
+Agent: Government API Verification Fallback (Blueprint §12.3–§12.7)
+
+Task: Implement the manual-upload + 48h SLA fallback for the four government API verifications (GAFI §12.3, Tax Authority §12.5, NOSI §12.6, Police Clearance §12.7), since the upstream government APIs are not yet live in this sandbox.
+
+Files created:
+- src/app/api/verification/route.ts — POST (submit) + GET (list) endpoints.
+- src/app/api/verification/[id]/route.ts — GET (single) + PATCH (review) endpoints.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 30 lines) to load brand-identity and platform context.
+- Read existing helpers: src/lib/aurienta/auth.ts (getCurrentUser), src/lib/aurienta/cre.ts (appendLedgerEvent, hashPayload), src/lib/aurienta/audit.ts (audit), src/lib/db.ts (db + PrismaTransaction).
+- Read existing route patterns: src/app/api/evidence/route.ts, src/app/api/evidence/[cid]/route.ts, src/app/api/skill-equity/route.ts, src/app/api/skill-equity/[id]/review/route.ts — copied the transactional ledger-append idiom and the auth/role-guard style.
+- Verified the GovApiVerification Prisma model (prisma/schema.prisma lines 1193–1212): id, enterpriseId?, userId?, verificationType, status, documentUrl, documentHash, submittedAt, reviewedAt?, reviewedById?, reviewNote?, expiresAt? — all fields match the task spec.
+- Verified EnterpriseMember.role enum includes aurienta_rep / law_firm_rep / accounting_firm_rep (line 246) and User has policeClearanceValid + policeClearanceExpiresAt (lines 42–43) — used the latter to mirror police-clearance expiry on the User record after a verified review.
+
+POST /api/verification (submit):
+- Zod schema: { enterpriseId?, userId?, verificationType (enum of 5), documentUrl, documentHash (hex), note? }.
+- Requires at least one of enterpriseId / userId (constitutional subject anchor).
+- Authorization: self-submission OR enterprise membership OR trusted institutional role (law_firm_rep / accounting_firm_rep / aurienta_rep acting on behalf of the Law Firm Client Account).
+- Creates GovApiVerification with status="pending", appends a hash-chained ledger event inside db.$transaction with action=gov_verification_submitted, a 48h SLA deadline, and the constitutional subject descriptor. Writes an audit log entry.
+- Returns 201 with sanitized record + slaDeadline + slaHours=48 + fallbackMode="manual_upload".
+
+GET /api/verification (list):
+- Optional query params: enterpriseId, userId, status (validated against the 5 lifecycle states), type (validated against the 5 verification types), limit (1–100).
+- Authorization: trusted institutional roles see the full filtered list; everyone else is scoped to verifications they own or that belong to enterprises they are a member of.
+- Auto-expiry sweep: any record whose expiresAt has elapsed is flipped to status="expired" before the query runs, so callers always see canonical constitutional reality.
+- Returns sanitized list with count + a fallback-mode notice describing the manual-upload + 48h SLA fallback.
+
+GET /api/verification/[id] (single):
+- Auto-expiry sweep on the single record before fetch.
+- Authorization: self / enterprise member / trusted reviewer.
+- Returns the record plus computed slaDeadline + slaBreached flag + fallbackMode.
+
+PATCH /api/verification/[id] (review):
+- Zod schema: { status: "verified" | "rejected" | "under_review", reviewNote (1–2000 chars) }.
+- Role gate: only aurienta_rep / law_firm_rep / accounting_firm_rep. Non-matching callers get 403 with requiredRoles list and an audit-denied entry.
+- Refuses re-review of terminal records (verified / rejected / expired) — a new submission must be filed instead.
+- Police-clearance 6-month expiry (§12.7): when status transitions to "verified" AND verificationType === "police_clearance", sets expiresAt = now + 6 months (~180 days). Other verification types do not auto-expire on verification (CR / UBO / NOSI / tax-clearance are point-in-time proofs that lapse only when superseded).
+- Update + ledger event inside one db.$transaction — action=gov_verification_reviewed, payload includes previousStatus, newStatus, reviewNote, reviewer, expiresAt, policeClearanceValidityMonths, and the constitutional subject descriptor.
+- After successful review, mirrors police-clearance state onto the User record (policeClearanceValid + policeClearanceExpiresAt) so downstream CRE policies (police-clearance-gated role appointments) read canonical state without an extra lookup.
+- Returns sanitized updated record with slaDeadline, slaHours=48, policeClearanceValidityMonths, and fallbackMode.
+
+Constitutional terminology used: Equity Units, Enterprise, Law Firm Client Account, Constitutional Partner, constitutional subject, constitutional SLA, hash-chained ledger.
+
+Technical requirements verified:
+- runtime = "nodejs"; dynamic = "force-dynamic" on both files.
+- All endpoints auth-required via getCurrentUser.
+- PATCH role check restricts to aurienta_rep / law_firm_rep / accounting_firm_rep.
+- All mutations append ledger events inside db.$transaction.
+- Zod schemas for both POST and PATCH bodies.
+- "use server" not required for route handlers; "use client" not used (API routes only).
+
+Validation:
+- bun run lint → exit 0, 0 errors (eslint .).
+- Files verified to exist at the expected paths.
+- dev.log shows the dev server is serving / with 200 responses (port 3000 active).
+
+Notes for downstream agents:
+- The auto-expiry sweep uses db.govApiVerification.updateMany({ where: { status: { not: "expired" }, expiresAt: { lt: now } }, data: { status: "expired" } }) — cheap and idempotent. If you build a cron later, you can lift this same query into a scheduler.
+- The 48h SLA is computed as submittedAt + 48h and surfaced as slaDeadline + slaBreached on read; no separate SLA column was added (keeps the schema as-is per the task spec).
+- The User.policeClearanceValid / policeClearanceExpiresAt mirror is best-effort (wrapped in .catch(() => {})) so a transient DB hiccup never blocks the review response.
+- When the real GAFI / Tax / NOSI / Police APIs come online, the same GovApiVerification row + status lifecycle can be populated by an automated adapter; the manual-upload fallback remains as the constitutional safety-net for any API outage.
+
+---
+Task ID: GRAD-EVE-RSYNC
+Agent: API Routes Agent (Graduation Export / EVE / Reality Sync)
+
+Task: Implement three blueprint features as API routes — (1) Graduation Export API (§15.11), (2) EVE AI Verification (§11.2), (3) Reality Sync (§11.8).
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 30 lines) to load prior context: brand identity, blueprint scope, and the convention that each agent appends a `---` section.
+- Inspected the codebase conventions:
+  - `src/lib/aurienta/auth.ts` — `getCurrentUser()` returns user with `memberships: { role, enterpriseId, enterprise }[]`.
+  - `src/lib/aurienta/cre.ts` — `appendLedgerEvent(tx, { enterpriseId, eventType, payload, actorId })` MUST run inside `db.$transaction` (per-enterprise monotonic sequence). `verifyLedgerChain(enterpriseId)` walks the hash chain and returns `{ intact, eventsChecked, brokenAt? }`.
+  - `src/lib/aurienta/ai.ts` — `askConstitutionalAI({ systemPrompt, userMessage, userContext, kind, enterpriseId, userId, entityId, persist, confidence })` — systemPrompt is appended BELOW the immutable constitutional prompt; userContext is wrapped in UNTRUSTED-DATA delimiters.
+  - `src/lib/aurienta/rate-limit.ts` — `limiters.ai(userId)` returns `{ allowed, remaining, resetAt }`; `rateLimitedResponse(resetAt)` builds the 429.
+  - `src/lib/aurienta/audit.ts` — `audit({ actorId, action, target, result, reason, metadata, ip, userAgent })` never throws.
+  - `src/lib/aurienta/constants.ts` — `CONSTITUTIONAL_HASH` is the platform-wide charter anchor (SHA-3-256).
+  - Prisma schema: `Enterprise`, `OwnershipRecord`, `LedgerEvent`, `QuarterlyReport`, `Milestone`, `Employee` (with `nosiStatus`, `nosiNumber`, `hireDate`), `Proposal`, `Vote`, `AiArtifact` — all confirmed.
+- Implemented the three routes:
+
+1. `src/app/api/graduation/export/route.ts` — Graduation Export API (§15.11)
+   - POST `{ enterpriseId }`.
+   - Auth: `founding_operator` / `company_owner` / `board_member` of the enterprise (verified via `EnterpriseMember.role`).
+   - Gathers: enterprise profile (all fields), cap table (OwnershipRecords), full immutable ledger (ordered by sequence), quarterly reports, milestones, employees (anonymised — `nationalId` and `nosiNumber` omitted), proposals + votes, and the constitutional charter hash.
+   - Computes a deterministic SHA-256 over the canonical JSON of the package (recursive key-sorted `stableStringify`) so any third party can recompute the hash from the same data.
+   - Inside `db.$transaction`: creates an `AiArtifact` with `kind="graduation_export"` storing the package hash + summary, then `appendLedgerEvent` with `eventType="graduation_export_generated"`.
+   - Returns `{ exportId, packageHash, enterpriseId, generatedAt, ledgerSequence, constitutionalCharterHash, data }`.
+   - Audit log entry on both allow and deny paths.
+
+2. `src/app/api/ai/eve/route.ts` — Execution Verification Engine (§11.2)
+   - POST `{ milestoneId, evidenceDescription, evidenceUrls? }` (zod-validated).
+   - Auth: `accounting_firm_rep` / `manager` / `founding_operator` of the milestone's enterprise.
+   - Rate-limited via `limiters.ai(user.id)` → `rateLimitedResponse` on hit.
+   - Builds UNTRUSTED-DATA user context: milestone title/description/amount/status/due/evidenceNote, caller-provided evidenceDescription + evidenceUrls, plus the last 20 expenses from the same enterprise (vendor names, amounts, categories, statuses, AI risk flags) so the model can cross-check vendor consistency and amount reasonableness.
+   - System prompt: the exact EVE instruction from the task spec (verbatim — checks 1–5, output JSON).
+   - `parseEveResult()` defensively extracts the first balanced `{…}` block (handles ```json fences and surrounding prose), clamps confidence to 0–100, normalises findings/redFlags to string arrays, and returns a fail-secure "unverified" verdict on any parse failure.
+   - Inside `db.$transaction`: creates an `AiArtifact` with `kind="eve_verification"` storing the parsed verification + raw model content + latency/tokens, updates `milestone.eveConfidence` from the parsed confidence, then `appendLedgerEvent` with `eventType="eve_verification_completed"`.
+   - Returns `{ ok, verification: { verified, confidence, findings, redFlags }, artifactId, ledgerSequence, milestoneId, enterpriseId }`.
+
+3. `src/app/api/reality-sync/route.ts` — Reality Synchronisation Engine (§11.8)
+   - POST `{ enterpriseId }`.
+   - Auth: `aurienta_rep` / `founding_operator` / `accounting_firm_rep`.
+   - Six checks implemented exactly per the task spec:
+     (1) NOSI compliance — counts employees hired >30 days ago where `nosiStatus != "registered"` (returns count + flag + sample).
+     (2) Ledger integrity — `verifyLedgerChain(enterpriseId)` (returns intact, eventsChecked, brokenAt, flag).
+     (3) Ownership consistency — `sum(OwnershipRecord.equityUnits)` vs `totalEquityUnits × (1 − founderEquityPct/100)`; flag if mismatch >1 unit.
+     (4) Milestone status — counts milestones in `evidence_submitted` waiting >7 days.
+     (5) Expense freeze — counts employees >60 days unregistered (NOSI freeze condition per Amendment IX).
+     (6) Health score drift — compares `enterprise.healthScore` to a vital-signs-derived computed score (runway + revenue growth + gross margin + NOSI compliance, 25 pts each); flag if |drift| >10.
+   - `overallStatus`: `"critical"` if ledger broken OR expense freeze triggered; `"warning"` if any other check flagged; `"healthy"` otherwise.
+   - Inside `db.$transaction`: `appendLedgerEvent` with `eventType="reality_sync_completed"` carrying the overall status + per-check flags + summary.
+   - Returns `{ ok, syncResults: { nosi, ledgerIntegrity, ownership, milestones, expenseFreeze, healthScore }, overallStatus, ledgerSequence, enterpriseId, checkedAt }`.
+
+Cross-cutting:
+- All three routes: `export const runtime = "nodejs"` + `export const dynamic = "force-dynamic"`.
+- All mutations use `db.$transaction` (with `appendLedgerEvent` receiving the `tx` client).
+- All routes return `{ error, code }` envelopes on 4xx/5xx and use the constitutional terminology (`Equity Units`, `Law Firm Client Account`, `Capital Partner`, `Founding Operator`, `Graduation`, `Constitutional Charter`, etc.).
+- zod schemas validate every request body before any DB access.
+- Audit log entries fire on both allow and deny paths (deny audits include the required role in the reason field).
+- Structured logger emits a single line per successful operation with the key fields (enterpriseId, artifactId, ledgerSequence, flags).
+
+Verification:
+- `cd /home/z/my-project && bun run lint` — passes clean (no warnings, no errors).
+- Smoke-tested all three endpoints via curl with proper `Origin` header — each compiled on first request (3.7s / 2.1s / 0.5s compile times) and returned the expected 401 (Not authenticated) for unauthenticated callers, confirming the routes are wired correctly and the auth guard fires before body validation (so unauthenticated callers never learn about validation errors).
+- dev.log shows the new routes compiled and handled POSTs cleanly with no runtime errors.
+- Files verified to exist at:
+  - `/home/z/my-project/src/app/api/graduation/export/route.ts` (14.5 KB)
+  - `/home/z/my-project/src/app/api/ai/eve/route.ts` (15.2 KB)
+  - `/home/z/my-project/src/app/api/reality-sync/route.ts` (15.9 KB)
+
+Notes for downstream agents:
+- The graduation export's `stableStringify()` is the canonical deterministic JSON serialiser for the package — if you ever need to hash an enterprise payload elsewhere, lift this helper into `src/lib/aurienta/format.ts` or a new `src/lib/aurienta/hashing.ts` and import from both call sites.
+- The EVE route writes back `milestone.eveConfidence` from the parsed AI confidence (0–100 → 0–1). The accountant-release endpoint at `src/app/api/milestones/[id]/accountant-release/route.ts` already reads `eveConfidence`; if you wire a "reject if EVE confidence < threshold" guard there, the value will now reflect the most recent EVE pass.
+- The reality-sync health-score computation (`computeVitalSignsHealthScore`) is local to the route for now. If the dashboard's Vital Signs card or the institutional-readiness page wants to show the same computed number, extract it into `src/lib/aurienta/cre.ts` next to `computeGraduationReadiness()`.
+- The EVE JSON parser (`parseEveResult`) is deliberately fail-secure: any unparseable AI response becomes `{ verified: false, confidence: 0, redFlags: ["ai_response_unparseable"] }`. The CRE remains the final authority on milestone release regardless of EVE's verdict — never wire EVE's `verified: true` to auto-release a milestone.
+- All three ledger event types (`graduation_export_generated`, `eve_verification_completed`, `reality_sync_completed`) are now first-class entries in the chain. The public CRE decision log at `/api/public/enterprise/[slug]/cre-decisions` should be updated to surface these types if you want them visible on the public trust page.
+
+---
+Task ID: Vault-Solvency-APIs
+Agent: Implementation Agent — Anti-Fragility Insurance Vault + Proof-of-Solvency APIs (Blueprint §5.4 / §5.5)
+
+Task: Implement the two remaining Tier-1 capital-safety blueprint features as API-only routes — (1) the Anti-Fragility Insurance Vault (contributions, loan requests, approve/reject/repay lifecycle) and (2) the Proof-of-Solvency assertion flow with 3-level health flags and emergency-freeze triggering. No UI, no tests.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 30 lines) for project context (Task 0 brand identity + Task 1-A blueprint extraction).
+- Reviewed src/lib/aurienta/auth.ts (getCurrentUser signature), src/lib/aurienta/cre.ts (appendLedgerEvent + enforceEmergencyFreeze signatures), src/lib/aurienta/audit.ts, src/lib/aurienta/validation.ts (parseBody + zod schema pattern), src/lib/db.ts (PrismaTransaction type), and the existing route handlers in src/app/api/proposals/route.ts, src/app/api/proposals/[id]/vote/route.ts, src/app/api/admin/enterprises/[id]/freeze/route.ts, src/app/api/expenses/[id]/approve/route.ts for the canonical transactional + RBAC + ledger-event patterns.
+- Verified the three target Prisma models exist in prisma/schema.prisma: InsuranceVault (lines 1126–1137, unique on enterpriseId), VaultLoan (lines 1146–1161), SolvencyAssertion (lines 1170–1184). Confirmed enterprise.lawFirmClientAccountBalanceEgp is the internal balance source (line 161) and enterprise.raisedEgp is the Capital Participated figure used for the 20% loan cap (line 149). EnterpriseMember.role enum (line 246) includes founding_operator, company_owner, board_member, law_firm_rep, accounting_firm_rep, aurienta_rep — all referenced by my new routes.
+
+Files created (4 route files, 0 UI, 0 tests):
+
+1. src/app/api/vault/route.ts — Anti-Fragility Insurance Vault balance + contribution.
+   - GET /api/vault?enterpriseId=xxx → returns the InsuranceVault record (or a zero-balance placeholder when the enterprise has not yet contributed, so callers never null-check). Auth required via getCurrentUser.
+   - POST /api/vault { enterpriseId, amountEgp } → contributes 0.5% of the closed Capital Formation amount. Called internally by the Capital Formation close flow. Uses db.insuranceVault.upsert with atomic increment of totalContributedEgp + currentBalanceEgp inside ONE db.$transaction, alongside a vault_contribution ledger event. Auth required. Returns 201 with the updated vault + the computed contribution amount + the 0.5% pct.
+
+2. src/app/api/vault/loan/route.ts — Vault loan petition.
+   - POST /api/vault/loan { enterpriseId, amountEgp, reason, boardVotePct } → creates a VaultLoan with status="pending" for AURIENTA review.
+   - Zod schema: reason enum (pandemic, currency_devaluation, war, natural_disaster), amountEgp 1–50B EGP, boardVotePct 0–100.
+   - RBAC: only founding_operator / company_owner / board_member of the enterprise may file (403 with audit-denied otherwise).
+   - CRE guards: (a) boardVotePct must be ≥ 50 (simple majority — vault_loan_board_majority.rego); (b) amountEgp must be ≤ 20% of enterprise.raisedEgp (Blueprint §5.4.3 cap — vault_loan_cap.rego); (c) the enterprise's InsuranceVault.currentBalanceEgp must be ≥ amountEgp (vault_loan_solvency.rego). Each denial writes an audit-denied entry with the policy + decision metadata.
+   - On success: persists the loan + appends a vault_loan_requested ledger event inside ONE db.$transaction; writes an audit-allowed entry; returns 201.
+
+3. src/app/api/vault/loan/[id]/route.ts — Vault loan lifecycle.
+   - GET /api/vault/loan/[id] → single VaultLoan record (with enterprise {id,name,slug}). Auth required.
+   - PATCH /api/vault/loan/[id] { action: "approve" | "reject" | "repay", amountEgp?, note? } → state-transition handler.
+     * approve (aurienta_rep only): refuses if loan.status !== "pending"; re-checks the vault still holds enough to disburse (defends against a concurrent drain); sets status="approved", approvedAt=now, repaymentDueAt=now+24months (Blueprint §5.4.3); atomically decrements InsuranceVault.currentBalanceEgp by amountEgp and increments totalLoanedEgp by amountEgp inside ONE db.$transaction; appends a vault_loan_approved ledger event.
+     * reject (aurienta_rep only): sets status="rejected" (a constitutional close-out state for pending petitions; the Prisma field is a String so the new value is accepted); appends vault_loan_rejected ledger event.
+     * repay (aurienta_rep / accounting_firm_rep / founding_operator / company_owner / board_member): requires positive amountEgp; refuses overpayment beyond (amountEgp − repaidEgp) with a precise 0.001 EGP epsilon for float drift; atomically increments VaultLoan.repaidEgp + InsuranceVault.currentBalanceEgp + InsuranceVault.totalRepaidEgp by the repayment amount, and — when repaidEgp crosses the original amountEgp — transitions the loan to status="repaid". Appends either a vault_loan_repaid or vault_loan_partial_repayment ledger event depending on whether the loan is fully settled.
+   - All three actions write audit-allowed entries; denials (role / state) write audit-denied entries.
+
+4. src/app/api/solvency/route.ts — Proof-of-Solvency.
+   - GET /api/solvency?enterpriseId=xxx → returns the most recent SolvencyAssertion + the current healthLevel (0 if none exists yet) + the enterprise's internal ledger balance for context. Auth required.
+   - POST /api/solvency { enterpriseId, lawFirmBalanceEgp } → files a new signed balance assertion.
+     * RBAC: only law_firm_rep or aurienta_rep of the enterprise may file (403 with audit-denied otherwise).
+     * Computes varianceEgp = lawFirmBalanceEgp − enterprise.lawFirmClientAccountBalanceEgp, variancePct = abs(varianceEgp) / max(internalBalanceEgp, 1) * 100, and healthLevel per the task spec:
+         variancePct > 10 → healthLevel = 3 (freeze)
+         variancePct > 2  → healthLevel = 2 (warning — all partners)
+         variancePct > 0.1 → healthLevel = 1 (pending reconcile — internal only)
+         else              → healthLevel = 0 (ok)
+       (Note: the model comment in prisma/schema.prisma says "1=ok, 2=warning, 3=freeze"; the task spec's calculation rules — which are authoritative — define 0=ok with 1=pending-reconcile. I implemented the task spec's 0–3 scale; the model field is Int so all four values are accepted. Downstream readers should treat 0 as the "no flag" baseline.)
+     * assertionHash = SHA-256 of a canonical pipe-delimited payload (enterpriseId | lawFirm | internal | variance | variancePct | health | t | actor).
+     * Inside ONE db.$transaction: creates the SolvencyAssertion, and — when healthLevel === 3 — invokes enforceEmergencyFreeze(enterprise) to obtain the CRE verdict + decision token, then mutates enterprise.status="frozen" + frozenAt=now (idempotent — skips if already frozen). Appends a solvency_assertion_freeze / solvency_assertion_warning / solvency_assertion_recorded ledger event whose payload carries the assertionHash, balances, variance, healthLevel, the freeze verdict, and the priorStatus.
+     * Returns 201 with the assertion, the computed healthLevel, an emergencyFreeze boolean, and the freeze verdict (policy + decisionToken + reason) when applicable.
+
+Constitutional terminology used throughout (per src/lib/aurienta/terminology.ts): Capital Formation (not "fundraising"), Capital Participated (not "raised" — though the Prisma field name raisedEgp is used in code), Equity Units, Enterprise, Founding Operator, Company Owner, Board Member, Law Firm Client Account (not "escrow"), AURIENTA Representative, Constitutional Runtime Engine, anti-fragility, constitutional charter, hash-chained ledger.
+
+Technical requirements verified:
+- All 4 files export `runtime = "nodejs"` and `dynamic = "force-dynamic"`.
+- All endpoints require auth via getCurrentUser (returns 401 {error, code:"unauthenticated"} on missing session).
+- All mutations (POST contribute, POST loan-request, PATCH approve / reject / repay, POST solvency-assert) run inside db.$transaction with appendLedgerEvent(tx, ...) so the ledger event and the data mutation are atomic.
+- All route bodies validated with zod schemas via parseBody(req, schema) from @/lib/aurienta/validation.
+- All RBAC denials and approvals write audit entries via audit() from @/lib/aurienta/audit.
+- Imports: getCurrentUser from "@/lib/aurienta/auth", db from "@/lib/db", appendLedgerEvent + enforceEmergencyFreeze from "@/lib/aurienta/cre", audit from "@/lib/aurienta/audit", z from "zod" — all per the task spec.
+- No "use server" (route handlers don't need it); no "use client"; no UI; no test code.
+
+Validation:
+- `cd /home/z/my-project && bun run lint` → exit 0, 0 errors, 0 warnings (eslint .).
+- Files verified to exist:
+    src/app/api/vault/route.ts                  (5331 bytes)
+    src/app/api/vault/loan/route.ts             (6499 bytes)
+    src/app/api/vault/loan/[id]/route.ts        (11436 bytes)
+    src/app/api/solvency/route.ts               (9419 bytes)
+- Live compile check: `curl http://localhost:3000/api/vault?enterpriseId=test` → 401 (route compiled in 457ms, no errors); `curl http://localhost:3000/api/solvency?enterpriseId=test` → 401 (compiled in 349ms, no errors). The POST/PATCH routes were intercepted by the CSRF middleware (403 csrf_validation_failed) before reaching the handler — confirming they compiled and registered correctly with the Next.js router. dev.log shows zero errors related to the vault or solvency routes.
+
+Notes for downstream agents:
+- The vault POST endpoint is designed to be called server-to-server by the Capital Formation close flow (it has no CSRF exemption — callers from the browser must include the X-CSRF-Token header like any other POST). When you wire the close flow, call this endpoint with a server-side fetch that includes the session cookie + an X-CSRF-Token header, OR refactor the contribution logic into a shared lib helper. The atomic upsert + ledger-event block is self-contained and easy to extract.
+- The "rejected" status on VaultLoan is not in the original Prisma comment ("pending, approved, repaid, forgiven") but is a valid String value. If you later add a "forgiven" path (Blueprint §5.4.3 mentions non-recourse forgiveness on enterprise failure), you can PATCH the loan to status="forgiven" with a similar aurienta_rep-only action and adjust the vault tallies as needed. The current implementation does not auto-forgive; that should be a deliberate constitutional action.
+- The Proof-of-Solvency health-level scale (0=ok, 1=pending, 2=warning, 3=freeze) follows the task spec, not the schema comment. When you build the partner-facing Escrow Health Flag UI (Blueprint §5.5), filter on healthLevel >= 2 for the "all partners" notification and healthLevel === 3 for the "all + regulator" notification. The internal-only pending-reconcile flag (level 1) is intended for the law firm + AURIENTA Rep dashboards only.
+- The Level-3 emergency freeze is atomic with the assertion insert (same db.$transaction), but the regulator notification (Blueprint §5.5 — "all + regulator") is NOT yet wired. When the regulator-notification service is built, hook it off the audit log entry with action="solvency.assert" and metadata.healthLevel===3 + metadata.emergencyFreeze===true.
+- The 24-month repayment clock starts at approval (repaymentDueAt = approvedAt + 24*30d). The Blueprint mentions 10% of each milestone release going to repayment — that automation should call PATCH /api/vault/loan/[id] with action="repay" + amountEgp=10%-of-release from the milestone-release flow. The repayment endpoint is idempotent-ish: it refuses overpayment, so multiple 10% releases will accumulate correctly until repaidEgp crosses amountEgp.
