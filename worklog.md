@@ -10578,3 +10578,253 @@ Stage Summary:
 - Surgical edits only: the PATCH handler in the enterprise profile route was NOT modified (P1-1 fix preserved); the POST handlers in /api/employees and /api/expenses were NOT modified; no UI components created.
 - Constitutional terminology preserved throughout: Capital Partner, Founding Operator, Workforce Partner, Constitutional Council (board_member), Enterprise, Constitutional Partner.
 - Lint: 0 errors. TypeScript: 0 errors in touched files. Files: 1 new (transparency.ts) + 3 modified (profile GET + employees GET new + expenses GET new). Ready for downstream consumption by future dashboard/enterprise-admin/financial-transparency agents.
+
+---
+Task ID: AUDIT-UI
+Agent: Explore Agent (UI Quality & Tab-Mapping Audit)
+Task: Read-only audit of 20 key dashboard pages — verify page title/metadata, shadcn/ui component usage, loading states, error handling, responsive design, sticky footer, framer-motion animations, and real-vs-placeholder content.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (first 50 lines) to load platform context (AURIENTA = constitutional enterprise infrastructure, gold #D4AF37 brand, CRE-enforced, tiers A–F).
+- Listed all 93 dashboard routes via LS on /home/z/my-project/src/app/dashboard.
+- Read all 20 target page.tsx files (4 batches of 4 + extra). Three files exceeded 30KB and were persisted to tool-results for review (operating-system, commercialization, strategic-partners) — confirmed headers/metadata via preview reads.
+- Confirmed global infrastructure that all 20 pages inherit:
+  • /home/z/my-project/src/app/dashboard/loading.tsx — gold AurientaMark spinner + 3 skeleton glass-gold cards ("Consulting the constitutional ledger…").
+  • /home/z/my-project/src/app/error.tsx — route-level error boundary with gold "CRE halted this request" UI, digest logging, Try-again + Back-to-dashboard buttons.
+  • /home/z/my-project/src/app/dashboard/layout.tsx — auth gate (redirects to /signin if no user).
+- Grep'd for `from "framer-motion"` → 0 matches in /src/app/dashboard. Animation is entirely CSS (transitions, hover:scale, animate-spin-slow).
+- Grep'd for `<footer` in /src/app/dashboard → only 9 dashboard pages have an explicit footer tag (5 of the 20 audit targets: dashboard, portfolio, opportunities, graduation, compliance, escrow — escrow uses <div> not <footer>).
+- Grep'd for `try {` and `Skeleton|isLoading` and `ErrorBoundary` → only defensive JSON.parse try/catch blocks (portfolio, brain-ai); no per-page loading.tsx or error.tsx files anywhere under /src/app (only the root + dashboard-level ones).
+
+Stage Summary:
+
+### Audit Table — 20 Key Dashboard Pages
+
+| # | Page | Title | shadcn/ui | Loading | Error | Responsive | Footer | Animation | Real Content | Score (0-8) |
+|---|------|-------|-----------|---------|-------|------------|--------|-----------|--------------|-------------|
+| 1 | `/dashboard` (Overview) | ✅ "Overview · AURIENTA" | ✅ Card, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ✅ `<footer>` | ❌ | ✅ real user/portfolio | 7/8 |
+| 2 | `/dashboard/portfolio` | ✅ "Constitutional Holdings · AURIENTA" | ❌ custom divs | ✅ inherited | ✅ + JSON.parse try/catch | ✅ sm:/lg: | ✅ `<footer>` | ❌ | ✅ real DB | 6/8 |
+| 3 | `/dashboard/opportunities` | ✅ "Capital Participation · AURIENTA" | ❌ delegates to OpportunitiesGrid | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ✅ `<footer>` | ❌ | ✅ real DB | 6/8 |
+| 4 | `/dashboard/founder` | ❌ NO metadata | ❌ thin wrapper to FounderStudioClient | ✅ inherited | ⚠️ `if(!user) return null` | ❌ in client comp | ❌ | ❌ | ✅ real DB | 4/8 |
+| 5 | `/dashboard/enterprise-profile` | ✅ "Enterprise Profile · AURIENTA" | ✅ Card, Badge (picker view) | ✅ inherited | ✅ + redirect on missing | ✅ sm:/lg: (picker) | ❌ | ❌ | ✅ real DB (40+ fields) | 6/8 |
+| 6 | `/dashboard/governance` | ✅ "Governance · AURIENTA" + description | ❌ delegates to GovernanceBoard | ✅ inherited | ✅ inherited | ✅ lg:/xl: (lg:sticky) | ❌ | ❌ | ✅ real DB | 5/8 |
+| 7 | `/dashboard/manager` | ✅ "Manager Console · AURIENTA" | ✅ Badge, Progress | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ✅ real DB | 6/8 |
+| 8 | `/dashboard/workforce` | ✅ "Workforce Registry · AURIENTA" + description | ❌ delegates to WorkforceRegistryClient | ✅ inherited | ✅ + empty state | ✅ sm:gap-8 | ❌ | ❌ | ✅ real DB | 5/8 |
+| 9 | `/dashboard/graduation` | ✅ "Graduation · AURIENTA" | ❌ Toaster + institutional components | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ✅ footer-style `<p>` | ❌ | ✅ real DB | 6/8 |
+| 10 | `/dashboard/brain-ai` | ✅ "Brain AI · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ + 2× try/catch | ✅ sm:/lg: | ❌ | ❌ | ✅ real DB + 5-provider registry | 6/8 |
+| 11 | `/dashboard/compliance` | ✅ "Compliance · AURIENTA" | ❌ delegates to ComplianceMatrix etc. | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ✅ footer-style `<p>` | ❌ | ✅ real DB (audit logs) | 6/8 |
+| 12 | `/dashboard/escrow` | ✅ "Law Firm Client Account Console · AURIENTA" + description | ❌ custom divs throughout | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ✅ footer-style `<div>` | ❌ | ✅ real DB + health-flag logic | 6/8 |
+| 13 | `/dashboard/execution-war-room` | ✅ "Execution War Room · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated frozen constants | 6/8 |
+| 14 | `/dashboard/constitutional-audit` | ✅ "Constitutional Audit · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated audit data | 6/8 |
+| 15 | `/dashboard/first-research` | ✅ "First 25 Research · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated research | 6/8 |
+| 16 | `/dashboard/operating-system` | ✅ "AURIENTA Operating System · AOS v1.0" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated AOS data | 6/8 |
+| 17 | `/dashboard/commercialization` | ✅ "Commercialization System · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated ACS data | 6/8 |
+| 18 | `/dashboard/institutional-trust` | ✅ "Institutional Trust · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated ITDB data | 6/8 |
+| 19 | `/dashboard/strategic-partners` | ✅ "Strategic Partners · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated SPRRE data | 6/8 |
+| 20 | `/dashboard/founder-office` | ✅ "Founder Office · AURIENTA" | ✅ Card, CardContent, CardHeader, CardTitle, Badge | ✅ inherited | ✅ inherited | ✅ sm:/lg: | ❌ | ❌ | ⚠️ curated FOCC data | 6/8 |
+
+### Aggregate Score
+- **Sum of scores**: 7 + 6 + 6 + 4 + 6 + 5 + 6 + 5 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 = **117 / 160**
+- **Average score per page**: 5.85 / 8
+- **Overall UI quality score**: **73.1 %**
+
+### Per-Criterion Pass Rate
+| Criterion | Pass / 20 | % |
+|-----------|-----------|---|
+| Page title / metadata | 19 | 95 % |
+| shadcn/ui components | 11 | 55 % |
+| Loading states (inherited from /dashboard/loading.tsx) | 20 | 100 % |
+| Error handling (inherited from /app/error.tsx) | 20 | 100 % |
+| Responsive breakpoints | 19 | 95 % |
+| Sticky / explicit footer | 7 | 35 % |
+| Framer Motion animations | 0 | 0 % |
+| Real content (DB-driven or curated) | 20 | 100 % |
+
+### Highest-Quality Pages
+1. **`/dashboard` (Overview)** — 7/8. The only page that hits every criterion except animation. Imports shadcn Card/CardContent/CardHeader/Badge, has explicit `<footer>` with constitutional hash + Zero-Custody/CRE-enforced/Sovereign trust strip, real user-derived portfolio/notifications/memberships, and `sm:`/`lg:` grid breakpoints. Already includes REMED-1D comment documenting the CTO audit fix.
+2. **`/dashboard/manager`** and **`/dashboard/brain-ai`** — both 6/8. Only flaws are missing footer and missing framer-motion. Brain-AI uses Card/CardContent/CardHeader/CardTitle/Badge + lucide icons + has local JSON.parse try/catch; Manager uses Badge + Progress + tables + dual-grid layout.
+
+### Pages Needing Improvement (with specific issues)
+1. **`/dashboard/founder` — 4/8 (lowest).** Server page is a 137-line thin wrapper:
+   - ❌ No `export const metadata` (page title falls back to default).
+   - ❌ No shadcn/ui imports (entire UI delegated to FounderStudioClient).
+   - ⚠️ `if (!user) return null;` swallows auth failure silently instead of redirecting (every other page does `redirect("/signin?next=…")`).
+   - ❌ No footer, no responsive classes, no animation in page.tsx (all in client component — outside this audit's scope).
+   - **Fix**: add `export const metadata = { title: "Founding Operator Studio · AURIENTA" }`, change `return null` to `redirect("/signin?next=/dashboard/founder")`, optionally add a `<footer>` in page.tsx so it works without JS.
+2. **`/dashboard/governance` — 5/8.** No shadcn/ui (delegates to GovernanceBoard + ConstitutionalCouncil), no `<footer>`, no animation. Has a strong `lg:sticky lg:top-20` for the council sidebar — but the main board area is entirely in the client component.
+3. **`/dashboard/workforce` — 5/8.** Same delegation pattern as governance — entire UI in WorkforceRegistryClient. Page.tsx is only 109 lines with no shadcn imports and no footer. Has proper metadata + description and an honest empty-state for users with no memberships.
+4. **All 8 "frozen-document" pages** (execution-war-room, constitutional-audit, first-research, operating-system, commercialization, institutional-trust, strategic-partners, founder-office) — all 6/8:
+   - Content is **curated constants** from `lib/aurienta/*` (frozen at a specific version + date) rather than DB-driven. This is appropriate for static architectural documents but means the page cannot reflect runtime state.
+   - All missing **`<footer>`** — long pages end abruptly with a "Synchronization" Card. Recommend a standard constitutional footer (`mt-2 border-t border-gold/8 pt-4`) with the version hash, like `/dashboard` and `/dashboard/portfolio` use.
+   - All missing **Framer Motion** — entrance animations on the executive-certification Card (the top "verdict" panel) would significantly improve perceived quality on these document-style pages.
+5. **`/dashboard/escrow` — 6/8 but with a real bug** (lines 111-115): the health-flag badge is wrapped in a `<span>` whose `className` contains the literal template string `${flag.cls}` (un-interpolated — `className="... ${flag.cls}"` is rendered as plain text). The actual visible badge is a nested `<span>` with the correctly interpolated class. The outer span is dead markup and should be removed.
+6. **Framer Motion is universally absent (0/20).** The whole dashboard relies on Tailwind transitions (`hover:scale-[1.02]`, `transition-colors`, `animate-spin-slow`) plus the CSS keyframe spinner in `/dashboard/loading.tsx`. Recommend installing `framer-motion` and animating (a) page-enter fades on the main `<section>` of each dashboard, (b) the hero "Executive Certification" Card on the 8 frozen-document pages, (c) the staged count-up on KPI numbers in `/dashboard` and `/dashboard/manager`.
+7. **Footer inconsistency (7/20 = 35 %).** Only `/dashboard`, `/dashboard/portfolio`, `/dashboard/opportunities`, `/dashboard/graduation`, `/dashboard/compliance`, and `/dashboard/escrow` have any footer-like element. The other 14 pages end mid-content. Recommend a shared `<ConstitutionalFooter hash={…} />` component imported into every page.
+8. **No per-route `loading.tsx` or `error.tsx` files.** All pages inherit `/dashboard/loading.tsx` (gold skeleton) and `/app/error.tsx` (gold "CRE halted" boundary). This works but means every dashboard page shows the same generic skeleton — no page-specific skeleton that matches the destination layout. Recommend per-route `loading.tsx` for at least the 4 most-visited pages (`/dashboard`, `/dashboard/portfolio`, `/dashboard/opportunities`, `/dashboard/governance`).
+
+### Conclusion
+The 20 dashboards are uniformly well-branded (gold #D4AF37 / glass-gold / font-serif), real-content-rich (0 placeholder text, 0 "Lorem", 0 "TODO"), and architecturally consistent (auth gate in layout, force-dynamic, lucide-react icons, shadcn/ui where used). The systemic gaps are (1) no Framer Motion anywhere, (2) only 35 % of pages have a footer, and (3) the founder page is a thin wrapper missing metadata + proper redirect. Overall UI quality score: **73.1 %**. No files were modified — this was a READ-ONLY audit.
+
+
+---
+Task ID: AUDIT-WIRING
+Agent: Explore (wiring/mapping audit)
+Task: Comprehensive wiring/mapping audit of the AURIENTA platform — verify the complete chain UI Page → API Route → Prisma Model → CRE Function → Ledger Event across 15 feature areas.
+
+Work Log:
+- Read worklog preamble (Task 0 brand-identity + Task 1-A blueprint research) to load context.
+- Read prisma/schema.prisma (1045 lines, 38 models including Enterprise, LedgerEvent, AuditLog, Proposal, Vote, Milestone, Expense, Employee, Reservation, Syndicate, WhistleblowerReport, AppealCase, SkillEquityClaim, AiArtifact, CreDecision, etc.).
+- Read src/lib/aurienta/cre.ts (1040 lines) — confirmed export list: enforceZeroCustody, enforceExpenseAuthority, computeDynamicMinimum, enforcePriceBand, checkQuorum, enforcePoliceClearance, enforceKycGate, enforceFamilyConsent, enforceConsultingOptOut, enforceLawFirmReplacement, enforceEmergencyFreeze, enforceNotFrozen, enforceFundFlow, enforceAccountantGate, enforceDividendLock, enforceFounderEquityCap, enforceTierMigration, appendLedgerEvent (immutable SHA3-256 hash chain + Ed25519-signed decision token), verifyLedgerChain, computeGraduationReadiness, enforceNosiRegistration, enforceNosiExpenseFreeze, enforceSalaryToEquity, enforceEquityLockUp, enforceSalaryConstitutionality.
+- Audited each feature area by reading the dashboard page, API route, and verifying client-side fetch() calls via Grep.
+- Confirmed which enforce* functions are actually called by API routes vs. defined-but-unused.
+- Generated the audit table and summary below.
+
+Stage Summary:
+
+# AURIENTA Wiring Audit Report — 15 Feature Areas
+
+## Per-Feature Chain Matrix
+
+| # | Feature | UI Page | API Route | DB Model | CRE Function | Ledger | Score | Gaps |
+|---|---------|---------|-----------|----------|--------------|--------|-------|------|
+| 1 | Enterprise Creation | `/dashboard/founder` (server comp lists; `new-enterprise-wizard.tsx` POSTs) | `POST /api/enterprises` ✓ | `Enterprise`, `EnterpriseMember`, `OwnershipRecord` ✓ | none (only tier-cap constant) ✗ | `appendLedgerEvent("share_issued")` ✓ | **4/6** | No `enforceFounderEquityCap`, no `enforceTierMigration`, no `enforceZeroCustody` at creation |
+| 2 | Enterprise Profile | `/dashboard/enterprise-profile` (server comp + `enterprise-profile-client.tsx` PATCHes) | `PATCH /api/enterprises/[id]/profile` ✓ | `Enterprise` ✓ | none ✗ | `appendLedgerEvent("profile_updated")` ✓ | **4/6** | No CRE gate on profile updates (founder-equity / submission-status transitions not enforced) |
+| 3 | Feasibility Evaluation | `/dashboard/founder` step `step-feasibility.tsx` POSTs | `POST /api/ai/feasibility` ✓ | `AiArtifact` ✓ | none — only rule-based tier-cap + dynamic-min checks inline ✗ | `appendLedgerEvent("cre_decision")` ✓ | **4/6** | No `enforce*` called; feasibility decision is not bound to a CRE policy token |
+| 4 | Capital Participation (Reservations) | `/dashboard/opportunities` (server comp) + `reserve-shares-dialog.tsx` POSTs | `POST /api/reservations` ✓ | `Reservation`, `Enterprise.raisedEgp` ✓ | `enforceKycGate`, `enforceNotFrozen`, `enforceFamilyConsent`, `computeDynamicMinimum` ✓ — but `enforceFundFlow` and `enforcePriceBand` NOT called here | `appendLedgerEvent("funds_received")` ✓ | **5/6** | `enforceFundFlow` exists but is only invoked in `/api/milestones/[id]/accountant-release`; `enforcePriceBand` not wired for reservations |
+| 5 | Syndicates | `/dashboard/syndicates` (server comp) + `form-syndicate-dialog.tsx` / `join-syndicate-dialog.tsx` POST | `POST /api/syndicates` + `/api/syndicates/[id]/join` ✓ | `Syndicate`, `SyndicateMember` ✓ | none ✗ | `appendLedgerEvent("cre_decision")` ✓ (form); join route not inspected but expected to mirror | **4/6** | No CRE enforcement on syndicate formation (no `enforceKycGate`, no `enforceFamilyConsent`, no `enforceNotFrozen`) despite being a capital-flow path |
+| 6 | Milestones | `/dashboard/milestone-designer` (server comp); `milestone-designer-page.tsx` → `/api/ai/milestone-designer` (AI suggest only); `milestone-evidence-dialog.tsx` → `POST /api/enterprises/[id]/milestones` | Two routes; `/api/ai/milestone-designer` (AI, no ledger) + `/api/enterprises/[id]/milestones` ✓ | `Milestone` ✓ | none on evidence-submission; `enforceFundFlow` + `enforceAccountantGate` on the separate `/api/milestones/[id]/accountant-release` route ✓ | `appendLedgerEvent("milestone_released")` ✓ (on submit) + `("milestone_released")` (on accountant release) | **5/6** | Evidence-submission route skips `enforceNotFrozen` + `enforceAccountantGate`; both are only on the accountant-release path |
+| 7 | Expenses | `/dashboard/manager` (server comp) + `submit-expense-dialog.tsx` POSTs | `POST /api/expenses` + `/api/expenses/[id]/approve` ✓ | `Expense` ✓ | `enforceNotFrozen` + `enforceExpenseAuthority` (correct dual-sig / board logic) ✓ — but `enforceNosiExpenseFreeze` is defined and NEVER called ✗ | `appendLedgerEvent("expense_submitted"/"expense_approved")` ✓ | **5/6** | `enforceNosiExpenseFreeze` (60-day freeze on non-compliant NOSI) defined in cre.ts but not wired to any route |
+| 8 | Employees / Workforce | `/dashboard/workforce` (server comp reads only); `/dashboard/manager` shows inline registry — neither calls `/api/employees` | `POST /api/employees` exists ✓ (mode-1: equity conversion; mode-2: enroll) | `Employee` ✓ | none ✗ — `enforceNosiRegistration` defined and NEVER called | `appendLedgerEvent("cre_decision")` ✓ (both modes) | **4/6** | UI page never invokes `/api/employees` (workforce-registry-client.tsx has zero fetch calls); NOSI registration enforcement defined-but-unwired |
+| 9 | Salary Engine | **NO dashboard page exists**; no client component calls `/api/ai/salary` | `POST /api/ai/salary` + `POST /api/ai/salary/override` ✓ | no dedicated model — uses `AiArtifact` (calc) + `LedgerEvent` (override) + `AuditLog` only ✗ | `enforceSalaryConstitutionality` defined and NEVER called ✗; override route enforces ≥75 % board vote inline ✓ | `appendLedgerEvent("salary_override")` on override only (basic calc writes NO ledger event) ✗ | **3/6** | No UI page; no salary decision model; `enforceSalaryConstitutionality` unwired; basic calc skips ledger (only audit); `processSalaryOverride` is the only path that writes the ledger |
+| 10 | Governance / Proposals | `/dashboard/governance` (server comp) + `new-proposal-dialog.tsx` + `voting-modal.tsx` POST | `POST /api/proposals` + `POST /api/proposals/[id]/vote` ✓ | `Proposal`, `Vote` ✓ | `enforceConsultingOptOut` (on create, type=consulting_optout), `checkQuorum` (on vote), RBAC for board-only types ✓ | `appendLedgerEvent("proposal_created" / "vote_cast" / "proposal_executed")` ✓ | **6/6** | Complete chain — RBAC, CRE, atomic vote tally, ledger, audit all wired |
+| 11 | Graduation | `/dashboard/graduation` (server comp) calls `computeGraduationReadiness` directly + `call-vote-button.tsx` POSTs `/api/proposals` (type=graduation) | **No `/api/graduation` route** — relies on `/api/proposals` + `computeGraduationReadiness` lib fn ✗ | `Enterprise`, `Proposal`, `QuarterlyReport`, `WhistleblowerReport`, `AppealCase` ✓ | `computeGraduationReadiness` (gate evaluation, no enforce) ✓ | `appendLedgerEvent("proposal_executed")` fires via the vote route when threshold passes ✓ | **5/6** | No dedicated graduation API; readiness is computed server-side without a CRE policy token; graduation event uses generic `proposal_executed` type rather than a distinct `graduation_executed` |
+| 12 | Whistleblower | `/dashboard/whistleblower` (server comp) + `whistleblower-client.tsx` POSTs | `POST /api/whistleblower` ✓ | `WhistleblowerReport` ✓ | none ✗ — no `enforce*` (bond lock is inline mock; no CRE policy token) | `appendLedgerEvent("whistleblower_filed")` ✓ (only when enterpriseId provided) | **5/6** | No CRE policy token; bond lock is a mocked constant (5000 EGP) not enforced through CRE; reports with no enterpriseId skip ledger entirely |
+| 13 | Appeals | `/dashboard/appeals` (server comp) + `appeals-client.tsx` POSTs | `POST /api/appeals` ✓ | `AppealCase` ✓ | none ✗ — no `enforce*` (fee + stage transition are inline) | `appendLedgerEvent("appeal_filed")` ✓ (only when enterpriseId provided) | **5/6** | No CRE policy token; appeals without enterpriseId skip ledger; stage-2 (human panel) and stage-3 (arbitration) escalation paths not visible in this route |
+| 14 | Skill-to-Equity | `/dashboard/skill-equity` (server comp) + `skill-equity-client.tsx` POSTs | `POST /api/skill-equity` + `POST /api/skill-equity/[id]/review` ✓ | `SkillEquityClaim` ✓ | `enforceSalaryToEquity` defined and NEVER called ✗; tenure rule (≥24 mo) enforced inline ✓; 2 % discretionary pool cap inline ✓ | `appendLedgerEvent("cre_decision")` ✓ (both submit + review) | **5/6** | `enforceSalaryToEquity` policy defined but unwired; review route calls `appendLedgerEvent(db, …)` with the non-tx client (potential chain-fork risk under concurrency) |
+| 15 | Public Transparency | `/enterprise/[slug]` (server comp reads db) + `transparency-score-badge.tsx` fetches `/api/public/enterprise/[slug]/transparency` + `live-ticker.tsx` fetches `/api/ledger/ticker` | `GET /api/public/enterprise/[slug]`, `/transparency`, `/trades`, `/cre-decisions`, `/api/public/stats`, `/api/public/registry` ✓ | `Enterprise` (read-only) ✓ | N/A (read-only) ✓ | reads `LedgerEvent` (no appends on public side) ✓ | **6/6** | Complete — server page reads via SSR, client components fetch live data, public CORS-enabled JSON API for external embedding, all PDPL-compliant |
+
+## Overall Wiring Completeness
+
+| Tier | Features | Score |
+|------|----------|-------|
+| Complete (6/6) | Governance, Public Transparency | 2 |
+| Strong (5/6) | Reservations, Milestones, Expenses, Graduation, Whistleblower, Appeals, Skill-to-Equity | 7 |
+| Partial (4/6) | Enterprise Creation, Enterprise Profile, Feasibility, Syndicates, Employees | 5 |
+| Weak (3/6) | Salary Engine | 1 |
+
+**Aggregate score: 70 / 90 = 77.8 % wiring completeness.**
+
+## Critical Gaps (defined-but-unwired CRE functions)
+
+The following `enforce*` / `check*` functions exist in `src/lib/aurienta/cre.ts` but are **NOT invoked by any API route** — they are only mentioned in comments inside `ai.ts`, `constitutional-audit.ts`, and the steward page:
+
+1. **`enforceFounderEquityCap`** — defined to enforce the founder's equity cap at enterprise creation; bypassed.
+2. **`enforceTierMigration`** — defined to gate tier-up / tier-down transitions; bypassed.
+3. **`enforcePriceBand`** — defined to enforce the ±5 % CRE price band on equity unit pricing; bypassed for reservations.
+4. **`enforceNosiRegistration`** — defined to enforce NOSI registration at employee enrollment; bypassed.
+5. **`enforceNosiExpenseFreeze`** — defined to freeze expenses after 60 days of NOSI non-compliance; bypassed.
+6. **`enforceSalaryConstitutionality`** — defined to constitutionally-validate the calculated salary; bypassed.
+7. **`enforceSalaryToEquity`** — defined to gate the salary-to-equity conversion (10 % cap, 15 % discount, 12-month lockup); bypassed.
+8. **`enforceDividendLock`** — defined for dividend distribution; not visible in audited routes.
+9. **`enforceEquityLockUp`** — defined for the 12-month equity lockup; bypassed.
+10. **`enforcePoliceClearance`** — defined for manager appointment; comment in `/api/proposals` says it should fire at execution, but the executor hook is not present in the audited routes.
+
+## Other Notable Findings
+
+- **Salary Engine is a stub**: although `calculateConstitutionalSalary` and `processSalaryOverride` are fully implemented, no dashboard page and no client component invokes `/api/ai/salary`. The feature is reachable only via direct API call (likely integration-tested but not user-facing).
+- **Workforce page bypasses its own API**: `/dashboard/workforce` reads `db.employee` directly via the server component; `workforce-registry-client.tsx` issues zero fetch calls. The `/api/employees` POST route therefore has no UI consumer.
+- **Ledger events skipped for non-enterprise-bound records**: both whistleblower and appeals routes skip `appendLedgerEvent` when `enterpriseId` is null — constitutional-level events that should still anchor to the global chain.
+- **Skill-equity review route calls `appendLedgerEvent(db, …)` instead of `appendLedgerEvent(tx, …)`** (`/api/skill-equity/[id]/review/route.ts:155`) — this is the non-transactional client, which is a known chain-fork risk under concurrent writes (the same class of bug fixed elsewhere as "P1-1").
+- **Graduation has no dedicated API or ledger event type**: it piggybacks on `/api/proposals` with `type=graduation`. The blueprint's irreversible sovereignty transition is logged as a generic `proposal_executed` event rather than a distinct `graduation_executed` event with the Sovereign Export Package hash.
+- **Reservation route enforces KYC + family consent + not-frozen + dynamic-min but skips `enforceFundFlow`** — the function exists and is used elsewhere (accountant-release), so wiring it into `/api/reservations` would close the loop on the zero-custody fund-flow policy.
+
+## Files Inspected (READ-ONLY audit — no files modified)
+
+- `prisma/schema.prisma` (all 38 models)
+- `src/lib/aurienta/cre.ts` (1040 lines — all enforce* + appendLedgerEvent)
+- `src/lib/aurienta/salary-engine.ts`
+- `src/app/dashboard/{founder,enterprise-profile,opportunities,syndicates,milestone-designer,manager,workforce,governance,graduation,whistleblower,appeals,skill-equity,steward}/page.tsx`
+- `src/app/enterprise/[slug]/page.tsx`
+- `src/app/api/{enterprises,enterprises/[id]/profile,enterprises/[id]/milestones,ai/feasibility,ai/salary,ai/salary/override,ai/milestone-designer,reservations,syndicates,expenses,employees,proposals,proposals/[id]/vote,whistleblower,appeals,skill-equity,skill-equity/[id]/review,milestones/[id]/accountant-release,public/enterprise/[slug],public/enterprise/[slug]/transparency}/route.ts`
+- Client components: `founder-studio-client`, `enterprise-profile-client`, `new-enterprise-wizard`, `step-feasibility`, `reserve-shares-dialog`, `form-syndicate-dialog`, `join-syndicate-dialog`, `milestone-evidence-dialog`, `submit-expense-dialog`, `expense-dashboard`, `workforce-registry-client`, `whistleblower-client`, `appeals-client`, `skill-equity-client`, `new-proposal-dialog`, `voting-modal`, `call-vote-button`, `transparency-score-badge`, `live-ticker`
+
+## Recommended Next Actions (priority order)
+
+1. **P0**: Wire the 10 defined-but-unwired CRE functions into their corresponding API routes (each is a one-line `import` + a verdict check + a 400-on-deny).
+2. **P0**: Fix `appendLedgerEvent(db, …)` → `appendLedgerEvent(tx, …)` in `/api/skill-equity/[id]/review/route.ts:155`.
+3. **P1**: Build the `/dashboard/salary` page that calls `/api/ai/salary` (the engine is fully implemented but unreachable from the UI).
+4. **P1**: Wire `workforce-registry-client.tsx` to actually POST equity-conversion updates to `/api/employees` (currently the page is read-only).
+5. **P1**: Add a dedicated `POST /api/graduation` route that fires a typed `graduation_executed` ledger event with the Sovereign Export Package hash, separate from the generic proposal-execution flow.
+6. **P2**: Always append a global ledger event for whistleblower + appeals filings even when `enterpriseId` is null (constitutional-anchor chain).
+7. **P2**: Wire `enforcePoliceClearance` into the proposal-execution path for `manager_appointment` proposals (the comment promises this hook; it is missing).
+
+Overall wiring completeness score: **77.8 %** — solid foundation, but 10 constitutional policies are defined in code yet silently bypassed at runtime.
+
+---
+Task ID: 6b
+Agent: Blueprint Modification Agent (Task 6b)
+Task: Modify the AURIENTA blueprint document to incorporate ALL modifications, updates, add-ons, and new features from the chat history — produce v3.0.
+
+Work Log:
+- Read /home/z/my-project/worklog.md to load prior context (Tasks 0, 1-A, etc.).
+- Extracted the original blueprint text via pandoc → /tmp/original-blueprint.txt (33,044 lines / 128,108 words).
+- Extracted the v2.0 modified blueprint text → /tmp/v2-blueprint.txt (21,553 lines / 75,841 words).
+- Read all key source files for v3.0 content:
+  - /home/z/my-project/src/lib/aurienta/salary-engine.ts (431 lines) — AI Salary Engine
+  - /home/z/my-project/src/lib/aurienta/transparency.ts (628 lines) — Role-aware transparency
+  - /home/z/my-project/src/lib/aurienta/cre.ts (1,040 lines) — 26 CRE functions including enforceSalaryConstitutionality
+  - /home/z/my-project/src/lib/aurienta/constants.ts — TIER_META with current tiers
+  - /home/z/my-project/REPOSITORY_INTEGRITY.md — integrity policy
+  - /home/z/my-project/docs/blueprint/BLUEPRINT_CHANGELOG.md — change history
+  - /home/z/my-project/docs/blueprint/AMENDMENT_REGISTRY.md — 7 amendments
+- Copied the existing v2.0 generator (/home/z/my-project/scripts/generate-expanded-blueprint.ts) as the v3.0 base.
+- Modified the v3.0 generator at /home/z/my-project/scripts/generate-modified-blueprint-v3.ts:
+  - Updated cover page to v3.0 spec ("Master Blueprint v3.0 — Fully Modified & Updated", "Incorporating all modifications, add-ons, and new features from the complete build history").
+  - Updated preamble to reflect v3.0 REPLACES all prior versions (v2.0 and v1.0).
+  - Updated edition notes table to include all 4 phases: Original → v1.0.0 → v2.0.0 → v3.0.0.
+  - Added Volume 4 FULL tier details (function volume4TierDetails): tier comparison matrix, individual tier sections (A/B/C/D/E/F) with eligibility/capital/governance/graduation/ERP/audit, dynamic minimum investment, tier migration enforcement, founder equity cap.
+  - Added Volume 8 expanded spec (function volume8ExpandedSpec): §8.4 AI Salary Engine (formula, factor bounds, tier multipliers, regional adjustments, worked example, AI validation, board override rules, compensation bands), §8.5 NOSI workflow (5-state model, 60-day expense freeze, vital sign), §8.6 transparency model (viewer roles, full salary visibility matrix, manager title detection, self-access rule), §8.14 expenses dashboard (12 categories, salary-like restriction, sanitisation, aggregation, dual-signature authority).
+  - Updated Volume 39 in Part V to include §39.6 enforceSalaryConstitutionality (v3.0 NEW — 6 validation rules, override decision matrix, LedgerEvent payload) and §39.7 Transparency Authorization Layer (v3.0 NEW — 13 exported functions, salary visibility decision tree, personal data protection).
+  - Added Volume 43 (function volume43TierReview) to Part VI: audit findings, 7 recommendations (Tier A min 100K, Tier B min 500K, Tier C min 2M, Tier E max 5M→20M, Tier F display update, dynamic minimum transparency, non-custodial verification prominence), recommendation summary table, implementation status.
+  - Added Part VII with Volume 44 (function partVII): Comprehensive Platform Audit — audit methodology, 9-dimension scorecard (Pages 88/100, Roles 82/100, Dashboards 85/100, Wiring 78/100, Features 90/100, UI Quality 73/100, Tab Mapping 87/100, Role Visibility 84/100, Norway-Grade Transparency 72/100; Overall 82/100; Drift 12/100), overall score and drift table, role visibility matrix (9 roles × 11 page categories), 10 unwired CRE functions, 9 unsanitised transparency surfaces, sanitisation pattern, Norway-grade score breakdown, prioritised remediation backlog, audit conclusion, sign-off.
+  - Updated Appendix D to 26 CRE functions (added enforceSalaryConstitutionality).
+  - Added Appendix J (Blueprint Change Log v1.0 → v2.0 → v3.0): edition history, v3.0.0 changes, v2.0.0 changes, v1.0.0 changes, change management process.
+  - Added Appendix K (Amendment Registry — 9 amendments): classification table, full registry (AM-001 through AM-009), superseded provisions, 17 invariants.
+  - Added Appendix L (Final Certification): certification statement, signatory block.
+  - Preserved Appendix M (Brain AI System Prompt) from v2.0's Appendix K.
+  - Updated final certification page to v3.0.
+  - Updated header to "AURIENTA Master Blueprint v3.0".
+  - Updated main() to include partVII() in body children.
+  - Updated output paths: download/AURIENTA_Blueprint_Modified.docx (overwrite v2.0), download/AURIENTA_Master_Blueprint_v3.0.docx (versioned copy), docs/blueprint/AURIENTA_Blueprint_CURRENT_CANONICAL.docx (canonical overwrite).
+- Updated /home/z/my-project/docs/blueprint/BLUEPRINT_VERSION.json: bumped canonical_version to "3.0.0", canonical_edition to "Master Blueprint v3.0 — Fully Modified & Updated", added v3_0_additions section with new_volumes/expanded_volumes/new_appendices/new_amendments.
+- Updated /home/z/my-project/docs/blueprint/BLUEPRINT_CHANGELOG.md: added full v3.0.0 entry at the top with 12 bullet items documenting all changes, kept v2.0.0 entry as superseded, kept v1.0.0 entry as superseded.
+- Updated /home/z/my-project/docs/blueprint/AMENDMENT_REGISTRY.md: bumped canonical_version to 3.0.0, added AM-008 (Tier System Review & Minimum Capital Recommendations — Structural), added AM-009 (Comprehensive Platform Audit Results — Operational), expanded superseded provisions table, updated invariant verification date to 2026-08-09.
+- Ran the v3.0 generator successfully: bun run scripts/generate-modified-blueprint-v3.ts.
+- Verified output:
+  - File size: 391,144 bytes (382 KB) — exceeds 300KB target.
+  - Word count: 86,428 words (pandoc) — exceeds 80,000 target.
+  - "Volume" occurrences: 188 — exceeds 150 target.
+  - "enforceSalaryConstitutionality" occurrences: 13.
+  - "Tier System Review" occurrences: 6.
+  - "Platform Audit" occurrences: 9.
+  - "AM-008" occurrences: 9.
+  - "AM-009" occurrences: 4.
+  - "82 / 100" occurrences: 3 (overall audit score).
+  - All 44 volumes present (0-44).
+  - All 7 parts present (I-VII).
+  - All 13 appendices present (A-M).
+  - All 3 output files written (Modified, v3.0 versioned, Current Canonical).
+
+Stage Summary:
+- Generated /home/z/my-project/download/AURIENTA_Blueprint_Modified.docx (v3.0, 391,144 bytes, 86,428 words, ~380 pages) — overwrote v2.0.
+- Generated /home/z/my-project/download/AURIENTA_Master_Blueprint_v3.0.docx (versioned copy).
+- Updated /home/z/my-project/docs/blueprint/AURIENTA_Blueprint_CURRENT_CANONICAL.docx (canonical copy).
+- Updated /home/z/my-project/docs/blueprint/BLUEPRINT_VERSION.json (canonical_version: 3.0.0).
+- Updated /home/z/my-project/docs/blueprint/BLUEPRINT_CHANGELOG.md (v3.0.0 entry).
+- Updated /home/z/my-project/docs/blueprint/AMENDMENT_REGISTRY.md (AM-008, AM-009).
+- Deliverable script: /home/z/my-project/scripts/generate-modified-blueprint-v3.ts (215KB, 2,325 lines).
+- v3.0 structure: 7 Parts + 44 Volumes + 13 Appendices (A-M).
+- v3.0 new content: Volume 43 (Tier System Review, 7 recommendations), Volume 44 (Platform Audit, 9-dimension scorecard, 82/100 overall, 12/100 drift), expanded Volume 8 (§8.4 AI Salary Engine, §8.5 NOSI, §8.6 Transparency, §8.14 Expenses Dashboard), expanded Volume 39 (§39.6 enforceSalaryConstitutionality, §39.7 Transparency Authorization Layer), updated Appendix D (26 functions), new Appendix J (Change Log), new Appendix K (9 Amendments), new Appendix L (Final Certification).
+- All 17 constitutional invariants verified PASS. All 26 CRE functions catalogued. All 9 amendments (AM-001 through AM-009) documented.
+- Founder: Mohamed Eltonsy — Founder & Sole Owner — 100%. Constitutional Hash: 0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A.
+- Founding principle preserved: "Your capital, your work, your company — no speculation required."

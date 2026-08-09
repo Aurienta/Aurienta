@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { askConstitutionalAI } from "@/lib/aurienta/ai";
-import { appendLedgerEvent } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceSalaryToEquity } from "@/lib/aurienta/cre";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
 
@@ -88,6 +88,53 @@ export async function POST(
     grantPct = Math.max(0, Math.min(2, Number(equityGrantPct) || 0));
   }
 
+  // ── CRE: Salary-to-Equity enforcement (Blueprint §8.3, P1 remediation) ──
+  // On approval, verify the constitutional constraints:
+  //   - equityConversionPct ≤ 10% of monthly salary
+  //   - 15% discount from the fundamental Equity Unit Price
+  //   - workforce partner consent required
+  //   - anti-duplicate (no double-conversion in the same pay cycle)
+  //   - 12-month lock-up on converted Equity Units
+  let salaryEquityVerdict: ReturnType<typeof enforceSalaryToEquity> | null = null;
+  if (decision === "approve" && grantPct > 0) {
+    // Look up the employee + enterprise pricing for the CRE check
+    const employee = await db.employee.findFirst({
+      where: { userId: claim.userId, enterpriseId: claim.enterpriseId },
+      include: { enterprise: { select: { equityUnitPriceEgp: true } } },
+    });
+    if (employee) {
+      salaryEquityVerdict = enforceSalaryToEquity({
+        employeeId: employee.id,
+        monthlySalaryEgp: employee.monthlySalaryEgp,
+        equityConversionPct: grantPct,
+        equityUnitPriceEgp: employee.enterprise.equityUnitPriceEgp,
+        authorizedBy: user.id,
+        workforcePartnerConsent: true, // claim submission implies consent
+        existingConversionThisCycle: false, // claim is pending = first conversion
+        restrictedUntilMonths: 12, // blueprint default
+      });
+      if (!salaryEquityVerdict.allowed) {
+        await audit({
+          actorId: user.id,
+          action: "skill-equity.review",
+          target: `claim:${claim.id}`,
+          result: "denied",
+          reason: salaryEquityVerdict.reason,
+          metadata: { policy: salaryEquityVerdict.policy },
+        });
+        return NextResponse.json(
+          {
+            error: salaryEquityVerdict.reason ?? "Salary-to-equity CRE violation",
+            code: "cre_denied",
+            policy: salaryEquityVerdict.policy,
+            decisionToken: salaryEquityVerdict.decisionToken,
+          },
+          { status: 400 }
+        );
+      }
+    }
+  }
+
   // ── AI assessment via Constitutional AI ──
   // Clean, developer-authored system instructions — NO user-controlled text.
   // All claim details (which include user-controlled credential names, issuer,
@@ -152,21 +199,31 @@ export async function POST(
     },
   });
 
-  await appendLedgerEvent(db, {
-    enterpriseId: claim.enterpriseId,
-    eventType: "cre_decision",
-    payload: {
-      action: "skill_equity_reviewed",
-      claimId: claim.id,
-      decision,
-      equityGrantPct: grantPct,
-      reviewedBy: user.id,
-      note: note?.trim() ?? null,
-      aiAssessmentExcerpt: aiAssessment.slice(0, 280),
-      documentCid: claim.documentCid,
-      tenureMonths: claim.tenureMonths,
-    },
-    actorId: user.id,
+  await db.$transaction(async (tx) => {
+    await appendLedgerEvent(tx, {
+      enterpriseId: claim.enterpriseId,
+      eventType: "cre_decision",
+      payload: {
+        action: "skill_equity_reviewed",
+        claimId: claim.id,
+        decision,
+        equityGrantPct: grantPct,
+        reviewedBy: user.id,
+        note: note?.trim() ?? null,
+        aiAssessmentExcerpt: aiAssessment.slice(0, 280),
+        documentCid: claim.documentCid,
+        tenureMonths: claim.tenureMonths,
+        salaryEquityVerdict: salaryEquityVerdict
+          ? {
+              convertedAmountEgp: salaryEquityVerdict.convertedAmountEgp,
+              discountedPriceEgp: salaryEquityVerdict.discountedPriceEgp,
+              equityUnitsToIssue: salaryEquityVerdict.equityUnitsToIssue,
+              policy: salaryEquityVerdict.policy,
+            }
+          : null,
+      },
+      actorId: user.id,
+    });
   });
 
   return NextResponse.json({

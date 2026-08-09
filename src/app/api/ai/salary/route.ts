@@ -14,6 +14,7 @@ import { parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
 import { calculateConstitutionalSalary } from "@/lib/aurienta/salary-engine";
+import { enforceSalaryConstitutionality } from "@/lib/aurienta/cre";
 import { logger } from "@/lib/aurienta/logger";
 import { z } from "zod";
 
@@ -50,6 +51,36 @@ export async function POST(req: NextRequest) {
       profitFactor: body.profitFactor,
       customBaseEgp: body.customBaseEgp,
     });
+
+    // ── CRE: Salary Constitutionality enforcement (Blueprint §8.4) ──
+    // Verifies the calculated salary meets the 2026 minimum wage (4,000 EGP)
+    // and that any board override has ≥75% vote + shareholder notification
+    // if the override exceeds 200% of the AI-calculated salary.
+    const salaryCheck = enforceSalaryConstitutionality({
+      proposedSalaryEgp: result.finalSalaryEgp,
+      aiCalculatedSalaryEgp: result.calculatedSalaryEgp,
+      isBoardOverride: false, // this is the AI calculation, not an override
+      boardVotePct: undefined,
+    });
+    if (!salaryCheck.allowed) {
+      await audit({
+        actorId: user.id,
+        action: "ai.salary.calculate",
+        target: `position:${body.position}`,
+        result: "denied",
+        reason: salaryCheck.reason,
+        metadata: { policy: salaryCheck.policy },
+      });
+      return NextResponse.json(
+        {
+          error: salaryCheck.reason ?? "Salary constitutionality violation",
+          code: "cre_denied",
+          policy: salaryCheck.policy,
+          decisionToken: salaryCheck.decisionToken,
+        },
+        { status: 400 }
+      );
+    }
 
     await audit({
       actorId: user.id,

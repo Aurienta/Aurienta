@@ -4,7 +4,7 @@ import { createHash } from "crypto";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { TIER_META } from "@/lib/aurienta/constants";
-import { appendLedgerEvent } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceFounderEquityCap } from "@/lib/aurienta/cre";
 
 // Tier → maximum raise cap (EGP). "Unlimited" = no cap.
 const TIER_MAX_RAISE: Record<string, number | null> = {
@@ -155,6 +155,21 @@ export async function POST(req: NextRequest) {
     const [platformFeePct, consultingFeePct] = parseFees(TIER_META[tier].fee);
     const founderShares = Math.floor((totalEquityUnits * founderEquityPct) / 100);
     const slug = await generateUniqueSlug(name);
+
+    // ── CRE: Founder Equity Cap enforcement (Blueprint §4.1) ──
+    // Verifies the Founding Operator equity meets the tier-specific floor
+    // (A/B: ≥5%, C: ≥10%, D: owner ≥51%, E: 0%, F: by bylaws).
+    const equityCheck = enforceFounderEquityCap({
+      tier,
+      founderEquityPct,
+      proposedFounderEquityPct: founderEquityPct,
+    });
+    if (!equityCheck.allowed) {
+      return NextResponse.json(
+        { error: equityCheck.reason ?? "Founder equity cap violation", code: "CRE_FOUNDER_EQUITY_CAP" },
+        { status: 400 }
+      );
+    }
 
     // ── Pick service providers (first available active) ──
     const lawFirm = await db.lawFirm.findFirst({ where: { status: "active" } });

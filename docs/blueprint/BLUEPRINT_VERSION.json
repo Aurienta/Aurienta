@@ -1,26 +1,27 @@
 {
   "blueprint_id": "AURIENTA-CONSTITUTIONAL-BLUEPRINT",
-  "canonical_version": "2.0.0",
-  "canonical_edition": "Master Blueprint v2.0 — Fully Expanded",
-  "effective_date": "2026-08-08",
-  "previous_version": "1.0.0",
-  "previous_edition": "Modified Blueprint — Prompt 1 & Prompt 2 Synchronized",
-  "previous_date": "2026-08-07",
+  "canonical_version": "3.0.0",
+  "canonical_edition": "Master Blueprint v3.0 — Fully Modified & Updated",
+  "effective_date": "2026-08-09",
+  "previous_version": "2.0.0",
+  "previous_edition": "Master Blueprint v2.0 — Fully Expanded",
+  "previous_date": "2026-08-08",
   "original_source": {
     "file": "AURIENTA_Blueprint_ORIGINAL.docx",
     "size_bytes": 1280016,
     "pages": 568,
+    "words": 128108,
     "source_hash": "sha256:to-be-computed-on-import",
     "received_date": "2026-08-06",
     "description": "The original AURIENTA Constitutional Blueprint as provided by the Founder. This document is IMMUTABLE and must never be modified."
   },
   "current_canonical": {
     "file": "AURIENTA_Blueprint_CURRENT_CANONICAL.docx",
-    "size_bytes": 351232,
-    "pages": 314,
-    "word_count": 75841,
+    "size_bytes": 391144,
+    "pages_approx": 380,
+    "word_count": 86428,
     "constitutional_hash": "0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A",
-    "description": "The single source of truth for all AURIENTA implementation. Incorporates the original 20 volumes (terminology replacements applied) plus 22 new volumes (22-42) covering all institutional systems, enforcement, and reference material from Prompts 1-21."
+    "description": "The single source of truth for all AURIENTA implementation. v3.0 incorporates the original 20 volumes (terminology replacements applied), Volume 21 (Institutional Architecture), Volumes 22-37 (16 institutional systems), Volumes 38-39 (P1 Constitutional Enforcement including the v3.0 enforceSalaryConstitutionality function and Transparency Authorization Layer), Volumes 40-43 (Master Reference including the v3.0 Tier System Review with 7 minimum-capital recommendations), Volume 44 (Comprehensive Platform Audit — 9-dimension scorecard, 82/100 overall, 12/100 drift score), and Appendices A-M. All modifications, add-ons, and new features from the complete build history are incorporated."
   },
   "founder": {
     "name": "Mohamed Eltonsy",
@@ -34,9 +35,33 @@
   "superseded_provisions": [
     {
       "provision": "Original terminology (shares, investor, escrow, startup, etc.)",
-      "superseded_by": "Constitutional Terminology Standard (20 approved terms)",
+      "superseded_by": "Constitutional Terminology Standard (20 approved terms) — AM-001",
       "effective_prompt": "Prompt 1",
       "migration": "DB fields retained via @map annotations for backward compatibility"
+    },
+    {
+      "provision": "Single-entity corporate structure",
+      "superseded_by": "Three-Entity Institutional Architecture — AM-002",
+      "effective_prompt": "Prompt 2",
+      "migration": "Holding Group + Operations + Advisory"
+    },
+    {
+      "provision": "Ad-hoc salary negotiation",
+      "superseded_by": "AI Salary Engine — AM-005",
+      "effective_prompt": "P1-4 Remediation",
+      "migration": "Deterministic formula + AI validation + board override rules"
+    },
+    {
+      "provision": "Open salary visibility to all Capital Partners",
+      "superseded_by": "Tier/Role-Specific Transparency Authorization — AM-006",
+      "effective_prompt": "P1-5 Remediation",
+      "migration": "Role-aware: bands vs exact per §8.6.2 matrix"
+    },
+    {
+      "provision": "Tier minimum capital floors (50 EGP for Tiers A/B/C)",
+      "superseded_by": "Tier System Review recommendations — AM-008 (pending implementation)",
+      "effective_prompt": "v3.0",
+      "migration": "Recommended floors: 100K/500K/2M EGP for Tiers A/B/C; Tier E max 5M→20M"
     }
   ],
   "deprecated_provisions": [],
@@ -50,13 +75,23 @@
   "implementation_status": {
     "cre_functions": 26,
     "prisma_models": 44,
-    "api_routes": 77,
+    "api_routes": 76,
     "pages": 93,
     "components": 187,
     "institutional_systems": 16,
     "constitutional_invariants_pass": 17,
     "constitutional_invariants_fail": 0,
     "zai_references": 0,
-    "p1_enforcement_functions": 5
+    "p1_enforcement_functions": 5,
+    "platform_audit_overall_score": 82,
+    "platform_audit_drift_score": 12,
+    "unwired_cre_functions": 10,
+    "unsanitised_transparency_surfaces": 9
+  },
+  "v3_0_additions": {
+    "new_volumes": ["Volume 43 — Tier System Review & Minimum Capital Recommendations", "Volume 44 — Comprehensive Platform Audit"],
+    "expanded_volumes": ["Volume 8 §8.4 AI Salary Engine", "Volume 8 §8.5 NOSI Workflow", "Volume 8 §8.6 Transparency Model", "Volume 8 §8.14 Expenses Dashboard", "Volume 39 §39.6 enforceSalaryConstitutionality", "Volume 39 §39.7 Transparency Authorization Layer"],
+    "new_appendices": ["Appendix J — Blueprint Change Log", "Appendix K — Amendment Registry (9 amendments)", "Appendix L — Final Certification"],
+    "new_amendments": ["AM-008 Tier System Review & Minimum Capital Recommendations", "AM-009 Comprehensive Platform Audit Results"]
   }
 }

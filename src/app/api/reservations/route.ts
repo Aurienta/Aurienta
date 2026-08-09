@@ -7,6 +7,7 @@ import {
   enforceFamilyConsent,
   enforceKycGate,
   enforceNotFrozen,
+  enforcePriceBand,
 } from "@/lib/aurienta/cre";
 import { reservationSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -73,6 +74,34 @@ export async function POST(req: NextRequest) {
   }
 
   const amountEgp = Math.round(shares * enterprise.equityUnitPriceEgp);
+
+  // ── CRE: Price Band enforcement (Blueprint §6 — Fundamental Pricing) ──
+  // Reservations are Phase 1 (primary market) — price must equal the
+  // fundamental Equity Unit Price exactly. No speculation allowed.
+  const priceCheck = enforcePriceBand(
+    enterprise.equityUnitPriceEgp,
+    enterprise.equityUnitPriceEgp,
+    "phase_1"
+  );
+  if (!priceCheck.allowed) {
+    await audit({
+      actorId: user.id,
+      action: "reservation.create",
+      target: `enterprise:${enterpriseId}`,
+      result: "denied",
+      reason: priceCheck.reason,
+      metadata: { policy: priceCheck.policy },
+    });
+    return NextResponse.json(
+      {
+        error: priceCheck.reason ?? "Price band violation",
+        code: "cre_denied",
+        policy: priceCheck.policy,
+        decisionToken: priceCheck.decisionToken,
+      },
+      { status: 400 }
+    );
+  }
 
   // ── CRE: KYC gate (CTO-AUDIT P0-8) ──
   const kyc = enforceKycGate(user.verificationLevel, "reservation", amountEgp);

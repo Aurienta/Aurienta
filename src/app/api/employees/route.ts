@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
-import { appendLedgerEvent } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceNosiRegistration } from "@/lib/aurienta/cre";
 import { employeeSchema, parseBody } from "@/lib/aurienta/validation";
 import {
   buildViewerContext,
@@ -268,6 +268,16 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // ── CRE: NOSI Registration enforcement (Blueprint §8.5, Add-on 26) ──
+  // Evaluate the 30-day registration deadline. The employee is just hired so
+  // they're in the "approaching" state — but we log the CRE decision token
+  // so the immutable ledger records the deadline clock starting.
+  const nosiVerdict = enforceNosiRegistration({
+    hireDate: employee.hireDate,
+    nosiStatus: employee.nosiStatus,
+    nosiRegisteredAt: employee.nosiRegisteredAt,
+  });
+
   // Bump the enterprise employee counter for downstream vital signs.
   await db.enterprise.update({
     where: { id: enterpriseId },
@@ -287,10 +297,22 @@ export async function POST(req: NextRequest) {
         department: employee.department,
         monthlySalaryEgp: employee.monthlySalaryEgp,
         nosiStatus: "pending",
+        nosiDeadlineState: nosiVerdict.deadlineState,
+        nosiDaysSinceHire: nosiVerdict.daysSinceHire,
+        crePolicy: nosiVerdict.policy,
+        creDecisionToken: nosiVerdict.decisionToken,
       },
       actorId: user.id,
     });
   });
 
-  return NextResponse.json({ ok: true, employee });
+  return NextResponse.json({
+    ok: true,
+    employee,
+    nosi: {
+      deadlineState: nosiVerdict.deadlineState,
+      daysSinceHire: nosiVerdict.daysSinceHire,
+      policy: nosiVerdict.policy,
+    },
+  });
 }

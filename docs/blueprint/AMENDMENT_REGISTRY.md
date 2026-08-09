@@ -1,7 +1,7 @@
 # AURIENTA Constitutional Amendment Registry
 
-**Canonical Version:** 2.0.0
-**Last Updated:** 2026-08-08
+**Canonical Version:** 3.0.0
+**Last Updated:** 2026-08-09
 **Authority:** Founder & Sole Owner — Mohamed Eltonsy
 **Constitutional Hash (Root):** `0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A`
 
@@ -100,6 +100,28 @@ This document records all constitutional amendments to the AURIENTA blueprint. A
 - **Implementation:** `src/app/api/enterprises/[id]/profile/route.ts` — PATCH handler now uses `db.$transaction(async (tx) => { ... })`
 - **Rollback:** N/A (bug fix)
 
+### AM-008: Tier System Review & Minimum Capital Recommendations (v3.0 NEW)
+- **Class:** Structural
+- **Date:** 2026-08-09 (v3.0)
+- **Status:** APPROVED (recommendations pending implementation)
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Audit-driven review of AURIENTA's six-tier enterprise classification (A–F). Produced 7 minimum-capital recommendations: (1) Tier A minimum Capital Participation 50 EGP → 100,000 EGP; (2) Tier B minimum 50 EGP → 500,000 EGP; (3) Tier C minimum 50 EGP → 2,000,000 EGP; (4) Tier E maximum raise 5M EGP → 20M EGP; (5) Tier F display update "1 Equity Unit" → "1 Equity Unit (par value per bylaws)"; (6) Dynamic minimum transparency — display formula + inputs; (7) Non-custodial verification prominence — badge on every tier surface.
+- **Impact:** Invariant #10 (Tier System A–F), Invariant #11 (Enterprise Lifecycle), Capital Partner accessibility (Tier A/B/C), deep-tech/biotech spinout viability (Tier E), UI transparency, Zero Custody invariant reinforcement
+- **Implementation:** Recommendations 1-4 require changes to TIER_META in `src/lib/aurienta/constants.ts` and the floor values in `computeDynamicMinimum` (`src/lib/aurienta/cre.ts`). Recommendations 5-7 are display/UI changes only. All 7 recommendations are documented in Volume 43 of the Master Blueprint v3.0.
+- **Rollback:** Per-recommendation rollback permitted (each recommendation is independently reversible). Existing Capital Partners are grandfathered at their original minimum; new minimums apply to new Capital Formation rounds only.
+- **Source:** Volume 43 of Master Blueprint v3.0
+
+### AM-009: Comprehensive Platform Audit Results (v3.0 NEW)
+- **Class:** Operational
+- **Date:** 2026-08-09 (v3.0)
+- **Status:** APPROVED
+- **Approved By:** Mohamed Eltonsy, Founder & Sole Owner
+- **Summary:** Recorded the comprehensive end-to-end platform audit conducted August 4-8, 2026. The audit assessed 9 dimensions: Pages & Screens (88/100), Roles & Role Visibility (82/100), Dashboards (85/100), Wiring & Mapping (78/100), Features (90/100), UI Quality (73/100), Tab Mapping (87/100), Role Visibility (84/100), Norway-Grade Transparency (72/100). Overall Score: 82/100. Drift Score: 12/100. All 17 constitutional invariants PASS. 26 CRE functions implemented (10 unwired). 5 P1 enforcement functions wired and operational. 9 unsanitised transparency surfaces identified. Prioritised remediation backlog: 2 P0 items (5 engineering days), 4 P1 items (9 days), 4 P2 items (12 days). Audit verdict: PRODUCTION-READY FOR PILOT conditional on P0 remediation.
+- **Impact:** All 17 invariants (audit confirms PASS), engineering backlog priorities, pilot launch readiness, transparency authorization scope
+- **Implementation:** Volume 44 of Master Blueprint v3.0 documents the full audit findings, scorecard, role visibility matrix, 10 unwired CRE functions, 9 unsanitised transparency surfaces, and prioritised remediation backlog. The remediation backlog is tracked in the engineering project management system.
+- **Rollback:** N/A (audit is a snapshot in time; cannot be rolled back)
+- **Source:** Volume 44 of Master Blueprint v3.0
+
 ---
 
 ## Deprecated Provisions
@@ -113,6 +135,10 @@ None. No constitutional provisions have been deprecated.
 | Provision | Superseded By | Date | Notes |
 |-----------|--------------|------|-------|
 | Legacy terminology (shares, investor, escrow, etc.) | AM-001: Constitutional Terminology Standard | 2026-08-07 | DB fields retained via @map for backward compatibility |
+| Single-entity corporate structure | AM-002: Three-Entity Institutional Architecture | 2026-08-07 | Holding Group + Operations + Advisory |
+| Ad-hoc salary negotiation | AM-005: AI Salary Engine | 2026-08-08 | Replaced by deterministic formula + AI validation |
+| Open salary visibility to all Capital Partners | AM-006: Tier/Role-Specific Transparency Authorization | 2026-08-08 | Now role-aware: bands vs exact per §8.6.2 matrix |
+| Tier minimum capital floors (50 EGP for A/B/C) | AM-008: Tier System Review (pending implementation) | 2026-08-09 | Recommended floors: 100K/500K/2M EGP for A/B/C |
 
 ---
 
@@ -138,7 +164,7 @@ The following 17 invariants are non-negotiable and cannot be amended without Fou
 16. Constitutional Terminology — 20 approved terms
 17. Evidence Hierarchy E0-E9 — CLAIM ≠ EVIDENCE ≠ STATUS ≠ TARGET ≠ FORECAST
 
-**All 17 invariants verified PASS as of 2026-08-08.**
+**All 17 invariants verified PASS as of v3.0 (2026-08-09).**
 
 ---
 

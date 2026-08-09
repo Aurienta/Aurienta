@@ -1,8 +1,88 @@
 # AURIENTA Blueprint Change Log
 
-**Canonical Version:** 2.0.0
-**Last Updated:** 2026-08-08
+**Canonical Version:** 3.0.0
+**Last Updated:** 2026-08-09
 **Authority:** Founder & Sole Owner — Mohamed Eltonsy
+
+---
+
+## Version 3.0.0 — Master Blueprint v3.0 (Fully Modified & Updated)
+
+**Date:** 2026-08-09
+**Edition:** Master Blueprint v3.0 — Fully Modified & Updated
+**Previous:** v2.0.0 (Master Blueprint v2.0 — Fully Expanded)
+**Status:** CURRENT CANONICAL
+**Size:** 391,144 bytes / ~380 pages / 86,428 words
+
+### Summary
+Replaced the v2.0 Master Blueprint (343KB / 314 pages / 75,841 words) with this v3.0 edition that incorporates all modifications, add-ons, and new features from the complete build history. Adds 2 new volumes (43, 44), expands Volume 8 with the full AI Salary Engine spec, expands Volume 39 with the new enforceSalaryConstitutionality function and the Transparency Authorization Layer, updates Appendix D to 26 CRE functions, and adds 3 new appendices (J, K, L).
+
+### Changes from v2.0.0
+
+#### Added — Volume 43: Tier System Review & Minimum Capital Recommendations (Part VI)
+- 7 audit-driven recommendations: Tier A min 50→100K EGP, Tier B min 50→500K EGP, Tier C min 50→2M EGP, Tier E max 5M→20M EGP, Tier F display update, dynamic minimum transparency, non-custodial verification prominence.
+- Source: audit findings against current TIER_META in src/lib/aurienta/constants.ts.
+
+#### Added — Volume 44: Comprehensive Platform Audit (Part VII)
+- 9-dimension scorecard: Pages & Screens (88/100), Roles & Role Visibility (82/100), Dashboards (85/100), Wiring & Mapping (78/100), Features (90/100), UI Quality (73/100), Tab Mapping (87/100), Role Visibility (84/100), Norway-Grade Transparency (72/100).
+- Overall Score: 82/100. Drift Score: 12/100.
+- 10 unwired CRE functions identified (implemented but not yet called by any API route).
+- 9 unsanitised transparency surfaces identified (require role-aware filtering).
+- Role visibility matrix (9 roles × 11 page categories, 16 visibility gaps).
+- Prioritised remediation backlog: 2 P0 items (5 days), 4 P1 items (9 days), 4 P2 items (12 days).
+- Audit verdict: PRODUCTION-READY FOR PILOT conditional on P0 remediation.
+
+#### Expanded — Volume 8: Financial Control, Workforce Capitalization & Treasury Operations
+- §8.4 AI Salary Engine (full spec): formula Salary = Base × Tier_multiplier × Performance_score × Regional_adjustment × Profit_factor. Tier multipliers (A=0.8, B=1.0, C=1.3, D=1.5, E=0.9, F=1.5). Regional adjustments (Cairo=1.0, Alexandria=0.9, Delta=0.85, Suez Canal=0.95, Upper Egypt=0.8). Performance score clamped [0.5, 1.5]. Profit factor clamped [0.8, 1.2]. AI validation (§8.4.2). Board override rules (§8.4.3): ≥75% vote, >200% triggers shareholder notification. Compensation bands (§8.6.2).
+- §8.5 NOSI Workflow: 5-state compliance model (compliant, approaching, overdue, frozen, unknown). 60-day expense freeze. NOSI compliance vital sign (healthy=100%, alert=<90%).
+- §8.6 Transparency Model: full visibility matrix (9 viewer roles × 6 visibility columns). Viewer roles catalog. Manager title detection (21 keywords). Self-access rule.
+- §8.14 Expenses Dashboard: 12 constitutional expense categories. Salary-like category restriction (board only for line items; aggregated for shareholders). Expense sanitisation. Expense aggregation. Dual-signature expense authority (<1%, 1-10%, >10% of capital).
+
+#### Expanded — Volume 39: P1 Constitutional Enforcement
+- §39.6 enforceSalaryConstitutionality (v3.0 NEW): constitutional salary floor enforcer. 6 validation rules. Override decision matrix (6 scenarios). LedgerEvent payload (10 fields). Minimum wage (4,000 EGP). Board override ≥75%. Shareholder notification >200%.
+- §39.7 Transparency Authorization Layer (v3.0 NEW): 13 exported functions documented (canSeeExactSalary, canSeeSalaryBand, canSeeWorkforceMetrics, sanitizeEmployeeForViewer, sanitizeEmployeeListForViewer, getVisibleExpenseCategories, sanitizeExpenseForViewer, aggregateExpensesByCategory, canonicalizeExpenseCategory, isSalaryLikeCategory, isManagerialTitle, buildViewerContext, buildOperatorViewerContext). Salary visibility decision tree. Personal data protection (nosiNumber, nationalId, home address, phone, medical — never exposed outside board/self).
+
+#### Updated — Appendix D: CRE Function Reference (26 functions)
+- Added enforceSalaryConstitutionality (26th function, v3.0 NEW).
+- Total CRE functions: 26 (was 25 in v2.0).
+- Source: src/lib/aurienta/cre.ts (1,040 lines, was 916 in v2.0).
+
+#### Added — Appendix J: Blueprint Change Log (v1.0 → v2.0 → v3.0)
+- Edition history table (Original, v1.0, v2.0, v3.0).
+- v3.0.0 changes from v2.0.0 (12 bullet items).
+- v2.0.0 changes from v1.0.0.
+- v1.0.0 changes from Original.
+- Change management process (8 steps).
+
+#### Added — Appendix K: Amendment Registry (9 Amendments)
+- Amendment classification (5 classes: Foundational, Structural, Operational, Terminological, Additive).
+- 9 amendments catalogued (AM-001 through AM-009).
+- New AM-008: Tier System Review & Minimum Capital Recommendations (v3.0 NEW, Structural).
+- New AM-009: Comprehensive Platform Audit Results (v3.0 NEW, Operational).
+- Deprecated and superseded provisions table.
+- 17 Constitutional Invariants (all PASS as of v3.0).
+
+#### Added — Appendix L: Final Certification
+- Certification statement signed by Mohamed Eltonsy, Founder & Sole Owner.
+- References all volumes and appendices through v3.0.
+
+#### Preserved — Appendix M: Brain AI System Prompt (Verbatim)
+- Carried over from v2.0's Appendix K. Reproduced verbatim from src/lib/aurienta/ai.ts.
+
+### CRE Functions Added
+- `enforceSalaryConstitutionality` (P1 — v3.0 NEW — constitutional salary floor enforcer: minimum wage, board override, shareholder notification, ledger logging)
+
+### Total CRE Functions: 26 (was 25 in v2.0)
+
+### Total Amendments: 9 (was 7 in v2.0)
+- AM-008: Tier System Review & Minimum Capital Recommendations (Structural, v3.0 NEW)
+- AM-009: Comprehensive Platform Audit Results (Operational, v3.0 NEW)
+
+### File Provenance
+- **Original source:** upload/AURIENTA.docx (1,280,016 bytes / 568 pages / 128,108 words) — IMMUTABLE.
+- **Modified blueprint v1.0:** superseded by v2.0.
+- **Expanded blueprint v2.0:** superseded by v3.0.
+- **Modified blueprint v3.0 (current canonical):** download/AURIENTA_Blueprint_Modified.docx (391,144 bytes) + download/AURIENTA_Master_Blueprint_v3.0.docx (versioned copy) + docs/blueprint/AURIENTA_Blueprint_CURRENT_CANONICAL.docx (canonical copy).
 
 ---
 
@@ -11,7 +91,7 @@
 **Date:** 2026-08-08
 **Edition:** Master Blueprint v2.0 — Fully Expanded
 **Previous:** v1.0.0 (Modified Blueprint — Prompt 1 & 2 Synchronized)
-**Status:** CURRENT CANONICAL
+**Status:** SUPERSEDED by v3.0.0
 
 ### Summary
 Replaced the 387KB Prompt 1-2 blueprint with a 343KB / 314-page / 75,841-word fully-expanded Master Blueprint incorporating ALL work from Prompts 1 through 21.
@@ -46,7 +126,7 @@ Replaced the 387KB Prompt 1-2 blueprint with a 343KB / 314-page / 75,841-word fu
 - Volume 41: 17 Constitutional Invariants (all PASS)
 - Volume 42: Evidence Hierarchy E0-E9
 
-#### Added — Appendices A-K
+#### Added — Appendices A-K (v2.0)
 - Appendix A: Constitutional Terminology Dictionary
 - Appendix B: RACI Responsibility Matrix
 - Appendix C: Automated Validation Checklist
@@ -68,14 +148,13 @@ After the v2.0.0 expansion, a CTO/COO audit identified 6 P1 findings. All were c
 - P1-5: Implemented tier/role-specific transparency authorization (§8.6.2 — salary bands vs exact salary, expense visibility)
 - P1-6: Removed tracked `.env` from git (security hygiene)
 
-### CRE Functions Added
+### CRE Functions Added (v2.0.0)
 - `enforceNosiRegistration` (NOSI 30-day deadline, 5 states)
 - `enforceNosiExpenseFreeze` (60-day expense freeze)
 - `enforceSalaryToEquity` (10% max, 15% discount, consent, anti-duplicate)
 - `enforceEquityLockUp`
-- `enforceSalaryConstitutionality` (minimum wage, board override, shareholder notification)
 
-### Total CRE Functions: 26 (was 22)
+### Total CRE Functions (v2.0.0): 25 (was 22 in v1.0)
 
 ---
 
@@ -119,7 +198,7 @@ Applied constitutional terminology replacements to the original 20 volumes and a
 ## Original Blueprint
 
 **Date:** 2026-06-24 (received)
-**File:** AURIENTA_Blueprint_ORIGINAL.docx (1,280,016 bytes, 568 pages)
+**File:** AURIENTA_Blueprint_ORIGINAL.docx (1,280,016 bytes, 568 pages, 128,108 words)
 **Status:** IMMUTABLE — preserved as-is, never modified
 
 The original blueprint contains Volumes 0-20 covering:

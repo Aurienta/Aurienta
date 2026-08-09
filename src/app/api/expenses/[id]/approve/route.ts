@@ -5,6 +5,7 @@ import {
   appendLedgerEvent,
   enforceExpenseAuthority,
   enforceNotFrozen,
+  enforceNosiExpenseFreeze,
 } from "@/lib/aurienta/cre";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -85,6 +86,36 @@ export async function POST(
       { error: "Not authorised to approve expenses in this enterprise", code: "forbidden" },
       { status: 403 }
     );
+  }
+
+  // ── CRE: NOSI Expense Freeze enforcement (Blueprint §8.5, Add-on 26) ──
+  // If any employee in the enterprise has been hired >60 days without NOSI
+  // registration, ALL expense approvals are FROZEN until compliance is restored.
+  const unregisteredEmployees = await db.employee.findMany({
+    where: { enterpriseId: expense.enterpriseId, nosiStatus: { not: "registered" } },
+    select: { hireDate: true, nosiStatus: true },
+  });
+  if (unregisteredEmployees.length > 0) {
+    const nosiFreeze = enforceNosiExpenseFreeze({ employees: unregisteredEmployees });
+    if (!nosiFreeze.allowed) {
+      await audit({
+        actorId: user.id,
+        action: "expense.approve",
+        target: `expense:${id}`,
+        result: "denied",
+        reason: nosiFreeze.reason,
+        metadata: { policy: nosiFreeze.policy, frozenEmployeeCount: nosiFreeze.frozenEmployeeCount },
+      });
+      return NextResponse.json(
+        {
+          error: nosiFreeze.reason ?? "NOSI expense freeze active",
+          code: "cre_denied",
+          policy: nosiFreeze.policy,
+          decisionToken: nosiFreeze.decisionToken,
+        },
+        { status: 400 }
+      );
+    }
   }
 
   // Submitter cannot self-approve (only the auto-approved <1% path bypasses
