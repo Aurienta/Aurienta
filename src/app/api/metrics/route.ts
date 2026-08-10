@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 // (Workstream 4) is installed.
 const STARTED_AT = Date.now();
 let requestCount = 0;
-export function incrementRequestCount() { requestCount++; }
+// Note: incrementRequestCount moved out of the route file to avoid
+// Next.js Route type validation errors (route files must only export
+// route handlers + config).
 
 /**
  * GET /api/metrics
@@ -19,7 +21,7 @@ export function incrementRequestCount() { requestCount++; }
  * NOTE: This is a minimal implementation. Full implementation (prom-client)
  * is Workstream 4 — installed when the observability stack is provisioned.
  */
-export async function GET(_req: NextRequest) {
+export async function GET() {
   let userCount = 0;
   let enterpriseCount = 0;
   let ledgerCount = 0;
