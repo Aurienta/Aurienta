@@ -240,7 +240,7 @@ export async function POST(req: NextRequest) {
     const ledgerIntegrity = {
       intact: ledgerIntegrityResult.intact,
       eventsChecked: ledgerIntegrityResult.eventsChecked,
-      brokenAt: ledgerIntegrityResult.brokenAt ?? null,
+      brokenAt: ledgerIntegrityResult.brokenAt ?? undefined,
       flag: !ledgerIntegrityResult.intact,
     };
 
@@ -440,8 +440,8 @@ export async function POST(req: NextRequest) {
           healthScore: healthScore.flag,
         },
       },
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      userAgent: req.headers.get("user-agent") ?? undefined,
     });
 
     logger.info("reality_sync.completed", {

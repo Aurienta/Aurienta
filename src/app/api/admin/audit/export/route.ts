@@ -144,8 +144,8 @@ export async function GET(req: NextRequest) {
         cap: EXPORT_CAP,
         truncated: rows.length >= EXPORT_CAP,
       },
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      userAgent: req.headers.get("user-agent") ?? undefined,
     }).catch(() => {});
 
     const filename = `aurienta-audit-log-${new Date().toISOString().slice(0, 10)}.csv`;

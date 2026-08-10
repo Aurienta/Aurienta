@@ -220,11 +220,11 @@ export async function POST(req: NextRequest) {
     const capTable = enterprise.ownershipRecords.map((r) => ({
       id: r.id,
       userId: r.userId,
-      ownerLegalName: r.user?.legalName ?? null,
-      ownerEmail: r.user?.email ?? null,
+      ownerLegalName: r.user?.legalName ?? undefined,
+      ownerEmail: r.user?.email ?? undefined,
       equityUnits: r.equityUnits,
       avgPriceEgp: r.avgPriceEgp,
-      restrictedUntil: r.restrictedUntil?.toISOString() ?? null,
+      restrictedUntil: r.restrictedUntil?.toISOString() ?? undefined,
       createdAt: r.createdAt.toISOString(),
       updatedAt: r.updatedAt.toISOString(),
     }));
@@ -270,14 +270,14 @@ export async function POST(req: NextRequest) {
       status: m.status,
       eveConfidence: m.eveConfidence,
       evidenceNote: m.evidenceNote,
-      dueAt: m.dueAt?.toISOString() ?? null,
-      releasedAt: m.releasedAt?.toISOString() ?? null,
+      dueAt: m.dueAt?.toISOString() ?? undefined,
+      releasedAt: m.releasedAt?.toISOString() ?? undefined,
       createdAt: m.createdAt.toISOString(),
     }));
 
     const employees = enterprise.employees.map((e) => ({
       ...anonymiseEmployee(e),
-      userLegalName: e.user?.legalName ?? null,
+      userLegalName: e.user?.legalName ?? undefined,
     }));
 
     const proposals = enterprise.proposals.map((p) => ({
@@ -287,7 +287,7 @@ export async function POST(req: NextRequest) {
       type: p.type,
       status: p.status,
       feeEgp: p.feeEgp,
-      coolingEndsAt: p.coolingEndsAt?.toISOString() ?? null,
+      coolingEndsAt: p.coolingEndsAt?.toISOString() ?? undefined,
       votingEndsAt: p.votingEndsAt.toISOString(),
       quorumPct: p.quorumPct,
       passThreshold: p.passThreshold,
@@ -298,7 +298,7 @@ export async function POST(req: NextRequest) {
       aiRiskScore: p.aiRiskScore,
       aiRecommendation: p.aiRecommendation,
       aiConfidence: p.aiConfidence,
-      executedAt: p.executedAt?.toISOString() ?? null,
+      executedAt: p.executedAt?.toISOString() ?? undefined,
       createdById: p.createdById,
       createdAt: p.createdAt.toISOString(),
       votes: p.votes.map((v) => ({
@@ -320,8 +320,8 @@ export async function POST(req: NextRequest) {
         createdAt: enterprise.createdAt.toISOString(),
         updatedAt: enterprise.updatedAt.toISOString(),
         stageSince: enterprise.stageSince.toISOString(),
-        frozenAt: enterprise.frozenAt?.toISOString() ?? null,
-        archivedAt: enterprise.archivedAt?.toISOString() ?? null,
+        frozenAt: enterprise.frozenAt?.toISOString() ?? undefined,
+        archivedAt: enterprise.archivedAt?.toISOString() ?? undefined,
       },
       capTable,
       ledger,
@@ -410,8 +410,8 @@ export async function POST(req: NextRequest) {
           proposals: proposals.length,
         },
       },
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      userAgent: req.headers.get("user-agent") ?? undefined,
     });
 
     logger.info("graduation.export.generated", {

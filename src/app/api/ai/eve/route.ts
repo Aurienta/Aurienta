@@ -400,8 +400,8 @@ ${recentExpenses
         fellBack: aiResult.fellBack,
         latencyMs: aiResult.latencyMs,
       },
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      userAgent: req.headers.get("user-agent") ?? undefined,
     });
 
     logger.info("ai.eve.completed", {

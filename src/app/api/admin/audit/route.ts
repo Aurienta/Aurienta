@@ -154,8 +154,8 @@ export async function GET(req: NextRequest) {
         filters: { actor, action, result, target, from, to, search },
         summary: { total, deniedCount, allowedCount: byResult.allowed },
       },
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      userAgent: req.headers.get("user-agent") ?? undefined,
     }).catch(() => {});
 
     return NextResponse.json({
