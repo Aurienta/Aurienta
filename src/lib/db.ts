@@ -12,7 +12,6 @@ function createPrismaClient(): PrismaClient {
   if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
     // Use eval to prevent webpack/turbopack from statically analyzing the
     // require() call and trying to bundle @libsql/client into client components.
-    // These packages are Node.js-only and listed in serverExternalPackages.
     const _require = eval('require')
     const { createClient } = _require('@libsql/client')
     const { PrismaLibSQL } = _require('@prisma/adapter-libsql')
@@ -31,12 +30,23 @@ function createPrismaClient(): PrismaClient {
   })
 }
 
-// Prisma client singleton.
-export const db =
-  globalForPrisma.prisma ??
-  createPrismaClient()
+// Lazy Prisma client — only created on first access, not at module load.
+// This prevents database connection attempts during `next build`.
+function getDb(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient()
+  }
+  return globalForPrisma.prisma
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+// Use a Proxy so that `db.model.findMany()` lazily creates the client.
+export const db = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getDb()
+    const value = (client as never as Record<string | symbol, unknown>)[prop]
+    return typeof value === 'function' ? value.bind(client) : value
+  },
+}) as PrismaClient
 
 // Transaction client type — passed to appendLedgerEvent and other
 // transaction-aware helpers so they can run inside db.$transaction.
