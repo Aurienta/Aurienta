@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -19,7 +19,7 @@ export function incrementRequestCount() { requestCount++; }
  * NOTE: This is a minimal implementation. Full implementation (prom-client)
  * is Workstream 4 — installed when the observability stack is provisioned.
  */
-export async function GET() {
+export async function GET(_req: NextRequest) {
   let userCount = 0;
   let enterpriseCount = 0;
   let ledgerCount = 0;
