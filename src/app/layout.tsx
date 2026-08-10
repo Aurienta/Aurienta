@@ -4,6 +4,10 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 
+// Prevent static prerendering during build — all pages are dynamic
+// (they query the database at request time, not build time).
+export const dynamic = "force-dynamic";
+
 const display = Cormorant_Garamond({
   variable: "--font-display",
   subsets: ["latin"],
