@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { SECTORS, CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";

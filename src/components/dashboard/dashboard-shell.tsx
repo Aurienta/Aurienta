@@ -31,6 +31,7 @@ import { stsLevel } from "@/lib/aurienta/constants";
 import { egp } from "@/lib/aurienta/format";
 import { CommandPalette } from "@/components/dashboard/ux/command-palette";
 import { Breadcrumbs, EnterpriseSwitcher, OnboardingTour, HelpButton, QuickActions } from "@/components/dashboard/ux/enhancements";
+import { RoleContextBar } from "@/components/dashboard/role-context-bar";
 import {
   EnterpriseProvider,
   type EnterpriseContextValue,
@@ -643,6 +644,8 @@ export function DashboardShell({
 
         {/* Main */}
         <main id="main-content" className="min-w-0 flex-1">
+          {/* Role Context Bar — shows active role, enterprise, tier, stage, health */}
+          <RoleContextBar user={user} selectedEntId={selectedEntId} />
           {/* I2: Breadcrumbs */}
           <div className="border-b border-gold/[0.06] px-4 py-2 sm:px-6">
             <Breadcrumbs pathname={pathname} />
