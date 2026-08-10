@@ -28,6 +28,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://aurienta.vercel.app"),
   title: "AURIENTA — Constitutional Enterprise Infrastructure",
   description:
     "AURIENTA is a noncustodial constitutional infrastructure of structural trust. It transforms everyday capital into real-economy corporate ownership through digital constitutional rules that cannot be bent, bypassed, or broken. Your capital, your work, your company — no speculation required.",
@@ -43,18 +44,32 @@ export const metadata: Metadata = {
     "real economy ownership",
   ],
   authors: [{ name: "AURIENTA" }],
+  creator: "Mohamed Eltonsy",
+  publisher: "AURIENTA",
+  alternates: {
+    canonical: "/",
+    languages: { "en": "/", "ar": "/legal" },
+  },
   openGraph: {
     title: "AURIENTA — Constitutional Enterprise Infrastructure",
     description:
       "Your capital, your work, your company — no speculation required. The world's first constitutional launchpad.",
     siteName: "AURIENTA",
     type: "website",
+    locale: "en_US",
+    url: "https://aurienta.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
     title: "AURIENTA — Constitutional Enterprise Infrastructure",
     description:
-      "Your capital, your work, your company — no speculation required.",
+      "Your capital, your work, your company — no speculation required. The world's first constitutional launchpad.",
+    creator: "@aurienta",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 };
 

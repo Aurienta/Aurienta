@@ -148,16 +148,17 @@ export function Hero() {
         >
           <Link
             href="/register"
-            className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)]"
+            className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)] active:scale-[0.98]"
           >
             Become a Constitutional Partner
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <Link
             href="#constitution"
-            className="inline-flex items-center gap-2 rounded-full border border-gold/25 bg-background/40 px-8 py-4 font-sans text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:border-gold/50 hover:bg-gold/5"
+            className="group inline-flex items-center gap-2 rounded-full border border-gold/25 bg-background/40 px-8 py-4 font-sans text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gold/50 hover:bg-gold/5 active:scale-[0.98]"
           >
             Explore the Constitution
+            <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-1" />
           </Link>
         </motion.div>
 
