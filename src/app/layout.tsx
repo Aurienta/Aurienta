@@ -1,8 +1,15 @@
-import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import {
+  Cairo,
+  Cormorant_Garamond,
+  Inter,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { LanguageProvider } from "@/lib/i18n/language-context";
+import { RegisterSW } from "@/components/pwa/register-sw";
 
 // Prevent static prerendering during build — all pages are dynamic
 // (they query the database at request time, not build time).
@@ -24,6 +31,14 @@ const inter = Inter({
 const mono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Arabic / RTL typography. Loaded alongside the latin fonts and applied
+// via the --font-arabic CSS variable when the document direction is RTL.
+const cairo = Cairo({
+  variable: "--font-arabic",
+  subsets: ["arabic", "latin"],
   display: "swap",
 });
 
@@ -71,6 +86,15 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  manifest: "/manifest.json",
+};
+
+// themeColor + viewport must live in the separate `viewport` export in Next 14+.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#D4AF37" },
+    { media: "(prefers-color-scheme: dark)", color: "#060608" },
+  ],
 };
 
 export default function RootLayout({
@@ -79,9 +103,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body
-        className={`${display.variable} ${inter.variable} ${mono.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${display.variable} ${inter.variable} ${mono.variable} ${cairo.variable} font-sans antialiased bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"
@@ -89,8 +113,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <LanguageProvider>
+            {children}
+            <Toaster />
+            <RegisterSW />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

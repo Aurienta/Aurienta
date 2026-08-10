@@ -3,12 +3,14 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { Hero } from "@/components/site/sections/hero";
 import { Constitution } from "@/components/site/sections/constitution";
 import { Pillars } from "@/components/site/sections/pillars";
+import { ProductPreview } from "@/components/site/sections/product-preview";
 import { Architecture } from "@/components/site/sections/architecture";
 import { Tiers } from "@/components/site/sections/tiers";
 import { Sovereignty } from "@/components/site/sections/sovereignty";
 import { Stats } from "@/components/site/sections/stats";
 import { Compliance } from "@/components/site/sections/compliance";
 import { Faq } from "@/components/site/sections/faq";
+import { EvidenceStage } from "@/components/site/sections/evidence-stage";
 import { FinalCta } from "@/components/site/sections/final-cta";
 
 export default function Home() {
@@ -25,12 +27,14 @@ export default function Home() {
         <Hero />
         <Constitution />
         <Pillars />
+        <ProductPreview />
         <Architecture />
         <Tiers />
         <Sovereignty />
         <Stats />
         <Compliance />
         <Faq />
+        <EvidenceStage />
         <FinalCta />
       </main>
       <SiteFooter />

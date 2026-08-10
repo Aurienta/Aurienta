@@ -9,6 +9,7 @@
   --font-sans: var(--font-inter);
   --font-serif: var(--font-display);
   --font-mono: var(--font-mono);
+  --font-arabic: var(--font-arabic);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -332,4 +333,20 @@
 }
 .tracking-tagline {
   letter-spacing: 0.34em;
+}
+
+/* ===== RTL / Arabic typography =====
+   When the LanguageProvider switches <html dir="rtl">, swap the base font
+   to Cairo so Arabic glyphs render with the dedicated Arabic typeface.
+   The latin fonts above remain loaded and are still used for any latin
+   runs inside an RTL document via the unicode-range fallback chain. */
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
+}
+
+/* Slightly relax tracking in Arabic — Arabic script doesn't benefit from
+   the wide latin letter-spacing used in the wordmark/tagline. */
+html[dir="rtl"] .tracking-wordmark,
+html[dir="rtl"] .tracking-tagline {
+  letter-spacing: 0.06em;
 }

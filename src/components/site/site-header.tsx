@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShieldCheck, ChevronRight } from "lucide-react";
 import { AurientaMark } from "@/components/aurienta-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { cn } from "@/lib/utils";
 
 const NAV: { label: string; href: string; external?: boolean }[] = [
@@ -74,6 +75,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Link
             href="/signin"
@@ -131,7 +133,8 @@ export function SiteHeader() {
                 )
               )}
               <div className="mt-3 flex flex-col gap-2 border-t border-gold/10 pt-4">
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center gap-2">
+                  <LanguageSwitcher />
                   <ThemeToggle />
                 </div>
                 <Link

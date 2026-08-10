@@ -1,0 +1,33 @@
+{
+  "name": "AURIENTA — Constitutional Enterprise Infrastructure",
+  "short_name": "AURIENTA",
+  "description": "Non-custodial constitutional infrastructure of structural trust. Your capital, your work, your company — no speculation required.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060608",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "categories": ["business", "finance", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Sign in",
+      "url": "/signin",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Enterprise Registry",
+      "url": "/registry",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}

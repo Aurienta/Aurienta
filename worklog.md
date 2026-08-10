@@ -11172,3 +11172,142 @@ Notes for downstream agents:
 - The vault-client fetches the vault balance via the API on every enterprise selection change. Loan history is server-fetched once at page load and updated optimistically after a successful POST; if long-lived sessions need fresh loan state, a manual refetch of GET /api/vault could be added (the API returns the vault summary only, not the loan list).
 - The solvency-client fetches the latest assertion via the API on selection change. Historical assertions are server-fetched once at page load (take 60) and updated optimistically after a successful POST; the client filters to the selected enterprise and slices to last 10.
 - No API routes were modified — all three pages consume existing endpoints only.
+
+---
+Task ID: SKELETONS-PWA
+Agent: UI Foundation Agent (skeletons + PWA)
+
+Task: Implement reusable loading skeleton primitives and lay the PWA foundation (manifest, icon, service worker, registration) for AURIENTA.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (Task 0 brand summary) to load brand context (Gold #D4AF37, dark base #08080a, luxury institutional aesthetic).
+- Inspected existing `src/components/ui/skeleton.tsx` (a thin wrapper around `<div className="bg-accent animate-pulse rounded-md">`).
+- Confirmed Tailwind v4 `@theme inline` defines `--color-gold` (and `-light/-dark/-soft`), so `border-gold/20`, `bg-gold`, etc. are valid utilities.
+- Confirmed Next.js version is `^16.1.1`, so `themeColor` must live in a separate `viewport` export (it was removed from `Metadata` in Next 14+).
+
+Files created:
+
+1. `src/components/ui/skeletons.tsx` — six reusable skeleton primitives built on the existing `Skeleton` component:
+   - `CardSkeleton` — rounded-xl card with `border-gold/20`, three-line layout (h-4 w-1/3, h-8 w-2/3, h-4 w-1/2).
+   - `TableSkeleton({ rows = 5, cols = 4 })` — header bar + `rows × cols` grid of `flex-1` cells.
+   - `ProfileSkeleton` — circular avatar + name/subtitle lines, followed by a 3-card grid (`sm:grid-cols-2 lg:grid-cols-3`).
+   - `DashboardSkeleton` — title bar + 4-card grid (`sm:grid-cols-2 lg:grid-cols-4`) + a 6-row × 5-col table.
+   - `TimelineSkeleton({ items = 4 })` — list of circular node + two-line rows.
+   - `DocumentSkeleton` — 4 rows of icon + two-line + pill, each row wrapped in `border-gold/20`.
+   - All compositional primitives reuse `CardSkeleton` where appropriate so the gold border treatment stays consistent.
+   - Fully typed; no default exports; tree-shakeable.
+
+2. `public/manifest.json` — PWA manifest:
+   - `name` / `short_name` ("AURIENTA — Constitutional Enterprise Infrastructure" / "AURIENTA").
+   - `start_url: "/"`, `display: "standalone"`, `orientation: "portrait-primary"`.
+   - `background_color: "#060608"`, `theme_color: "#D4AF37"` (matches dark base + brand gold).
+   - `categories: ["business", "finance", "productivity"]`, `lang: "en"`, `dir: "ltr"`.
+   - `icons`: single SVG (`/icon.svg`, `sizes: "any"`, `type: "image/svg+xml"`, `purpose: "any maskable"`) — SVG scales to any size so we avoid shipping duplicate PNG rasters (the $0 approach).
+   - `shortcuts`: "Sign in" → `/signin`, "Enterprise Registry" → `/registry` (each with the SVG icon).
+   - Verified valid JSON via `python3 -c "import json; json.load(open('public/manifest.json'))"`.
+
+3. `public/icon.svg` — AURIENTA PWA icon (512×512 viewBox):
+   - Rounded-square dark background (`#08080a → #16161b` linear gradient) with a faint gold ring.
+   - Stylized geometric "A" in metallic gold gradient (`#f4d676 → #d4af37 → #b8860b`) matching the brand logo, plus a curved gold arc above and a five-pointed gold star accent — echoing the brand identity established in Task 0.
+   - Vector-only, ~1.5 KB, scales cleanly from favicon to 512px install icon.
+
+4. `public/sw.js` — minimal service worker:
+   - `CACHE_NAME = "aurienta-v1"`, `STATIC_ASSETS = ["/", "/manifest.json", "/icon.svg"]`.
+   - `install` → precaches the app shell + `self.skipWaiting()`.
+   - `activate` → deletes old caches + `self.clients.claim()`.
+   - `fetch` handler:
+     - **Never caches `/api/*`** — constitutional data must always be fresh (the handler returns early and lets the browser hit the network).
+     - **Network-first for navigations** (`event.request.mode === "navigate"`) — falls back to cached `"/"` when offline.
+     - **Cache-first for the static app shell** — falls through to network on miss.
+     - All other requests are left to the browser default (no opaque cross-origin caching).
+
+5. `src/components/pwa/register-sw.tsx` — client-only SW registration:
+   - `"use client"`; `useEffect` registers `/sw.js` only when `process.env.NODE_ENV === "production"` and SW is supported.
+   - Registration failures are silently swallowed (PWA is a progressive enhancement; we never block the UI on it).
+   - Renders `null` — no DOM footprint.
+
+Files modified:
+
+6. `src/app/layout.tsx`:
+   - Imported `Viewport` type alongside `Metadata` and the new `RegisterSW` component.
+   - Added `manifest: "/manifest.json"` to the existing `metadata` object.
+   - Added a new `export const viewport: Viewport` with `themeColor` (`#D4AF37` for light scheme, `#060608` for dark scheme). This is the correct Next 14+ pattern — `themeColor` was removed from `Metadata` and is now a viewport concern, so placing it in `metadata` would fail type-checking under Next 16.
+   - Rendered `<RegisterSW />` inside `<LanguageProvider>` (alongside `<Toaster />`) so the SW is registered on every page once in production.
+
+Validation:
+- `cd /home/z/my-project && bun run lint` → `$ eslint .` EXIT_CODE=0 (0 errors, 0 warnings).
+- All five new files verified to exist via `ls -la`.
+- `manifest.json` validated as well-formed JSON.
+- SW uses only standard Web APIs (`caches`, `fetch`, `clients`) — no external dependencies, no paid libraries.
+
+Notes for downstream agents:
+- The skeleton primitives are 100% presentational and theme-aware (they use `border-gold/20` which adapts to light/dark via the existing `--gold` variable). Drop them in anywhere a Suspense fallback or loading state is needed; no props required except `rows`/`cols` on `TableSkeleton` and `items` on `TimelineSkeleton`.
+- The service worker is intentionally minimal and conservative. It does NOT use Workbox, does NOT do runtime caching of Next's JS chunks, and does NOT cache API responses. If a future agent wants to cache `_next/static/*`, that must be added explicitly to the cache-first branch in `sw.js` — but be careful: stale constitutional data is a correctness bug, so never expand API caching.
+- `RegisterSW` is gated on `NODE_ENV === "production"`. The dev server will not register the SW, which is the desired behaviour (avoids caching during development).
+- The PWA install icon is an SVG. Most modern browsers accept SVG icons in the manifest with `sizes: "any"`. If install-time raster PNGs become required (e.g., for older Android), a future agent can generate `icon-192.png` / `icon-512.png` from the SVG and add them as additional entries in the `icons` array — no manifest schema change needed.
+
+---
+Task ID: i18n-RTL-1
+Agent: i18n / RTL Architecture Agent
+
+Task: Build a centralized EN/AR internationalization (i18n) system for AURIENTA using React Context (NOT next-intl routing) with RTL support, localStorage persistence, and a `useTranslation()` hook.
+
+Work Log:
+- Read worklog.md (first 30 lines) for prior project context (AURIENTA constitutional enterprise platform, gold/dark luxury theme, Next.js 16 App Router, shadcn/ui).
+- Inspected `src/app/layout.tsx` (ThemeProvider already wrapping children, fonts: Cormorant_Garamond + Inter + JetBrains_Mono), `src/components/site/site-header.tsx` (ThemeToggle in header + mobile menu), `src/app/globals.css` (gold color system + utility classes), and `tailwind.config.ts` (HSL CSS variables, no `gold` key but `--gold` available via globals.css `@theme inline`).
+- Created `src/lib/i18n/translations.ts`:
+  * Exported `Locale = "en" | "ar"` and a `Record<Locale, Record<string, string>>` dictionary covering all keys requested in the task spec (nav, hero, constitution, pillars, tiers, sovereignty, stats, compliance, faq, finalCta, footer, dashboard, common, evidence, empty/error states, auth, roles, preview, evidenceStage).
+  * Exported `getDir(locale)` helper returning `"rtl"` for Arabic, `"ltr"` otherwise.
+  * All Arabic translations are professional MSA (Modern Standard Arabic).
+- Created `src/lib/i18n/language-context.tsx`:
+  * `"use client"` React Context provider.
+  * Initializes with `"en"` on the server for hydration stability, then in a `useEffect` reads `localStorage["aurienta-locale"]` and falls back to browser-language detection (`navigator.languages` → AR if any lang starts with `ar`, else EN).
+  * `setLocale(next)` persists to localStorage (try/catch around storage for private mode), updates state, and re-applies `document.documentElement.lang` + `document.documentElement.dir`.
+  * `t(key)` returns `translations[locale][key] ?? key` (fallback to the key itself when a translation is missing — important so partial migrations don't break the UI).
+  * Exposes `{ locale, setLocale, t, dir, isRTL }`.
+  * `useLanguage()` throws if used outside `<LanguageProvider>`. Exported `useTranslation = useLanguage` alias for familiar DX.
+  * Memoized context value (`useMemo`) and `t` callback (`useCallback`) to avoid re-render churn.
+- Created `src/components/site/language-switcher.tsx`:
+  * Two-button pill toggle: `EN` (short for English) and `ع` (short for العربية).
+  * Uses `useLanguage()` from the context.
+  * Active button uses `bg-gold-gradient text-black` with a soft gold shadow; inactive uses `text-muted-foreground hover:text-gold-light`.
+  * Wrapped in `border border-gold/20 bg-background/40` pill with `Languages` lucide icon, `role="group"`, `aria-label="Language switcher"`, and `aria-pressed` per button. Touch-target ≥ 28px tall.
+  * Renders on both desktop header (inline with ThemeToggle) and mobile menu (centered row with ThemeToggle).
+- Edited `src/app/layout.tsx`:
+  * Added `Cairo` font import from `next/font/google` (`subsets: ["arabic", "latin"]`, `display: "swap"`, `variable: "--font-arabic"`).
+  * Added `${cairo.variable}` to the body className so the `--font-arabic` CSS variable is registered site-wide.
+  * Added `dir="ltr"` (initial SSR value) on `<html>` so the SSR markup is stable; LanguageProvider flips it to `rtl` on the client after mount when Arabic is selected.
+  * Wrapped `{children}` + `<Toaster />` (and any other existing mount nodes) in `<LanguageProvider>` so `useLanguage` / `useTranslation` work everywhere.
+  * Did NOT remove any existing functionality (ThemeProvider, RegisterSW, metadata, viewport all preserved).
+- Edited `src/app/globals.css`:
+  * Registered `--font-arabic: var(--font-arabic)` inside the existing `@theme inline` block so Tailwind can resolve `font-arabic` utility if needed later.
+  * Added a rule `html[dir="rtl"] body { font-family: var(--font-arabic), var(--font-inter), system-ui, sans-serif; }` so Arabic glyphs render in Cairo when the LanguageProvider switches direction.
+  * Relaxed `.tracking-wordmark` / `.tracking-tagline` letter-spacing for `html[dir="rtl"]` (Arabic script doesn't benefit from the wide latin tracking).
+- Edited `src/components/site/site-header.tsx`:
+  * Imported `LanguageSwitcher` from `@/components/site/language-switcher`.
+  * Inserted `<LanguageSwitcher />` immediately before `<ThemeToggle />` in the desktop header action group.
+  * Inserted `<LanguageSwitcher />` next to `<ThemeToggle />` inside the mobile menu's centered toggle row.
+  * Did NOT touch any existing nav items, labels, or styling.
+- Verified `bun run lint` passes cleanly (no errors, no warnings).
+- Verified all 5 files exist (translations.ts, language-context.tsx, language-switcher.tsx, layout.tsx edited, site-header.tsx edited).
+
+Files Created:
+- /home/z/my-project/src/lib/i18n/translations.ts
+- /home/z/my-project/src/lib/i18n/language-context.tsx
+- /home/z/my-project/src/components/site/language-switcher.tsx
+
+Files Modified:
+- /home/z/my-project/src/app/layout.tsx (Cairo font + LanguageProvider wrap + dir="ltr" on html)
+- /home/z/my-project/src/app/globals.css (--font-arabic token + RTL font swap + RTL letter-spacing relax)
+- /home/z/my-project/src/components/site/site-header.tsx (LanguageSwitcher in desktop + mobile header)
+
+Architecture Notes for Future Agents:
+- The i18n layer is **additive**: existing components keep their hard-coded English copy. To internationalize a component, call `const { t } = useTranslation();` and replace the string with `t("your.key")`. The `t()` function falls back to the key itself if the key is missing — so partial migrations are safe.
+- The LanguageProvider is intentionally client-only (`"use client"`). Server components can still import `translations` and `getDir` directly from `translations.ts` (those are pure, framework-agnostic) if server-side rendering of a specific locale is needed in the future.
+- `localStorage` key: `"aurienta-locale"`. Values: `"en"` | `"ar"`. On first visit with no stored preference, the browser language is auto-detected.
+- The `<html dir="ltr">` initial SSR value is deliberate to avoid hydration mismatches; the provider updates it to `rtl` post-mount when Arabic is selected. `suppressHydrationWarning` is already on `<html>` from before.
+- RTL font swap is done in CSS via `html[dir="rtl"] body { font-family: var(--font-arabic), … }` — no JS class-swap needed. Cairo is loaded eagerly (not conditionally) so there's no FOIT/FOUT flash when toggling to Arabic; the latin glyphs continue to use Inter/Cormorant via the font-family fallback chain (Cairo's `latin` subset is only used as a last-resort fallback for characters Inter doesn't cover, which is none in practice).
+- To add a new translation key: add it to BOTH `en` and `ar` blocks in `translations.ts`. The `t()` fallback-to-key behaviour means a missing AR value will show the key string in the UI until the AR translation is filled in.
+
+Stage Summary:
+- Centralized EN/AR i18n system is live. Language switcher is visible in the site header (both desktop and mobile). Toggling to العربية immediately: (1) sets `<html dir="rtl" lang="ar">`, (2) swaps the body font to Cairo, (3) persists the choice to localStorage, (4) updates all components consuming `useTranslation()`. The `useTranslation()` / `useLanguage()` hook is ready for incremental migration of existing components.
