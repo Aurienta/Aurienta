@@ -11311,3 +11311,31 @@ Architecture Notes for Future Agents:
 
 Stage Summary:
 - Centralized EN/AR i18n system is live. Language switcher is visible in the site header (both desktop and mobile). Toggling to العربية immediately: (1) sets `<html dir="rtl" lang="ar">`, (2) swaps the body font to Cairo, (3) persists the choice to localStorage, (4) updates all components consuming `useTranslation()`. The `useTranslation()` / `useLanguage()` hook is ready for incremental migration of existing components.
+
+---
+Task ID: i18n-expand-nav
+Agent: i18n-expander (translations expansion)
+
+Task: Expand `src/lib/i18n/translations.ts` to cover ALL dashboard navigation, page titles, common UI strings, constitutional terms, and institutional section headers.
+
+Work Log:
+- Read existing translations.ts (~150 keys per locale, both `en` and `ar`).
+- Added new key groups to BOTH `en` and `ar` objects (no existing keys modified/removed):
+  - Nav Groups (9): group.workspace, group.capitalWorkforce, group.enterprise, group.intelligence, group.compliance, group.treasury, group.graduation, group.services, group.admin
+  - Nav Items (78): full dashboard sidebar — overview, portfolio, opportunities, market, priorityWindows, calendar, updates, syndicates, careerLedger, mentorship, skillEquity, salary, diaspora, governance, manager, founder, enterpriseProfile, pitchDeck, milestoneDesigner, boardMember, boardBriefings, succession, partnerCrm, brainAi, precedents, drift, anomalies, charterDiff, constitutionGuide, notifications, copilot, compliance, workforce, whistleblower, appeals, riskDisclosure, vendorPortal, escrow, antifragility, vault, solvency, oracleMirror, realitySync, institutionalMemory, graduation, graduationCoach, graduationSimulator, survivalDrill, alumni, tax, ir, drip, adminUsers, adminEnterprises, steward, architecture, governanceModel, institutionalReadiness, operatingSystem, commercialization, productionReadiness, pilotExecution, globalLaunch, founderOffice, institutionalTrust, marketExecution, marketActivation, customerConversion, strategicPartners, executionWarRoom, firstResearch, constitutionalAudit, auditLog, adminSettings, fra, companyOwner, lawFirm, accounting, industry, federation, credentials, university, profile
+  - Page Titles (14): pageTitle.overview, pageTitle.portfolio, pageTitle.governance, pageTitle.workforce, pageTitle.graduation, pageTitle.brainAi, pageTitle.compliance, pageTitle.escrow, pageTitle.salary, pageTitle.vault, pageTitle.solvency, pageTitle.founder, pageTitle.enterpriseProfile, pageTitle.manager
+  - Common Dashboard UI (63): ui.welcome, ui.quickActions, ui.recentActivity, ui.viewAll, ui.viewDetails, ui.create, ui.edit, ui.delete, ui.approve, ui.reject, ui.close, ui.open, ui.export, ui.import, ui.download, ui.upload, ui.refresh, ui.settings, ui.help, ui.feedback, ui.signOut, ui.signedInAs, ui.memberSince, ui.enterpriseSwitcher, ui.searchPlaceholder, ui.noResults, ui.confirm, ui.continue, ui.back, ui.next, ui.previous, ui.finish, ui.optional, ui.required, ui.status, ui.date, ui.amount, ui.description, ui.category, ui.type, ui.name, ui.email, ui.role, ui.actions, ui.evidence, ui.tier, ui.sector, ui.stage, ui.health, ui.score, ui.progress, ui.complete, ui.incomplete, ui.pending, ui.active, ui.inactive, ui.approved, ui.rejected, ui.draft, ui.published, ui.verified, ui.unverified
+  - Constitutional Terms (16): term.constitutionalHash, term.cre, term.zeroCustody, term.fundamentalPricing, term.equityUnits, term.ownershipLedger, term.lawFirmAccount, term.sovereignTrustScore, term.graduation, term.constitutionalPartner, term.constitutionalCouncil, term.amendmentIX, term.creDecisionToken, term.evidenceHierarchy, term.enterpriseLifecycle, term.threeEntityStructure
+  - Dashboard Section Headers (21): section.summary, section.details, section.history, section.documents, section.proposals, section.votes, section.milestones, section.expenses, section.employees, section.partners, section.ownership, section.capital, section.workforce, section.governance, section.compliance, section.transparency, section.ledger, section.health, section.vitalSigns, section.feasibility, section.graduation
+- Maintained exact same structure (en/ar objects with key:value pairs).
+- `Locale` type and `getDir` function untouched.
+- Arabic translations use approved constitutional terminology (e.g., "محرك التنفيذ الدستوري" for CRE, "الصندوق غير القابل للتلاعب" for Immutable Ledger, "الهيئة العامة للرقابة المالية" for FRA).
+
+Verification:
+- `bun run lint` → exit code 0, no errors.
+- Total key count per locale: 348 (EN) = 348 (AR). Started at ~150, added ~198 new keys. Total 300+ target met.
+
+Stage Summary:
+- translations.ts now provides complete bilingual coverage for the entire AURIENTA dashboard: nav groups, all sidebar nav items, page titles, common UI strings, constitutional terms, and dashboard section headers.
+- Both `en` and `ar` objects contain exactly 348 keys each (perfectly aligned).
+- File remains valid TypeScript, lint passes cleanly.

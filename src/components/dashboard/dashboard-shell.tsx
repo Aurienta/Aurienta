@@ -36,8 +36,108 @@ import {
   type EnterpriseContextValue,
 } from "@/components/dashboard/enterprise-context";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type NavItem = { href: string; label: string; icon: React.ElementType; group: string };
+
+// Translation map: English label → i18n key
+const NAV_I18N: Record<string, string> = {
+  "Overview": "nav.overview",
+  "Constitutional Holdings": "nav.portfolio",
+  "Capital Participation": "nav.opportunities",
+  "Enterprise Registry": "nav.market",
+  "Priority Windows": "nav.priorityWindows",
+  "Constitutional Calendar": "nav.calendar",
+  "Enterprise Updates": "nav.updates",
+  "Syndicates": "nav.syndicates",
+  "Career Ledger": "nav.careerLedger",
+  "Mentorship": "nav.mentorship",
+  "Skill-to-Equity": "nav.skillEquity",
+  "AI Salary Engine": "nav.salary",
+  "Diaspora Bridge": "nav.diaspora",
+  "Governance": "nav.governance",
+  "Manager Console": "nav.manager",
+  "Founding Operator Studio": "nav.founder",
+  "Enterprise Profile": "nav.enterpriseProfile",
+  "Pitch Deck Generator": "nav.pitchDeck",
+  "Milestone Designer": "nav.milestoneDesigner",
+  "Board Member Console": "nav.boardMember",
+  "Board Briefings": "nav.boardBriefings",
+  "Succession Planner": "nav.succession",
+  "Partner CRM": "nav.partnerCrm",
+  "Brain AI Status": "nav.brainAi",
+  "Precedent Engine": "nav.precedents",
+  "Drift Detector": "nav.drift",
+  "Anomaly Narration": "nav.anomalies",
+  "Charter Diff": "nav.charterDiff",
+  "Constitution Guide": "nav.constitutionGuide",
+  "Notifications": "nav.notifications",
+  "AI Copilot": "nav.copilot",
+  "Compliance": "nav.compliance",
+  "Workforce Registry": "nav.workforce",
+  "Whistleblower": "nav.whistleblower",
+  "Appeal Court": "nav.appeals",
+  "Risk Disclosure": "nav.riskDisclosure",
+  "Vendor Portal": "nav.vendorPortal",
+  "Law Firm Client Accounts": "nav.escrow",
+  "Anti-Fragility Vault": "nav.antifragility",
+  "Insurance Vault": "nav.vault",
+  "Proof-of-Solvency": "nav.solvency",
+  "Oracle Mirror": "nav.oracleMirror",
+  "Reality Sync": "nav.realitySync",
+  "Institutional Memory": "nav.institutionalMemory",
+  "Graduation": "nav.graduation",
+  "Graduation Coach": "nav.graduationCoach",
+  "Graduation Simulator": "nav.graduationSimulator",
+  "Survival Drill": "nav.survivalDrill",
+  "Alumni Hall": "nav.alumni",
+  "Tax Optimizer": "nav.tax",
+  "Capital Partner Relations": "nav.ir",
+  "DRIP (Dividend Reinvest)": "nav.drip",
+  "Partner Management": "nav.adminUsers",
+  "Enterprise Management": "nav.adminEnterprises",
+  "Steward Dashboard": "nav.steward",
+  "Institutional Architecture": "nav.architecture",
+  "Governance System": "nav.governanceModel",
+  "Institutional Readiness": "nav.institutionalReadiness",
+  "Operating System (AOS)": "nav.operatingSystem",
+  "Commercialization (ACS)": "nav.commercialization",
+  "Production Readiness": "nav.productionReadiness",
+  "Pilot Execution": "nav.pilotExecution",
+  "Global Launch (GLS)": "nav.globalLaunch",
+  "Founder Office (FOCC)": "nav.founderOffice",
+  "Institutional Trust (ITDB)": "nav.institutionalTrust",
+  "Market Execution (MES)": "nav.marketExecution",
+  "Market Activation": "nav.marketActivation",
+  "Customer Conversion": "nav.customerConversion",
+  "Strategic Partners": "nav.strategicPartners",
+  "Execution War Room": "nav.executionWarRoom",
+  "First 25 Research": "nav.firstResearch",
+  "Constitutional Audit": "nav.constitutionalAudit",
+  "Audit Log Viewer": "nav.auditLog",
+  "Institutional Settings": "nav.adminSettings",
+  "FRA Regulatory": "nav.fra",
+  "Company Owner": "nav.companyOwner",
+  "Law Firm Rep": "nav.lawFirm",
+  "Accounting Firm": "nav.accounting",
+  "Industry Modules": "nav.industry",
+  "Federation": "nav.federation",
+  "VC Wallet": "nav.credentials",
+  "University Rep Console": "nav.university",
+};
+
+// Group translation map
+const GROUP_I18N: Record<string, string> = {
+  "Workspace": "group.workspace",
+  "Capital & Workforce": "group.capitalWorkforce",
+  "Enterprise": "group.enterprise",
+  "Intelligence": "group.intelligence",
+  "Compliance & Transparency": "group.compliance",
+  "Treasury & Infrastructure": "group.treasury",
+  "Graduation & Sovereignty": "group.graduation",
+  "Institutional Services": "group.services",
+  "Platform Admin": "group.admin",
+};
 
 const NAV: NavItem[] = [
   // ── Workspace (6) ──
@@ -257,6 +357,18 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { t } = useLanguage();
+
+  // Helper: translate a nav label via the NAV_I18N map
+  const tNav = (label: string) => {
+    const key = NAV_I18N[label];
+    return key ? t(key) : label;
+  };
+  // Helper: translate a group name via the GROUP_I18N map
+  const tGroup = (group: string) => {
+    const key = GROUP_I18N[group];
+    return key ? t(key) : group;
+  };
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const level = stsLevel(user.sovereignTrustScore);
 
@@ -678,7 +790,7 @@ function SidebarContent({
                 aria-expanded={!isCollapsed}
                 aria-label={`Toggle ${group} section`}
               >
-                <span>{group}</span>
+                <span>{tGroup(group)}</span>
                 <span className="flex items-center gap-1.5">
                   <span className="font-mono text-[11px] text-muted-foreground/85">{items.length}</span>
                   <ChevronDown className={cn("h-3 w-3 transition-transform", isCollapsed ? "-rotate-90" : "")} />
@@ -709,7 +821,7 @@ function SidebarContent({
                             )}
                           >
                             <item.icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-gold/70 group-hover:text-gold")} />
-                            <span className="truncate">{item.label}</span>
+                            <span className="truncate">{tNav(item.label)}</span>
                           </Link>
                         );
                       })}
