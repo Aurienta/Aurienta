@@ -9,6 +9,7 @@ import { VotingModal } from "./voting-modal";
 import { isExpired, type ProposalForUi, type EnterpriseForUi } from "./types";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   proposals: ProposalForUi[];
@@ -17,14 +18,15 @@ type Props = {
 
 type FilterKey = "all" | "open" | "executed" | "expired";
 
-const FILTERS: { key: FilterKey; label: string; icon: React.ElementType }[] = [
-  { key: "all", label: "All", icon: Scale },
-  { key: "open", label: "Voting open", icon: Gavel },
-  { key: "executed", label: "Executed", icon: CheckCircle2 },
+const FILTERS: { key: FilterKey; label: string; tKey?: string; icon: React.ElementType }[] = [
+  { key: "all", label: "All", tKey: "common.all", icon: Scale },
+  { key: "open", label: "Voting open", tKey: "gov.votingOpen", icon: Gavel },
+  { key: "executed", label: "Executed", tKey: "gov.executed", icon: CheckCircle2 },
   { key: "expired", label: "Expired", icon: Clock },
 ];
 
 export function GovernanceBoard({ proposals, enterprises }: Props) {
+  const { t } = useLanguage();
   const [filter, setFilter] = React.useState<FilterKey>("all");
   const [votingProposal, setVotingProposal] = React.useState<ProposalForUi | null>(null);
 
@@ -130,7 +132,7 @@ export function GovernanceBoard({ proposals, enterprises }: Props) {
                 />
               )}
               <f.icon className="relative z-10 h-3.5 w-3.5" />
-              <span className="relative z-10">{f.label}</span>
+              <span className="relative z-10">{f.tKey ? t(f.tKey) : f.label}</span>
               <span
                 className={cn(
                   "relative z-10 ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-mono text-[11px]",

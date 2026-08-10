@@ -10,6 +10,8 @@ import type {
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Founding Operator Studio · AURIENTA" };
+
 export default async function FounderStudioPage() {
   const user = await getCurrentUser();
   if (!user) return null; // layout.tsx handles the redirect.

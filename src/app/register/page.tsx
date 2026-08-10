@@ -4,7 +4,7 @@ import { AuthFooter } from "@/components/auth/auth-footer";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Become a Partner · AURIENTA — Constitutional Enterprise Infrastructure",
+  title: "Become a Partner · AURIENTA",
   description:
     "Register as a Constitutional Partner on AURIENTA. Identity, KYC, role & intent, the Constitutional Pledge, and activation — in under 5 minutes.",
 };

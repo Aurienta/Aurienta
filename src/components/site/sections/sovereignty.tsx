@@ -1,7 +1,10 @@
+"use client";
+
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { GoldStar } from "@/components/aurienta-logo";
 import { Sprout, TrendingUp, Building2, Crown } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const STAGES = [
   {
@@ -46,17 +49,26 @@ const ALUMNI = [
 ];
 
 export function Sovereignty() {
+  const { t } = useLanguage();
+
+  // Split the sovereignty description at the first sentence boundary so the
+  // gold-gradient emphasis on the second sentence is preserved across locales.
+  const desc = t("sovereignty.description");
+  const periodIdx = desc.indexOf(". ");
+  const descFirst = periodIdx >= 0 ? desc.slice(0, periodIdx + 1) : desc;
+  const descSecond = periodIdx >= 0 ? desc.slice(periodIdx + 2) : "";
+
   return (
     <section id="sovereignty" className="relative overflow-hidden py-28 sm:py-36">
       <div className="absolute inset-0 -z-10 aurienta-radial opacity-40" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
-          eyebrow="Graduation & Sovereignty"
+          eyebrow={t("sovereignty.title")}
           title={
             <>
-              Dependency is transitional.
+              {descFirst}
               <br />
-              <span className="text-gold-gradient">Sovereignty is the destination.</span>
+              {descSecond && <span className="text-gold-gradient">{descSecond}</span>}
             </>
           }
           description="A successful constitutional launchpad makes itself unnecessary. AURIENTA exists to create sovereign enterprises that no longer require its infrastructure. Graduation is not an exit — it is the climax of the journey."

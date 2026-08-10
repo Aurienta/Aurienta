@@ -45,6 +45,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { egp, pct, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Enterprise = {
   id: string;
@@ -128,6 +129,7 @@ export function VaultClient({
   initialLoans: VaultLoan[];
 }) {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const [selectedId, setSelectedId] = React.useState<string>(
     enterprises[0]?.id ?? ""
@@ -341,15 +343,15 @@ export function VaultClient({
                   accent
                 />
                 <Stat
-                  label="Total contributed"
+                  label={t("vault.totalContributed")}
                   value={egp(vault.totalContributedEgp, { compact: true })}
                 />
                 <Stat
-                  label="Total loaned"
+                  label={t("vault.totalLoaned")}
                   value={egp(vault.totalLoanedEgp, { compact: true })}
                 />
                 <Stat
-                  label="Total repaid"
+                  label={t("vault.totalRepaid")}
                   value={egp(vault.totalRepaidEgp, { compact: true })}
                 />
               </div>
@@ -405,7 +407,7 @@ export function VaultClient({
           <div className="flex items-center gap-2">
             <GoldStar className="h-3 w-3" />
             <CardTitle className="font-serif text-base font-semibold">
-              Loan history
+              {t("vault.loanHistory")}
             </CardTitle>
             <span className="ml-auto font-mono text-xs text-muted-foreground/80">
               {enterpriseLoans.length} loan{enterpriseLoans.length === 1 ? "" : "s"} ·
@@ -435,10 +437,10 @@ export function VaultClient({
                       Loan
                     </TableHead>
                     <TableHead className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Amount
+                      {t("ui.amount")}
                     </TableHead>
                     <TableHead className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Reason
+                      {t("vault.loanReason")}
                     </TableHead>
                     <TableHead className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
                       Board vote

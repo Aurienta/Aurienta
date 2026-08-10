@@ -1,9 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { Reveal } from "@/components/site/reveal";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { ChevronRight, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function FinalCta() {
+  const { t } = useLanguage();
+
+  // Split the final-CTA subtitle at the em-dash so the gold-gradient emphasis
+  // on the second half is preserved across locales.
+  const subtitle = t("finalCta.subtitle");
+  const dashIdx = subtitle.indexOf(" — ");
+  const subtitleFirst = dashIdx >= 0 ? subtitle.slice(0, dashIdx) : subtitle;
+  const subtitleSecond = dashIdx >= 0 ? subtitle.slice(dashIdx + 3) : "";
+
   return (
     <section className="relative overflow-hidden py-28 sm:py-36">
       <div className="absolute inset-0 -z-10 aurienta-radial" />
@@ -21,15 +33,16 @@ export function FinalCta() {
                 <span className="h-px w-8 bg-gradient-to-r from-transparent to-gold/50" />
                 <GoldStar className="h-3.5 w-3.5" />
                 <span className="font-sans text-[11px] font-medium uppercase tracking-[0.24em] text-gold-light/80">
-                  The Constitutional Pledge
+                  {t("finalCta.title")}
                 </span>
                 <GoldStar className="h-3.5 w-3.5" />
                 <span className="h-px w-8 bg-gradient-to-l from-transparent to-gold/50" />
               </div>
 
               <h2 className="mt-6 max-w-2xl font-serif text-3xl font-semibold leading-[1.2] sm:text-4xl md:text-5xl">
-                Your capital, your work, your company —
-                <span className="text-gold-gradient"> no speculation required.</span>
+                {subtitleFirst}{subtitleSecond && (
+                  <span className="text-gold-gradient"> — {subtitleSecond}</span>
+                )}
               </h2>
 
               <p className="mt-6 max-w-xl font-sans text-base leading-relaxed text-muted-foreground">
@@ -43,7 +56,7 @@ export function FinalCta() {
                   href="/register"
                   className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)]"
                 >
-                  Become a Constitutional Partner
+                  {t("finalCta.button")}
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link

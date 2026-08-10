@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/site/section-heading";
 import { motion } from "framer-motion";
 import { Cpu, Landmark, Database, Coins, ArrowRight } from "lucide-react";
 import { GoldStar } from "@/components/aurienta-logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const SYSTEMS = [
   {
@@ -66,20 +67,19 @@ const JOURNEY = [
 ];
 
 export function Architecture() {
+  const { t } = useLanguage();
   return (
     <section id="how-it-works" className="relative overflow-hidden py-28 sm:py-36">
       <div className="absolute inset-0 -z-10 aurienta-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
-          eyebrow="The Infrastructure"
+          eyebrow={t("architecture.eyebrow")}
           title={
             <>
-              Four systems that make capital
-              <br />
-              <span className="text-gold-gradient">constitutionally unbreakable.</span>
+              {t("architecture.title")}
             </>
           }
-          description="Friction is engineered out, not managed. Each layer is deterministic, auditable, and unable to be bypassed — by any party."
+          description={t("architecture.description")}
         />
 
         <StaggerGroup className="mt-16 grid gap-5 md:grid-cols-2">
@@ -115,15 +115,14 @@ export function Architecture() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <span className="font-sans text-[11px] font-medium uppercase tracking-[0.24em] text-gold-light/80">
-                  A worked example
+                  {t("architecture.workedExample")}
                 </span>
                 <h3 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">
-                  From 500 EGP to Constitutional Partner
+                  {t("architecture.exampleTitle")}
                 </h3>
               </div>
               <p className="max-w-sm font-sans text-sm text-muted-foreground">
-                Every Network Participant — from a student with 50 EGP to a sovereign fund —
-                becomes a legally recognised Constitutional Partner.
+                {t("architecture.exampleDescription")}
               </p>
             </div>
 

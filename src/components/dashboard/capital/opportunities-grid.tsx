@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { egp, pct } from "@/lib/aurienta/format";
 import { TIER_META } from "@/lib/aurienta/constants";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   ReserveSharesDialog,
   type ReserveTarget,
@@ -58,7 +59,7 @@ export type Opportunity = {
 };
 
 const PHASE_TABS = [
-  { value: "all", label: "All", status: ["active", "fundraising_active", "fundraising_closed", "graduation_pending"] },
+  { value: "all", label: "All", tKey: "common.all", status: ["active", "fundraising_active", "fundraising_closed", "graduation_pending"] },
   { value: "active", label: "Active Capital Formation", status: ["fundraising_active"] },
   { value: "closed", label: "Closed Capital Formation", status: ["fundraising_closed", "graduation_pending"] },
   { value: "milestone", label: "Milestone unlock", status: ["active"] },
@@ -72,8 +73,9 @@ export function OpportunitiesGrid({
   const [phase, setPhase] = React.useState<string>("all");
   const [target, setTarget] = React.useState<Opportunity | null>(null);
   const [open, setOpen] = React.useState(false);
+  const { t } = useLanguage();
 
-  const activeTab = PHASE_TABS.find((t) => t.value === phase) ?? PHASE_TABS[0];
+  const activeTab = PHASE_TABS.find((tab) => tab.value === phase) ?? PHASE_TABS[0];
   const filtered = opportunities.filter((o) =>
     (activeTab.status as readonly string[]).includes(o.status)
   );
@@ -89,13 +91,13 @@ export function OpportunitiesGrid({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Tabs value={phase} onValueChange={setPhase}>
           <TabsList className="grid h-auto w-full grid-cols-2 gap-1 bg-gold/[0.04] p-1 sm:flex sm:w-auto sm:grid-cols-4">
-            {PHASE_TABS.map((t) => (
+            {PHASE_TABS.map((tab) => (
               <TabsTrigger
-                key={t.value}
-                value={t.value}
+                key={tab.value}
+                value={tab.value}
                 className="font-sans text-[11px] data-[state=active]:bg-gold-gradient data-[state=active]:text-black"
               >
-                {t.label}
+                {"tKey" in tab ? t(tab.tKey) : tab.label}
               </TabsTrigger>
             ))}
           </TabsList>

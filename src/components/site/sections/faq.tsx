@@ -1,3 +1,5 @@
+"use client";
+
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import {
@@ -6,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const FAQ = [
   {
@@ -43,11 +46,12 @@ const FAQ = [
 ];
 
 export function Faq() {
+  const { t } = useLanguage();
   return (
     <section id="faq" className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-4xl px-5 sm:px-8">
         <SectionHeading
-          eyebrow="Constitutional Questions"
+          eyebrow={t("faq.title")}
           title={
             <>
               Answers as deterministic

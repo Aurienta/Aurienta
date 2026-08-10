@@ -4,6 +4,7 @@ import { Reveal, StaggerGroup, staggerItem } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { motion } from "framer-motion";
 import { Landmark, FileCheck2, ShieldCheck, Scale, Building2, Users, Cpu, Brain, ScanFace } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const REGULATORY = [
   { icon: Landmark, title: "FRA", body: "No-action letter — classified as technology, governance & matchmaking infrastructure, not crowdfunding." },
@@ -26,11 +27,12 @@ const AI = [
 ];
 
 export function Compliance() {
+  const { t } = useLanguage();
   return (
     <section className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
-          eyebrow="Egyptian Compliance, Built In"
+          eyebrow={t("compliance.title")}
           title={
             <>
               Regulator-aligned by design,

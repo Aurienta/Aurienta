@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { egp } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 import { SubmitExpenseDialog } from "./submit-expense-dialog";
 import { ApproveExpenseButton } from "./approve-expense-button";
 
@@ -57,6 +58,7 @@ export function ExpenseDashboard({
   canApprove: boolean;
 }) {
   const [filter, setFilter] = React.useState<FilterKey>("all");
+  const { t } = useLanguage();
 
   const counts = React.useMemo(() => {
     return {
@@ -115,7 +117,7 @@ export function ExpenseDashboard({
             onClick={onExport}
             className="h-10 border-gold/25 text-foreground hover:bg-gold/5"
           >
-            <Download className="h-4 w-4" /> Export
+            <Download className="h-4 w-4" /> {t("ui.export")}
           </Button>
           <SubmitExpenseDialog
             enterpriseId={enterpriseId}
@@ -131,15 +133,15 @@ export function ExpenseDashboard({
         <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterKey)}>
           <TabsList className="bg-muted/60">
             <TabsTrigger value="all" className="gap-1.5">
-              All
+              {t("common.all")}
               <Count n={counts.all} />
             </TabsTrigger>
             <TabsTrigger value="pending" className="gap-1.5">
-              Pending
+              {t("ui.pending")}
               <Count n={counts.pending} />
             </TabsTrigger>
             <TabsTrigger value="approved" className="gap-1.5">
-              Approved
+              {t("ui.approved")}
               <Count n={counts.approved} />
             </TabsTrigger>
             <TabsTrigger value="flagged" className="gap-1.5">
@@ -164,22 +166,22 @@ export function ExpenseDashboard({
             <TableHeader>
               <TableRow className="border-gold/10 hover:bg-transparent">
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                  Date
+                  {t("ui.date")}
                 </TableHead>
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                  Description
+                  {t("ui.description")}
                 </TableHead>
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
                   Vendor
                 </TableHead>
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                  Category
+                  {t("ui.category")}
                 </TableHead>
                 <TableHead className="text-right font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                  Amount
+                  {t("ui.amount")}
                 </TableHead>
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t("ui.status")}
                 </TableHead>
                 <TableHead className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
                   AI risk

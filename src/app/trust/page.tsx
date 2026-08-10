@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Trust & Zero-Custody Proof · AURIENTA",
+  title: "Trust · AURIENTA",
   description:
     "AURIENTA's public trust dashboard — zero-custody proof, Law Firm Client Account reconciliation, AI health, compliance integrations, and recent graduations. Constitutional trust, proven not promised.",
 };

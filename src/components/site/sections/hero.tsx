@@ -5,6 +5,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShieldCheck, Lock, Cpu, ChevronRight, ArrowDown } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
+import { useLanguage } from "@/lib/i18n/language-context";
+
+const TRUST_KEYS = [
+  { icon: Lock, key: "hero.badge.zeroCustody" },
+  { icon: Cpu, key: "hero.badge.aiGovernance" },
+  { icon: ShieldCheck, key: "hero.badge.fraNoAction" },
+] as const;
 
 function OrbitRings() {
   return (
@@ -65,13 +72,8 @@ function FloatingParticles() {
   );
 }
 
-const TRUST = [
-  { icon: Lock, label: "Zero Custody" },
-  { icon: Cpu, label: "AI-Enforced Governance" },
-  { icon: ShieldCheck, label: "FRA No-Action Letter" },
-];
-
 export function Hero() {
+  const { t } = useLanguage();
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 pt-28 pb-20 sm:px-8">
       <div className="absolute inset-0 -z-10 aurienta-radial" />
@@ -94,7 +96,7 @@ export function Hero() {
         >
           <GoldStar className="h-3 w-3" />
           <span className="font-sans text-[11px] font-medium uppercase tracking-[0.24em] text-gold-light/90">
-            Constitutional Enterprise Infrastructure
+            {t("hero.badge")}
           </span>
         </motion.div>
 
@@ -150,14 +152,14 @@ export function Hero() {
             href="/register"
             className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)] active:scale-[0.98]"
           >
-            Become a Constitutional Partner
+            {t("hero.cta.primary")}
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <Link
             href="#constitution"
             className="group inline-flex items-center gap-2 rounded-full border border-gold/25 bg-background/40 px-8 py-4 font-sans text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gold/50 hover:bg-gold/5 active:scale-[0.98]"
           >
-            Explore the Constitution
+            {t("hero.cta.secondary")}
             <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-1" />
           </Link>
         </motion.div>
@@ -168,13 +170,13 @@ export function Hero() {
           transition={{ delay: 0.86, duration: 0.7 }}
           className="mt-12 flex flex-wrap items-center justify-center gap-x-7 gap-y-3"
         >
-          {TRUST.map((t) => (
+          {TRUST_KEYS.map((trust) => (
             <span
-              key={t.label}
+              key={trust.key}
               className="inline-flex items-center gap-2 font-sans text-xs text-muted-foreground"
             >
-              <t.icon className="h-4 w-4 text-gold" />
-              {t.label}
+              <trust.icon className="h-4 w-4 text-gold" />
+              {t(trust.key)}
             </span>
           ))}
         </motion.div>
@@ -189,7 +191,7 @@ export function Hero() {
         <div className="flex items-center gap-2 rounded-full border border-gold/10 bg-background/50 px-4 py-2 backdrop-blur-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_2px_rgba(52,211,153,0.6)]" />
           <span className="font-mono text-xs text-muted-foreground/85">
-            Constitutional Hash · 0xB4F8…E7D1A · live on immutable ledger
+            {t("hero.hash")} · 0xB4F8…E7D1A · {t("hero.hashLive")}
           </span>
         </div>
       </motion.div>

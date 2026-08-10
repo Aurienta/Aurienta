@@ -5,7 +5,7 @@ import { Brain, Cpu, Zap, Database, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export const metadata = { title: "Brain AI · AURIENTA" };
+export const metadata = { title: "Brain AI Status · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 export default async function BrainAiPage() {

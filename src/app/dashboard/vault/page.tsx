@@ -6,7 +6,7 @@ import { VaultClient } from "@/components/dashboard/transparency/vault-client";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Anti-Fragility Insurance Vault · AURIENTA",
+  title: "Insurance Vault · AURIENTA",
   description:
     "0.5% constitutional levy, 20% cap, 24-month non-recourse loans — the collective reserve that converts exogenous shocks into survivable events.",
 };

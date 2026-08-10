@@ -19,7 +19,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Law Firm Client Account Console · AURIENTA",
+  title: "Law Firm Client Accounts · AURIENTA",
   description:
     "Per-enterprise Law Firm Client Accounts, zero-custody proof, health flags, and automatic failover. AURIENTA never holds a piastre.",
 };

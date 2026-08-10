@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { egp } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type SalaryResult = {
   baseEgp: number;
@@ -99,6 +100,7 @@ export function SalaryCalculatorClient({
   user: { id: string; legalName: string };
 }) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [position, setPosition] = React.useState("software_engineer");
   const [tier, setTier] = React.useState("C");
   const [region, setRegion] = React.useState("cairo");
@@ -219,7 +221,7 @@ export function SalaryCalculatorClient({
             {/* Position */}
             <div className="flex flex-col gap-1.5">
               <Label className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                Position
+                {t("salary.position")}
               </Label>
               <Select value={position} onValueChange={setPosition}>
                 <SelectTrigger className="border-gold/20 bg-background/40">
@@ -256,7 +258,7 @@ export function SalaryCalculatorClient({
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Region
+                  {t("salary.region")}
                 </Label>
                 <Select value={region} onValueChange={setRegion}>
                   <SelectTrigger className="border-gold/20 bg-background/40">
@@ -277,7 +279,7 @@ export function SalaryCalculatorClient({
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Label className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Performance score
+                  {t("salary.performance")}
                 </Label>
                 <span className="font-mono text-sm text-gold-light">
                   ×{performance.toFixed(2)}
@@ -302,7 +304,7 @@ export function SalaryCalculatorClient({
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Label className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Profit factor
+                  {t("salary.profitFactor")}
                 </Label>
                 <span className="font-mono text-sm text-gold-light">
                   ×{profit.toFixed(2)}
@@ -350,7 +352,7 @@ export function SalaryCalculatorClient({
               ) : (
                 <Sparkles className="mr-2 h-4 w-4" />
               )}
-              {submitting ? "Calculating…" : "Calculate salary"}
+              {submitting ? t("misc.loading") : t("salary.calculate")}
             </Button>
           </CardContent>
         </Card>

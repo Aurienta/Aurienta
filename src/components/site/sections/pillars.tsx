@@ -4,46 +4,48 @@ import { Reveal, StaggerGroup, staggerItem } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { motion } from "framer-motion";
 import { Lock, Cpu, LineChart, Landmark, Eye } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const PILLARS = [
   {
     n: "01",
     icon: Lock,
-    title: "Zero Custody",
+    titleKey: "pillars.moneyProtection",
     body: "AURIENTA never holds, touches, or controls partner funds. Capital flows directly from a partner's bank account to a licensed law firm's Law Firm Client Account. AURIENTA only orchestrates metadata.",
     detail: "Non-amendable Rule I 1.1",
   },
   {
     n: "02",
     icon: Cpu,
-    title: "AI-Locked Governance",
+    titleKey: "pillars.governanceIntegrity",
     body: "The Constitutional Runtime Engine validates every state transition against Rego policies — deterministic, fail-secure. If consensus cannot be reached within 500ms, the action is rejected by default. Silence is denial.",
     detail: "CRE · 3-node Raft consensus",
   },
   {
     n: "03",
     icon: LineChart,
-    title: "Fundamental Pricing",
+    titleKey: "pillars.fairness",
     body: "Valuation is derived exclusively from fundamental financial metrics, sector benchmarks, and AI-forecasted growth — never from speculation or momentum. A ±5% constitutional price band governs the Enterprise Registry.",
     detail: "JOZOUR v3 · 7-step engine",
   },
   {
     n: "04",
     icon: Landmark,
-    title: "Legal Classification",
+    titleKey: "pillars.legalCompliance",
     body: "AURIENTA is classified as technology, governance, and matchmaking infrastructure — not crowdfunding. An FRA no-action letter has been obtained. An Egyptian LLC under Companies Law 159/1981.",
     detail: "FRA no-action letter",
   },
   {
     n: "05",
     icon: Eye,
-    title: "Transparent & Fair",
+    titleKey: "pillars.transparency",
     body: "No hidden spending. Every financial event is visible to all Constitutional Partners in real time. One Equity Unit carries one vote. No super-voting Equity Units, no Founding Operator vetoes, no undisclosed discussions influencing governance.",
     detail: "Non-amendable Rule I 1.10",
   },
-];
+] as const;
 
 export function Pillars() {
+  const { t } = useLanguage();
   return (
     <section id="pillars" className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -73,7 +75,7 @@ export function Pillars() {
                 </div>
                 <span className="font-serif text-2xl font-semibold text-gold/30">{p.n}</span>
               </div>
-              <h3 className="mt-5 font-serif text-xl font-semibold leading-tight">{p.title}</h3>
+              <h3 className="mt-5 font-serif text-xl font-semibold leading-tight">{t(p.titleKey)}</h3>
               <p className="mt-3 flex-1 font-sans text-sm leading-relaxed text-muted-foreground">
                 {p.body}
               </p>

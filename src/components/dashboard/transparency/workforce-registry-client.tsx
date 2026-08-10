@@ -15,6 +15,7 @@ import { GoldStar } from "@/components/aurienta-logo";
 import { Badge } from "@/components/ui/badge";
 import { egp, pct, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export type WorkforceRow = {
   id: string;
@@ -49,10 +50,10 @@ type EntLite = {
   nosiCompliantPct: number;
 };
 
-const NOSI_LABELS: Record<string, { label: string; cls: string }> = {
-  registered: { label: "Registered", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" },
-  pending: { label: "Pending", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" },
-  missing: { label: "Missing", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" },
+const NOSI_LABELS: Record<string, { label: string; tKey?: string; cls: string }> = {
+  registered: { label: "Registered", tKey: "wf.nosi.registered", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" },
+  pending: { label: "Pending", tKey: "wf.nosi.pending", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" },
+  missing: { label: "Missing", tKey: "wf.nosi.missing", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" },
 };
 
 const EMP_TYPE_LABELS: Record<string, string> = {
@@ -70,6 +71,7 @@ export function WorkforceRegistryClient({
 }) {
   const [activeEnt, setActiveEnt] = React.useState<string>("all");
   const [openId, setOpenId] = React.useState<string | null>(null);
+  const { t } = useLanguage();
 
   const filtered =
     activeEnt === "all" ? employees : employees.filter((e) => e.enterpriseId === activeEnt);
@@ -216,7 +218,7 @@ export function WorkforceRegistryClient({
                             nosiMeta.cls
                           )}
                         >
-                          {nosiMeta.label}
+                          {nosiMeta.tKey ? t(nosiMeta.tKey) : nosiMeta.label}
                         </span>
                         {e.nosiNumber && (
                           <div className="mt-1 font-mono text-[11px] text-muted-foreground/85">{e.nosiNumber}</div>

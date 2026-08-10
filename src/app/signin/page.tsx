@@ -5,7 +5,7 @@ import { AuthFooter } from "@/components/auth/auth-footer";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Sign In · AURIENTA — Constitutional Enterprise Infrastructure",
+  title: "Sign in · AURIENTA",
   description:
     "Sign in to your AURIENTA constitutional workspace. Ed25519 Identity Anchor · HSM-backed · Zero Custody.",
 };

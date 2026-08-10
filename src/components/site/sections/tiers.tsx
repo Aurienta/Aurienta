@@ -4,11 +4,12 @@ import { Reveal, StaggerGroup, staggerItem } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { motion } from "framer-motion";
 import { GraduationCap, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const TIERS = [
   {
     tier: "A",
-    name: "Micro",
+    nameKey: "tiers.a.name",
     form: "LLC",
     raise: "Up to 3M EGP",
     min: "50 EGP",
@@ -19,7 +20,7 @@ const TIERS = [
   },
   {
     tier: "B",
-    name: "Small",
+    nameKey: "tiers.b.name",
     form: "LLC",
     raise: "Up to 25M EGP",
     min: "50 EGP",
@@ -30,7 +31,7 @@ const TIERS = [
   },
   {
     tier: "C",
-    name: "Growth",
+    nameKey: "tiers.c.name",
     form: "LLC",
     raise: "Unlimited",
     min: "50 EGP",
@@ -41,7 +42,7 @@ const TIERS = [
   },
   {
     tier: "D",
-    name: "Established",
+    nameKey: "tiers.d.name",
     form: "LLC",
     raise: "Unlimited",
     min: "50,000 EGP",
@@ -52,7 +53,7 @@ const TIERS = [
   },
   {
     tier: "E",
-    name: "University",
+    nameKey: "tiers.e.name",
     form: "SPV",
     raise: "Up to 5M EGP",
     min: "50 EGP",
@@ -63,7 +64,7 @@ const TIERS = [
   },
   {
     tier: "F",
-    name: "Joint Stock",
+    nameKey: "tiers.f.name",
     form: "JSC",
     raise: "Unlimited",
     min: "1 unit",
@@ -72,7 +73,7 @@ const TIERS = [
     trait: "EGX listing",
     accent: "from-yellow-400/20",
   },
-];
+] as const;
 
 const COMPARISON = [
   { label: "Legal form", a: "LLC", b: "LLC", c: "LLC", d: "LLC", e: "SPV", f: "JSC" },
@@ -86,11 +87,12 @@ const COMPARISON = [
 ];
 
 export function Tiers() {
+  const { t } = useLanguage();
   return (
     <section id="tiers" className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
-          eyebrow="Enterprise Tiers A–F"
+          eyebrow={t("tiers.title")}
           title={
             <>
               A constitutional ladder from
@@ -102,24 +104,24 @@ export function Tiers() {
 
         {/* tier cards */}
         <StaggerGroup className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {TIERS.map((t) => (
+          {TIERS.map((tier) => (
             <motion.div
-              key={t.tier}
+              key={tier.tier}
               variants={staggerItem}
               className="group relative overflow-hidden rounded-2xl glass p-6 transition-all duration-500 hover:-translate-y-1 hover:border-gold/30"
             >
-              <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${t.accent} to-transparent blur-2xl`} />
+              <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${tier.accent} to-transparent blur-2xl`} />
               <div className="relative flex items-start justify-between">
                 <div>
                   <div className="flex items-baseline gap-2">
-                    <span className="font-serif text-5xl font-semibold text-gold-gradient">T{t.tier}</span>
+                    <span className="font-serif text-5xl font-semibold text-gold-gradient">T{tier.tier}</span>
                     <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                      Tier {t.tier}
+                      Tier {tier.tier}
                     </span>
                   </div>
-                  <h3 className="mt-2 font-serif text-2xl font-semibold">{t.name}</h3>
+                  <h3 className="mt-2 font-serif text-2xl font-semibold">{t(tier.nameKey)}</h3>
                   <span className="mt-1 inline-block font-mono text-xs uppercase tracking-wider text-gold/60">
-                    {t.form} · {t.trait}
+                    {tier.form} · {tier.trait}
                   </span>
                 </div>
               </div>
@@ -127,19 +129,19 @@ export function Tiers() {
               <dl className="relative mt-6 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-gold/10 pt-5">
                 <div>
                   <dt className="font-sans text-xs uppercase tracking-wider text-muted-foreground">Max raise</dt>
-                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{t.raise}</dd>
+                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{tier.raise}</dd>
                 </div>
                 <div>
                   <dt className="font-sans text-xs uppercase tracking-wider text-muted-foreground">Min. participation</dt>
-                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{t.min}</dd>
+                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{tier.min}</dd>
                 </div>
                 <div>
                   <dt className="font-sans text-xs uppercase tracking-wider text-muted-foreground">Founding Operator equity</dt>
-                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{t.equity}</dd>
+                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{tier.equity}</dd>
                 </div>
                 <div>
                   <dt className="font-sans text-xs uppercase tracking-wider text-muted-foreground">Fees</dt>
-                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{t.fee}</dd>
+                  <dd className="mt-0.5 font-sans text-sm font-medium text-foreground">{tier.fee}</dd>
                 </div>
               </dl>
             </motion.div>
@@ -151,10 +153,10 @@ export function Tiers() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-gold/10 bg-background/40 p-5">
             <GraduationCap className="h-5 w-5 text-gold" />
             <span className="font-sans text-sm text-muted-foreground">Graduation path:</span>
-            {["A", "B", "C", "D", "E", "F"].map((t, i) => (
-              <span key={t} className="flex items-center gap-2">
+            {["A", "B", "C", "D", "E", "F"].map((tierId, i) => (
+              <span key={tierId} className="flex items-center gap-2">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gold/25 bg-gold/5 font-serif text-sm font-semibold text-gold-light">
-                  {t}
+                  {tierId}
                 </span>
                 {i < 5 && <ChevronRight className="h-3.5 w-3.5 text-gold/40" />}
               </span>
@@ -173,11 +175,11 @@ export function Tiers() {
                     <th className="px-5 py-4 font-sans text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                       Parameter
                     </th>
-                    {TIERS.map((t) => (
-                      <th key={t.tier} className="px-5 py-4 text-center">
-                        <span className="font-serif text-lg font-semibold text-gold-gradient">T{t.tier}</span>
+                    {TIERS.map((tier) => (
+                      <th key={tier.tier} className="px-5 py-4 text-center">
+                        <span className="font-serif text-lg font-semibold text-gold-gradient">T{tier.tier}</span>
                         <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground">
-                          {t.name}
+                          {t(tier.nameKey)}
                         </span>
                       </th>
                     ))}

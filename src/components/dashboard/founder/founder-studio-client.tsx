@@ -11,6 +11,7 @@ import type { FounderEnterprise, FounderMilestone } from "./types";
 import { EnterpriseCard } from "./enterprise-card";
 import { EnterpriseDetailDialog } from "./enterprise-detail-dialog";
 import { NewEnterpriseWizard } from "./new-enterprise-wizard";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function FounderStudioClient({
   enterprises,
@@ -25,6 +26,7 @@ export function FounderStudioClient({
   const [list, setList] = React.useState<FounderEnterprise[]>(enterprises);
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [detailEnterprise, setDetailEnterprise] = React.useState<FounderEnterprise | null>(null);
+  const { t } = useLanguage();
 
   // Keep local state in sync with server-side data when the page is re-rendered.
   React.useEffect(() => {
@@ -74,7 +76,7 @@ export function FounderStudioClient({
             <div className="flex items-center gap-2.5">
               <AurientaMark className="h-6 w-6" />
               <span className="font-sans text-[11px] font-medium uppercase tracking-[0.22em] text-gold-light/80">
-                Founding Operator Studio
+                {t("nav.founder")}
               </span>
             </div>
             <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight sm:text-4xl">

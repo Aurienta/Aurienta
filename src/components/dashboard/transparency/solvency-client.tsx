@@ -36,6 +36,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { egp, pct, shortHash, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Enterprise = {
   id: string;
@@ -113,6 +114,7 @@ export function SolvencyClient({
   initialAssertions: Assertion[];
 }) {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const [selectedId, setSelectedId] = React.useState<string>(
     enterprises[0]?.id ?? ""
@@ -370,11 +372,11 @@ export function SolvencyClient({
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <Stat
-                    label="Law firm balance"
+                    label={t("solv.lawFirmBalance")}
                     value={egp(latest.lawFirmBalanceEgp, { compact: true })}
                   />
                   <Stat
-                    label="Internal balance"
+                    label={t("solv.internalBalance")}
                     value={egp(latest.internalBalanceEgp, { compact: true })}
                   />
                   <Stat
@@ -386,7 +388,7 @@ export function SolvencyClient({
                     danger={Math.abs(latest.varianceEgp) > 0}
                   />
                   <Stat
-                    label="Variance %"
+                    label={t("solv.variancePct")}
                     value={pct(latest.variancePct, 2)}
                     danger={latest.variancePct > 0.1}
                   />
@@ -423,7 +425,7 @@ export function SolvencyClient({
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4 text-gold/80" />
               <CardTitle className="font-serif text-sm font-semibold">
-                Submit Balance Assertion
+                {t("solv.submitAssertion")}
               </CardTitle>
             </div>
           </CardHeader>
@@ -487,7 +489,7 @@ export function SolvencyClient({
           <div className="flex items-center gap-2">
             <GoldStar className="h-3 w-3" />
             <CardTitle className="font-serif text-base font-semibold">
-              Historical assertions
+              {t("solv.history")}
             </CardTitle>
             <span className="ml-auto font-mono text-xs text-muted-foreground/80">
               last {enterpriseAssertions.length} · hash-anchored
