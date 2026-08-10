@@ -223,7 +223,7 @@ export async function PATCH(
     const data: {
       verificationLevel?: string;
       tier?: string;
-      primaryIntent?: string;
+      primaryIntent?: string | null;
       policeClearanceValid?: boolean;
       policeClearanceExpiresAt?: Date | null;
     } = {};
