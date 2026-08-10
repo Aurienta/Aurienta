@@ -2,8 +2,7 @@
 // Prisma schema (SQLite). Enums stored as String for SQLite compatibility.
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-x64", "debian-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
