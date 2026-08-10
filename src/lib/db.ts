@@ -10,10 +10,9 @@ function createPrismaClient(): PrismaClient {
   // If the URL starts with libsql:// or http(s)://, use the libSQL adapter.
   // Otherwise fall back to the standard PrismaClient (for local SQLite dev).
   if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
-    // Dynamic import to avoid pulling @libsql/client into client bundles
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // These imports are server-only — next.config.ts serverExternalPackages
+    // prevents them from being bundled into client components.
     const { createClient } = require('@libsql/client')
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { PrismaLibSQL } = require('@prisma/adapter-libsql')
     const authToken = process.env.TURSO_AUTH_TOKEN ?? ''
     const libsql = createClient({ url: databaseUrl, authToken })
