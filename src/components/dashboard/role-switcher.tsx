@@ -80,7 +80,7 @@ export function RoleSwitcher({
     );
   }
 
-  const currentIcon = ROLE_ICONS[activeRole ?? uniqueRoles[0]] ?? Users;
+  const CurrentIcon = ROLE_ICONS[activeRole ?? uniqueRoles[0]] ?? Users;
 
   return (
     <div ref={ref} className="relative">
@@ -91,7 +91,7 @@ export function RoleSwitcher({
         aria-haspopup="listbox"
         aria-label={t("ui.role") || "Switch role"}
       >
-        <currentIcon className="h-3.5 w-3.5 text-gold" />
+        <CurrentIcon className="h-3.5 w-3.5 text-gold" />
         <span className="font-medium text-foreground">
           {activeRole ? (t(`role.${activeRole}`) || activeRole.replace(/_/g, " ")) : "Select role"}
         </span>
