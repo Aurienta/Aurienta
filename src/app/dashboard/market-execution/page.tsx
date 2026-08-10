@@ -37,6 +37,7 @@ import {
   Crosshair, Target, Filter, DollarSign, Handshake, Scale, FlaskConical,
   FileText, TrendingDown, HeartPulse, CalendarClock, Trophy, AlertTriangle,
   CheckCircle2, XCircle, Crown, Rocket, Brain, ShieldCheck,
+  AlertCircle,
 } from "lucide-react";
 
 export const metadata = { title: "Market Execution · AURIENTA" };
@@ -58,6 +59,12 @@ export default async function MarketExecutionPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
+        <p className="text-xs text-amber-200/90">
+          <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
+        </p>
+      </div>
       {/* Header */}
       <header className="mb-6">
         <div className="flex items-center gap-2">

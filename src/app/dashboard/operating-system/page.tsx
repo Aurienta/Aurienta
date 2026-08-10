@@ -17,6 +17,7 @@ import {
   Network, FileStack, ClipboardList, Boxes, Gauge, LayoutDashboard,
   BookOpen, RefreshCw, Users, CalendarClock, Target, Sparkles,
   Workflow, TrendingUp, Cpu, Brain, Crosshair, ShieldCheck,
+  AlertCircle,
 } from "lucide-react";
 
 export const metadata = { title: "AURIENTA Operating System · AOS v1.0" };
@@ -40,6 +41,12 @@ export default async function OperatingSystemPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
+        <p className="text-xs text-amber-200/90">
+          <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
+        </p>
+      </div>
       {/* Header */}
       <header className="mb-6">
         <div className="flex items-center gap-2">
