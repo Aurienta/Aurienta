@@ -32,6 +32,7 @@ import { egp } from "@/lib/aurienta/format";
 import { CommandPalette } from "@/components/dashboard/ux/command-palette";
 import { Breadcrumbs, EnterpriseSwitcher, OnboardingTour, HelpButton, QuickActions } from "@/components/dashboard/ux/enhancements";
 import { RoleContextBar } from "@/components/dashboard/role-context-bar";
+import { RoleSwitcher } from "@/components/dashboard/role-switcher";
 import {
   EnterpriseProvider,
   type EnterpriseContextValue,
@@ -392,6 +393,15 @@ export function DashboardShell({
   const userEnterprises = user.memberships.map((m) => ({ id: m.enterprise.id, name: m.enterprise.name, tier: m.enterprise.tier }));
   const [selectedEntId, setSelectedEntId] = React.useState<string | null>(userEnterprises[0]?.id ?? null);
 
+  // P1.1: Active role state — tracks which constitutional role the user
+  // is currently acting as. This affects navigation filtering, dashboard
+  // content, and available actions. Server-side authorization always
+  // validates the actual role — this is a client convenience only.
+  const rolesForActiveEnt = selectedEntId
+    ? user.memberships.filter((m) => m.enterprise.id === selectedEntId).map((m) => m.role)
+    : user.memberships.map((m) => m.role);
+  const [activeRole, setActiveRole] = React.useState<string | null>(rolesForActiveEnt[0] ?? null);
+
   // REMED-1D: persist the active enterprise to localStorage so navigation
   // between routes (and full reloads) preserve the user's choice. We hydrate
   // on mount from `aurienta_active_ent` and write on every change. The stored
@@ -403,10 +413,31 @@ export function DashboardShell({
       if (stored && userEnterprises.some((e) => e.id === stored)) {
         setSelectedEntId(stored);
       }
+      const storedRole = localStorage.getItem("aurienta_active_role");
+      if (storedRole && rolesForActiveEnt.includes(storedRole)) {
+        setActiveRole(storedRole);
+      }
     } catch {
       // localStorage may be unavailable (private mode, sandbox) — fail silently.
     }
   }, []);
+
+  // When enterprise changes, reset active role to the first role in the new enterprise
+  React.useEffect(() => {
+    const newRoles = selectedEntId
+      ? user.memberships.filter((m) => m.enterprise.id === selectedEntId).map((m) => m.role)
+      : user.memberships.map((m) => m.role);
+    if (newRoles.length > 0 && !newRoles.includes(activeRole ?? "")) {
+      setActiveRole(newRoles[0]);
+    }
+  }, [selectedEntId]);
+
+  // Persist active role
+  React.useEffect(() => {
+    if (activeRole) {
+      try { localStorage.setItem("aurienta_active_role", activeRole); } catch {}
+    }
+  }, [activeRole]);
 
   // a11y: respect prefers-reduced-motion for framer-motion (WAAPI) animations.
   const reduceMotion = useReducedMotion();
@@ -530,6 +561,14 @@ export function DashboardShell({
             </div>
           )}
 
+          {/* P1.1: Role Switcher — explicit multi-role context selection */}
+          <RoleSwitcher
+            memberships={user.memberships}
+            selectedEntId={selectedEntId}
+            activeRole={activeRole}
+            onSelectRole={setActiveRole}
+          />
+
           <ThemeToggle />
 
           <Button
@@ -645,7 +684,7 @@ export function DashboardShell({
         {/* Main */}
         <main id="main-content" className="min-w-0 flex-1">
           {/* Role Context Bar — shows active role, enterprise, tier, stage, health */}
-          <RoleContextBar user={user} selectedEntId={selectedEntId} />
+          <RoleContextBar user={user} selectedEntId={selectedEntId} activeRole={activeRole} />
           {/* I2: Breadcrumbs */}
           <div className="border-b border-gold/[0.06] px-4 py-2 sm:px-6">
             <Breadcrumbs pathname={pathname} />
