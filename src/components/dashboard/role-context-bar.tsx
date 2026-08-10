@@ -37,7 +37,7 @@ export function RoleContextBar({
     legalName: string;
     sovereignTrustScore: number;
     tier: string;
-    memberships: { role: string; enterprise: { id: string; name: string; slug: string; tier: string; stage: string; healthScore: number | null } }[];
+    memberships: { role: string; enterprise: { id: string; name: string; slug: string; tier: string; stage?: string; healthScore?: number | null } }[];
   };
   selectedEntId: string | null;
 }) {
@@ -57,7 +57,7 @@ export function RoleContextBar({
   if (!activeEnterprise) return null;
 
   const tierMeta = TIER_META[activeEnterprise.tier];
-  const stageMeta = STAGE_META[activeEnterprise.stage] ?? STAGE_META.stage_1;
+  const stageMeta = STAGE_META[activeEnterprise.stage ?? "stage_1"] ?? STAGE_META.stage_1;
   const healthScore = activeEnterprise.healthScore ?? 75;
   const healthColor = healthScore >= 90 ? "text-emerald-400" : healthScore >= 70 ? "text-amber-400" : "text-red-400";
   const healthLabel = healthScore >= 90 ? "Healthy" : healthScore >= 70 ? "Attention" : "Action Required";
