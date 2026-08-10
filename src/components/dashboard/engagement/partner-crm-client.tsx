@@ -35,7 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type Partner = {
+export type Partner = {
   userId: string;
   name: string;
   ownershipPct: number;

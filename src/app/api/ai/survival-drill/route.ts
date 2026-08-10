@@ -188,18 +188,20 @@ ${tests.map((t, i) => `${i + 1}. ${t.name} — ${t.detail}`).join("\n")}`;
       },
     });
 
-    await appendLedgerEvent(db, {
-      enterpriseId,
-      eventType: "cre_decision",
-      payload: {
-        action: "survival_drill",
-        result: overallVerdict,
-        drillId: drill.id,
-        certificateExpiry: certificateExpiry?.toISOString() ?? null,
-        passedTests: passedCount,
-        totalTests: findings.length,
-      },
-      actorId: user.id,
+    await db.$transaction(async (tx) => {
+      await appendLedgerEvent(tx, {
+        enterpriseId,
+        eventType: "cre_decision",
+        payload: {
+          action: "survival_drill",
+          result: overallVerdict,
+          drillId: drill.id,
+          certificateExpiry: certificateExpiry?.toISOString() ?? null,
+          passedTests: passedCount,
+          totalTests: findings.length,
+        },
+        actorId: user.id,
+      });
     });
 
     return NextResponse.json({

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PROPOSAL_TYPES } from "@/lib/aurienta/constants";
-import { appendLedgerEvent, enforceConsultingOptOut } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceConsultingOptOut, enforceDividendLock, enforceLawFirmReplacement } from "@/lib/aurienta/cre";
 import { proposalSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -109,6 +109,99 @@ export async function POST(req: NextRequest) {
           code: "cre_denied",
           policy: optout.policy,
           decisionToken: optout.decisionToken,
+        },
+        { status: 400 }
+      );
+    }
+  }
+
+  // ── CRE: dividend_lock — dividends paid from realized profits only ──
+  // At proposal creation we verify the enterprise has positive retained
+  // earnings (sum of quarterly net profits). The dividend amount is not
+  // carried on the proposal body, so we probe with a minimal amount of 1 EGP
+  // — this enforces realizedProfits ≥ 1 (i.e. positive). The 30-day cooling
+  // check is skipped here (lastDividendAt unknown at creation time) and is
+  // enforced at execution instead.
+  if (type === "dividend") {
+    const realizedProfits = enterprise.quarterlyReports.reduce(
+      (sum, q) => sum + (q.netProfitEgp ?? 0),
+      0
+    );
+    const dividendLock = enforceDividendLock({
+      dividendAmount: 1,
+      realizedProfits,
+      lastDividendAt: null,
+    });
+    if (!dividendLock.allowed) {
+      await audit({
+        actorId: user.id,
+        action: "proposal.create",
+        target: `enterprise:${enterpriseId}`,
+        result: "denied",
+        reason: dividendLock.reason,
+        metadata: { policy: dividendLock.policy, type, realizedProfits },
+      });
+      return NextResponse.json(
+        {
+          error: dividendLock.reason ?? "Dividend blocked by dividend_lock policy",
+          code: "cre_denied",
+          policy: dividendLock.policy,
+          decisionToken: dividendLock.decisionToken,
+        },
+        { status: 400 }
+      );
+    }
+  }
+
+  // ── CRE: law_firm_replacement — a qualifying replacement must exist ──
+  // The proposal body does not carry a target law-firm ID, so we verify that
+  // at least one active law firm (other than the enterprise's current firm)
+  // meets the constitutional bar: active, licensed, insured ≥100M EGP,
+  // expertise ≥75. If no qualifying candidate exists, the replacement
+  // proposal is premature and blocked.
+  if (type === "law_firm_replacement") {
+    const candidates = await db.lawFirm.findMany({
+      where: {
+        status: "active",
+        ...(enterprise.lawFirmId ? { id: { not: enterprise.lawFirmId } } : {}),
+      },
+      take: 20,
+    });
+    const validCandidate = candidates.find((f) =>
+      enforceLawFirmReplacement({
+        status: f.status,
+        frLicenseNumber: f.frLicenseNumber,
+        insuranceEgp: f.insuranceEgp,
+        expertiseScore: f.expertiseScore,
+      }).allowed
+    );
+    if (!validCandidate) {
+      const sample = candidates[0]
+        ? enforceLawFirmReplacement({
+            status: candidates[0].status,
+            frLicenseNumber: candidates[0].frLicenseNumber,
+            insuranceEgp: candidates[0].insuranceEgp,
+            expertiseScore: candidates[0].expertiseScore,
+          })
+        : null;
+      await audit({
+        actorId: user.id,
+        action: "proposal.create",
+        target: `enterprise:${enterpriseId}`,
+        result: "denied",
+        reason: sample?.reason ?? "No qualifying replacement law firm available",
+        metadata: {
+          policy: sample?.policy ?? "law_firm_replacement.rego",
+          type,
+          candidatesChecked: candidates.length,
+        },
+      });
+      return NextResponse.json(
+        {
+          error: sample?.reason ?? "No qualifying replacement law firm available",
+          code: "cre_denied",
+          policy: sample?.policy ?? "law_firm_replacement.rego",
+          decisionToken: sample?.decisionToken,
         },
         { status: 400 }
       );

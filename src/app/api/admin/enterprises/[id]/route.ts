@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
-import { computeGraduationReadiness } from "@/lib/aurienta/cre";
+import { computeGraduationReadiness, enforceTierMigration } from "@/lib/aurienta/cre";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -178,10 +178,40 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     // Stage transitions update stageSince automatically.
     const existing = await db.enterprise.findUnique({
       where: { id },
-      select: { stage: true, status: true, healthScore: true, healthRating: true, lawFirmId: true, accountingFirmId: true },
+      select: { tier: true, stage: true, status: true, healthScore: true, healthRating: true, lawFirmId: true, accountingFirmId: true },
     });
     if (!existing) {
       return NextResponse.json({ error: "Enterprise not found", code: "NOT_FOUND" }, { status: 404 });
+    }
+
+    // ── CRE: tier_migration — no skipping A→B→C→D→F (E is a separate track) ──
+    if (updates.tier !== undefined && updates.tier !== existing.tier) {
+      const tierMigration = enforceTierMigration({
+        currentTier: existing.tier,
+        proposedTier: String(updates.tier),
+      });
+      if (!tierMigration.allowed) {
+        await audit({
+          actorId: user.id,
+          action: "admin.enterprise.update",
+          target: `enterprise:${id}`,
+          result: "denied",
+          reason: tierMigration.reason,
+          metadata: {
+            policy: tierMigration.policy,
+            tier: { from: existing.tier, to: updates.tier },
+          },
+        });
+        return NextResponse.json(
+          {
+            error: tierMigration.reason ?? "Tier migration blocked",
+            code: "cre_denied",
+            policy: tierMigration.policy,
+            decisionToken: tierMigration.decisionToken,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // If stage is changing, also reset stageSince.

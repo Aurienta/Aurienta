@@ -164,6 +164,7 @@ export async function POST(req: NextRequest) {
           orderBy: { createdAt: "asc" },
           include: { votes: { orderBy: { createdAt: "asc" } } },
         },
+        members: { orderBy: { joinedAt: "asc" } },
       },
     });
 

@@ -11041,3 +11041,134 @@ Notes for downstream agents:
 - The Proof-of-Solvency health-level scale (0=ok, 1=pending, 2=warning, 3=freeze) follows the task spec, not the schema comment. When you build the partner-facing Escrow Health Flag UI (Blueprint §5.5), filter on healthLevel >= 2 for the "all partners" notification and healthLevel === 3 for the "all + regulator" notification. The internal-only pending-reconcile flag (level 1) is intended for the law firm + AURIENTA Rep dashboards only.
 - The Level-3 emergency freeze is atomic with the assertion insert (same db.$transaction), but the regulator notification (Blueprint §5.5 — "all + regulator") is NOT yet wired. When the regulator-notification service is built, hook it off the audit log entry with action="solvency.assert" and metadata.healthLevel===3 + metadata.emergencyFreeze===true.
 - The 24-month repayment clock starts at approval (repaymentDueAt = approvedAt + 24*30d). The Blueprint mentions 10% of each milestone release going to repayment — that automation should call PATCH /api/vault/loan/[id] with action="repay" + amountEgp=10%-of-release from the milestone-release flow. The repayment endpoint is idempotent-ish: it refuses overpayment, so multiple 10% releases will accumulate correctly until repaidEgp crosses amountEgp.
+
+---
+Task ID: CRE-WIRE-5
+Agent: CRE Wiring Agent
+Task: Wire the 5 remaining unwired CRE functions (enforceZeroCustody, enforceDividendLock, enforceTierMigration, enforceEquityLockUp, enforceLawFirmReplacement) into their corresponding API routes.
+
+Work Log:
+- Read /home/z/my-project/worklog.md (head) to load prior context.
+- Read src/lib/aurienta/cre.ts and located all 5 target function signatures:
+    - enforceZeroCustody(beneficiary: string): CreVerdict
+    - enforceDividendLock({ dividendAmount: number; realizedProfits: number; lastDividendAt?: Date | null }): CreVerdict
+    - enforceTierMigration({ currentTier: string; proposedTier: string }): CreVerdict
+    - enforceEquityLockUp({ restrictedUntil: Date | null }): CreVerdict
+    - enforceLawFirmReplacement({ status: string; frLicenseNumber: string; insuranceEgp: number; expertiseScore: number }): CreVerdict
+- Read each of the 4 target route files in full before editing.
+- Confirmed relevant Prisma fields: OwnershipRecord.restrictedUntil (DateTime?), Enterprise.tier/lawFirmId, LawFirm.{status,frLicenseNumber,insuranceEgp,expertiseScore}, QuarterlyReport.netProfitEgp.
+
+Implementations (minimal, additive only — no CRE function or existing logic modified):
+
+1. enforceZeroCustody → src/app/api/milestones/[id]/accountant-release/route.ts
+   - Added to existing cre import.
+   - Inserted immediately AFTER the enforceFundFlow check, BEFORE fund release.
+   - Calls enforceZeroCustody(milestone.enterprise.name) — the enterprise (beneficiary of the law-firm-client-account → vendor flow) must not contain "aurienta".
+   - On deny: 400 { error: zc.reason, code: "cre_denied", policy: zc.policy }.
+
+2. enforceDividendLock → src/app/api/proposals/route.ts
+   - Added enforceDividendLock + enforceLawFirmReplacement to existing cre import.
+   - New block mirroring the consulting_optout pattern, placed right after it.
+   - realizedProfits = sum of enterprise.quarterlyReports[].netProfitEgp (already eager-loaded).
+   - Probes with dividendAmount=1 to enforce realizedProfits ≥ 1 (i.e. positive retained earnings) — the proposal body schema carries no dividend amount, so a minimal probe enforces the "positive retained earnings" prerequisite the task specifies.
+   - lastDividendAt passed as null (no such field on Enterprise; 30-day cooling is enforced at execution instead). This keeps the creation-time check focused on the positive-earnings prerequisite.
+   - On deny: audit + 400 { error, code: "cre_denied", policy, decisionToken }.
+
+3. enforceTierMigration → src/app/api/admin/enterprises/[id]/route.ts
+   - Added enforceTierMigration to existing cre import.
+   - Added `tier: true` to the `existing` findUnique select (was previously missing).
+   - New block in PATCH handler, AFTER `existing` is fetched, BEFORE the stage/stageSince + db.update. Only fires when updates.tier is set AND differs from existing.tier.
+   - Calls enforceTierMigration({ currentTier: existing.tier, proposedTier: String(updates.tier) }).
+   - On deny: audit + 400 { error, code: "cre_denied", policy, decisionToken }.
+
+4. enforceEquityLockUp → src/app/api/orders/route.ts
+   - Added enforceEquityLockUp to existing cre import (multi-line import block).
+   - Inserted INSIDE the existing `if (side === "sell")` block, immediately AFTER the "Sells must be backed by an existing holding" (no-speculation) check.
+   - Uses holding?.restrictedUntil ?? null — the OwnershipRecord fetched for the ownership check is reused (no extra DB call).
+   - On deny: audit + 400 { error, code: "cre_denied", policy, decisionToken }.
+
+5. enforceLawFirmReplacement → src/app/api/proposals/route.ts
+   - Same import line as #2 (already added enforceLawFirmReplacement).
+   - New block after the dividend block, mirroring the consulting_optout pattern.
+   - ADAPTATION: the proposal body schema (proposalSchema) does not carry a target law-firm ID and zod safeParse strips unknown keys, so the new firm is not directly available. Adapted by scanning active LawFirm rows (excluding the enterprise's current lawFirmId) and verifying at least one candidate passes enforceLawFirmReplacement — i.e. "a qualifying replacement must exist" as a creation-time prerequisite. If no candidate qualifies, the first candidate's verdict (or a synthetic "no candidate" verdict when the table is empty) is returned.
+   - On deny: audit + 400 { error, code: "cre_denied", policy, decisionToken }.
+
+Validation:
+- `cd /home/z/my-project && bun run lint` → `$ eslint .` EXIT_CODE=0 (0 errors, 0 warnings).
+- `grep -rl "enforceZeroCustody|enforceDividendLock|enforceTierMigration|enforceEquityLockUp|enforceLawFirmReplacement" src/app/api/` returns all 4 expected files:
+    src/app/api/orders/route.ts
+    src/app/api/milestones/[id]/accountant-release/route.ts
+    src/app/api/admin/enterprises/[id]/route.ts
+    src/app/api/proposals/route.ts
+- dev.log: server still ✓ Ready, GET / 200, no compile/runtime errors related to the touched routes.
+
+Notes for downstream agents:
+- The dividend-creation check probes with dividendAmount=1 (positive-earnings prerequisite only). The 30-day cooling-off and the full dividendAmount-vs-realizedProfits comparison should be re-enforced at the proposal EXECUTION step (proposals/[id]/execute) once the actual dividend amount and lastDividendAt are known. That executor route is the right place for the full enforceDividendLock call.
+- The law_firm_replacement creation check verifies a qualifying candidate EXISTS; the actual binding of the chosen new firm (and a second enforceLawFirmReplacement call on the specifically-selected firm) should also happen at proposal EXECUTION.
+- The equity_lockup check is per-holding (one OwnershipRecord per enterprise+user). If a seller's holding is partially salary-derived and partially unrestricted, the current restrictedUntil applies to the whole record — this matches the schema (single restrictedUntil per OwnershipRecord). If finer-grained per-unit lock-up is ever needed, OwnershipRecord would need a sub-record model.
+- No CRE function in src/lib/aurienta/cre.ts was modified — all changes are additive wiring in the API routes only.
+
+---
+Task ID: 3-DASHBOARD
+Agent: Dashboard UI Agent (Salary / Vault / Solvency)
+Task: Build three new dashboard UI pages connecting to existing APIs — AI Salary Engine (§8.4), Anti-Fragility Insurance Vault (§5.4), and Proof-of-Solvency (§5.5).
+
+Work Log:
+- Read /home/z/my-project/worklog.md (head) for brand + stack context.
+- Audited existing patterns: whistleblower + appeals pages (server → client), antifragility page, PageHeader, useToast hook (shadcn), sonner toasts, format helpers (egp/pct/timeAgo/shortHash), prisma schema for InsuranceVault/VaultLoan/SolvencyAssertion.
+- Confirmed APIs in place: POST /api/ai/salary, GET /api/vault?enterpriseId=, POST /api/vault/loan, GET /api/solvency?enterpriseId=, POST /api/solvency. No GET endpoint for listing loans/assertions — those are server-fetched directly from the DB (matches whistleblower + appeals pattern).
+
+Files Created (6):
+
+1. src/app/dashboard/salary/page.tsx (server component)
+   - `export const dynamic = "force-dynamic"`.
+   - Auth check via `getCurrentUser()`; redirect to /signin?next=/dashboard/salary if absent.
+   - Passes `{ id, legalName }` to client.
+   - Wraps in `min-h-screen flex flex-col` with `mt-auto` footer ("AURIENTA Compensation Intelligence · Blueprint §8.4 …").
+
+2. src/components/dashboard/workforce/salary-calculator-client.tsx (client component)
+   - "use client". Uses `useToast` from `@/hooks/use-toast`.
+   - Form: position Select (20 common positions from salary-engine MARKET_RATES), tier Select (A–F with multiplier labels), region Select (Cairo/Alexandria/Delta/Upper Egypt/Suez Canal with adjustment labels), performance Slider (0.5–1.5 step 0.05, default 1.0), profit Slider (0.8–1.2 step 0.05, default 1.0), optional custom base Input.
+   - On submit → POST /api/ai/salary → renders result Card with final salary (gold-gradient), compensation band, AI validation badge (validated / adjusted fallback / rejected), formula breakdown code block, 6-factor grid (Base, Tier multiplier, Performance, Regional, Profit factor, Pre-AI figure), AI verdict text.
+   - Formula banner: `Salary = Base × Tier_multiplier × Performance × Regional × Profit`.
+   - Constitutional bounds card (fixed tier multipliers, clamps, 4,000 EGP min wage, 75% override, 200% notification).
+   - Gold theme: text-gold, border-gold/20, bg-gold/5, glass-gold, gold-gradient. Responsive lg:grid-cols-2.
+
+3. src/app/dashboard/vault/page.tsx (server component)
+   - Auth check, db.enterprise.findMany for memberships, db.vaultLoan.findMany (take 50, includes enterprise) for loan history.
+   - Passes enterprises + initialLoans (flattened) to client.
+   - Footer: "AURIENTA Anti-Fragility Insurance Vault · Blueprint §5.4 · 0.5% levy · 20% cap · 24-month non-recourse."
+
+4. src/components/dashboard/transparency/vault-client.tsx (client component)
+   - Enterprise Select, Request Vault Loan Button (opens Dialog).
+   - useEffect fetches GET /api/vault?enterpriseId= on selection change → renders 4 Stat tiles (Current balance, Total contributed, Total loaned, Total repaid).
+   - Loan history Table (max-h-96 overflow-y-auto) — columns: Loan #, Amount, Reason, Board vote, Repaid, Status (pending/approved/repaid/rejected/forgiven badges), Filed timeAgo.
+   - Request Loan Dialog: amount Input (capped at 20% of raisedEgp), reason Select (pandemic/currency_devaluation/war/natural_disaster), board vote Input (≥50% simple majority). POST /api/vault/loan → optimistic prepend to loan list.
+   - Constitutional rules card: 0.5% contribution, 20% cap, 24-month repayment, non-recourse, ≥50% board vote.
+   - Gold theme + responsive lg:grid-cols-3.
+
+5. src/app/dashboard/solvency/page.tsx (server component)
+   - Auth check, db.enterprise.findMany (includes status + lawFirmClientAccountBalanceEgp), db.solvencyAssertion.findMany (take 60, includes enterprise).
+   - Passes enterprises (with internalBalanceEgp), memberships [{enterpriseId, role}], initialAssertions to client.
+   - Footer: "AURIENTA Proof-of-Solvency · Blueprint §5.5 · 3-level health flag system · SHA-256 anchored assertions."
+
+6. src/components/dashboard/transparency/solvency-client.tsx (client component)
+   - Enterprise Select (flags FROZEN enterprises).
+   - useEffect fetches GET /api/solvency?enterpriseId= on selection change → renders latest assertion card with health flag ring (border + bg colored per level), 4 Stat tiles (Law firm balance, Internal balance, Variance EGP, Variance %), assertion hash + timeAgo.
+   - 3-level health flag system with color coding via getHealthMeta(): Level 1 → emerald (OK / Pending reconcile, variance ≤ 2%), Level 2 → amber (Warning, 2–10%), Level 3 → rose (Freeze, >10%). Maps API's level 0 → "Level 1 · OK" and level 1 → "Level 1 · Pending reconcile" (both green) to honour the user-facing 3-level spec while remaining faithful to the API contract.
+   - Submit Balance Assertion form (visible only when user's role for the selected enterprise is law_firm_rep or aurienta_rep — checked against memberships prop). Input for law firm balance → POST /api/solvency. On emergency freeze, toast surfaces the decision token.
+   - Historical assertions Table (last 10) — columns: Filed, Law firm, Internal, Variance (amber if >0.1%), Level badge, Hash (shortHash).
+   - 3-tile legend explaining the color coding.
+
+Validation:
+- `cd /home/z/my-project && bun run lint` → `$ eslint .` EXIT_CODE=0 (0 errors, 0 warnings).
+- All six files exist (verified via ls -la).
+- dev.log: server still ✓ Ready, no compile/runtime errors.
+- Footer pattern: every page uses `<footer className="mt-auto border-t border-gold/10 py-6 text-center text-xs text-muted-foreground">` inside a `min-h-screen flex flex-col` wrapper, ensuring sticky-footer behaviour on short content and natural push-down on overflow.
+- All three server components export `dynamic = "force-dynamic"` and call `getCurrentUser()` with a redirect to /signin on missing user.
+
+Notes for downstream agents:
+- The solvency health-level mapping in the client deliberately collapses API levels 0 and 1 into the user-facing "Level 1" (green). If the DB schema is later migrated so the default is 0 (matching the API code) instead of 1 (matching the current schema comment), no client change is required — getHealthMeta already handles both.
+- The vault-client fetches the vault balance via the API on every enterprise selection change. Loan history is server-fetched once at page load and updated optimistically after a successful POST; if long-lived sessions need fresh loan state, a manual refetch of GET /api/vault could be added (the API returns the vault summary only, not the loan list).
+- The solvency-client fetches the latest assertion via the API on selection change. Historical assertions are server-fetched once at page load (take 60) and updated optimistically after a successful POST; the client filters to the selected enterprise and slices to last 10.
+- No API routes were modified — all three pages consume existing endpoints only.

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import {
   appendLedgerEvent,
+  enforceEquityLockUp,
   enforceKycGate,
   enforceNotFrozen,
   enforcePriceBand,
@@ -149,6 +150,35 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // ── CRE: equity_lockup — salary-derived Equity Units are restricted ──
+    // OwnershipRecord.restrictedUntil holds the lock-up expiry for units
+    // granted via salary-to-equity conversion. Block the sale while locked.
+    const lockUp = enforceEquityLockUp({
+      restrictedUntil: holding?.restrictedUntil ?? null,
+    });
+    if (!lockUp.allowed) {
+      await audit({
+        actorId: user.id,
+        action: "order.create",
+        target: `enterprise:${enterpriseId}`,
+        result: "denied",
+        reason: lockUp.reason,
+        metadata: {
+          policy: lockUp.policy,
+          restrictedUntil: holding?.restrictedUntil ?? null,
+        },
+      });
+      return NextResponse.json(
+        {
+          error: lockUp.reason ?? "Equity lock-up blocks the sale",
+          code: "cre_denied",
+          policy: lockUp.policy,
+          decisionToken: lockUp.decisionToken,
+        },
+        { status: 400 }
+      );
+    }
   }
 
   // ── CRE: enforce the fundamental_pricing.rego price band ──
@@ -242,7 +272,7 @@ export async function POST(req: NextRequest) {
   // After creating the order, attempt to match it against existing
   // counterparties in the order book. This makes the secondary market
   // functional — orders are not just listed, they execute.
-  let matchResult = null;
+  let matchResult: { tradesCreated: number; totalEquityUnitsMatched: number; totalValueEgp: number; newOrderFullyFilled: boolean; newOrderRemainingUnits: number; } | null = null;
   try {
     matchResult = await runFifoMatching(order.id);
   } catch (matchErr) {

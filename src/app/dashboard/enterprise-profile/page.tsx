@@ -118,7 +118,7 @@ export default async function EnterpriseProfilePage({
   }
 
   // Verify the user has access
-  const isFounder = enterprise.founderId === user.id;
+  const isFounder = enterprise.founder?.id === user.id;
   const membership = user.memberships.find(
     (m) => m.enterpriseId === id && (m.role === "founding_operator" || m.role === "company_owner")
   );

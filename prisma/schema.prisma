@@ -148,6 +148,7 @@ model Enterprise {
   raisedEgp           Int      @default(0)
   minInvestmentEgp    Int      @default(50)
   investorCap         Int?     // optional max investors
+  minParticipationEgp Int      @default(50) // minimum Capital Participation per partner (EGP)
   equityUnitPriceEgp       Int      @default(50) @map("sharePriceEgp") // CONSTITUTIONAL: Equity Unit Price (CPP). Legacy DB column: sharePriceEgp
   totalEquityUnits         Int      @map("totalShares") // CONSTITUTIONAL: Total Equity Units. Legacy DB column: totalShares
   founderEquityPct    Float    @default(5)

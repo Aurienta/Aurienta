@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
-import { appendLedgerEvent, enforceFundFlow, enforceAccountantGate } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceFundFlow, enforceAccountantGate, enforceZeroCustody } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
@@ -100,6 +100,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
   if (!fundFlow.allowed) {
     return NextResponse.json({ error: "fund_flow_denied", message: fundFlow.reason, policy: fundFlow.policy }, { status: 403 });
+  }
+
+  // ── CRE: Zero Custody (Non-amendable Rule I 1.1) ──
+  // The beneficiary of a fund release is the enterprise (or its law firm
+  // client account). AURIENTA must NEVER be the beneficiary/custodian —
+  // verify the enterprise name does not contain "aurienta".
+  const zc = enforceZeroCustody(milestone.enterprise.name);
+  if (!zc.allowed) {
+    return NextResponse.json(
+      { error: zc.reason, code: "cre_denied", policy: zc.policy },
+      { status: 400 }
+    );
   }
 
   // All checks passed — release the funds.

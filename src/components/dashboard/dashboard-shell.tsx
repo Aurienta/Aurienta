@@ -54,6 +54,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard/career-ledger", label: "Career Ledger", icon: HardHat, group: "Capital & Workforce" },
   { href: "/dashboard/mentorship", label: "Mentorship", icon: UserCheck, group: "Capital & Workforce" },
   { href: "/dashboard/skill-equity", label: "Skill-to-Equity", icon: Award, group: "Capital & Workforce" },
+  { href: "/dashboard/salary", label: "AI Salary Engine", icon: Calculator, group: "Capital & Workforce" },
   { href: "/dashboard/diaspora", label: "Diaspora Bridge", icon: Globe, group: "Capital & Workforce" },
 
   // ── Enterprise (8) ──
@@ -89,6 +90,8 @@ const NAV: NavItem[] = [
   // ── Treasury & Infrastructure (5) ──
   { href: "/dashboard/escrow", label: "Law Firm Client Accounts", icon: Vault, group: "Treasury & Infrastructure" },
   { href: "/dashboard/antifragility", label: "Anti-Fragility Vault", icon: Database, group: "Treasury & Infrastructure" },
+  { href: "/dashboard/vault", label: "Insurance Vault", icon: Database, group: "Treasury & Infrastructure" },
+  { href: "/dashboard/solvency", label: "Proof-of-Solvency", icon: ShieldCheck, group: "Treasury & Infrastructure" },
   { href: "/dashboard/oracle-mirror", label: "Oracle Mirror", icon: FileText, group: "Treasury & Infrastructure" },
   { href: "/dashboard/reality-sync", label: "Reality Sync", icon: Activity, group: "Treasury & Infrastructure" },
   { href: "/dashboard/institutional-memory", label: "Institutional Memory", icon: Layers, group: "Treasury & Infrastructure" },
