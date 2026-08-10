@@ -1,6 +1,4 @@
 import { PrismaClient, Prisma } from '@prisma/client'
-import { PrismaLibSQL } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -12,6 +10,11 @@ function createPrismaClient(): PrismaClient {
   // If the URL starts with libsql:// or http(s)://, use the libSQL adapter.
   // Otherwise fall back to the standard PrismaClient (for local SQLite dev).
   if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
+    // Dynamic import to avoid pulling @libsql/client into client bundles
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createClient } = require('@libsql/client')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaLibSQL } = require('@prisma/adapter-libsql')
     const authToken = process.env.TURSO_AUTH_TOKEN ?? ''
     const libsql = createClient({ url: databaseUrl, authToken })
     const adapter = new PrismaLibSQL(libsql)
