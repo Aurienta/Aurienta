@@ -1,18 +1,36 @@
 import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaLibSQL } from '@prisma/adapter-libsql'
+import { createClient } from '@libsql/client'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Prisma client singleton.
-// NOTE: query logging is disabled because it floods stdout and causes
-// OOM in memory-constrained sandbox environments. Enable only for local
-// debugging with `log: ['query']`.
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient(): PrismaClient {
+  const databaseUrl = process.env.DATABASE_URL ?? ''
+
+  // If the URL starts with libsql:// or http(s)://, use the libSQL adapter.
+  // Otherwise fall back to the standard PrismaClient (for local SQLite dev).
+  if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
+    const authToken = process.env.TURSO_AUTH_TOKEN ?? ''
+    const libsql = createClient({ url: databaseUrl, authToken })
+    const adapter = new PrismaLibSQL(libsql)
+    return new PrismaClient({
+      adapter,
+      log: ['error', 'warn'],
+    })
+  }
+
+  // Local SQLite fallback (file:./prisma/dev.db etc.)
+  return new PrismaClient({
     log: ['error', 'warn'],
   })
+}
+
+// Prisma client singleton.
+export const db =
+  globalForPrisma.prisma ??
+  createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
 
