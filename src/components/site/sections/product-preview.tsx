@@ -329,7 +329,7 @@ export function ProductPreview() {
 }
 
 function DemoData({ step }: { step: typeof STEPS[0] }) {
-  const d = step.demo;
+  const d = step.demo as any;
   return (
     <div className="rounded-lg border border-border/30 bg-muted/20 p-4">
       <Badge variant="outline" className="mb-3 border-amber-500/30 text-amber-500 text-[10px]">

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: { ignoreBuildErrors: true },
+  typescript: { ignoreBuildErrors: false },
   reactStrictMode: true,
   serverExternalPackages: ["@libsql/client", "@prisma/adapter-libsql"],
   // CRITICAL: Prevent trailing-slash redirect loops behind the Caddy gateway.

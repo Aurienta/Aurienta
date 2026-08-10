@@ -276,8 +276,8 @@ export default async function AdminUsersPage({
                 key={lvl.value}
                 href={
                   verificationLevel === lvl.value
-                    ? `/dashboard/admin/users?${qsNo({ verificationLevel, search, role, tier, pageSize })}`
-                    : `/dashboard/admin/users?${qsNo({ verificationLevel: lvl.value, search, role, tier, pageSize })}`
+                    ? `/dashboard/admin/users?${qsNo({ verificationLevel, search, role, tier, pageSize: String(pageSize) })}`
+                    : `/dashboard/admin/users?${qsNo({ verificationLevel: lvl.value, search, role, tier, pageSize: String(pageSize) })}`
                 }
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-sans text-xs transition-colors ${
                   verificationLevel === lvl.value
@@ -534,8 +534,8 @@ export default async function AdminUsersPage({
               key={t.value}
               href={
                 tier === t.value
-                  ? `/dashboard/admin/users?${qsNo({ tier, search, role, verificationLevel, pageSize })}`
-                  : `/dashboard/admin/users?${qsNo({ tier: t.value, search, role, verificationLevel, pageSize })}`
+                  ? `/dashboard/admin/users?${qsNo({ tier, search, role, verificationLevel, pageSize: String(pageSize) })}`
+                  : `/dashboard/admin/users?${qsNo({ tier: t.value, search, role, verificationLevel, pageSize: String(pageSize) })}`
               }
               className={`flex items-center justify-between rounded-lg border px-3 py-2 transition-colors ${
                 tier === t.value

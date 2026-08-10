@@ -229,8 +229,8 @@ export default async function AdminEnterprisesPage({
                 key={t}
                 href={
                   tier === t
-                    ? buildQs({ search, stage, status, sector, pageSize })
-                    : buildQs({ search, tier: t, stage, status, sector, pageSize })
+                    ? buildQs({ search, stage, status, sector, pageSize: String(pageSize) })
+                    : buildQs({ search, tier: t, stage, status, sector, pageSize: String(pageSize) })
                 }
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-sans text-xs transition-colors ${
                   tier === t

@@ -690,6 +690,15 @@ function SidebarContent({
   onNavigate?: () => void;
 }) {
   const reduceMotion = useReducedMotion();
+  const { t } = useLanguage();
+  const tNav = (label: string) => {
+    const key = NAV_I18N[label];
+    return key ? t(key) : label;
+  };
+  const tGroup = (group: string) => {
+    const key = GROUP_I18N[group];
+    return key ? t(key) : group;
+  };
   // I1: Collapsible groups — collapsed by default, active group auto-expands
   const activeGroup = NAV.find((n) => n.href === pathname)?.group;
   const [collapsedGroups, setCollapsedGroups] = React.useState<Set<string>>(

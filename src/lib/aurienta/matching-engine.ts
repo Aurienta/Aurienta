@@ -226,7 +226,6 @@ export async function runFifoMatching(newOrderId: string): Promise<MatchResult> 
             userId: buyerId,
             equityUnits: matchQty,
             avgPriceEgp: matchPrice,
-            acquiredAt: new Date(),
           },
         });
       }

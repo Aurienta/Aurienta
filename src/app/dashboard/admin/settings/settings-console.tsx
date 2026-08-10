@@ -423,7 +423,7 @@ function SettingsCard({
           </Badge>
           {lastUpdated && (
             <span className="ml-auto font-mono text-[11px] text-muted-foreground/80">
-              updated {timeAgo(lastUpdated)}
+              updated {timeAgo(new Date(lastUpdated))}
             </span>
           )}
         </div>
