@@ -50,8 +50,8 @@ export default async function AdminPanelPage() {
       db.enterprise.count().then(c => ({ name: "Enterprises", count: c, status: "ok" as const })),
       db.session.count({ where: { revokedAt: null, expiresAt: { gt: new Date() } } }).then(c => ({ name: "Active Sessions", count: c, status: "ok" as const })),
       db.ledgerEvent.count().then(c => ({ name: "Ledger Events", count: c, status: "ok" as const })),
-      db.govApiVerification.count({ where: { status: "pending" } }).then(c => ({ name: "Pending Verifications", count: c, status: (c > 10 ? "warning" : "ok") as const })),
-      db.enterprise.count({ where: { status: "frozen" } }).then(c => ({ name: "Frozen Enterprises", count: c, status: (c > 0 ? "warning" : "ok") as const })),
+      db.govApiVerification.count({ where: { status: "pending" } }).then(c => ({ name: "Pending Verifications", count: c, status: c > 10 ? "warning" as const : "ok" as const })),
+      db.enterprise.count({ where: { status: "frozen" } }).then(c => ({ name: "Frozen Enterprises", count: c, status: c > 0 ? "warning" as const : "ok" as const })),
     ]),
   ]);
 
