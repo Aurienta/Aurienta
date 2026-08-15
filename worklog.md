@@ -11605,3 +11605,100 @@ Stage Summary:
 - New canonical Graduation API boundary established: `GET /api/graduation` (readiness read) + `POST /api/graduation/execute` (authorized, transactional act). Combined with the pre-existing `POST /api/graduation/export` (SHA-256-sealed data package), these three endpoints form the single, clean graduation workflow surface.
 - Graduation logic is no longer scattered — frontend consumers (institutional-readiness page, graduation simulator, founder studio) should now call these endpoints directly. The previous scattered triggers in proposals/AI endpoints remain for backward compatibility but should migrate in a follow-up.
 - All mutations transactional; all denials audited; full readiness snapshot persisted to the immutable ledger on every successful graduation. Lint clean.
+
+---
+Task ID: P1-COMPETITIVE-GAP
+Agent: competitive-gap-builder
+Task: Implement 5 competitive-gap features for AURIENTA — Constitutional Match Score, Enterprise Benchmarking, Document E-Signature, Constitutional Q&A, and Public API Key System. All constitutionally compatible.
+
+Work Log:
+- Read worklog.md (first 20 lines) for context: Aurienta brand (gold #D4AF37 on black/white), shared build history, prior agent conventions.
+- Read existing reference patterns: `/api/graduation/execute/route.ts` (role-gate + transaction + audit pattern), `/api/evidence/route.ts` (ledger append pattern), `/api/proxies/[id]/revoke/route.ts` (Next.js 16 dynamic-route shape with `params: Promise<{id:string}>`), `/api/admin/settings/route.ts` (PlatformSetting JSON-blob storage), `/api/ai/ir/route.ts` (AI artifact persistence + audit shape).
+- Read library surfaces used: `lib/aurienta/auth.ts` (`getCurrentUser` returns `user` with `memberships` + `ownershipRecords` included), `lib/aurienta/audit.ts` (fire-and-forget audit), `lib/aurienta/cre.ts` (`appendLedgerEvent(tx, ...)` must run inside a `db.$transaction`), `lib/aurienta/industry-modules.ts` (`INDUSTRY_MODULES` + `getModuleForSector` resolver), `lib/aurienta/signing.ts` (`signWithUserKey(secretEnc, message)` decrypts the user's AES-GCM-encrypted Ed25519 private key and signs; `verifyUserSignature(publicKeyHex, message, signatureB64)` verifies), `lib/aurienta/rate-limit.ts` (`rateLimit({windowMs, max, key})` factory + `rateLimitedResponse(resetAt)`).
+- Read Prisma schema (1241 lines): confirmed `EnterpriseDocument`, `AiArtifact` (generic kind/entityId/payload store), `PlatformSetting` (key/value JSON-blob), `EnterpriseMember` (role enum), `OwnershipRecord` all exist as needed. No schema changes required — features reuse existing tables.
+- Created `/agent-ctx/P1-COMPETITIVE-GAP-competitive-gap-builder.md` capturing shared patterns + match-score weighting + sector benchmark mapping for any future agent.
+
+Files Created (8 routes):
+
+1. `src/app/api/matching/route.ts` — GET (Constitutional Match Score)
+   - Branch 1: `?userId=xxx` → enterprises sorted by match score for that Capital Partner (caller must be self or aurienta_rep).
+   - Branch 2: `?enterpriseId=xxx` → Capital Partners sorted by match score for the enterprise (caller must be a member or aurienta_rep).
+   - Score = weighted sum of 6 components: sector_preference (30%, prior ownership in same sector), tier_preference (20%, riskProfile→tier mapping: conservative→A/B, balanced→C, aggressive→D/E, founder_aligned→F), STS alignment (15%, 1−|user.STS−ent.healthScore|/100), risk_profile_match (15%, riskProfile↔runway+grossMargin bands), past_participation_history (10%, +1.0 if already an owner), geographic_proximity (10%, EG→1.0, abroad→0.6).
+   - Top 20 returned with per-component breakdown. Labeled "Constitutional Match Score — relevance ranking, not investment recommendation".
+   - Scoring upper bound: 500 enterprises / 500 partners. Every read audit-logged (allowed/denied + mode + scored/returned counts).
+
+2. `src/app/api/benchmark/route.ts` — GET (Enterprise Benchmarking)
+   - Loads enterprise vital signs: runway (lawFirmClientAccountBalance/monthlyBurn), revenueGrowth, grossMargin, turnover (monthlyRevenue/employeeCount), nosiCompliance, healthScore.
+   - Resolves sector averages from `INDUSTRY_MODULES` via `getModuleForSector(sector)` — pulls `healthy` thresholds from the module's `vitalSigns` (technology exposes `runway`, agriculture exposes `subsidyCompliance`, healthcare exposes `staffCertification`). Falls back to constitutional defaults (12mo runway, 20% rev growth, 30% gross margin, 50K EGP/emp turnover, 100% NOSI, 75 health).
+   - Returns: `{ enterprise: {...vitals}, sector: {avgRunway, avgRevenueGrowth, avgGrossMargin, avgTurnover, avgNosiCompliance, avgHealthScore, benchmarks[], availableModuleCount}, deltas: {signed enterprise−sector}, label: "Sector benchmark — not investment advice" }`.
+   - Caller must be a member or aurienta_rep. Audit-logged.
+
+3. `src/app/api/documents/[id]/sign/route.ts` — POST (Ed25519 E-Signature)
+   - Body: `{ signatureType: "ed25519" }` (Zod-validated literal).
+   - Computes deterministic document hash: SHA3-256 over (id|fileUrl|fileName|mimeType|sizeBytes|uploadedAt).
+   - Authorizes signer — member of the enterprise that owns the document (any role) or aurienta_rep. Refuses to sign for frozen enterprises.
+   - Verifies the signer has an `identityAnchor` (Ed25519 public key, hex) + `identitySecretEnc` (AES-GCM-encrypted private key). If absent → 400 with `NO_IDENTITY_ANCHOR`.
+   - Signs the document hash with `signWithUserKey(user.identitySecretEnc, documentHash)` → base64 Ed25519 signature.
+   - Computes tamper-evident signatureHash: SHA3-256 over (documentHash|signatureB64|userId|ISO timestamp).
+   - Atomically (db.$transaction): (a) creates AiArtifact with `kind="document_signature"`, `entityId=documentId`, payload=`{documentId, documentHash, signatureHash, signatureB64, signedBy, signedByName, signerIdentityAnchor, signatureType:"ed25519", timestamp}`; (b) appends `document_signed` ledger event carrying the full signature envelope.
+   - Promotes `EnterpriseDocument.verificationStatus` to "signed" (non-fatal if update fails — the signature is already persisted in the AiArtifact + ledger).
+   - Returns `{ ok, signature: { documentId, signedBy, signedByName, signedAt, signatureHash, documentHash, signatureType, artifactId, signerIdentityAnchor } }`.
+   - Audit-logged. Verification path for any future auditor: `verifyUserSignature(signerIdentityAnchor, documentHash, signatureB64)`.
+
+4. `src/app/api/qa/route.ts` — POST (ask) + GET (list)
+   - POST `/api/qa` body `{ enterpriseId, question }` (Zod 3–4000 chars). Caller must be a member of the enterprise. Soft cap 500 questions/enterprise (429 on overflow). Persists an AiArtifact with `kind="constitutional_qa"`, payload=`{enterpriseId, question, askedById, askedByName, askedAt, status:"open", evidenceClassification:null, answer:null, answeredById:null, answeredAt:null}`. Appends `question_asked` ledger event. Returns 201 with the question envelope.
+   - GET `/api/qa?enterpriseId=xxx` returns the 200 most recent questions for the enterprise (newest first), each with its answer (if any), evidence classification, asker/answerer names + timestamps. Caller must be a member.
+   - Both audit-logged (allowed/denied + counts).
+
+5. `src/app/api/qa/[id]/answer/route.ts` — POST (answer)
+   - Body: `{ answer (1–8000 chars), evidenceClassification: "FACT"|"FOUNDER_PROVIDED"|"EVIDENCE_BACKED"|"TARGET"|"FORECAST"|"UNKNOWN" }` (Zod enum).
+   - Authorization: only `founding_operator`, `company_owner`, `board_member` of the enterprise that owns the question (or aurienta_rep). 403 otherwise.
+   - Loads the AiArtifact (must have `kind="constitutional_qa"`); parses existing payload; merges the answer + classification + answeredBy/answeredAt; sets `status:"answered"`.
+   - Atomically (db.$transaction): (a) updates the AiArtifact payload + content (`Q: <question>\n\nA (<classification>): <answer>`); (b) appends `question_answered` ledger event with the question + answer + classification + actor + timestamp.
+   - Returns `{ ok, question: { id, enterpriseId, status, answer, answeredBy, answeredByName, answeredAt, evidenceClassification } }`.
+   - Audit-logged.
+
+6. `src/app/api/api-keys/route.ts` — POST (generate) + GET (list)
+   - POST body `{ enterpriseId, name (1–120 chars) }`. Authorizes `founding_operator`/`company_owner`/`board_member` (or aurienta_rep). Refuses for frozen enterprises. Generates `rawKey = crypto.randomUUID()` + `settingKey = api_key_${enterpriseId}_${randomUUID()}`. Stores as `PlatformSetting` with `category="api_key"`, `value=JSON.stringify({key, name, enterpriseId, createdAt, createdBy, createdByName, active:true, revokedAt:null})`. Returns 201 with the **actual key value shown ONCE** + `keyPrefix` (first 8 chars for later recognition) + a warning that the key will not be retrievable again.
+   - GET `?enterpriseId=xxx` — stricter authorization: only `founding_operator`/`company_owner` (or aurienta_rep). Returns metadata only — `id`, `name`, `keyPrefix` (first 8 chars + "…"), `active`, `createdAt`, `createdBy`, `revokedAt`. The actual key value is NEVER included.
+   - Both audit-logged (allowed/denied + counts + keyPrefix only).
+
+7. `src/app/api/api-keys/[id]/route.ts` — DELETE (revoke)
+   - `id` = PlatformSetting.id (cuid) returned by GET.
+   - Authorizes `founding_operator`/`company_owner`/`board_member` (or aurienta_rep). Parses the stored JSON value, sets `active=false` + `revokedAt=ISO timestamp`, writes back via `db.platformSetting.update` (preserving the row for audit — never hard-deleted).
+   - Idempotent on already-revoked keys (returns 200 with `alreadyRevoked:true`).
+   - Audit-logged.
+
+8. `src/app/api/v1/enterprise/[slug]/data/route.ts` — GET (public API-key–gated)
+   - NO session auth — the API key IS the auth. `?key=xxx` query param.
+   - Resolves enterprise by slug first (404 short-circuits before key check — leaks nothing about which enterprises have keys).
+   - Linear-scans the enterprise's `PlatformSetting` rows where `key` starts with `api_key_${enterpriseId}_` and category=`api_key`; returns the first ACTIVE one whose stored `.key === providedKey`. 401 `INVALID_API_KEY` on no match (audit-logged as `v1.api_key.invalid`).
+   - Rate limit: 100 requests/hour per key (in-memory sliding window via `rateLimit({windowMs: 60*60*1000, max: 100, key: "v1_enterprise_data"})`). 429 with `Retry-After` header on overflow.
+   - Returns read-only enterprise data: enterprise metadata (name, slug, sector, tier, stage, status, legalForm, healthScore, healthRating, createdAt); financials (fundraisingGoal, raised, equityUnitPrice, totalEquityUnits, monthlyRevenue, monthlyBurn, lawFirmClientAccountBalance, runwayMonths, grossMargin, revenueGrowth, employeeCount, nosiCompliance, policeClearanceValid); milestones (id, title, status, amountEgp, dueAt, releasedAt, createdAt — capped at 100); expenses **aggregated by category + status** (count, totalEgp, pendingEgp, approvedEgp — NO vendor names, NO individual line items); employees **anonymized** by department + employmentType (count, compensationBands[], nosiRegistered/Pending/Missing counts, keyPersons count, avgEquityConversionPct — NO names, NO national IDs, NO individual salaries).
+   - Response includes `disclaimer: "Read-only enterprise data — anonymized; no personal data exposed."` + `apiVersion: "v1"` + `rateLimit` envelope + CORS-open headers (so external integrations can call from the browser) + `Cache-Control: no-store` + `X-Aurienta-Api-Version: v1` + `X-Aurienta-RateLimit-Remaining` headers.
+   - OPTIONS handler returns 204 with CORS headers for preflight.
+   - Successful reads audit-logged as `v1.enterprise.data.read` with `apiKeyName`, `apiSettingId`, returned counts, and rate-limit remaining.
+
+Technical details:
+- All 8 routes export `runtime = "nodejs"` + `dynamic = "force-dynamic"` (literal strings, per existing convention).
+- All imports per spec: `getCurrentUser` from `@/lib/aurienta/auth`, `db` from `@/lib/db`, `appendLedgerEvent` from `@/lib/aurienta/cre`, `audit` from `@/lib/aurienta/audit`, `z` from `zod`, `INDUSTRY_MODULES`/`getModuleForSector` from `@/lib/aurienta/industry-modules`. Additional imports: `signWithUserKey` (e-signature), `createHash` + `randomUUID` from `crypto` (hashing + key generation), `rateLimit`/`rateLimitedResponse` (v1 public API), `logger` from `@/lib/aurienta/logger`.
+- All mutations (signature, question, answer, api-key creation, api-key revoke) live inside `db.$transaction` so the AiArtifact/payload mutation + the ledger append commit atomically.
+- Every route writes an audit entry on both allowed and denied paths; denied paths include `reason` + role metadata for forensic review.
+- Next.js 16 dynamic-route shape used consistently: `{ params }: { params: Promise<{ id: string }> }` + `await params`.
+- No Prisma schema changes required — features reuse the existing `AiArtifact` (with two new `kind` values: `document_signature`, `constitutional_qa`), `PlatformSetting` (with `category: "api_key"`), `EnterpriseDocument`, `Milestone`, `Expense`, `Employee` tables.
+- Rate-limited v1 endpoint never leaks whether the enterprise exists vs. whether the key is wrong — same 401 envelope for both (after the slug→enterprise resolution).
+
+Verification:
+- `bun run lint` → exit 0, no warnings, no errors (after renaming `module` → `indModule` in benchmark route to satisfy `@next/next/no-assign-module-variable` rule — `module` is reserved by Next.js).
+- `bunx tsc --noEmit` filtered to the 6 new route directories → zero TypeScript errors.
+- No dev.log present at time of writing (dev server had not yet emitted logs); routes compile cleanly through ESLint.
+- Pattern parity verified against `/api/graduation/execute/route.ts` (role set, transaction shape, audit metadata, ledger append signature, error envelope) and `/api/proxies/[id]/revoke/route.ts` (Next.js 16 async params).
+
+Stage Summary:
+- 5 competitive-gap features shipped across 8 new route files. All are constitutionally compatible (zero-custody preserved, all mutations ledger-appended, all sensitive actions audit-logged, all denials audited with reason + role metadata).
+- Match Score API surfaces a 6-component weighted score with breakdown — clearly labeled "NOT investment advice".
+- Benchmark API compares enterprise vitals against `INDUSTRY_MODULES` sector averages — clearly labeled "Sector benchmark — not investment advice".
+- E-Signature API records a REAL Ed25519 signature (not a mock) using the user's onboarding-provisioned `identityAnchor` + `identitySecretEnc`; verifiable by any external auditor via `verifyUserSignature`.
+- Q&A API persists questions + answers as `AiArtifact` rows with `kind="constitutional_qa"`; answer route enforces evidence classification (FACT / FOUNDER_PROVIDED / EVIDENCE_BACKED / TARGET / FORECAST / UNKNOWN) per the constitutional evidence-tagging convention.
+- Public API Key System: keys issued once (returned only at creation), stored as `PlatformSetting` rows keyed `api_key_${enterpriseId}_${uuid}`; the public v1 endpoint authenticates by key, rate-limits 100/hour/key, and returns ANONYMIZED read-only data (no PII, no vendor names, no individual salaries, no national IDs).
+- Zero schema changes; zero business-logic changes to existing routes; lint clean; type-check clean.

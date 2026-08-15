@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShieldCheck, ChevronRight } from "lucide-react";
+import { Menu, X, ShieldCheck, ShieldAlert, ChevronRight } from "lucide-react";
 import { AurientaMark } from "@/components/aurienta-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
@@ -77,6 +77,15 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 lg:flex">
           <LanguageSwitcher />
           <ThemeToggle />
+          {/* Admin icon — build mode (no password). Will be hidden in production. */}
+          <Link
+            href="/dashboard/admin-panel"
+            className="flex items-center gap-1 rounded-full border border-gold/20 px-2.5 py-1.5 text-xs text-gold/70 transition-colors hover:border-gold/40 hover:text-gold"
+            title="Platform Admin (Build Mode)"
+          >
+            <ShieldAlert className="h-3.5 w-3.5" />
+            <span className="hidden xl:inline">Admin</span>
+          </Link>
           <Link
             href="/signin"
             className="font-sans text-sm font-medium text-foreground/80 transition-colors hover:text-gold-light"
