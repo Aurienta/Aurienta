@@ -9,7 +9,7 @@ const DEMO_PASSWORD = "aurienta2026";
 const DEMO = [
   { email: "layla@streetbites.eg", name: "Layla Mostafa", role: "Capital Partner · Founding Operator", icon: Wallet, note: "The Cairo student — multi-role partner" },
   { email: "ahmed@ecopack.eg", name: "Ahmed Khaled", role: "Founding Operator · Manager", icon: Crown, note: "EcoPack founder, Tier C" },
-  { email: "sarah@Capital Partner.eg", name: "Sarah Ibrahim", role: "Capital Partner", icon: Wallet, note: "Active Capital Partner, 3 enterprises" },
+  { email: "sarah@capitalpartner.eg", name: "Sarah Ibrahim", role: "Capital Partner", icon: Wallet, note: "Active Capital Partner, 3 enterprises" },
   { email: "mohamed@smartfarm.eg", name: "Mohamed Adel", role: "Founder (graduated)", icon: Rocket, note: "SmartFarm — sovereign JSC" },
   { email: "khalil@holding.eg", name: "Khalil Mansour", role: "Company Owner · Board", icon: Building2, note: "Nile Brew owner → graduation" },
 ];
