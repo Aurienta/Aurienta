@@ -119,6 +119,13 @@ export function RegisterWizard() {
             legalName: state.legalName,
             password: state.password,
             verificationLevel: "L1",
+            nationality: state.nationality ?? "egyptian",
+            nationalIdLast4: state.nationalIdLast4 || undefined,
+            primaryIntent: state.intent === "capital" ? "capital_partner"
+              : state.intent === "founding" ? "founding_operator"
+              : state.intent === "workforce" ? "workforce_partner"
+              : state.intent === "institution" ? "institution"
+              : undefined,
           }),
         });
         const data = await res.json().catch(() => ({}));
