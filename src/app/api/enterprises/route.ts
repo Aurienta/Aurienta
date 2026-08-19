@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
           employeeCount: 1,
           nosiCompliantPct: 100,
           policeClearanceValid: true,
-          status: "fundraising_active",
+          status: "draft",
           graduationReadiness: 0,
           founderId: user.id,
           lawFirmId: lawFirm?.id ?? null,

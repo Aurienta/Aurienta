@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
-import { computeGraduationReadiness, enforceTierMigration } from "@/lib/aurienta/cre";
+import { computeGraduationReadiness, enforceTierMigration, enforceStatusTransition } from "@/lib/aurienta/cre";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -182,6 +182,28 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     });
     if (!existing) {
       return NextResponse.json({ error: "Enterprise not found", code: "NOT_FOUND" }, { status: 404 });
+    }
+
+    // ── CRE: status_transition — enforce valid status machine ──
+    if (updates.status !== undefined && String(updates.status) !== existing.status) {
+      const statusCheck = enforceStatusTransition({
+        currentStatus: existing.status,
+        proposedStatus: String(updates.status),
+      });
+      if (!statusCheck.allowed) {
+        await audit({
+          actorId: user.id,
+          action: "admin.enterprise.update",
+          target: `enterprise:${id}`,
+          result: "denied",
+          reason: statusCheck.reason,
+          metadata: { policy: statusCheck.policy, from: existing.status, to: String(updates.status) },
+        });
+        return NextResponse.json(
+          { error: statusCheck.reason ?? "Invalid status transition", code: "CRE_DENIED", policy: statusCheck.policy },
+          { status: 400 }
+        );
+      }
     }
 
     // ── CRE: tier_migration — no skipping A→B→C→D→F (E is a separate track) ──

@@ -41,6 +41,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           accountingFirmId: true,
           accountingFirm: { select: { id: true, name: true, status: true, esaaLicense: true } },
           lawFirm: { select: { id: true, name: true, status: true } },
+          platformFeePct: true, consultingFeePct: true, consultingOptOut: true,
         },
       },
     },
@@ -115,6 +116,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   // All checks passed — release the funds.
+  // Calculate fees: 5% platform + 2.5% consulting (unless opted out)
+  const platformFeePct = milestone.enterprise.platformFeePct ?? 5;
+  const consultingFeePct = milestone.enterprise.consultingOptOut ? 0 : (milestone.enterprise.consultingFeePct ?? 2.5);
+  const platformFeeEgp = Math.round(milestone.amountEgp * platformFeePct / 100);
+  const consultingFeeEgp = Math.round(milestone.amountEgp * consultingFeePct / 100);
+  const totalFeesEgp = platformFeeEgp + consultingFeeEgp;
+  const netReleasedEgp = milestone.amountEgp - totalFeesEgp;
+
   const result = await db.$transaction(async (tx) => {
     // Update milestone status to "released".
     const updated = await tx.milestone.update({
@@ -122,21 +131,29 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       data: { status: "released", releasedAt: new Date() },
     });
 
-    // Decrement the law firm client account balance (field: lawFirmClientAccountBalanceEgp).
+    // Decrement the law firm client account balance by the full milestone amount.
+    // Fees are deducted from the release — net goes to enterprise operations.
     await tx.enterprise.update({
       where: { id: milestone.enterprise.id },
       data: { lawFirmClientAccountBalanceEgp: { decrement: milestone.amountEgp } },
     });
 
-    // Ledger event: milestone released by accountant.
+    // Ledger event: milestone released by accountant with fee breakdown.
     await appendLedgerEvent(tx, {
       enterpriseId: milestone.enterprise.id,
       eventType: "milestone_released",
       payload: {
         milestoneId,
         title: milestone.title,
-        amount: milestone.amountEgp,
-        flow: "law_firm_client_account → accounting_firm_verification → vendor",
+        grossAmount: milestone.amountEgp,
+        platformFeeEgp,
+        platformFeePct,
+        consultingFeeEgp,
+        consultingFeePct,
+        consultingOptOut: milestone.enterprise.consultingOptOut,
+        totalFeesEgp,
+        netReleasedEgp,
+        flow: "law_firm_client_account → accounting_firm_verification → enterprise_operating_account",
         verifiedBy: user.id,
         accountingFirmId: accountingFirm.id,
         accountingFirmName: accountingFirm.name,

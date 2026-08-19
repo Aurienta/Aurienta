@@ -1048,3 +1048,51 @@ export function enforceSalaryConstitutionality(params: {
     overrideRatio: Number(overrideRatio.toFixed(4)),
   };
 }
+
+// ── Enterprise Status Machine (Blueprint §4) ──
+// Enforces valid status transitions. Prevents invalid jumps like
+// "draft" → "graduated" or "frozen" → "active" (without unfreeze).
+const VALID_TRANSITIONS: Record<string, string[]> = {
+  draft: ["fundraising_active", "frozen"],
+  fundraising_active: ["active", "frozen", "draft"],
+  active: ["frozen", "graduation_pending"],
+  frozen: ["active", "draft", "fundraising_active"], // unfreeze returns to previous
+  graduation_pending: ["graduated", "active", "frozen"],
+  graduated: [], // terminal state
+};
+
+export function enforceStatusTransition(params: {
+  currentStatus: string;
+  proposedStatus: string;
+}): CreVerdict {
+  const policy = "status_machine.rego";
+  const payloadHash = hashPayload({ cs: params.currentStatus, ps: params.proposedStatus });
+
+  const allowedTargets = VALID_TRANSITIONS[params.currentStatus];
+  if (!allowedTargets) {
+    return {
+      allowed: false,
+      reason: `Enterprise status machine: unknown current status "${params.currentStatus}"`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+
+  if (params.currentStatus === params.proposedStatus) {
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+    };
+  }
+
+  const ok = allowedTargets.includes(params.proposedStatus);
+  return {
+    allowed: ok,
+    reason: ok
+      ? undefined
+      : `Enterprise status machine: invalid transition "${params.currentStatus}" → "${params.proposedStatus}". Allowed: ${allowedTargets.join(", ")}`,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: ok }),
+  };
+}
