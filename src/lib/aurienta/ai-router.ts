@@ -103,10 +103,10 @@ function getOrKey() { return process.env.OPENROUTER_API_KEY ?? null; }
 async function callGemini(system: string, user: string): Promise<MultiModelResult> {
   const client = getGemini(); if (!client) throw new Error("Gemini API key not configured");
   const start = Date.now();
-  const model = client.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: system });
+  const model = client.getGenerativeModel({ model: "gemini-2.0-flash", systemInstruction: system });
   const result = await model.generateContent(user);
   const usage = result.response.usageMetadata;
-  return { content: result.response.text(), provider: "gemini", model: "gemini-1.5-flash", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: usage?.promptTokenCount ?? null, tokensOut: usage?.candidatesTokenCount ?? null };
+  return { content: result.response.text(), provider: "gemini", model: "gemini-2.0-flash", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: usage?.promptTokenCount ?? null, tokensOut: usage?.candidatesTokenCount ?? null };
 }
 async function callOpenAI(system: string, user: string): Promise<MultiModelResult> {
   const client = getOpenAI(); if (!client) throw new Error("OpenAI API key not configured");
@@ -117,8 +117,8 @@ async function callOpenAI(system: string, user: string): Promise<MultiModelResul
 async function callGroq(system: string, user: string): Promise<MultiModelResult> {
   const client = getGroq(); if (!client) throw new Error("Groq API key not configured");
   const start = Date.now();
-  const c = await client.chat.completions.create({ model: "llama-3.3-70b-versatile", messages: [{ role: "system", content: system }, { role: "user", content: user }] });
-  return { content: c.choices[0]?.message?.content ?? "", provider: "groq", model: "llama-3.3-70b-versatile", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: c.usage?.prompt_tokens ?? null, tokensOut: c.usage?.completion_tokens ?? null };
+  const c = await client.chat.completions.create({ model: "llama-3.1-8b-instant", messages: [{ role: "system", content: system }, { role: "user", content: user }] });
+  return { content: c.choices[0]?.message?.content ?? "", provider: "groq", model: "llama-3.1-8b-instant", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: c.usage?.prompt_tokens ?? null, tokensOut: c.usage?.completion_tokens ?? null };
 }
 async function callHuggingFace(system: string, user: string): Promise<MultiModelResult> {
   const key = getHfKey(); if (!key) throw new Error("HuggingFace API key not configured");
