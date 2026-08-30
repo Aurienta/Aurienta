@@ -19,6 +19,7 @@ export interface RegisterState {
   otpVerified: boolean;
   // Step 2 — KYC
   idFileName: string | null;
+  nationalIdLast4: string;
   livenessProgress: number; // 0..100
   livenessStarted: boolean;
   livenessDone: boolean;
@@ -47,6 +48,7 @@ export const INITIAL_REGISTER_STATE: RegisterState = {
   otp: "",
   otpVerified: false,
   idFileName: null,
+  nationalIdLast4: "",
   livenessProgress: 0,
   livenessStarted: false,
   livenessDone: false,
