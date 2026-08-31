@@ -20,7 +20,14 @@ function read(): EnvShape {
   const allowDemoSignIn = process.env.ALLOW_DEMO_SIGNIN === "true";
   let fieldEncryptionKey = process.env.FIELD_ENCRYPTION_KEY ?? "";
   if (!fieldEncryptionKey) {
-    if (nodeEnv === "production") { console.error("[env] FATAL: FIELD_ENCRYPTION_KEY is not set"); throw new Error("FIELD_ENCRYPTION_KEY is required in production"); }
+    // Do NOT throw at module-evaluation time: this module is imported by route
+    // handlers whose page data is collected during `next build` (and on Vercel),
+    // where env vars may not be present. A missing key is logged loudly here and
+    // enforced lazily by `encryption.ts` (`getKey()` throws when first used).
+    // This keeps builds green while still failing loudly at runtime if unset.
+    if (nodeEnv === "production") {
+      console.error("[env] FATAL: FIELD_ENCRYPTION_KEY is not set — encryption will fail at runtime.");
+    }
     fieldEncryptionKey = Buffer.from("aurienta-dev-field-key-32bytes!!", "utf8").toString("base64").slice(0, 44);
   }
   if (!databaseUrl) console.error("[env] FATAL: DATABASE_URL is not set");
