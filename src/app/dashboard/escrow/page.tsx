@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +73,7 @@ export default async function EscrowPage() {
   const totalEscrow = allEnts.reduce((s, e) => s + e.lawFirmClientAccountBalanceEgp, 0);
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
+    <PageTransition className="flex flex-col gap-6 sm:gap-8">
       <PageHeader
         eyebrow="Law Firm Client Account Console"
         icon={Lock}
@@ -189,7 +190,7 @@ export default async function EscrowPage() {
           Zero Custody is non-amendable Rule I 1.1 — every page load re-verifies via aggregate Law Firm Client Account balance query
         </p>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

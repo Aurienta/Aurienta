@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, Lock, Cpu } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
+import { NewsletterSignup } from "@/components/site/newsletter-signup";
 
 const COLUMNS = [
   {
@@ -54,6 +55,9 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-gold/10 bg-gradient-to-b from-background to-[#060608]">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
+        {/* Lead capture — slim gold banner above the link grid */}
+        <NewsletterSignup className="mb-12" />
+
         <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div className="flex flex-col gap-5">
             <Link href="/" className="flex items-center gap-3">

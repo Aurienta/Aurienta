@@ -73,6 +73,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://aurienta.vercel.app",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1344,
+        height: 768,
+        alt: "AURIENTA — Constitutional Enterprise Infrastructure",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -80,6 +88,7 @@ export const metadata: Metadata = {
     description:
       "Your capital, your work, your company — no speculation required. The world's first constitutional launchpad.",
     creator: "@aurienta",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,

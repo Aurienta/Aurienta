@@ -91,7 +91,7 @@ export function Stats() {
         <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-gold/12 bg-gold/10 sm:grid-cols-2 lg:grid-cols-3">
           {KPIS.map((k, i) => (
             <motion.div
-              key={k.label}
+              key={k.label ?? k.labelKey ?? `kpi-${i}`}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}

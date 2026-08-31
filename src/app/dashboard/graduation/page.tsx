@@ -14,6 +14,7 @@ import { PostGraduationCard } from "@/components/dashboard/institutional/post-gr
 import { ExportPackageCard } from "@/components/dashboard/institutional/export-package-card";
 import { CallVoteButton } from "@/components/dashboard/institutional/call-vote-button";
 import { GraduationCap } from "lucide-react";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const metadata = { title: "Graduation · AURIENTA" };
 
@@ -52,7 +53,7 @@ export default async function GraduationPage() {
     : [];
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
+    <PageTransition className="flex flex-col gap-6 sm:gap-8">
       <Toaster position="top-right" richColors closeButton />
 
       <PageHeader
@@ -140,6 +141,6 @@ export default async function GraduationPage() {
       <p className="mt-2 text-center font-mono text-[11px] leading-relaxed text-muted-foreground/80">
         Constitutional anchor {shortHash(CONSTITUTIONAL_HASH, 14, 6)} · graduation is irreversible once executed.
       </p>
-    </div>
+    </PageTransition>
   );
 }

@@ -10,6 +10,7 @@ import type {
   CouncilMemberForUi,
   Choice,
 } from "@/components/dashboard/governance/types";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -145,7 +146,7 @@ export default async function GovernancePage() {
   }
 
   return (
-    <div className="relative">
+    <PageTransition className="relative">
       {/* Mount sonner toasts (the radix toaster in the root layout is separate). */}
       <SonnerToaster
         position="top-center"
@@ -179,6 +180,6 @@ export default async function GovernancePage() {
           )}
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

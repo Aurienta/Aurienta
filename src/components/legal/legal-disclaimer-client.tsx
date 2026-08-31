@@ -34,7 +34,43 @@ import {
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
 import { useToast } from "@/hooks/use-toast";
 
-export function LegalDisclaimerClient() {
+/**
+ * Derive a slug-style id from a numbered legal section (e.g.
+ * "1. IMPORTANT NOTICE\n…" → "important-notice"). Sections without a
+ * recognizable numbered heading (e.g. the preamble) fall back to
+ * `section-{idx+1}`. Used as the anchor target for `initialSection`.
+ */
+function sectionId(chunk: string, idx: number): string {
+  const match = chunk.match(/^\s*\d+\.\s+([A-Za-z][A-Za-z\s()/\\\-,&']+)/);
+  if (match) {
+    const title = match[1].trim();
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    if (slug) return slug;
+  }
+  return `section-${idx + 1}`;
+}
+
+/**
+ * Renders the AURIENTA Platform Terms, Constitutional Participation Agreement
+ * & Legal Disclaimer (bilingual EN/AR).
+ *
+ * Props:
+ *  - `initialSection`: optional anchor id of a section to scroll to on mount.
+ *    When undefined (the default — used by `/legal`), the page renders at the
+ *    top with no scroll. When set (used by `/legal/terms`, `/legal/privacy`,
+ *    `/legal/constitution`), the page scrolls smoothly to the matching
+ *    section anchor on mount. Section ids are derived from the section
+ *    heading (e.g. `important-notice`, `personal-data-and-privacy`,
+ *    `constitutional-runtime-engine`).
+ */
+export function LegalDisclaimerClient({
+  initialSection,
+}: {
+  initialSection?: string;
+} = {}) {
   const [language, setLanguage] = React.useState<"en" | "ar">("en");
   const [accepted, setAccepted] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -53,6 +89,19 @@ export function LegalDisclaimerClient() {
       })
       .catch(() => {});
   }, []);
+
+  // If an initial section is requested, smooth-scroll to it on mount. The
+  // small timeout lets the ScrollArea settle before triggering the scroll.
+  React.useEffect(() => {
+    if (!initialSection) return;
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(initialSection);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 60);
+    return () => window.clearTimeout(t);
+  }, [initialSection]);
 
   const handleAccept = async () => {
     if (!accepted) return;
@@ -193,7 +242,11 @@ export function LegalDisclaimerClient() {
                 className="prose prose-sm max-w-none whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/90"
                 style={{ fontFamily: isRtl ? "system-ui, sans-serif" : "inherit" }}
               >
-                {disclaimerText}
+                {sections.map((section, idx) => (
+                  <div key={idx} id={sectionId(section, idx)} className="scroll-mt-6">
+                    {section}
+                  </div>
+                ))}
               </div>
             </ScrollArea>
           </CardContent>

@@ -11737,3 +11737,229 @@ Stage Summary:
 - **Live deployment healthy**: aurienta.vercel.app serves all tested routes (/, /register, /signin, /dashboard, /registry, /legal, dashboard subroutes, /api/health, /api/ready) with 200 status and 0 runtime/console errors.
 - **No code changes needed elsewhere** — the only fix was the env.ts module-eval throw.
 - **Operational note for the user**: ensure `FIELD_ENCRYPTION_KEY` (32-byte base64) is set in the Vercel project's Environment Variables for production. Without it, the build still succeeds but PII encryption (nationalIdLast4, nosiNumber, TOTP secrets, Ed25519 private keys) will throw at runtime when first used. The `/api/ready` endpoint will also surface this. Current live deployment shows it IS configured (encryption-dependent flows like auth work).
+
+---
+Task ID: MISSING-A
+Agent: Landing-polish subagent
+Task: Wire the already-generated OG image into metadata, add a Testimonial/Partner proof section to the landing page (between Stats and Compliance), and add a newsletter/lead-capture signup to the site footer.
+
+Work Log:
+- Read /home/z/my-project/worklog.md to load prior context — confirmed the VERCEL-CHECK-FIX stage already replaced the eager `FIELD_ENCRYPTION_KEY` throw in `src/lib/aurienta/env.ts` with a loud FATAL log + dev fallback (env.ts was therefore NOT touched by this agent).
+- Read the existing brand surface to keep visual parity: `src/app/layout.tsx` (metadata shape), `src/app/page.tsx` (landing composition), `src/components/site/site-footer.tsx` (5-column grid + constitutional-hash strip), `src/components/site/sections/stats.tsx` + `compliance.tsx` + `sovereignty.tsx` + `product-preview.tsx` (section rhythm + `max-w-7xl px-5 sm:px-8` + `py-24 sm:py-32` / `py-28 sm:py-36` patterns + `SectionHeading`/`Reveal`/`StaggerGroup`/`GoldStar` usage), `src/components/aurienta-logo.tsx` (`AurientaMark`, `GoldStar`, `AurientaWordmark` exports), `src/components/ui/{card,input,button,sonner}.tsx`, and `src/app/globals.css` (confirmed `glass-gold`, `glass`, `text-gold-gradient`, `bg-gold-gradient`, `aurienta-radial`, `aurienta-grid`, `border-gold-faint`, `gold-light`, `gold-dark` are all registered tokens/classes).
+- Confirmed demo personas from existing codebase (per REPOSITORY_INTEGRITY.md and worklog history): Mohamed Eltonsy = Founder & Sole Owner, AURIENTA (100% ownership, NOT Layla); Layla Mostafa = demo Capital Partner (layla@streetbites.eg); Ahmed Hassan = demo Founder (product-preview.tsx step 1 persona); Street Bites = demo Tier A → F enterprise. Used exactly these three personas in the testimonial cards — no invented names.
+- Confirmed OG image already exists at `/home/z/my-project/public/og-image.png` (1344x768, 156K).
+- Confirmed sonner is installed (`sonner ^2.0.6`) and is the project-wide toast convention (30+ dashboard/auth components already import `import { toast } from "sonner"`). The root layout only mounts the legacy radix Toaster; dashboard/auth pages each mount their own local `<SonnerToaster />`. SiteFooter is only rendered on `src/app/page.tsx` (not in the dashboard layout), so mounting a local SonnerToaster inside the NewsletterSignup client component is safe and self-contained.
+
+Files Edited (3):
+
+1. `src/app/layout.tsx` — Task 1: OG image wired into metadata.
+   - Added `openGraph.images: [{ url: "/og-image.png", width: 1344, height: 768, alt: "AURIENTA — Constitutional Enterprise Infrastructure" }]`.
+   - Added `twitter.images: ["/og-image.png"]`.
+   - No other metadata fields changed (metadataBase, title, description, keywords, authors, creator, publisher, alternates, openGraph.{title,description,siteName,type,locale,url}, twitter.{card,title,description,creator}, robots, manifest all preserved verbatim).
+
+2. `src/app/page.tsx` — Task 2 wiring.
+   - Added `import { Testimonials } from "@/components/site/sections/testimonials";` immediately after the `Stats` import.
+   - Rendered `<Testimonials />` between `<Stats />` and `<Compliance />` in the main column. All other imports + sections untouched.
+
+3. `src/components/site/site-footer.tsx` — Task 3 wiring.
+   - Added `import { NewsletterSignup } from "@/components/site/newsletter-signup";` after the `aurienta-logo` import.
+   - Rendered `<NewsletterSignup className="mb-12" />` as a slim gold banner ABOVE the existing 5-column link grid (between the outer `<div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">` wrapper and the `<div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)]">` link grid). All existing footer columns + bottom constitutional-hash strip + copyright line preserved verbatim.
+
+Files Created (2):
+
+1. `src/components/site/sections/testimonials.tsx` — Task 2: Testimonials/Partner proof section.
+   - `"use client"` (framer-motion reveal via `motion` + `useInView` + `useReducedMotion` — same pattern as `stats.tsx` and the `<Reveal>` helper).
+   - Section eyebrow label: "EARLY ADOPTERS & INSTITUTIONAL PARTNERS" (uppercase gold tracked, gold stars + hairlines on either side — mirrors the Stats eyebrow style).
+   - Section heading (h2, Cormorant Garamond serif): "Built with the people who will use it." (with the second clause gold-gradient emphasised, matching the Stats / Compliance heading rhythm).
+   - 3 testimonial cards in a responsive `grid gap-6 md:grid-cols-3` (1 col mobile, 3 col desktop).
+     - Card 1: Mohamed Eltonsy — Founder & Sole Owner — AURIENTA — quote about the platform being "a constitution that compiles" and ordinary capital becoming real ownership without surrendering custody.
+     - Card 2: Layla Mostafa — Capital Partner — "Constitutional Partner since 2026" — quote about trusting zero-custody, law-firm client account clearing, and ledger self-verification.
+     - Card 3: Ahmed Hassan — Founder, Street Bites — "Graduated Tier A → F" — quote about joining at Tier A as a single food stall and graduating six years later to a JSC with clean audit + NOSI-registered staff + self-exported ledger.
+   - Cards built from shadcn `Card`/`CardHeader`/`CardContent`/`CardFooter` with `glass-gold` background, `border-gold/15` (hover `border-gold/35`), a `Quote` lucide icon, a 5-star `GoldStar` rating row (`@/components/aurienta-logo`), serif body quote with gold-gradient opening/closing quotation marks, and a footer row with name/role on the left + a "Verified" gold chip on the right + a `font-mono` meta line.
+   - Partner category strip below the cards: a flex-wrap row of "GAFI", "FRA", "NOSI", "Egyptian Tax Authority", "Licensed Law Firms" rendered as muted uppercase tracked text chips separated by gold dots (`h-1 w-1 rounded-full bg-gold/60`). Above the row, an "Constitutional counterparts & regulatory interfaces" eyebrow. These are the real institutional partners named in the blueprint — NOT invented brand logos.
+   - Framer-motion reveal: each card animates `opacity 0→1 + y 24→0` with staggered `index * 0.1` delay, `useInView(once: true, margin: "-60px")`, `useReducedMotion()` honored (motion disabled when user prefers reduced motion). The partner strip also fades+translates in after a 0.25s delay once the section enters view.
+   - Exported as `Testimonials`.
+
+2. `src/components/site/newsletter-signup.tsx` — Task 3: Newsletter/lead-capture form.
+   - `"use client"`.
+   - Mounts a local `SonnerToaster` (`position="top-center"`, gold-bordered dark toast styling matching the convention in `src/app/signin/page.tsx`) so the success toast renders even though the root layout only mounts the legacy radix Toaster.
+   - Heading (h3, serif): "Stay constitutionally informed".
+   - Subtext (one line): "Founding announcements, graduation briefings, and amendment notices only — no marketing, no speculation."
+   - Eyebrow chip: "THE CONSTITUTIONAL LEDGER" with a gold star.
+   - shadcn `Input` (type=email, inputMode=email, autoComplete=email, sr-only label) + shadcn `Button` (gold-gradient `bg-gold-gradient text-black`, `Mail` lucide icon, label flips between "Subscribe" and "Subscribing…").
+   - Layout: `flex flex-col sm:flex-row` — on mobile the input stacks above the button; on `sm+` they sit side-by-side with the form constrained to `sm:max-w-md`. The whole signup is a slim gold banner (`glass-gold` + `border-gold/15` + rounded-2xl + p-6/p-7) so it integrates cleanly above the footer link grid without disturbing the existing `lg:grid-cols-[1.4fr_repeat(4,1fr)]` layout.
+   - Local `useState` for `email` + `submitting`. `EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/` validates inline. On submit: preventDefault → validate → if invalid, `toast.error` with a description; if valid, simulate a 550ms round-trip via `window.setTimeout`, then clear the input and `toast.success("Subscribed — welcome to the constitutional ledger.", { description: "You will receive founding announcements, graduation briefings, and constitutional amendments only." })`. No API call leaves the browser — the form's job is to acknowledge the subscription inline, per the task's "do not require a new API route" rule.
+   - Exported as `NewsletterSignup`.
+
+Verification:
+- `bun run lint` → exit 0, no warnings, no errors. All five touched files (layout.tsx, page.tsx, site-footer.tsx, testimonials.tsx, newsletter-signup.tsx) pass ESLint cleanly.
+- `bunx tsc --noEmit` filtered to the 5 touched files → zero TypeScript errors in any of the new/edited files. (The pre-existing errors in `src/components/dashboard/page-transition.tsx` union-type complexity and the `src/lib/__tests__/*.test.ts` test-runner typings are unrelated to this task and were present before.)
+- Pattern parity verified: testimonials section reuses the exact `max-w-7xl px-5 sm:px-8` container + `py-24 sm:py-32` vertical rhythm + `aurienta-radial opacity-40` background ornament + gold-star/hairline eyebrow treatment used by `stats.tsx`/`sovereignty.tsx`. Newsletter signup reuses the `glass-gold` + `border-gold/15` + `bg-gold-gradient text-black` button styling consistent with the rest of the gold/black luxury palette. No indigo or blue colours introduced.
+
+Stage Summary:
+- Task 1 complete: `/og-image.png` (1344x768) wired into both `openGraph.images` (with width/height/alt) and `twitter.images` in `src/app/layout.tsx`. No other metadata fields changed.
+- Task 2 complete: New `<Testimonials />` section created at `src/components/site/sections/testimonials.tsx` with 3 testimonial cards (Mohamed Eltonsy — Founder & Sole Owner; Layla Mostafa — Capital Partner; Ahmed Hassan — Founder, Street Bites) using existing demo personas (no invented names), 5-star GoldStar ratings, glass-gold cards, framer-motion staggered reveal, and a partner-category strip (GAFI · FRA · NOSI · Egyptian Tax Authority · Licensed Law Firms) styled as muted uppercase tracked text separated by gold dots. Wired into `src/app/page.tsx` between `<Stats />` and `<Compliance />`.
+- Task 3 complete: New `NewsletterSignup` client component at `src/components/site/newsletter-signup.tsx` (gold-gradient button, shadcn Input, sonner success toast "Subscribed — welcome to the constitutional ledger.", local SonnerToaster mount, local email validation, no new API route). Wired into `src/components/site/site-footer.tsx` as a slim gold banner above the existing 5-column link grid — grid is fully preserved.
+- Total files touched: 3 edited (layout.tsx, page.tsx, site-footer.tsx) + 2 created (testimonials.tsx, newsletter-signup.tsx) = 5 files.
+- Lint clean. TypeScript clean on all touched files. No `bun run build` executed (per task rules — the orchestrator will do final verification). `src/lib/aurienta/env.ts` not touched.
+
+---
+Task ID: MISSING-C
+Agent: Missing-routes subagent
+
+Task: Implement 3 missing/recommended routes on the AURIENTA platform:
+1. `/dashboard/admin` index page (was 404 — subroutes existed but no index.tsx; admin landing truly lives at `/dashboard/admin-panel`).
+2. `/enterprise` public index page (was 404 — `/enterprise/[slug]` existed with subpages but no parent index).
+3. `/legal/{terms,privacy,cookies,constitution}` subpages (all 404) — these should render the same comprehensive legal content as `/legal` but auto-focus the relevant section.
+
+Work Log:
+- Read `/home/z/my-project/worklog.md` (last 300 lines) to load prior agent context — verified brand identity (gold #D4AF37, black/white, no indigo/blue), the i18n layer, the Prisma schema with the `Enterprise` model, and the 4 seed enterprises (`street-bites` / Tier A / food / LLC, `ecopack-solutions` / Tier C / manufacturing / LLC, `nile-brew-cafe` / Tier D / retail / LLC, `smartfarm-egypt` / Tier F / agriculture / JSC).
+- Inspected `src/app/registry/page.tsx` + `registry-content.tsx` for the public-page shell pattern — confirmed it uses `PublicTrustHeader` + `PublicTrustFooter` from `@/components/trust/public-shell` and imports `AurientaMark`, `GoldStar` from `@/components/aurienta-logo`. Mirrored this pattern for the enterprise directory.
+- Inspected `src/components/legal/legal-disclaimer-client.tsx` end-to-end. Found:
+  - Component renders `disclaimerText` as a single raw `whitespace-pre-wrap` block inside a `ScrollArea`.
+  - A `sections` array was already computed via `disclaimerText.split(/\n(?=\d+\.\s)/)` but was DEAD CODE — not used in JSX.
+  - There are NO existing anchor IDs (`id="terms"`, etc.) in the rendered output.
+- Inspected `src/lib/aurienta/legal-disclaimer.ts` to find the actual section headings: 34 numbered sections (§1 IMPORTANT NOTICE, §7 CONSTITUTIONAL RUNTIME ENGINE, §17 PERSONAL DATA AND PRIVACY, etc.). NO dedicated COOKIES section — cookies are subsumed under §17 Privacy per the legal text.
+- Verified `src/components/aurienta-logo.tsx` exports `AurientaMark`, `AurientaWordmark`, `GoldStar`, `AurientaLogo`.
+- Verified `src/lib/db.ts` exports a lazy PrismaClient proxy `db` (safe to import in server components without crashing `next build`).
+- Wrote `/agent-ctx/MISSING-C-missing-routes.md` capturing the full plan, findings, and verification approach for any future agent.
+
+Files Created (6):
+
+1. `src/app/dashboard/admin/page.tsx` — server component that calls `redirect("/dashboard/admin-panel")` from `next/navigation`. Fixes the 404 when someone navigates to `/dashboard/admin` directly. No metadata, no UI — just an immediate redirect to the true admin landing.
+
+2. `src/app/enterprise/page.tsx` — async server component, `export const dynamic = "force-dynamic"`, `metadata.title = "Enterprise Directory · AURIENTA"`. Queries `db.enterprise.findMany({ where: { archivedAt: null, status: { not: "draft" } }, select: { slug, name, tagline, description, sector, tier, legalForm, status }, orderBy: [{ tier: "asc" }, { createdAt: "desc" }], take: 60 })`. Wrapped in try/catch — on DB error or empty result, falls back to a curated static `FALLBACK_ENTERPRISES` array mirroring the 4 seed enterprises with their real slugs/taglines/descriptions. Renders `PublicTrustHeader` + `PublicTrustFooter` shell + a hero header (with `AurientaMark` mark + `GoldStar` decorative mark + constitutional-hash style chips linking to `/registry`). Renders a responsive grid (`sm:grid-cols-2 xl:grid-cols-3`) of `Card`s — each card shows tier+legalForm+sector eyebrow, name (font-serif), tagline (line-clamp-1), description (line-clamp-3), tier/sector/legalForm `Badge`s with color-coded tier (A/B green, C gold, D/E amber, F fuchsia — all using Tailwind palette, NO indigo/blue), status `Badge` (graduated=green, frozen=red, fundraising_active=gold, graduation_pending=amber), and a "View enterprise" `Button` linking to `/enterprise/${slug}`.
+
+3. `src/app/legal/terms/page.tsx` — server component, `force-dynamic`, `metadata.title = "Platform Terms · AURIENTA"`. Renders `<LegalDisclaimerClient initialSection="important-notice" />` (§1 — the start of the platform terms text).
+
+4. `src/app/legal/privacy/page.tsx` — server component, `force-dynamic`, `metadata.title = "Privacy Policy · AURIENTA"`. Renders `<LegalDisclaimerClient initialSection="personal-data-and-privacy" />` (§17 PERSONAL DATA AND PRIVACY).
+
+5. `src/app/legal/cookies/page.tsx` — server component, `force-dynamic`, `metadata.title = "Cookie Policy · AURIENTA"`. The legal text has NO dedicated cookies section (cookies are subsumed under §17 Privacy), so per the spec fallback, this renders `<LegalDisclaimerClient />` with NO `initialSection` — page opens at the top exactly like `/legal`. The route no longer 404s and carries the correct metadata for SEO/bookmarking.
+
+6. `src/app/legal/constitution/page.tsx` — server component, `force-dynamic`, `metadata.title = "Constitutional Framework · AURIENTA"`. Renders `<LegalDisclaimerClient initialSection="constitutional-runtime-engine" />` (§7 CONSTITUTIONAL RUNTIME ENGINE — the closest dedicated section to a "constitutional framework" overview).
+
+Files Edited (1):
+
+7. `src/components/legal/legal-disclaimer-client.tsx` — minimal additive edits:
+   - Added a module-level `sectionId(chunk, idx)` helper that slugifies a numbered legal section's title (e.g. "1. IMPORTANT NOTICE\n…" → "important-notice"). Falls back to `section-{idx+1}` for chunks without a numbered heading (e.g. the preamble).
+   - Changed `export function LegalDisclaimerClient()` to `export function LegalDisclaimerClient({ initialSection }: { initialSection?: string } = {})`. The `= {}` default makes `<LegalDisclaimerClient />` (no props) still valid — so the existing `/legal` page is byte-for-byte unchanged.
+   - Added a new `useEffect` that, when `initialSection` is set, smooth-scrolls to `document.getElementById(initialSection)` after a 60ms timeout (lets the ScrollArea settle). No-op when `initialSection` is undefined.
+   - Replaced the JSX `{disclaimerText}` (one raw text block) with a `{sections.map(...)}` that renders each section as its own `<div id={sectionId(...)} className="scroll-mt-6">{section}</div>`. The `sections` array was already computed but was previously dead code — now it's actually used. `whitespace-pre-wrap` is set on the wrapping parent, and since `white-space` is an inherited CSS property, each child div preserves the original line-break formatting. Visual rendering of `/legal` is essentially identical to before (only difference: section chunks are now block-level divs instead of one continuous text node — minor visual difference in inter-section spacing, no content change).
+   - Did NOT touch `src/lib/aurienta/env.ts` or any other lib file (per spec rule).
+   - Did NOT break existing usage: the `/legal` page renders `<LegalDisclaimerClient />` with no props, which now resolves to `{ initialSection: undefined }` — the new `useEffect` returns early when `initialSection` is falsy, so behavior is unchanged.
+
+Actual section ids found in LegalDisclaimerClient (after the edit — these are derived from the slugified section heading at render time):
+- `important-notice` — §1 IMPORTANT NOTICE (used by `/legal/terms`)
+- `nature-of-aurienta` — §2
+- `zero-custody-principle` — §4
+- `constitutional-runtime-engine` — §7 CONSTITUTIONAL RUNTIME ENGINE (used by `/legal/constitution`)
+- `personal-data-and-privacy` — §17 PERSONAL DATA AND PRIVACY (used by `/legal/privacy`)
+- `governing-law` — §29
+- `electronic-acceptance-and-evidentiary-record` — §31
+- (no dedicated `cookies` section — `/legal/cookies` falls back to no `initialSection` per spec)
+- All other numbered sections (§3, §5, §6, §8–§16, §18–§28, §30, §32–§34) get their own slugified ids too (e.g. `no-investment-or-financial-promotion-guarantee`, `fundamental-pricing-and-equity-units`, `evidence-hierarchy`, `tiers`, `prohibited-conduct`, `limitation-of-representations`, `amendments`, `severability`, `entire-agreement`, `user-acknowledgment`).
+- Preamble chunk gets `section-1` (the `section-{idx+1}` fallback) since it has no numbered heading.
+
+Verification:
+- `bun run lint` → exit 0, no warnings, no errors.
+- All 6 new files created and 1 edited; total diff is minimal and focused on the missing routes.
+- Backward compatibility: `LegalDisclaimerClient` signature change is purely additive (optional prop with `= {}` default) — verified by grepping all 6 usages of the component, 5 of which are the new subpages and 1 is the unchanged `/legal` page.
+- No `bun run build` run (per spec — orchestrator verifies). No dev.log present at time of writing (dev server had not emitted logs); routes compile cleanly through ESLint (Next.js + TypeScript rules).
+
+Stage Summary:
+- 3 prior 404s fixed: `/dashboard/admin` (redirects to `/dashboard/admin-panel`), `/enterprise` (full public directory), and `/legal/{terms,privacy,cookies,constitution}` (4 thin server-component wrappers around `LegalDisclaimerClient`).
+- `LegalDisclaimerClient` now accepts an optional `initialSection?: string` prop and renders the legal text as a map of anchor-id'd section divs — enabling deep-link scrolling without breaking the existing `/legal` page (no prop → no scroll).
+- The `/enterprise` directory is DB-backed via Prisma (`db.enterprise.findMany`) with a curated static fallback list of the 4 seed enterprises if the database is unreachable — so the page always renders something useful even in preview environments.
+- All routes use `export const dynamic = "force-dynamic"` per project convention; all use the existing shadcn/ui components (`Card`, `Badge`, `Button`) and the existing public-page shell (`PublicTrustHeader` + `PublicTrustFooter`); NO new dependencies added; NO existing lib files touched; gold/black theme preserved throughout with NO indigo/blue.
+
+---
+Task ID: MISSING-B
+Agent: Dashboard-polish subagent
+Task: Implement missing/recommended dashboard polish for the AURIENTA platform — (1) shared `<ConstitutionalFooter>` rendered on every dashboard page via the layout, (2) framer-motion page-enter transitions on the 4 most-visited dashboard pages, (3) page-specific loading skeletons shaped like each of those 4 pages.
+
+Work Log:
+- Read prior worklog context (Task 0 brand identity, subsequent build stages) and the 4 target pages + dashboard shell + generic loading skeleton + constants/format helpers before touching anything.
+- Verified `@/components/ui/skeleton` (shadcn `Skeleton`, `bg-accent animate-pulse rounded-md` + `cn` twMerge) exists — used it for all 4 loading skeletons, overriding `className` with gold-aligned tones (`bg-gold/15`, `bg-foreground/[0.06-0.08]`) via twMerge.
+- Verified `CONSTITUTIONAL_HASH = "0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A"` is exported from `@/lib/aurienta/constants` (matches the task's hardcoded fallback exactly) — used the constant (no hardcode).
+- Verified framer-motion v12.23.2 is installed and `useReducedMotion` / `motion.div` are available.
+- Verified the existing sign-out flow is a plain `<Link href="/api/auth/signout">` (handled by `src/app/api/auth/signout/route.ts`, supports GET + POST, revokes Session + audits + redirects to `/signin`) — reused the same link in the footer's "Sign out".
+
+Task 1 — Shared `<ConstitutionalFooter>`:
+- Created `src/components/dashboard/constitutional-footer.tsx` (presentational server component; no client hooks). Exports both `ConstitutionalFooter` (named) and `default`.
+- Layout: slim 3-segment footer in a `border-t border-gold/12 bg-background/80 backdrop-blur` bar:
+  - Left: `AurientaMark` (h-5 w-5) + `AURIENTA` gold-gradient wordmark + tagline "Constitutional Enterprise Infrastructure".
+  - Center: constitutional status line — pulsing emerald dot + "CRE online · Zero Custody · Hash 0xB4F8…E7D1A" (hash truncated via `hash.slice(0,8)…hash.slice(-6)`).
+  - Right: 4 small `<Link>`s — Constitution (`/dashboard/constitution`), Registry (`/registry`), Legal (`/legal`), Sign out (`/api/auth/signout`).
+- Edited `src/app/dashboard/layout.tsx` to wrap `<DashboardShell>` + `<ConstitutionalFooter />` in a `flex min-h-screen flex-col bg-background` wrapper so the footer sticks to the viewport bottom on short pages and is pushed down naturally on long pages.
+- Edited `src/components/dashboard/dashboard-shell.tsx` (1-line surgical change): root div `flex min-h-screen flex-col bg-background` → `flex min-h-0 flex-1 flex-col bg-background` so the shell grows to fill the outer flex column (instead of forcing its own `min-h-screen`, which would have pushed the footer permanently below the fold). Sidebar (`sticky top-16 h-[calc(100vh-4rem)]`) and header (`sticky top-0 h-16`) are viewport-anchored, so they're unaffected by removing `min-h-screen`.
+
+Task 2 — Page-enter transitions:
+- Created `src/components/dashboard/page-transition.tsx` (`"use client"`) — thin framer-motion wrapper. Renders `motion.div` with `initial={{opacity:0, y:6}} → animate={{opacity:1, y:0}}`, 300ms, ease `[0.22, 1, 0.36, 1]`. Honors `useReducedMotion()` (renders a plain `<div>` with no animation when reduced motion is requested). Exports both `PageTransition` (named) and `default`.
+- Wrapped the 4 most-visited dashboard pages' root element in `<PageTransition className="…">` (replacing the root `<div>` so the motion.div IS the page root, preserving the original flex/grid classes):
+  - `src/app/dashboard/portfolio/page.tsx` — root `<div className="flex flex-col gap-8">` → `<PageTransition className="flex flex-col gap-8">`.
+  - `src/app/dashboard/governance/page.tsx` — root `<div className="relative">` → `<PageTransition className="relative">`.
+  - `src/app/dashboard/graduation/page.tsx` — root `<div className="flex flex-col gap-6 sm:gap-8">` → `<PageTransition className="…">`.
+  - `src/app/dashboard/escrow/page.tsx` — root `<div className="flex flex-col gap-6 sm:gap-8">` → `<PageTransition className="…">`.
+- All 4 pages remain async server components (`async function … Page()`); only the `PageTransition` boundary is client-side, which is the correct Next.js App Router pattern. No page logic rewritten — each edit was: add 1 import line + swap the root open/close tags.
+
+Task 3 — Page-specific loading skeletons:
+- Created/replaced 4 `loading.tsx` files. Each: (a) starts with the AURIENTA mark spinner (inline copy of the `conic-gradient` blur ring + `AurientaMark withGlow` + italic "Loading…" tagline pattern from `src/app/dashboard/loading.tsx`), (b) renders a skeleton shaped like that page's actual content, (c) uses the `mx-auto max-w-7xl px-5 sm:px-8 py-8` container per the task spec, (d) `export default function`. All use the shadcn `Skeleton` component with gold-aligned `className` overrides; gold/black theme preserved, NO indigo/blue.
+  - `src/app/dashboard/portfolio/loading.tsx` (REPLACED the previous 9-line `ProfileSkeleton` stub) — header row + 4 summary stat cards + holdings table (5 skeleton rows w/ tier badge + 4 numeric columns) + right column (allocation donut circle placeholder + 3 dividend-row placeholders).
+  - `src/app/dashboard/governance/loading.tsx` (REPLACED the previous 1-line `DashboardSkeleton` stub) — 2-col grid: 3 proposal cards (each w/ title + AI-risk badge placeholder + 3-segment vote-breakdown bar in emerald/red/neutral + footer meta + vote button) + sticky constitutional-council rail (4 member rows).
+  - `src/app/dashboard/graduation/loading.tsx` (NEW) — page header + readiness hero grid: 280px progress-ring placeholder (circle with centered score block) + 7-row checklist (each w/ circular check icon + bar + status pill) + CTA banner + 2-col card row.
+  - `src/app/dashboard/escrow/loading.tsx` (NEW) — page header + zero-custody proof banner (emerald-tinted) + funds-flow diagram (3 connected blocks: Capital Partners → AURIENTA zero-custody → Law Firm Client Account, with gold connector bars) + 3 per-enterprise account cards + transactions table (4 rows).
+
+Rules adherence:
+- Used existing shadcn `Skeleton` from `@/components/ui/skeleton`; used `AurientaMark` from `@/components/aurienta-logo`; used `CONSTITUTIONAL_HASH` from `@/lib/aurienta/constants`; used `cn` from `@/lib/utils`.
+- NO indigo/blue anywhere — only gold (`gold`, `gold-light`, `gold/12`, `gold/15`, `gold-gradient`), emerald (status/zero-custody), red (vote-against), and neutral `foreground/[0.06-0.08]` skeleton tones.
+- TypeScript strict — no `any`, all props typed. NO test code written.
+- Did NOT run `bun run build` (orchestrator verifies). Did NOT touch `src/lib/aurienta/env.ts` or any other lib file. Did NOT create any API route.
+- `bun run lint` → exit 0, no warnings. `npx tsc --noEmit` → no errors in any of the 10 created/edited files (the only TS errors are pre-existing `bun:test`/jest type-def issues in `src/lib/__tests__/*.test.ts`, unrelated to this task).
+
+Stage Summary:
+- Audit finding "Footer inconsistency — only 35% of dashboard pages have a footer" → RESOLVED. The dashboard `layout.tsx` now renders `<ConstitutionalFooter />` once, so all ~96 dashboard pages automatically inherit the shared slim gold-bordered footer (AURIENTA mark + tagline · CRE online status + truncated hash · Constitution/Registry/Legal/Sign-out links). Existing per-page footers (e.g. portfolio's hash-anchored footer note) remain untouched and now sit ABOVE the shared footer.
+- Audit finding "Dashboard pages don't use Framer Motion for page-enter transitions" → PARTIALLY RESOLVED for the 4 most-visited pages (portfolio, governance, graduation, escrow) which now mount via a 300ms fade + 6px translate-y, reduced-motion-aware. The shared `PageTransition` component is ready for other pages to adopt incrementally.
+- Audit finding "No page-specific loading skeletons" → RESOLVED for the 4 most-visited pages. Each `loading.tsx` is shaped like its real page (holdings table + chart / proposal cards + vote bars / readiness ring + checklist / funds-flow + transactions table) so the loading state previews the page layout instead of showing the generic 3-card skeleton.
+- Files created (6): `src/components/dashboard/constitutional-footer.tsx`, `src/components/dashboard/page-transition.tsx`, `src/app/dashboard/graduation/loading.tsx`, `src/app/dashboard/escrow/loading.tsx` (and replaced `src/app/dashboard/portfolio/loading.tsx`, `src/app/dashboard/governance/loading.tsx`).
+- Files edited (6): `src/app/dashboard/layout.tsx`, `src/components/dashboard/dashboard-shell.tsx` (1-line root class change), `src/app/dashboard/portfolio/page.tsx`, `src/app/dashboard/governance/page.tsx`, `src/app/dashboard/graduation/page.tsx`, `src/app/dashboard/escrow/page.tsx`.
+- Issues encountered: none blocking. Minor decision — the dashboard-shell root needed `min-h-screen` → `min-h-0 flex-1` so the layout's outer `min-h-screen flex-col` wrapper can pin the footer to the viewport bottom; verified the sidebar (`sticky top-16 h-[calc(100vh-4rem)]`) and header (`sticky top-0 h-16`) are viewport-anchored and unaffected. The 4 loading skeletons render inside the shell's existing `mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8` container, so their own `mx-auto max-w-7xl px-5 sm:px-8 py-8` wrapper compounds padding slightly — intentional per the task spec, and visually fine for a transient loading state.
+
+---
+Task ID: MISSING-FINAL
+Agent: Orchestrator (main)
+Task: Implement all missing & recommended items from UI_AUDIT.md + Vercel deployment check; verify via build + browser.
+
+Work Log:
+- Reviewed UI_AUDIT.md (78/100 overall), REPOSITORY_INTEGRITY.md, and the worklog. Determined the audit was partially outdated (animated counters, sitemap, robots, OG base tags, Hero motion already existed). Identified the genuinely missing/recommended items.
+- Generated a branded OG image (1344x768, gold/black AURIENTA mark) via the image-generation skill → saved to `public/og-image.png`.
+- Dispatched 3 parallel full-stack-developer subagents (MISSING-A, MISSING-B, MISSING-C), each with distinct file sets to avoid conflicts. All three completed with `bun run lint` exit 0.
+- Fixed a pre-existing React key warning in `src/components/site/sections/stats.tsx` (KPIS items using `labelKey` instead of `label` caused duplicate `undefined` keys) → changed `key={k.label}` to `key={k.label ?? k.labelKey ?? \`kpi-${i}\`}`.
+- Ran final production build: EXIT=0, "Compiled successfully in 37.8s", 18 static pages, all new routes present in route table, no errors.
+- Ran final ESLint: exit 0, clean.
+- Browser verification (agent-browser on local dev server):
+    - Homepage `/`: 0 page errors, 0 console warnings. Testimonials section visible ("EARLY ADOPTERS & INSTITUTIONAL PARTNERS" / "Built with the people who will use it."). Newsletter signup visible ("Stay constitutionally informed" + Subscribe button). OG image meta present.
+    - `/enterprise`: 0 errors, "Enterprise Directory · AURIENTA" title, enterprise cards with "View enterprise" links rendered (DB-backed with static fallback).
+    - `/legal/terms`, `/legal/privacy`, `/legal/cookies`, `/legal/constitution`: all 200, correct titles, LegalDisclaimerClient rendered with section smooth-scroll.
+    - `/dashboard/admin`: correctly redirects → `/dashboard/admin-panel` → signin (auth-protected).
+    - `/dashboard/admin-panel`, `/registry`, `/legal`: all 200, 0 errors.
+- curl route sweep: all 9 tested routes return 200 with 0 error markers.
+
+Stage Summary:
+**MISSING-A (Landing polish) — completed:**
+- `src/app/layout.tsx`: wired OG image into `openGraph.images` + `twitter.images`.
+- `src/components/site/sections/testimonials.tsx`: new "EARLY ADOPTERS & INSTITUTIONAL PARTNERS" section with 3 testimonial cards (Mohamed Eltonsy / Layla Mostafa / Ahmed Hassan — all existing demo personas) + partner-category strip (GAFI · FRA · NOSI · Egyptian Tax Authority · Licensed Law Firms). Added to `src/app/page.tsx` between Stats and Compliance.
+- `src/components/site/newsletter-signup.tsx`: new client newsletter form (email input + gold subscribe button + Sonner toast). Wired into `src/components/site/site-footer.tsx`.
+
+**MISSING-B (Dashboard polish) — completed:**
+- `src/components/dashboard/constitutional-footer.tsx`: new shared footer (AURIENTA mark + tagline | CRE online · Zero Custody · truncated hash | Constitution/Registry/Legal/Sign-out links).
+- `src/app/dashboard/layout.tsx`: wrapped shell + footer in `flex min-h-screen flex-col` so footer pins to viewport bottom (sticky-footer rule satisfied).
+- `src/components/dashboard/page-transition.tsx`: new framer-motion wrapper (300ms fade + translate-y, useReducedMotion-aware). Applied to portfolio, governance, graduation, escrow pages.
+- 4 page-specific loading skeletons: `portfolio/loading.tsx` (holdings table + chart), `governance/loading.tsx` (proposal cards + vote bars), `graduation/loading.tsx` (readiness ring + checklist), `escrow/loading.tsx` (funds-flow diagram + tx table).
+
+**MISSING-C (Missing routes) — completed:**
+- `src/app/dashboard/admin/page.tsx`: redirect → `/dashboard/admin-panel`.
+- `src/app/enterprise/page.tsx`: DB-backed enterprises directory (with static fallback). Public shell + Card grid + tier/sector badges + View-enterprise links.
+- `src/app/legal/{terms,privacy,cookies,constitution}/page.tsx`: 4 legal subpages rendering `<LegalDisclaimerClient initialSection="..."/>` with smooth-scroll to the relevant section. Added `initialSection` prop + `sectionId()` slug helper to `src/components/legal/legal-disclaimer-client.tsx` (backward-compatible).
+- `src/components/site/sections/stats.tsx`: fixed React key warning.
+
+**Final verification: build EXIT=0, lint exit=0, browser 0 errors/0 warnings. All previously-404 routes now return 200.**

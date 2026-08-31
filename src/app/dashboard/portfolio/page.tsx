@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Lock,
 } from "lucide-react";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const metadata = { title: "Constitutional Holdings · AURIENTA" };
 
@@ -184,7 +185,7 @@ export default async function PortfolioPage() {
     .filter((d) => d.grossEgp > 0);
 
   return (
-    <div className="flex flex-col gap-8">
+    <PageTransition className="flex flex-col gap-8">
       {/* Page heading */}
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -552,7 +553,7 @@ export default async function PortfolioPage() {
           Constitutional Hash: {shortHash(CONSTITUTIONAL_HASH, 14, 6)}
         </span>
       </footer>
-    </div>
+    </PageTransition>
   );
 }
 

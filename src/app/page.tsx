@@ -8,6 +8,7 @@ import { Architecture } from "@/components/site/sections/architecture";
 import { Tiers } from "@/components/site/sections/tiers";
 import { Sovereignty } from "@/components/site/sections/sovereignty";
 import { Stats } from "@/components/site/sections/stats";
+import { Testimonials } from "@/components/site/sections/testimonials";
 import { Compliance } from "@/components/site/sections/compliance";
 import { Faq } from "@/components/site/sections/faq";
 import { EvidenceStage } from "@/components/site/sections/evidence-stage";
@@ -32,6 +33,7 @@ export default function Home() {
         <Tiers />
         <Sovereignty />
         <Stats />
+        <Testimonials />
         <Compliance />
         <Faq />
         <EvidenceStage />
