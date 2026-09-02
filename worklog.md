@@ -12030,3 +12030,22 @@ Stage Summary:
 - **`.env.example`** created with 12 standard env vars (placeholders only, no secrets).
 - **`scripts/seed-demo-users.ts`** hardened: no hardcoded URL fallback, no hardcoded demo password, fail-fast on missing env vars.
 - **Build + lint + typecheck**: all green.
+
+---
+Task ID: PROD-READINESS-AUDIT
+Agent: Orchestrator (Principal Architect / DevSecOps / SRE)
+Task: Comprehensive 5-module production-readiness audit with evidence-backed scoring.
+
+Work Log:
+- Module 1 (Codebase): Read tsconfig.json (strict:true but noImplicitAny:false), eslint.config.mjs (15+ rules disabled), .github/workflows/{ci,release}.yml + dependabot.yml. Ran `bun audit` → 83 vulnerabilities (1 critical, 45 high, 32 moderate, 5 low; mostly transitive dev deps via eslint). Scanned git history for secrets → clean. Counted error boundaries (app root + 4 dashboard pages). 34/102 API routes lack try/catch. No process.on('unhandledRejection') handler.
+- Module 2 (Vercel): Queried deployments API → latest READY (sha 7f9f1a42), 1 ERROR (3e9868a2, fixed). Build log: 18s compile + 39s cache, 18 static pages, 5 serverless functions, Node 24.x, Hobby plan. Env vars: all 9 mapped to prod+preview+dev (perfect parity). Domain aurienta.vercel.app verified, SSL active.
+- Module 3 (Turso): 51 tables, 89 relations, 91 @@index (91% coverage). 6 models with relations but 0 @@index: User (15 relations!), OwnershipRecord (0 index — the ownership ledger), Vote (0 index), SyndicateMember, DripEnrollment, InsuranceVault. Verified live indexes: User has only autoindex+3 unique constraints; OwnershipRecord has NONE. RTT: min 214ms, avg 294ms, max 671ms (sandbox→aws-us-east-1). No multi-region replication, no migration files, no backup automation.
+- Module 4 (Frontend): agent-browser live vitals — TTFB 7ms (edge cache), FCP 1188ms, CLS 0.000, DOM load 1291ms, transfer 30KB / decoded 251KB. 0 console errors on /, /trust, /enterprise. 27 static assets. /trust TTFB 1.2s (DB-heavy). a11y: h1=1, h2=11, 0 img-without-alt, 0 btn-without-label, skip-link ✓, 18 landmarks, lang=en, 0 inputs-without-label. SEO: og:image ✓, twitter:card ✓, canonical ✓, sitemap.xml valid, robots.txt blocks /dashboard/ and /api/.
+- Module 5 (Security): Live headers verified — HSTS ✓ (2yr+preload), CSP ✓ (but unsafe-inline+unsafe-eval), X-Frame-Options ✓, X-Content-Type-Options ✓, Referrer-Policy ✓, Permissions-Policy ✓. Cookie: httpOnly:true, sameSite:lax, but `secure:false` in src/lib/aurienta/auth.ts:106 (CRITICAL — allows session cookie over HTTP). CSRF token cookie present.
+
+Stage Summary:
+- Overall composite score: 76/100 — LAUNCH ELIGIBLE WITH WARNINGS.
+- P0 blockers: (1) cookie secure:false in production, (2) missing FK indexes on User/Vote/OwnershipRecord tables.
+- P1 high: CSP unsafe-eval, 34 API routes without try/catch, no unhandledRejection handler, 83 CVEs (1 critical sharp), Hobby plan cold-start risk, ESLint rules heavily relaxed.
+- P2 medium: no Turso multi-region replication, no DB backup automation, TS noImplicitAny:false, /trust page TTFB 1.2s.
+- Full scored report written to /home/z/my-project/PRODUCTION_READINESS_AUDIT.md.
