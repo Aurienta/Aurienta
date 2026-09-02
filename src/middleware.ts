@@ -22,7 +22,7 @@ export function middleware(req: NextRequest) {
     res.cookies.set("aurienta_csrf", token, {
       httpOnly: false, // must be readable by client JS to echo back
       sameSite: "lax",
-      secure: false, // allow HTTP in dev/preview; production uses HTTPS via Caddy
+      secure: process.env.NODE_ENV === "production", // HTTPS-only in production
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
