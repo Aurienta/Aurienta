@@ -40,15 +40,13 @@ export function middleware(req: NextRequest) {
   // State-changing request — validate Origin.
   const origin = req.headers.get("origin");
   const host = req.headers.get("host");
+  const referer = req.headers.get("referer");
 
+  // Same-origin check via Origin header (preferred).
   if (origin && host) {
-    // Same-origin check: extract the host from the Origin header and compare.
-    // Origin is like "https://example.com:3000" or "http://localhost:3000"
-    // Host is like "example.com:3000" or "localhost:3000"
     try {
       const originUrl = new URL(origin);
-      const originHost = originUrl.host; // includes port
-      if (originHost === host) {
+      if (originUrl.host === host) {
         // Same-origin request — allow it.
         res.headers.set("X-Content-Type-Options", "nosniff");
         res.headers.set("X-Frame-Options", "SAMEORIGIN");
@@ -57,7 +55,26 @@ export function middleware(req: NextRequest) {
         return res;
       }
     } catch {
-      // Origin URL parsing failed — fall through to CSRF token check
+      // Origin URL parsing failed — fall through to other checks.
+    }
+  }
+
+  // Fallback same-origin check via Referer header.
+  // Some browsers/extensions strip the Origin header for same-origin POSTs
+  // (privacy hardening), but they still send a Referer. If the Referer's
+  // host matches the request host, treat it as same-origin.
+  if (!origin && referer && host) {
+    try {
+      const refererUrl = new URL(referer);
+      if (refererUrl.host === host) {
+        res.headers.set("X-Content-Type-Options", "nosniff");
+        res.headers.set("X-Frame-Options", "SAMEORIGIN");
+        res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+        res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+        return res;
+      }
+    } catch {
+      // Referer URL parsing failed — fall through to CSRF token check.
     }
   }
 

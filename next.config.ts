@@ -21,6 +21,18 @@ const nextConfig: NextConfig = {
       : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
     return [
       {
+        source: "/sw.js",
+        headers: [
+          // The service worker file MUST never be cached — browsers need to
+          // fetch the latest version on every navigation so they pick up
+          // cache-version bumps (e.g. aurienta-v1 → aurienta-v2-csrf-fix)
+          // and purge stale caches. Without this, a browser may run an old
+          // SW indefinitely, serving stale client JS that lacks fixes.
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, max-age=0" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
