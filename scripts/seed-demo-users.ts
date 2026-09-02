@@ -1,18 +1,34 @@
 // AURIENTA Demo User Seeder
 // Seeds 5 demo users into the Turso database for testing.
-// Each user has: email, mobile, legalName, password (aurienta2026),
+// Each user has: email, mobile, legalName, password (from DEMO_USER_PASSWORD env),
 // verificationLevel, primaryIntent, STS=65, Ed25519 identity anchor,
 // and a signed Constitutional Pledge.
+//
+// Usage: DEMO_USER_PASSWORD=... DATABASE_URL=... TURSO_AUTH_TOKEN=... bun run scripts/seed-demo-users.ts
 
 import { createClient } from "@libsql/client";
 import { scryptSync, randomBytes } from "crypto";
 import { createHash } from "crypto";
 import { generateKeyPairSync, sign } from "crypto";
 
-const TURSO_URL = process.env.DATABASE_URL ?? "libsql://aurienta-fortleem.aws-us-east-1.turso.io";
-const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN ?? "";
+// Fail fast if required env vars are missing — never fall back to hardcoded
+// infrastructure URLs or default passwords.
+const TURSO_URL = process.env.DATABASE_URL;
+const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN;
+const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD;
 
-const DEMO_PASSWORD = "aurienta2026";
+if (!TURSO_URL) {
+  console.error("FATAL: DATABASE_URL is not set. Set it in .env or export it before running.");
+  process.exit(1);
+}
+if (!TURSO_TOKEN) {
+  console.error("FATAL: TURSO_AUTH_TOKEN is not set. Set it in .env or export it before running.");
+  process.exit(1);
+}
+if (!DEMO_PASSWORD) {
+  console.error("FATAL: DEMO_USER_PASSWORD is not set. Set it in .env or export it before running.");
+  process.exit(1);
+}
 
 function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
@@ -138,7 +154,7 @@ async function main() {
       ],
     });
 
-    console.log(`  INSERTED: ${user.email} — ${user.legalName} — STS:${user.sovereignScore ?? user.sovereignTrustScore} — ${user.tier}`);
+    console.log(`  INSERTED: ${user.email} — ${user.legalName} — STS:${user.sovereignTrustScore} — ${user.tier}`);
   }
 
   // Verify
