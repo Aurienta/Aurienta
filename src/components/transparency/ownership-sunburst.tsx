@@ -94,7 +94,7 @@ export function OwnershipSunburst({ slices, totalEquityUnits }: { slices: Slice[
               stroke="rgba(8,8,10,0.6)"
               strokeWidth={2}
               activeIndex={active}
-              activeShape={(props) => ActiveShape(props as unknown as ActiveShapeProps)}
+              activeShape={(props: unknown) => ActiveShape(props as unknown as ActiveShapeProps)}
               onMouseEnter={(_, i) => setActive(i)}
             >
               {slices.map((s, i) => (

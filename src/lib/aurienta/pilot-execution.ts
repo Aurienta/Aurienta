@@ -417,7 +417,7 @@ export const EXECUTIVE_READINESS_ASSESSMENT = {
   duringPilot: 73,
   afterPilot: 82,
   target: 90,
-  verdict: afterPilotScore => afterPilotScore >= 80 ? "READY FOR COMMERCIAL DEPLOYMENT (with continued evidence generation)" : "NOT READY",
+  verdict: (afterPilotScore: number) => afterPilotScore >= 80 ? "READY FOR COMMERCIAL DEPLOYMENT (with continued evidence generation)" : "NOT READY",
   assessment: "Pilot execution framework is complete. Overall readiness projected to rise from 58 (pre-pilot) to 82 (post-pilot) as evidence is generated. Target 90 requires completing first 5-10 pilots + first strategic partners + first regulatory engagement. The framework is ready; execution generates the evidence.",
 };
 

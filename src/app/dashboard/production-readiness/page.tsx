@@ -151,10 +151,16 @@ export default async function ProductionReadinessPage() {
             </CardHeader>
             <CardContent>
               <div className="max-h-64 overflow-y-auto">
-                {items.map(item => (
-                  <div key={item.itemId} className="flex items-start justify-between border-b border-gold/5 py-1.5">
+                {items.map((item, idx) => (
+                  <div key={"itemId" in item ? item.itemId : "docId" in item ? item.docId : idx} className="flex items-start justify-between border-b border-gold/5 py-1.5">
                     <div className="min-w-0 flex-1 pr-2">
-                      <p className="font-sans text-[11px]"><span className="font-mono text-[10px] text-gold-light">{item.itemId}</span> {item.item}</p>
+                      <p className="font-sans text-[11px]">
+                        {"itemId" in item ? (
+                          <><span className="font-mono text-[10px] text-gold-light">{item.itemId}</span> {item.item}</>
+                        ) : "docId" in item ? (
+                          <><span className="font-mono text-[10px] text-gold-light">{item.docId}</span> {item.document}</>
+                        ) : null}
+                      </p>
                       {"notes" in item && item.notes && <p className="font-sans text-[10px] text-muted-foreground">{item.notes}</p>}
                     </div>
                     {statusBadge(item.status)}

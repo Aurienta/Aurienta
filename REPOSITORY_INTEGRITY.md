@@ -61,7 +61,7 @@ The following artifacts constitute the constitutional core of the platform. Remo
 | 16 | Constitutional Audit | `constitutional-audit.ts` | 37 |
 
 ### 2.5 Data Layer
-- `prisma/schema.prisma` — 44 models with constitutional `@map` terminology
+- `prisma/schema.prisma` — 51 models with constitutional `@map` terminology (7 models use `@map` to bridge forbidden legacy DB column names like `shares`/`Shareholding`/`escrowBalanceEgp` to constitutional terminology like `Equity Units`/`OwnershipRecord`)
 - `db/` — SQLite database (gitignored, but schema is canonical)
 
 ### 2.6 Application Layer
@@ -141,7 +141,7 @@ Before any commit to `main`, verify:
 - [ ] `src/lib/aurienta/ai.ts` is intact (8-level hierarchy, Founder = Mohamed Eltonsy)
 - [ ] `src/lib/aurienta/ai-router.ts` has ZERO `z-ai-web-dev-sdk` imports
 - [ ] All 16 institutional system files exist in `src/lib/aurienta/`
-- [ ] `prisma/schema.prisma` has 44 models with `@map` constitutional names
+- [ ] `prisma/schema.prisma` has 51 models with `@map` constitutional names
 - [ ] No "Layla as Founder" references
 - [ ] No forbidden terminology in new code (`escrowBalanceEgp`, `sharePriceEgp`, `totalShares`, `Shareholding`, `shares` — except in `@map` annotations and audit reports)
 - [ ] `bun run lint` passes
@@ -171,7 +171,7 @@ grep -rn "Layla.*Founder" src/ | grep -v "NOT the Founder\|DEFECT\|demo"  # must
 # Stable tag exists
 git tag -l | grep v1.0.0-constitutional-complete
 
-# Model count (must be 44)
+# Model count (must be 51)
 grep -c "^model " prisma/schema.prisma
 ```
 

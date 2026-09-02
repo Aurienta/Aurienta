@@ -14,7 +14,7 @@
 // (AiArtifact table) for similar past interactions and includes relevant
 // context.
 //
-// NO ZAI: The z-ai-web-dev-sdk has been completely removed.
+// NO Z**-sdk: the proprietary SDK has been completely removed from this router.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 let GoogleGenerativeAI: any = null;

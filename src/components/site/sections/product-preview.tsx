@@ -354,7 +354,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
         )}
         {step.id === 3 && (
           <div className="space-y-2">
-            {d.items.map((item, i) => (
+            {d.items.map((item: { name: string; level: string }, i: number) => (
               <div key={i} className="flex items-center justify-between rounded border border-border/20 px-3 py-2">
                 <span className="text-foreground">{item.name}</span>
                 <Badge variant="outline" className="text-[10px] text-muted-foreground">{item.level}</Badge>
@@ -374,7 +374,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
               </div>
             </div>
             <div className="space-y-1">
-              {d.breakdown.map((b, i) => (
+              {d.breakdown.map((b: { step: string; result: string }, i: number) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{b.step}</span>
                   <span className="font-mono text-foreground">{b.result}</span>
@@ -398,7 +398,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
         )}
         {step.id === 6 && (
           <div className="space-y-2">
-            {d.employees.map((emp, i) => (
+            {d.employees.map((emp: { name: string; position: string; band: string; nosi: string }, i: number) => (
               <div key={i} className="flex items-center justify-between rounded border border-border/20 px-3 py-2">
                 <div>
                   <div className="text-foreground">{emp.name}</div>
@@ -434,7 +434,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
               </div>
             </div>
             <div className="space-y-1.5">
-              {d.vitalSigns.map((v, i) => (
+              {d.vitalSigns.map((v: { name: string; value: string; status: string }, i: number) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{v.name}</span>
                   <div className="flex items-center gap-2">
@@ -456,7 +456,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
               <Progress value={d.score} className="h-2" />
             </div>
             <div className="space-y-1.5">
-              {d.gates.map((g, i) => (
+              {d.gates.map((g: { gate: string; passed: boolean }, i: number) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{g.gate}</span>
                   {g.passed ? (

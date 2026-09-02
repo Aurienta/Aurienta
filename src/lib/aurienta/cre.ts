@@ -553,7 +553,7 @@ export async function verifyLedgerChain(enterpriseId: string): Promise<{
         brokenAt: { sequence: ev.sequence, id: ev.id, reason: "prevHash mismatch — chain broken or tampered" },
       };
     }
-    const recomputed = createHash("sha3-256")
+    const recomputed: string = createHash("sha3-256")
       .update(ev.payload + ev.eventType + (ev.prevHash ?? "") + ev.sequence)
       .digest("hex");
     if (recomputed !== ev.payloadHash) {
