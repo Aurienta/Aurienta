@@ -11963,3 +11963,43 @@ Stage Summary:
 - `src/components/site/sections/stats.tsx`: fixed React key warning.
 
 **Final verification: build EXIT=0, lint exit=0, browser 0 errors/0 warnings. All previously-404 routes now return 200.**
+
+---
+Task ID: DEPLOY-CREDENTIALS
+Agent: Orchestrator (main)
+Task: Configure provided credentials (GitHub, Vercel, Turso DB, Groq), push code, deploy to Vercel, and verify live site.
+
+Work Log:
+- Inspected project env requirements: 13 env vars used (DATABASE_URL, TURSO_AUTH_TOKEN, FIELD_ENCRYPTION_KEY, SESSION_SECRET, GROQ_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, HUGGINGFACE_API_KEY, OPENROUTER_API_KEY, ALLOW_DEMO_SIGNIN, LOG_LEVEL, PUBLIC_BASE_URL, NODE_ENV).
+- Generated crypto secrets: FIELD_ENCRYPTION_KEY (32-byte base64 via openssl rand) + SESSION_SECRET.
+- Updated local .env with Turso libSQL URL + token, Groq API key, and generated secrets. .env is gitignored.
+- Configured Prisma 7 for Turso:
+    - Initial attempt: added `url = env("DATABASE_URL")` to schema datasource → Prisma 7 rejected it ("url no longer supported in schema files, move to prisma.config.ts").
+    - Used prisma.config.ts with `migrations.adapter` (PrismaLibSql) + `datasource.url` placeholder.
+    - Fixed adapter import casing bug: package exports `PrismaLibSql` (lowercase q), not `PrismaLibSQL` — only prisma.config.ts had the wrong casing (db.ts was already correct).
+    - `prisma db push` with the adapter silently fell back to the local placeholder file — discovered the Prisma 7.9.1 `MigrationsConfigShape` type has NO `adapter` field (only path/initShadowDb/seed). The adapter is a RUNTIME-ONLY concept (passed to PrismaClient constructor in db.ts), not a CLI config option.
+    - For Turso schema sync: used `prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script` to generate SQL, then executed via @libsql/client. Result: Turso DB ALREADY had all 44+ tables (pre-existing from prior setup). Verified: 12 users, 1 enterprise in production DB.
+    - Final prisma.config.ts: minimal config (schema path + datasource.url file placeholder). Removed the invalid `adapter` field entirely.
+- Configured Vercel env vars via REST API (project-scoped token prj_zEATZmp64oA7lfDTt8wya1OjOPYg):
+    - Listed 9 existing env vars (all encrypted, all targets).
+    - Updated 3 vars with provided credentials: DATABASE_URL (Turso libsql URL), TURSO_AUTH_TOKEN (Turso JWT), GROQ_API_KEY (Groq key). Left FIELD_ENCRYPTION_KEY and SESSION_SECRET untouched (changing those would break existing encrypted PII for the 12 users in the DB).
+- GitHub: updated remote URL with new token (ghp_…), verified admin+push permissions on Aurienta/Aurienta repo. Normalized file modes (755→644 for source files). Committed prisma.config.ts fix + pushed 4 commits to main (3 prior + 1 new).
+- Vercel deployment:
+    - 1st deploy (sha 3e9868a2): ERROR — `prisma.config.ts:24:5 Type error: 'adapter' does not exist in type MigrationsConfigShape`. The invalid `migrations.adapter` field failed the Vercel TypeScript check (local build had passed because tsconfig didn't flag it, but Vercel's strict check did).
+    - Fixed: removed the `adapter` field from prisma.config.ts (adapter is runtime-only in db.ts).
+    - 2nd deploy (sha 37f1ec23): READY ✓ — "Compiled successfully", build passed.
+- Live site verification (aurienta.vercel.app):
+    - /api/health → {"status":"ok","db":"connected","version":"0.2.0"}
+    - /api/ready → ALL checks pass: database ok (14ms), cre_config ok, ai_providers ok (2/3 primary providers configured = Groq + pre-existing), ledger ok (3 events).
+    - 12 routes checked: all 200, 0 errors. Previously-404 routes (/enterprise, /legal/{terms,privacy,cookies,constitution}, /dashboard/admin) all now 200.
+    - agent-browser: homepage 0 page errors + 0 console warnings; Testimonials + Newsletter visible; /enterprise shows enterprise cards (DB-backed); /registry loads.
+
+Stage Summary:
+- **Local .env**: configured with Turso DB + Groq + generated FIELD_ENCRYPTION_KEY + SESSION_SECRET.
+- **Turso DB**: connection verified (12 users, 1 enterprise). Schema already in sync (44+ tables).
+- **Vercel env vars**: DATABASE_URL, TURSO_AUTH_TOKEN, GROQ_API_KEY updated to provided values. FIELD_ENCRYPTION_KEY/SESSION_SECRET preserved (existing encrypted data depends on them).
+- **GitHub**: 4 commits pushed to main (Aurienta/Aurienta). Code is live.
+- **Vercel deployment**: sha 37f1ec23 → READY, serving aurienta.vercel.app.
+- **Live site**: all systems green — DB connected, AI providers configured, all routes 200, 0 errors.
+- **Key learning**: Prisma 7's driver adapter is RUNTIME-ONLY (PrismaClient constructor). The CLI (db push/migrate) does NOT accept an adapter in prisma.config.ts — use `prisma migrate diff --script` + @libsql/client for Turso schema changes.
+- **prisma.config.ts**: minimal config with schema path + datasource.url file placeholder. The runtime db.ts uses @prisma/adapter-libsql for the actual Turso connection.
