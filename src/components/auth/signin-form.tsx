@@ -100,7 +100,15 @@ export function SigninForm({ onReady }: SigninFormProps) {
         });
         const params = new URLSearchParams(window.location.search);
         const next = params.get("next") ?? "/dashboard/portfolio";
-        window.setTimeout(() => router.push(next), 600);
+        // Use window.location.assign for a FULL page navigation (not router.push
+        // which is client-side and can be intercepted by a stale service worker
+        // or fail silently). A full navigation forces the browser to make a
+        // fresh HTTP request to the dashboard URL, which reliably loads the
+        // authenticated dashboard with the session cookie attached.
+        setSubmitting(false);
+        window.setTimeout(() => {
+          window.location.assign(next);
+        }, 800);
       } catch {
         setSubmitting(false);
         toast.error("Network error", { description: "The CRE could not be reached." });
