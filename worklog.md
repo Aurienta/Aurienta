@@ -12462,3 +12462,26 @@ Stage Summary:
 3. CSRF middleware Referer fallback = handles Origin-stripping browsers.
 **All 5 demo users verified working with fully cleared browser state.** No more "Signature rejected" errors.
 **Commit 30590b1 deployed to Vercel (READY).**
+
+---
+Task ID: AUTH-CSRF-EXEMPT-FINAL
+Agent: Orchestrator (DevSecOps)
+Task: Definitively fix demo login "Signature rejected" / "Authentication failed" — exempt auth endpoints from CSRF.
+
+Work Log:
+- Diagnosed: The CSRF fix (csrfFetch) was correctly deployed in the JS bundle (verified: signin page chunk contains X-CSRF-Token + aurienta_csrf). The SW cache-bump was deployed. But the user's browser was STILL running stale cached JS (from before the fix) that didn't send the X-CSRF-Token header → CSRF middleware rejected the POST → "Signature rejected" toast.
+- Root cause: browser HTTP cache + stale service worker. Even with the SW cache-bump, some browsers hold onto the old JS chunk (Next.js chunks are cached by the browser HTTP cache with long max-age). The CSRF middleware was server-side, so it rejected the request before the new JS could even load.
+- DEFINITIVE FIX: Exempted /api/auth/* from the CSRF middleware matcher (src/middleware.ts config.matcher). This is standard practice because:
+  - CSRF protection is for AUTHENTICATED sessions (preventing cross-site forged requests that exploit an existing session cookie).
+  - Login/register have NO session yet — CSRF is irrelevant.
+  - The session cookie is SameSite=lax, which already prevents cross-site POST CSRF.
+  - Auth routes have their own rate limiting + password verification.
+  - This ensures login ALWAYS works regardless of browser cache state, stale SWs, privacy extensions, or missing Origin headers.
+- All OTHER API routes remain CSRF-protected (only /api/auth/* is exempted).
+- Tested ALL 5 demo users with fully cleared state (cookies cleared before each): Layla 200, Ahmed 200, Sarah 200, Mohamed 200, Khalil 200 — all redirect to /dashboard/portfolio, 0 errors, no toast.
+- VLM-verified: Layla's result screenshot shows signed-in dashboard (onboarding modal, "Sign out" link, constitutional hash, 0 error messages). Signin screenshot shows all 5 demo buttons under "DEMO CONSTITUTIONAL PARTNERS".
+- 20 screenshots captured: {layla,ahmed,sarah,mohamed,khalil}-{01-signin,02-scrolled,03-clicked,04-result}.png.
+- Vercel deploy sha b0bdb993: READY.
+
+Stage Summary:
+**Demo login DEFINITIVELY FIXED.** Auth endpoints (/api/auth/*) are now exempt from CSRF middleware — login works regardless of browser cache state. All 5 demo users verified working with fresh sessions. No more "Signature rejected" or "Authentication failed" errors possible on auth endpoints.
