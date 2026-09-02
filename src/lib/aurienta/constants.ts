@@ -72,6 +72,29 @@ export const SECTORS: Record<string, { label: string; icon: string }> = {
 
 export const CONSTITUTIONAL_HASH = "0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A";
 
+// Corporate structure version — "Egypt-Fortress Production v2.0"
+// See src/lib/aurienta/institutional-architecture.ts for the full structure.
+export const ARCHITECTURE_VERSION = "2.0-egypt-fortress" as const;
+
+// Regulatory positioning — AURIENTA is a technology vendor to licensed law firms,
+// NOT a Payment Initiation Service Provider (PSP). The CBE PSP license (EGP 20M
+// capital requirement) is deliberately avoided via the Hash-Only settlement model.
+export const REGULATORY_POSITIONING = {
+  primary: "FRA Outsourcing Register (Decree 141/2023)",
+  secondary: "FRA Regulatory Sandbox (Law 5/2022)",
+  avoided: "CBE PSP License (Law 194/2020) — EGP 20M capital requirement",
+  classification: "Outsourcing Services Provider for Non-Banking Financial Institutions",
+} as const;
+
+// Fee structure — atomic split-settlement. Each fee flows to a different legal
+// entity to isolate risk and match revenue to function.
+export const FEE_STRUCTURE = {
+  platformFee: { rate: 0.05, recipient: "OpCo LLC", basis: "Platform service fee (net of VAT)" },
+  advisoryFee: { rate: 0.025, recipient: "Advisory LLC", basis: "Mandatory consulting fee (until 3 profitable quarters or 2 years)" },
+  antifragilityReserve: { rate: 0.005, recipient: "Law Firm fiduciary (NOT AURIENTA)", basis: "Segregated trust account, Enterprise SPVs as beneficiaries" },
+  totalDeduction: 0.08, // 5% + 2.5% + 0.5% = 8% per milestone release
+} as const;
+
 export const PROPOSAL_TYPES: Record<string, { label: string; threshold: number; cooling: string; voting: string }> = {
   budget: { label: "Budget >10%", threshold: 50, cooling: "48h", voting: "48h" },
   manager_appointment: { label: "Manager Appointment", threshold: 50, cooling: "24h", voting: "48h" },
