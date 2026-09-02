@@ -12438,3 +12438,27 @@ Work Log:
 
 Stage Summary:
 **CSRF login rejection FIXED.** The `csrfFetch` helper sends the X-CSRF-Token header (double-submit pattern) on every state-changing request, so the middleware's CSRF check passes regardless of Origin header behavior. All 5 demo users verified working with fresh sessions (cookies cleared). No more "Signature rejected" errors.
+
+---
+Task ID: SW-CACHE-CSRF-FIX
+Agent: Orchestrator (DevSecOps)
+Task: Fix persistent "Signature rejected" CSRF error on demo login — root cause was stale service worker cache.
+
+Work Log:
+- Diagnosed: My browser tests showed login working (200), but the user kept seeing "Signature rejected". The CSRF fix (csrfFetch sending X-CSRF-Token) was deployed, but browsers were running the OLD service worker (public/sw.js, CACHE_NAME='aurienta-v1') which served the OLD signin-form.tsx JavaScript bundle (without csrfFetch). The old JS used bare fetch() → no X-CSRF-Token → 403 rejection.
+- Root cause confirmed: Service worker caching the app shell under a static cache name 'aurienta-v1' that never got invalidated. Browsers kept running the old SW indefinitely, serving stale client JS.
+- Fix 1 — Bumped SW cache version (public/sw.js): 'aurienta-v1' → 'aurienta-v2-csrf-fix'. The activate handler now deletes ALL old caches (keys !== CACHE_NAME), purging the stale v1 cache. skipWaiting() + clients.claim() force the new SW to take control of all open tabs immediately (no reload needed).
+- Fix 2 — SW file non-cacheable (next.config.ts): Added a /sw.js header rule: Cache-Control: no-store, no-cache, must-revalidate, max-age=0 + Service-Worker-Allowed: /. This ensures browsers ALWAYS fetch the latest SW file on every navigation, so cache-version bumps propagate immediately. Verified live: sw.js now returns cache-control: no-store, no-cache, must-revalidate.
+- Fix 3 — Referer fallback for CSRF (src/middleware.ts): Some browsers/extensions strip the Origin header for same-origin POSTs (privacy hardening). Added a fallback: if Origin is missing but Referer is present and its host matches the request host, treat it as same-origin and allow it. This handles edge cases where both Origin AND X-CSRF-Token are missing but the request is genuinely same-origin (provable via Referer).
+- Verified all 5 demo users with FULLY CLEARED state (cookies cleared + storage cleared + SW unregistered): Layla 200, Ahmed 200, Sarah 200, Mohamed 200, Khalil 200 — all redirect to /dashboard/portfolio, 0 errors, no 'Signature rejected' toast.
+- VLM-verified: signin page shows all 5 demo user buttons, no errors. Layla's dashboard shows signed-in state (Sign out link, constitutional hash, onboarding modal), no error toast.
+- 6 screenshots captured: final-signin-page.png + final-{layla,ahmed,sarah,mohamed,khalil}.png.
+
+Stage Summary:
+**Stale service worker cache was the root cause of the persistent CSRF rejection.**
+**Fixed via 3-layer approach:**
+1. SW cache version bumped (aurienta-v1 → aurienta-v2-csrf-fix) + skipWaiting + clients.claim = immediate cache purge.
+2. SW file served with no-cache headers = browsers always fetch latest SW.
+3. CSRF middleware Referer fallback = handles Origin-stripping browsers.
+**All 5 demo users verified working with fully cleared browser state.** No more "Signature rejected" errors.
+**Commit 30590b1 deployed to Vercel (READY).**
