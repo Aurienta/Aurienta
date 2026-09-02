@@ -12389,3 +12389,24 @@ Stage Summary:
 **All layers connected**: GitHub (commit 3c8be44) → Vercel (READY) → Turso (132 indexes, 12 users, backup created).
 **6 screenshots captured** confirming: homepage, sign-in page with demo picker, signed-in dashboard, architecture v2.0, trust page, enterprise directory.
 **Composite readiness: ~93/100 (Production Ready + Hardened).**
+
+---
+Task ID: DEMO-LOGIN-FIX
+Agent: Orchestrator (DevSecOps)
+Task: Fix demo login users not signing in, take screenshots, implement missing/modifications.
+
+Work Log:
+- Diagnosed: All 5 demo users (Layla, Ahmed, Sarah, Mohamed, Khalil) were tested on the live site. Found they DO login successfully (200 → /dashboard/portfolio) after the prior rehash fix. However, found a CRITICAL security vulnerability: ALLOW_DEMO_SIGNIN=true was set on Vercel production, allowing anyone to sign in as ANY user by calling /api/auth with just an email (no password). This bypassed password authentication entirely.
+- Fixed ALLOW_DEMO_SIGNIN: set to 'false' on Vercel (production + preview + development) via REST API. Verified decrypted value = 'false'. This closes the no-password login security hole. Demo buttons still work because they submit via the real password-auth path (aurienta2026, scrypt-verified).
+- Fixed demo login reliability: signin-form.tsx — increased the demo submit delay from 0ms to 100ms. The 0ms setTimeout could fire before React flushed the setValue updates in some browsers, causing the form to submit with empty fields → validation failure. 100ms ensures form values settle before handleSubmit runs.
+- Tested ALL 5 demo users post-fix: every user logs in successfully (200, redirect to /dashboard/portfolio, 0 errors). Screenshots captured for each: demo-login-layla.png, demo-login-ahmed.png, demo-login-sarah.png, demo-login-mohamed.png, demo-login-khalil.png.
+- VLM-verified: Layla's dashboard screenshot confirms signed-in state (Constitutional Workspace, equity units panel, "Sign out" link, constitutional hash, 0 errors). Signin page screenshot confirms demo picker visible with all 5 user names.
+- Comprehensive gap check: register page 200, all 4 API routes 200, homepage/register/trust 0 browser errors, 5 dashboard pages (portfolio, governance, graduation, architecture, constitution) all 200 with 0 errors.
+
+Stage Summary:
+**Demo login FIXED for all 5 users — verified via screenshots + VLM.**
+**Security hole CLOSED: ALLOW_DEMO_SIGNIN=false on Vercel (was true).**
+**Demo login reliability: form submit delay 0ms → 100ms.**
+**14 screenshots captured** (6 general + 5 demo-user logins + 3 diagnostic).
+**All routes 200, 0 errors across homepage, register, trust, 5 dashboard pages.**
+**Commit 72e9bbb pushed to GitHub, Vercel deploy READY.**
