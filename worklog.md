@@ -12485,3 +12485,23 @@ Work Log:
 
 Stage Summary:
 **Demo login DEFINITIVELY FIXED.** Auth endpoints (/api/auth/*) are now exempt from CSRF middleware — login works regardless of browser cache state. All 5 demo users verified working with fresh sessions. No more "Signature rejected" or "Authentication failed" errors possible on auth endpoints.
+
+---
+Task ID: REDIRECT-FIX-FINAL
+Agent: Orchestrator (DevSecOps)
+Task: Fix "Signature verified" toast shows but page doesn't navigate to dashboard.
+
+Work Log:
+- Root cause: the signin-form.tsx used `router.push(next)` for the post-login redirect. `router.push` does a CLIENT-SIDE navigation (Next.js App Router), which can be intercepted by a stale service worker or fail silently. The toast "Signature verified" fired (API returned 200, session cookie was set), but the navigation never happened — the user stayed on the signin page.
+- Fix: changed `router.push(next)` to `window.location.assign(next)` which performs a FULL page navigation. The browser makes a fresh HTTP GET to /dashboard/portfolio, bypassing any client-side router or service worker issues. Also added `setSubmitting(false)` before the redirect so the form isn't stuck in a loading state. Increased delay from 600ms to 800ms to ensure the toast is visible before navigation.
+- Verified ALL 5 demo users end-to-end with fresh sessions (cookies cleared before each):
+  - Layla Mostafa: API 200 → /dashboard/portfolio, session SET, 0 errors ✓
+  - Ahmed Khaled: API 200 → /dashboard/portfolio, session SET, 0 errors ✓
+  - Sarah Ibrahim: API 200 → /dashboard/portfolio, session SET, 0 errors ✓
+  - Mohamed Adel: API 200 → /dashboard/portfolio, session SET, 0 errors ✓
+  - Khalil Mansour: API 200 → /dashboard/portfolio, session SET, 0 errors ✓
+- VLM-verified: dashboard screenshot shows signed-in state (Sign out link, constitutional hash, onboarding modal, 0 errors).
+- 15 screenshots captured: e2e-{layla,ahmed,sarah,mohamed,khalil}-{01-signin,02-toast,03-dashboard}.png.
+
+Stage Summary:
+**Post-login redirect FIXED.** `window.location.assign` replaces `router.push` for bulletproof full-page navigation. All 5 demo users verified end-to-end: click → toast → redirect → dashboard loads with session cookie. Commit 96bb0e5 deployed to Vercel (READY).
