@@ -12410,3 +12410,31 @@ Stage Summary:
 **14 screenshots captured** (6 general + 5 demo-user logins + 3 diagnostic).
 **All routes 200, 0 errors across homepage, register, trust, 5 dashboard pages.**
 **Commit 72e9bbb pushed to GitHub, Vercel deploy READY.**
+
+---
+Task ID: CSRF-LOGIN-FIX
+Agent: Orchestrator (DevSecOps)
+Task: Fix "Signature rejected — Request must be same-origin or include a valid X-CSRF-Token header" on demo login.
+
+Work Log:
+- Root cause: the signin + register forms used a bare `fetch("/api/auth", { method: "POST" })` call that relied SOLELY on the middleware's same-origin check (Origin header === Host header). This fails when:
+  - Browsers or privacy extensions strip the Origin header for same-origin POSTs
+  - The CSRF cookie isn't set yet on a first visit (race condition)
+  - The Origin header is missing for programmatic form submissions in some edge cases
+  When the Origin check fails, the middleware falls through to the double-submit check, but the fetch didn't send the X-CSRF-Token header → 403 rejection.
+- Created `src/lib/aurienta/csrf-client.ts`: a `csrfFetch()` helper that automatically reads the `aurienta_csrf` cookie and sends it as the `X-CSRF-Token` header on POST/PATCH/PUT/DELETE requests. Also includes `credentials: "same-origin"`. The middleware accepts EITHER same-origin OR a matching token — sending both maximizes compatibility.
+- Applied `csrfFetch` to:
+  - `src/components/auth/signin-form.tsx` (the signin POST)
+  - `src/components/auth/register-wizard.tsx` (the register POST)
+- Tested ALL 5 demo users with FRESH sessions (cookies cleared before each):
+  - Layla Mostafa: ✅ 200 → /dashboard/portfolio, 0 errors
+  - Ahmed Khaled: ✅ 200 → /dashboard/portfolio, 0 errors
+  - Sarah Ibrahim: ✅ 200 → /dashboard/portfolio, 0 errors
+  - Mohamed Adel: ✅ 200 → /dashboard/portfolio, 0 errors
+  - Khalil Mansour: ✅ 200 → /dashboard/portfolio, 0 errors
+- VLM-verified: Layla's dashboard screenshot confirms signed-in state, no "Signature rejected" toast, no errors.
+- 6 screenshots captured: csrf-fix-test-layla.png + csrf-fix-{layla,ahmed,sarah,mohamed,khalil}.png.
+- Build: EXIT=0 (44s). Lint: 0 errors. Vercel deploy sha 1e09632: READY.
+
+Stage Summary:
+**CSRF login rejection FIXED.** The `csrfFetch` helper sends the X-CSRF-Token header (double-submit pattern) on every state-changing request, so the middleware's CSRF check passes regardless of Origin header behavior. All 5 demo users verified working with fresh sessions (cookies cleared). No more "Signature rejected" errors.
