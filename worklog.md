@@ -12277,3 +12277,28 @@ Stage Summary:
 - Long-list overflow convention: `max-h-* overflow-y-auto` blocks inherit the global gold scrollbar from globals.css (no inline scrollbar CSS added — keeps a single source of truth for the scrollbar style).
 - All shadcn/ui primitives used (Card/CardHeader/CardTitle/CardContent, Badge, Separator); all icons from lucide-react; branding mark from `@/components/aurienta-logo` (GoldStar).
 - No issues encountered. File is production-ready and orchestrator-verifiable via `bun run build`.
+
+---
+Task ID: ARCHITECTURE-V2-FORTRESS
+Agent: Orchestrator (Principal Architect)
+Task: Implement the definitive Egypt-Fortress Production v2.0 corporate structure into the codebase.
+
+Work Log:
+- Read the full chat history + blueprint preamble to verify alignment. Confirmed the v2.0 structure (5-entity fortress chassis, Class A/B shares, Hash-Only settlement, FRA Outsourcing Register) is consistent with the blueprint's zero-custody doctrine and the constitutional hash.
+- Rewrote `src/lib/aurienta/institutional-architecture.ts` (181→~280 lines): the canonical source of truth for the corporate structure. Now models 5 entities (Holding JSC + Tech/OpCo/Advisory/Middleware LLCs as direct sister subsidiaries), Class A/B share classes, the 6-step Hash-Only settlement flow, regulatory positioning (FRA primary/CBE avoided), blueprint mapping (10 rows), phased standup (4 phases), and a 26-row 5-column RACI matrix.
+- Created `src/lib/aurienta/legal-clauses.ts` (new, 7 canonical clauses): Binding Record (A), Law Firm Fiduciary Mandate (B), Bank Regulatory Exemption (C), Fiduciary Kill-Switch (D), CRE Hash as Binding Record with 72-hour key-compromise window (E), Antifragility Vault Segregation (F), Intercompany IP License (G, Law 91/2005 arm's-length). Each clause has a stable clauseId for audit-trail referencing + a registry by agreement type.
+- Updated `src/lib/aurienta/constants.ts`: added ARCHITECTURE_VERSION, REGULATORY_POSITIONING (FRA primary / CBE avoided), FEE_STRUCTURE (5% OpCo + 2.5% Advisory + 0.5% Antifragility = 8% total, with the 0.5% explicitly NOT AURIENTA-owned).
+- Dispatched subagent to rewrite `src/app/dashboard/architecture/page.tsx` (155→1123 lines): renders 11 sections — header with v2.0 badge + constitutional hash, founder card, 5-entity hierarchy (Holding JSC on top + 4 sister LLCs in a 2-col grid), share capital (Class A/B side by side with non-amendable rules), non-custodial settlement (6-step stepper + 4 legal consequences + Antifragility Vault sub-card), regulatory positioning (3 cards: FRA primary gold / FRA sandbox neutral / CBE avoided red-strikethrough), blueprint mapping table, 7 legal clauses (full text blockquoted), 5-column RACI matrix, 90-day implementation roadmap (6 rows, 4 phases), phased standup principle. Server component, auth-guarded, force-dynamic. Lint clean, 0 new TS errors.
+- Verified all v2.0 data exports correctly: 5 entities, 6 settlement steps, 26 RACI rows × 5 cols, 7 clauses (AUR-CLAUSE-A through G), FRA Outsourcing Register as primary regulatory path, 8% total fee deduction.
+
+Stage Summary:
+**Egypt-Fortress Production v2.0 is now the canonical corporate structure in the codebase.**
+- 5-entity bankruptcy-remote chassis: Holding JSC + Tech/OpCo/Advisory/Middleware LLCs (all direct sisters, not daughters).
+- Class A (ordinary) + Class B (constitutional golden, veto over non-amendable rules only) share structure per Law 159/1981 Art. 83.
+- Hash-Only non-custodial settlement: AURIENTA generates hashes, Law Firm HSM co-signs, Bank executes. AURIENTA never holds/moves/controls funds.
+- FRA Outsourcing Register (Decree 141/2023) as primary regulatory path; CBE PSP license (EGP 20M) deliberately avoided.
+- 7 canonical legal clauses embedded contractually (Binding Record, Fiduciary Mandate, Bank Exemption, Kill-Switch, CRE Hash Binding, Antifragility Vault Segregation, Intercompany IP License).
+- Antifragility Vault: segregated fiduciary account, Law Firm owned, Enterprise SPVs as beneficiaries, AURIENTA has ZERO legal claim.
+- Phased standup documented (Phase 1 Pilot → Phase 4 full 5-entity) to match capital efficiency.
+- Build EXIT=0 (41s), lint 0 errors. Vercel deploy sha 4bfd607: READY. Live architecture page renders (auth-protected, title confirmed).
+- Blueprint alignment: FULLY VERIFIED — zero deviations from the zero-custody constitutional doctrine.
