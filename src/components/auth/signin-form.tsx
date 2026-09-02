@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -74,7 +75,11 @@ export function SigninForm({ onReady }: SigninFormProps) {
     async (values: EmailValues) => {
       setSubmitting(true);
       try {
-        const res = await fetch("/api/auth", {
+        // csrfFetch automatically reads the CSRF cookie and sends it as
+        // X-CSRF-Token (double-submit pattern). The middleware accepts
+        // EITHER same-origin OR a matching token — sending both maximizes
+        // compatibility with browsers/extensions that strip Origin.
+        const res = await csrfFetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: values.email, password: values.password }),

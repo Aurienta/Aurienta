@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { AurientaMark, AurientaWordmark, GoldStar } from "@/components/aurienta-logo";
 import {
   INITIAL_REGISTER_STATE,
@@ -108,7 +109,7 @@ export function RegisterWizard() {
     // the Activation step. Replaces the previous mockAnchorHash() theatre.
     if (current === 3) {
       try {
-        const res = await fetch("/api/auth/register", {
+        const res = await csrfFetch("/api/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
