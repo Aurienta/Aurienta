@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // Open Constitutional API — #32
 // Public, read-only aggregate platform health (no PII).
@@ -17,7 +18,7 @@ const AI_HEALTH = {
 
 const CRE_UPTIME_PCT = 99.95;
 
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   // ── Enterprises ──
   const enterprises = await db.enterprise.findMany({
     select: {
@@ -123,7 +124,7 @@ export async function GET() {
       "Cache-Control": "no-store",
     },
   });
-}
+}, "GET /api/public/stats");
 
 // Handle CORS preflight
 export async function OPTIONS() {

@@ -17,22 +17,25 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/reservations/[id]/confirm
 // Only law_firm_rep or aurienta_rep can confirm fund receipt.
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+export const POST = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-  const { id: reservationId } = await params;
+    const { params } = ctx;
+    const { id: reservationId } = await params;
 
   // Authorization: only law_firm_rep or aurienta_rep can confirm
   const canConfirm = user.memberships.some(
@@ -172,4 +175,6 @@ export async function POST(
       vaultContribution,
     },
   });
-}
+  },
+  "POST /api/reservations/[id]/confirm"
+);

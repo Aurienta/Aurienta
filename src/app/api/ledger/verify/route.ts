@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { verifyLedgerChain } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 // that external auditors, regulators, and law-firm reps can verify any
 // enterprise's ledger at any time.  For now it is restricted to members
 // of the enterprise (membership check below) while the surface stabilises.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -101,4 +102,4 @@ export async function GET(req: NextRequest) {
     brokenAt: verification.brokenAt ?? null,
     verifiedAt: new Date().toISOString(),
   });
-}
+}, "GET /api/ledger/verify");

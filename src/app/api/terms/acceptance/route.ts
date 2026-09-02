@@ -20,6 +20,7 @@ import {
   computeDisclaimerHash,
 } from "@/lib/aurienta/legal-disclaimer";
 import { z } from "zod";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ function clientIp(req: NextRequest): string | undefined {
 }
 
 // GET /api/terms/acceptance — Check if the current user has accepted the terms
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ accepted: false, authenticated: false });
@@ -61,7 +62,7 @@ export async function GET() {
       : null,
     currentVersion: LEGAL_DISCLAIMER_VERSION,
   });
-}
+}, "GET /api/terms/acceptance");
 
 // POST /api/terms/acceptance — Record the user's acceptance
 const acceptSchema = z.object({
@@ -69,7 +70,7 @@ const acceptSchema = z.object({
   language: z.enum(["en", "ar"]).default("en"),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -175,4 +176,4 @@ export async function POST(req: NextRequest) {
       acceptanceType: acceptance.acceptanceType,
     },
   });
-}
+}, "POST /api/terms/acceptance");

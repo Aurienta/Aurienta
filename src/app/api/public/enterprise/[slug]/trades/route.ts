@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +20,8 @@ export const dynamic = "force-dynamic";
  * Legal basis: market transparency (Article XIV); aggregate activity
  * is published, personal identities are masked.
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export const GET = withErrorHandler(async (req: NextRequest, ctx: { params: Promise<{ slug: string }> }) => {
+  const { params } = ctx;
   const { slug } = await params;
   const url = new URL(req.url);
   const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") ?? "50", 10) || 50, 1), 200);
@@ -139,4 +141,4 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   res.headers.set("X-Aurienta-Constitutional-Api", "v1");
   res.headers.set("X-Aurienta-PDPL-Compliant", "151/2020");
   return res;
-}
+}, "GET /api/public/enterprise/[slug]/trades");

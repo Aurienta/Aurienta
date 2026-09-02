@@ -12,17 +12,19 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent, enforceFundFlow, enforceAccountantGate, enforceZeroCustody } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandler(async (req: NextRequest, ctx: { params: Promise<{ id: string }> }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const rlHit = limiters.expenses(user.id);
   if (!rlHit.allowed) return rateLimitedResponse(rlHit.resetAt);
 
+  const { params } = ctx;
   const { id: milestoneId } = await params;
   const body = await req.json().catch(() => ({}));
   const { action, verificationNote } = body as { action: "verify" | "reject"; verificationNote?: string };
@@ -181,4 +183,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     flow: "law_firm_client_account → accounting_firm → vendor",
     amendment: "IX — direct law-firm transfer + accountant verification",
   });
-}
+}, "POST /api/milestones/[id]/accountant-release");

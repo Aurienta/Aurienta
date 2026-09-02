@@ -34,7 +34,11 @@ export const metadata: Metadata = {
     "AURIENTA's public trust dashboard — zero-custody proof, Law Firm Client Account reconciliation, AI health, compliance integrations, and recent graduations. Constitutional trust, proven not promised.",
 };
 
-export const dynamic = "force-dynamic";
+// Revalidate every 5 minutes (300 seconds). The first request after cache
+// expiry serves stale content and triggers a background revalidation.
+// /trust is a public, low-mutation stats surface (a few writes/day), so it is
+// an ideal ISR candidate — no cookies/headers/dynamic APIs are read here.
+export const revalidate = 300;
 
 // ── Mock AI health metrics ──
 const AI_HEALTH = {
@@ -120,52 +124,55 @@ function aiMetricColor(value: number, ok: number, warn: number, inverted = true)
 
 export default async function TrustPage() {
   // ── Data fetch ──
-  const enterprises = await db.enterprise.findMany({
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      tier: true,
-      stage: true,
-      status: true,
-      raisedEgp: true,
-      employeeCount: true,
-      lawFirmClientAccountBalanceEgp: true,
-      lawFirmId: true,
-      healthRating: true,
-      healthScore: true,
-      monthlyRevenueEgp: true,
-    },
-  });
-
-  const lawFirms = await db.lawFirm.findMany({
-    select: {
-      id: true,
-      name: true,
-      frLicenseNumber: true,
-      insuranceEgp: true,
-      expertiseScore: true,
-      status: true,
-    },
-  });
-
-  const partners = await db.user.count();
-
-  const graduations = await db.graduationRecord.findMany({
-    orderBy: { graduationDate: "desc" },
-    take: 6,
-    select: {
-      id: true,
-      enterpriseId: true,
-      enterpriseName: true,
-      tierAtGraduation: true,
-      finalHealthScore: true,
-      readinessScore: true,
-      graduationDate: true,
-      testimonial: true,
-      exportHash: true,
-    },
-  });
+  // The four independent queries below run in parallel via Promise.all to cut
+  // sequential Turso round-trips (avg RTT ≈ 294ms per the prod-readiness audit,
+  // so 4 sequential awaits ≈ 1.2s → ~1 RTT for the batch). The 5th query
+  // (graduation slugs) depends on `graduations` so it stays sequential.
+  const [enterprises, lawFirms, partners, graduations] = await Promise.all([
+    db.enterprise.findMany({
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        tier: true,
+        stage: true,
+        status: true,
+        raisedEgp: true,
+        employeeCount: true,
+        lawFirmClientAccountBalanceEgp: true,
+        lawFirmId: true,
+        healthRating: true,
+        healthScore: true,
+        monthlyRevenueEgp: true,
+      },
+    }),
+    db.lawFirm.findMany({
+      select: {
+        id: true,
+        name: true,
+        frLicenseNumber: true,
+        insuranceEgp: true,
+        expertiseScore: true,
+        status: true,
+      },
+    }),
+    db.user.count(),
+    db.graduationRecord.findMany({
+      orderBy: { graduationDate: "desc" },
+      take: 6,
+      select: {
+        id: true,
+        enterpriseId: true,
+        enterpriseName: true,
+        tierAtGraduation: true,
+        finalHealthScore: true,
+        readinessScore: true,
+        graduationDate: true,
+        testimonial: true,
+        exportHash: true,
+      },
+    }),
+  ]);
 
   // GraduationRecord has no Prisma relation to Enterprise (only a FK enterpriseId),
   // so we resolve slugs separately via a single enterprise lookup.

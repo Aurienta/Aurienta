@@ -20,6 +20,7 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,7 +35,7 @@ const contributeSchema = z.object({
 
 // GET /api/vault?enterpriseId=xxx — read the Anti-Fragility Insurance Vault
 // balance for the named enterprise. Auth required.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -83,12 +84,12 @@ export async function GET(req: NextRequest) {
   };
 
   return NextResponse.json({ vault: summary, enterprise });
-}
+}, "GET /api/vault");
 
 // POST /api/vault — contribute 0.5% of a Capital Formation close to the
 // Anti-Fragility Insurance Vault. Creates the vault record on first
 // contribution. Appends a tamper-evident ledger event. Auth required.
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -170,4 +171,4 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
-}
+}, "POST /api/vault");

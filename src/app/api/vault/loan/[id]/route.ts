@@ -29,6 +29,7 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,7 +55,7 @@ const patchSchema = z.object({
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/vault/loan/[id] — fetch a single VaultLoan. Auth required.
-export async function GET(_req: NextRequest, { params }: Params) {
+export const GET = withErrorHandler(async (_req: NextRequest, ctx: Params) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -63,6 +64,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     );
   }
 
+  const { params } = ctx;
   const { id } = await params;
   const loan = await db.vaultLoan.findUnique({
     where: { id },
@@ -78,10 +80,10 @@ export async function GET(_req: NextRequest, { params }: Params) {
   }
 
   return NextResponse.json({ loan });
-}
+}, "GET /api/vault/loan/[id]");
 
 // PATCH /api/vault/loan/[id] — approve / reject / record a repayment.
-export async function PATCH(req: NextRequest, { params }: Params) {
+export const PATCH = withErrorHandler(async (req: NextRequest, ctx: Params) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -90,6 +92,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     );
   }
 
+  const { params } = ctx;
   const { id } = await params;
   const body = await parseBody(req, patchSchema);
   if (body instanceof NextResponse) return body;
@@ -382,4 +385,4 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   });
 
   return NextResponse.json({ ok: true, loan: result });
-}
+}, "PATCH /api/vault/loan/[id]");

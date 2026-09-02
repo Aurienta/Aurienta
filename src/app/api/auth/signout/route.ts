@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { signOut } from "@/lib/aurienta/auth";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,14 +36,14 @@ async function doSignOut(req: NextRequest) {
   return null; // fall through to redirect
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const json = await doSignOut(req);
   if (json) return json;
   redirect("/signin");
-}
+}, "POST /api/auth/signout");
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const json = await doSignOut(req);
   if (json) return json;
   redirect("/signin");
-}
+}, "GET /api/auth/signout");

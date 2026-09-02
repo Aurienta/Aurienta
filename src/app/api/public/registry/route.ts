@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export const dynamic = "force-dynamic";
  * level financial & governance data with the enterprise's constitutional
  * consent (Article XIV of the constitutional charter).
  */
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const url = new URL(req.url);
   const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
   const tier = (url.searchParams.get("tier") ?? "").trim().toUpperCase();
@@ -154,4 +155,4 @@ export async function GET(req: NextRequest) {
   res.headers.set("X-Aurienta-Constitutional-Api", "v1");
   res.headers.set("X-Aurienta-PDPL-Compliant", "151/2020");
   return res;
-}
+}, "GET /api/public/registry");

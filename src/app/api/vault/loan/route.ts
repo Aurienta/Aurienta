@@ -18,6 +18,7 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,7 +49,7 @@ const loanRequestSchema = z.object({
 // POST /api/vault/loan — request an interest-free loan from the
 // Anti-Fragility Insurance Vault. Auth required
 // (founding_operator, company_owner, board_member only).
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -201,4 +202,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ ok: true, loan }, { status: 201 });
-}
+}, "POST /api/vault/loan");

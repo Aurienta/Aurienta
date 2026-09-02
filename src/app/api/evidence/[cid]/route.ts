@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // Live Evidence Streaming to IPFS — #15
 // GET /api/evidence/[cid] — fetch evidence metadata by CID.
 // Public, no auth (radical transparency — evidence is public).
 // CORS-enabled.
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ cid: string }> }
-) {
-  const { cid } = await params;
+export const GET = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ cid: string }> }
+  ) => {
+    const { params } = ctx;
+    const { cid } = await params;
   if (!cid || cid.length < 6) {
     return NextResponse.json({ error: "Invalid CID" }, { status: 400 });
   }
@@ -66,7 +69,9 @@ export async function GET(
       },
     }
   );
-}
+  },
+  "GET /api/evidence/[cid]"
+);
 
 export async function OPTIONS() {
   return new NextResponse(null, {

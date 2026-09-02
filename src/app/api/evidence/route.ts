@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { mockCid } from "@/lib/aurienta/ai";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { evidenceSchema, parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // Live Evidence Streaming to IPFS — #15
 // POST /api/evidence — upload evidence metadata to mock IPFS.
@@ -13,7 +14,7 @@ import { evidenceSchema, parseBody } from "@/lib/aurienta/validation";
 // Generates a mock CID, creates an IpfsEvidence record, and appends a hash-chained
 // `evidence_published` (or `milestone_released` when milestoneId is present) ledger event.
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -133,11 +134,11 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
-}
+}, "POST /api/evidence");
 
 // GET /api/evidence — list recent evidence across the platform (radical transparency).
 // Optional query: ?enterpriseId=...&limit=...
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const url = new URL(req.url);
   const enterpriseId = url.searchParams.get("enterpriseId");
   const limitParam = url.searchParams.get("limit");
@@ -179,7 +180,7 @@ export async function GET(req: NextRequest) {
       },
     }
   );
-}
+}, "GET /api/evidence");
 
 export async function OPTIONS() {
   return new NextResponse(null, {

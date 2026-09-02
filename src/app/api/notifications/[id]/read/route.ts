@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/notifications/[id]/read — mark a single notification as read.
 // Auth required; the notification must belong to the signed-in user.
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "not authenticated" }, { status: 401 });
-  }
+export const POST = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "not authenticated" }, { status: 401 });
+    }
 
-  const { id } = await params;
+    const { params } = ctx;
+    const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "id required" }, { status: 400 });
   }
@@ -40,4 +43,6 @@ export async function POST(
   });
 
   return NextResponse.json({ ok: true });
-}
+  },
+  "POST /api/notifications/[id]/read"
+);

@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { z } from "zod";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ const proxySchema = z.object({
 });
 
 // POST /api/proxies — Create a voting proxy delegation
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -141,10 +142,10 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ ok: true, proxy });
-}
+}, "POST /api/proxies");
 
 // GET /api/proxies?enterpriseId=xxx — List the user's proxies (delegated + received)
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -200,4 +201,4 @@ export async function GET(req: NextRequest) {
     delegated: proxies.filter((p) => p.delegatorId === user.id),
     received: proxies.filter((p) => p.delegateeId === user.id),
   });
-}
+}, "GET /api/proxies");

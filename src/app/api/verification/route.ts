@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -51,7 +52,7 @@ const submitSchema = z.object({
 // Auth required. Creates a GovApiVerification with status="pending" and appends
 // a hash-chained ledger event. The 48-hour SLA window is recorded so reviewers
 // (and the CRE) can monitor SLA breaches.
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -218,7 +219,7 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
-}
+}, "POST /api/verification");
 
 // GET /api/verification
 // Query params (all optional):
@@ -230,7 +231,7 @@ export async function POST(req: NextRequest) {
 // Auth required. Returns a sanitized list. Stale verified records whose
 // expiresAt has elapsed are auto-expired here so callers always see canonical
 // status.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -337,7 +338,7 @@ export async function GET(req: NextRequest) {
     note:
       "Government API integrations (GAFI §12.3, Tax §12.5, NOSI §12.6, Police §12.7) are operating in manual-upload fallback mode with a 48-hour human-review SLA.",
   });
-}
+}, "GET /api/verification");
 
 export async function OPTIONS() {
   return new NextResponse(null, {

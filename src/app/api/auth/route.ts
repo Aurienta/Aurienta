@@ -20,6 +20,7 @@ import { audit } from "@/lib/aurienta/audit";
 import { authSchema, parseBody } from "@/lib/aurienta/validation";
 import { createSession, signOut, signInAs } from "@/lib/aurienta/auth";
 import { verifyPassword, isPlaintextHash } from "@/lib/aurienta/password";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,7 +33,7 @@ function clientIp(req: NextRequest): string {
   return "unknown";
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
 
@@ -168,4 +169,4 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     user: { id: user.id, email: user.email, legalName: user.legalName },
   });
-}
+}, "POST /api/auth");

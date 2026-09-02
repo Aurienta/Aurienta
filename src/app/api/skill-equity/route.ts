@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { mockCid, mockHash } from "@/lib/aurienta/ai";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { parseBody, skillEquitySchema } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // Constants for the 2-year tenure rule
 const TENURE_REQUIRED_MONTHS = 24;
@@ -30,7 +31,7 @@ function monthsBetween(from: Date, to: Date): number {
 // Server re-fetches the Employee, computes tenureMonths from hireDate, enforces ≥24,
 // generates a mock CID + hash for the uploaded document, creates a SkillEquityClaim
 // with status "pending".
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -187,4 +188,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ claim }, { status: 201 });
-}
+}, "POST /api/skill-equity");

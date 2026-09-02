@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,8 @@ export const dynamic = "force-dynamic";
  *
  * Legal basis: enterprise-level governance metadata, no personal data.
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export const GET = withErrorHandler(async (req: NextRequest, ctx: { params: Promise<{ slug: string }> }) => {
+  const { params } = ctx;
   const { slug } = await params;
 
   const ent = await db.enterprise.findUnique({
@@ -174,4 +176,4 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   res.headers.set("X-Aurienta-Constitutional-Api", "v1");
   res.headers.set("X-Aurienta-PDPL-Compliant", "151/2020");
   return res;
-}
+}, "GET /api/public/enterprise/[slug]/transparency");

@@ -9,6 +9,7 @@ import {
 } from "@/lib/aurienta/cre";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // POST /api/expenses/[id]/approve
 // Applies the next signature in the dual-signature chain, or finalises a
@@ -20,10 +21,11 @@ import { audit } from "@/lib/aurienta/audit";
 //   - Already approved / rejected / flagged     → 409
 // The CRE requiredApproverRoles is consulted so the right role signs in each
 // bracket. The existing code blocks re-signing by the same approver — preserved.
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -36,6 +38,7 @@ export async function POST(
   const rl = limiters.expenses(user.id);
   if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
 
+  const { params } = ctx;
   const { id } = await params;
   const expense = await db.expense.findUnique({
     where: { id },
@@ -282,4 +285,6 @@ export async function POST(
   });
 
   return NextResponse.json({ ok: true, expense: updated });
-}
+  },
+  "POST /api/expenses/[id]/approve"
+);

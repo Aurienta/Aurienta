@@ -19,20 +19,23 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+export const POST = withErrorHandler(
+  async (
+    req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-  const { id: enterpriseId } = await params;
+    const { params } = ctx;
+    const { id: enterpriseId } = await params;
   const body = await req.json().catch(() => ({}));
   const { earlyClose, adjustedGoalEgp } = body as {
     earlyClose?: boolean;
@@ -156,4 +159,6 @@ export async function POST(
       name: enterprise.name,
     },
   });
-}
+  },
+  "POST /api/enterprises/[id]/close-capital-formation"
+);

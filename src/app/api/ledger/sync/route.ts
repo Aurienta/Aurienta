@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 //
 // Body (optional):
 //   { enterpriseId?: string, note?: string }
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -67,4 +68,4 @@ export async function POST(req: NextRequest) {
     sequence: result.sequence,
     timestamp: new Date().toISOString(),
   });
-}
+}, "POST /api/ledger/sync");

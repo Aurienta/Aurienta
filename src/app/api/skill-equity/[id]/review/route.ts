@@ -5,16 +5,18 @@ import { askConstitutionalAI } from "@/lib/aurienta/ai";
 import { appendLedgerEvent, enforceSalaryToEquity } from "@/lib/aurienta/cre";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // POST /api/skill-equity/[id]/review
 // Body: { decision: "approve" | "reject", equityGrantPct?, note? }
 // Only board members / company owners / founding operators of the claim's enterprise may review.
 // On approval, equityGrantPct is set (capped at the 2% board discretionary pool), and an AI
 // assessment is generated via askConstitutionalAI and persisted on the claim.
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withErrorHandler(
+  async (
+    req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -24,6 +26,7 @@ export async function POST(
   const hit = limiters.ai(user.id);
   if (!hit.allowed) return rateLimitedResponse(hit.resetAt);
 
+  const { params } = ctx;
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
   const { decision, equityGrantPct, note } = body as {
@@ -235,4 +238,6 @@ export async function POST(
       aiAssessment: updated.aiAssessment,
     },
   });
-}
+  },
+  "POST /api/skill-equity/[id]/review"
+);

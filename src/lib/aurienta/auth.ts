@@ -103,7 +103,7 @@ function sessionCookieOptions(expiresAt: Date) {
   return {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure: false, // allow HTTP in dev/preview; Caddy terminates HTTPS in production
+    secure: process.env.NODE_ENV === "production",
     expires: expiresAt,
     path: "/",
   };

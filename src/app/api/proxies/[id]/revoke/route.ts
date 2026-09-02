@@ -6,21 +6,24 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/proxies/[id]/revoke — Revoke a voting proxy
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+export const POST = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-  const { id } = await params;
+    const { params } = ctx;
+    const { id } = await params;
 
   const proxy = await db.votingProxy.findUnique({ where: { id } });
   if (!proxy) {
@@ -70,4 +73,6 @@ export async function POST(
   });
 
   return NextResponse.json({ ok: true });
-}
+  },
+  "POST /api/proxies/[id]/revoke"
+);

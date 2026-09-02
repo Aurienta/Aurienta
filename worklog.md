@@ -12049,3 +12049,112 @@ Stage Summary:
 - P1 high: CSP unsafe-eval, 34 API routes without try/catch, no unhandledRejection handler, 83 CVEs (1 critical sharp), Hobby plan cold-start risk, ESLint rules heavily relaxed.
 - P2 medium: no Turso multi-region replication, no DB backup automation, TS noImplicitAny:false, /trust page TTFB 1.2s.
 - Full scored report written to /home/z/my-project/PRODUCTION_READINESS_AUDIT.md.
+
+---
+Task ID: P2-4-TRUST-OPTIMIZATION
+Agent: Trust-optimization subagent
+
+Task: Optimize the /trust page (src/app/trust/page.tsx) whose 1.2s TTFB was flagged as a P2 finding in the PROD-READINESS-AUDIT (Module 4). Convert it from fully-dynamic (force-dynamic) to ISR, and fix any obvious N+1 / redundant DB calls — without changing visual output, styling, or content. Keep it a server component.
+
+Work Log:
+- Read prior worklog (Task 0 → PROD-READINESS-AUDIT) to load context. Confirmed the audit's exact finding at line 12043/12050: "/trust TTFB 1.2s (DB-heavy)" / "P2 medium: /trust page TTFB 1.2s", and the audit's Turso RTT measurement (min 214ms, avg 294ms, max 671ms, sandbox→aws-us-east-1).
+- Read src/app/trust/page.tsx (853 lines) in full. Catalogued every DB call with a targeted grep for `db\.|await |cookies\(|headers\(|fetch\(|draftMode|revalidate`:
+    1. db.enterprise.findMany() — all enterprises, 12 selected fields (line ~123).
+    2. db.lawFirm.findMany() — all law firms, 6 selected fields (line ~141).
+    3. db.user.count() — capital-partner count (line ~152).
+    4. db.graduationRecord.findMany() — latest 6, ordered desc, 9 selected fields (line ~154).
+    5. db.enterprise.findMany({ where: { id: { in: gradEnterpriseIds } } }) — single BATCHED query to resolve slugs for the 6 graduation rows (line ~173).
+- N+1 audit: NO N+1 patterns. The author explicitly handled the one relation-less case correctly — GraduationRecord has only a bare FK enterpriseId (no Prisma relation to Enterprise), so slugs are resolved with a single `id: { in: [...] }` lookup + a Map, not a per-row findUnique loop. The existing inline comment at the call site already documents this decision. No `findUnique`-inside-`.map()` anywhere.
+- Dynamic-API audit: NO cookies()/headers()/fetch()/draftMode()/searchParams usage anywhere in the file. The ONLY thing forcing the page dynamic was `export const dynamic = "force-dynamic";` at line 37. The render body does call `Date.now()` for the mock `lastReconciliation.at` — with ISR this value is baked at revalidation time (oscillates the displayed "reconciled X minutes ago" between ~2min and ~7min across the 5-min window). This is acceptable for a mock UI indicator and is arguably more realistic than the force-dynamic "always exactly 2 minutes ago" it replaces; per the task's "do not change content" rule I left it untouched.
+- Optimization applied (2 edits, single file — src/app/trust/page.tsx):
+    (a) Replaced `export const dynamic = "force-dynamic";` with `export const revalidate = 300;` (ISR, 5-minute revalidation window) + a 4-line explanatory comment. /trust is a public low-mutation stats surface (a few writes/day), making it a textbook ISR candidate.
+    (b) Wrapped the 4 independent queries (enterprises, lawFirms, partners, graduations) in `const [a,b,c,d] = await Promise.all([...])`. The 5th query (graduation slugs) depends on `graduations` so it stays sequential after the Promise.all. Behavior is byte-identical — same select fields, same ordering, same variable names; only the await topology changed (4 sequential awaits → 1 parallel batch). This cuts the revalidation-path DB latency from ~4×294ms ≈ 1.2s to ~1×294ms for the batch + 1×294ms for the dependent slug lookup ≈ 0.6s.
+- Verified: no remaining `force-dynamic` / `dynamic =` anywhere in the file; `revalidate = 300` present at line 41; Promise.all at line 131 with all 4 queries; dependent 5th query intact at line ~180. Page is still `export default async function TrustPage()` (server component, unchanged).
+- Did NOT touch any other file. Did NOT run `bun run build` (orchestrator verifies). Did NOT write any test code. Did NOT change visual output, styling, copy, or component structure — only the data-fetch topology and the caching directive.
+- `bun run lint` → 0 errors (3 pre-existing warnings in src/instrumentation.ts, unrelated, untouched by this task).
+
+Stage Summary:
+- Queries the page runs (5 total, all via Prisma on Turso/libSQL): db.enterprise.findMany (all enterprises, 12 fields), db.lawFirm.findMany (all firms, 6 fields), db.user.count (partners), db.graduationRecord.findMany (latest 6, 9 fields), db.enterprise.findMany({id:{in:[...]}}) (batched slug resolution for the 6 graduation rows).
+- N+1 patterns: NONE found. The one relation-less case (GraduationRecord→Enterprise slug) was already implemented correctly as a single batched `id IN [...]` query + Map, with an inline comment documenting why. No fix needed; no change made to that block.
+- ISR: ADDED. Removed `export const dynamic = "force-dynamic"` and added `export const revalidate = 300` (5-minute stale-while-revalidate). The page reads no dynamic APIs (cookies/headers/searchParams/fetch/draftMode), so it is fully cacheable.
+- Bonus optimization: parallelized the 4 independent queries with Promise.all (the 5th stays sequential). This is a pure data-fetch-topology change — same selects, same ordering, same variable names — and only speeds up the background-revalidation path; it does not affect the cached HTML that the vast majority of users receive.
+- Expected TTFB improvement:
+    • Cached path (the vast majority of requests — first hit after a 5-min window, and every hit until the next revalidate): 1.2s → ~7ms, matching the audit's measured cached-homepage TTFB (the homepage is already ISR-cached at 7ms per Module 4 of the audit). This is the primary win and resolves the P2 finding.
+    • Revalidation path (once per 5 min, served stale-while-revalidate so users don't wait): ~1.2s → ~0.6s (4 sequential Turso RTTs → 1 parallel batch RTT + 1 dependent RTT), cutting background-regeneration latency roughly in half.
+- Net effect: the P2 "/trust TTFB 1.2s" finding from PROD-READINESS-AUDIT Module 4 is RESOLVED. /trust now behaves like the cached homepage (single-digit-ms TTFB) for ~all requests, with sub-second background revalidation every 5 minutes.
+
+---
+Task ID: P1-2-ERROR-HANDLING
+Agent: API-error-handling subagent
+Task: Harden the 34 unprotected API routes by adding structured try/catch error handling via a reusable `withErrorHandler` higher-order wrapper. Goal: prevent stack-trace leaks, eliminate unhandled serverless crashes, and surface clean 4xx/5xx responses to clients.
+
+Work Log:
+- Read prior worklog context (PROD-READINESS-AUDIT found 34/102 API routes lack try/catch — listed as P1 high priority item).
+- Created `src/lib/aurienta/api-handler.ts` with `withErrorHandler(handler, label?)` — a higher-order wrapper that:
+  - Catches any error thrown inside the handler.
+  - Re-throws Next.js internal control-flow errors (digest starting with `NEXT_`) — needed because `redirect()` from `next/navigation` throws a `NEXT_REDIRECT` error that Next.js catches upstream; wrapping it as a 500 would break sign-out / signin redirects.
+  - Logs to `console.error("[api] {METHOD /path} failed:", error)` for server-side traceability.
+  - Zod errors (`issues` array) → 400 + `{ error: "Validation failed", detail: <first issue message> }`.
+  - Custom HTTP errors (`Error` with `statusCode` property) → that status code + the error message.
+  - Prisma errors (`code` starting with `P`): P2002 → 409 Resource already exists · P2025 → 404 Resource not found · P2003 → 400 Referenced resource does not exist · other → 500 Database error.
+  - Everything else → 500 `{ error: "Internal server error" }` (NO stack trace leak).
+  - Wrapper signature `(req: NextRequest, ctx?: any) => Promise<Response>` — preserves the underlying handler signature so existing `(req: Request, ctx)` handlers work via contravariance.
+
+- Read each of the 34 listed route files before modifying to understand the existing pattern (inline function vs named function, params destructuring, imports).
+- Applied the wrapper using Pattern A (inline → `export const POST = withErrorHandler(async (req, ctx) => { ... }, "POST /api/...")`) consistently across all 34 files. Each HTTP method function was wrapped individually. The OPTIONS handler (CORS preflight) was deliberately NOT wrapped — it returns a static 204 with CORS headers, no business logic, no DB calls.
+
+- Dynamic-route param handling: For each `[id]/route.ts` / `[slug]/route.ts` / `[cid]/route.ts`, the wrapper preserves the existing `params: Promise<{...}>` destructuring pattern. The wrapped handler receives the original ctx (second argument) and re-destructures it: `const { params } = ctx; const { id } = await params;` — this preserves Next.js 16's required `await params` semantic.
+- For `src/app/api/verification/[id]/route.ts` PATCH, the existing code references `params` inside an audit `target:` template literal BEFORE destructuring it (line 137: `target: \`verification:${(await params).id ?? ""}\``). The wrapping moved `await ctx.params` to the new position (since the bare `params` binding is no longer in scope at that point in the function). Verified this preserves the audit log target string semantically.
+
+- Special-case file: `src/app/api/auth/signout/route.ts` uses `redirect("/signin")` (throws `NEXT_REDIRECT`). The wrapper's digest-check at the top of the catch re-throws `NEXT_*`-prefixed errors so the redirect still works correctly.
+
+- Special-case file: `src/app/api/public/enterprise/[slug]/route.ts` uses `Request` (not `NextRequest`) for its `_req` param. Preserved the `Request` type — TypeScript contravariance allows a function accepting `Request` to be assigned to a slot expecting `(req: NextRequest)`, so no type change was needed.
+
+- All business logic, SQL queries, RBAC checks, CRE enforcements, ledger events, audit logs, rate-limit calls, and return values are UNCHANGED. Only the function-declaration form was changed from `export async function POST(...)` to `export const POST = withErrorHandler(async (...) => { ... }, "POST /api/...")`.
+
+Verification:
+- `bun run lint` → exit 0. Only 3 pre-existing warnings in `src/instrumentation.ts` (unused eslint-disable directives) — unrelated to this task.
+- `npx tsc --noEmit` → only pre-existing `bun:test`/jest type-def errors in `src/lib/__tests__/*.test.ts` (unrelated to this task). Zero new TypeScript errors in any of the 34 modified route files or the new `api-handler.ts`.
+
+Stage Summary:
+- 1 new file created: `src/lib/aurienta/api-handler.ts` (~115 lines, exports `withErrorHandler`).
+- 34 route files modified to wrap each exported HTTP method (GET/POST/PUT/PATCH/DELETE) with `withErrorHandler`. OPTIONS handlers left untouched. Total: 47 individual handler functions wrapped across the 34 files.
+- Files modified (34):
+  1. `src/app/api/reservations/[id]/confirm/route.ts` (POST)
+  2. `src/app/api/vault/loan/[id]/route.ts` (GET, PATCH)
+  3. `src/app/api/vault/loan/route.ts` (POST)
+  4. `src/app/api/vault/route.ts` (GET, POST)
+  5. `src/app/api/verification/[id]/route.ts` (GET, PATCH)
+  6. `src/app/api/verification/route.ts` (POST, GET)
+  7. `src/app/api/enterprises/[id]/close-capital-formation/route.ts` (POST)
+  8. `src/app/api/notifications/[id]/read/route.ts` (POST)
+  9. `src/app/api/terms/acceptance/route.ts` (GET, POST)
+  10. `src/app/api/proxies/[id]/revoke/route.ts` (POST)
+  11. `src/app/api/proxies/route.ts` (POST, GET)
+  12. `src/app/api/milestones/[id]/accountant-release/route.ts` (POST)
+  13. `src/app/api/ai/brain-status/route.ts` (GET)
+  14. `src/app/api/public/stats/route.ts` (GET)
+  15. `src/app/api/public/enterprise/[slug]/transparency/route.ts` (GET)
+  16. `src/app/api/public/enterprise/[slug]/route.ts` (GET)
+  17. `src/app/api/public/enterprise/[slug]/trades/route.ts` (GET)
+  18. `src/app/api/public/registry/route.ts` (GET)
+  19. `src/app/api/mentorship/route.ts` (GET, POST)
+  20. `src/app/api/solvency/route.ts` (GET, POST)
+  21. `src/app/api/skill-equity/[id]/review/route.ts` (POST)
+  22. `src/app/api/skill-equity/route.ts` (POST)
+  23. `src/app/api/ledger/verify/route.ts` (GET)
+  24. `src/app/api/ledger/sync/route.ts` (POST)
+  25. `src/app/api/evidence/[cid]/route.ts` (GET)
+  26. `src/app/api/evidence/route.ts` (POST, GET)
+  27. `src/app/api/route.ts` (GET)
+  28. `src/app/api/syndicates/route.ts` (GET, POST)
+  29. `src/app/api/expenses/budget/route.ts` (GET)
+  30. `src/app/api/expenses/[id]/approve/route.ts` (POST)
+  31. `src/app/api/proposals/route.ts` (POST)
+  32. `src/app/api/auth/register/route.ts` (POST)
+  33. `src/app/api/auth/signout/route.ts` (POST, GET) — uses `redirect()`, handled via the `NEXT_*` digest re-throw.
+  34. `src/app/api/auth/route.ts` (POST)
+- Files skipped: none. All 34 files in the task's exact list were modified.
+- Issues encountered: none blocking. Minor cosmetic consideration — the wrapping preserves the original 2-space indentation of the handler body inside the now-deeper closure; this is functionally identical and ESLint-clean, just visually slightly less nested than it could be. The wrapper added a `NEXT_*` digest re-throw that the spec's starting-point code didn't have — this is necessary to not break `redirect()` calls in `/api/auth/signout`.
+
+Audit finding "34 API routes without try/catch" → RESOLVED. All 34 routes now route through `withErrorHandler`, which translates Zod/Prisma/HTTP errors into clean 4xx/5xx JSON responses and falls back to a generic 500 with no stack-trace leak.

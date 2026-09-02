@@ -5,10 +5,11 @@ import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { syndicateSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // GET /api/syndicates
 // Returns all active/forming syndicates (with members + enterprise) the viewer may consider.
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -83,11 +84,11 @@ export async function GET() {
       isLead: s.leadPartnerId === user.id,
     })),
   });
-}
+}, "GET /api/syndicates");
 
 // POST /api/syndicates — form a new syndicate.
 // Body: { name, enterpriseId, targetShares, riskProfile?, description? }
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -174,4 +175,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ syndicate }, { status: 201 });
-}
+}, "POST /api/syndicates");

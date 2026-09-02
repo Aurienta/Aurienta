@@ -3,10 +3,11 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { mentorshipSchema, parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // GET /api/mentorship
 // Returns mentors (STS ≥ 85), mentees (Tier A/B in stage 1/2), and the caller's active mentorships.
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -120,12 +121,12 @@ export async function GET() {
       role: mr.mentorId === user.id ? "mentor" : "mentee",
     })),
   });
-}
+}, "GET /api/mentorship");
 
 // POST /api/mentorship
 // Body (founder requesting): { menteeEnterpriseId, focusAreas }
 // Body (mentor offering):    { mentorId, menteeEnterpriseId, focusAreas }
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -215,4 +216,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ mentorship }, { status: 201 });
-}
+}, "POST /api/mentorship");

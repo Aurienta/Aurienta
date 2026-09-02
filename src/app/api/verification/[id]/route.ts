@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,16 +27,18 @@ const reviewSchema = z.object({
 
 // GET /api/verification/[id]
 // Auth required. Auto-expires stale verified records (expiresAt < now).
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+export const GET = withErrorHandler(
+  async (
+    _req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-  const { id } = await params;
+    const { params } = ctx;
+    const { id } = await params;
   if (!id || id.length < 6) {
     return NextResponse.json(
       { error: "Invalid verification id", code: "invalid_id" },
@@ -109,7 +112,9 @@ export async function GET(
       fallbackMode: "manual_upload",
     },
   });
-}
+  },
+  "GET /api/verification/[id]"
+);
 
 // PATCH /api/verification/[id]
 // Body: { status: "verified" | "rejected" | "under_review", reviewNote: string }
@@ -117,10 +122,11 @@ export async function GET(
 // - On "verified" for police_clearance, sets expiresAt = now + 6 months.
 // - Sets reviewedAt + reviewedById.
 // - Appends a ledger event inside the same transaction as the update.
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withErrorHandler(
+  async (
+    req: NextRequest,
+    ctx: { params: Promise<{ id: string }> }
+  ) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -134,7 +140,7 @@ export async function PATCH(
     await audit({
       actorId: user.id,
       action: "verification.review",
-      target: `verification:${(await params).id ?? ""}`,
+      target: `verification:${(await ctx.params).id ?? ""}`,
       result: "denied",
       reason: `Forbidden: reviewer roles are ${REVIEWER_ROLES.join(", ")}`,
     });
@@ -149,6 +155,7 @@ export async function PATCH(
     );
   }
 
+  const { params } = ctx;
   const { id } = await params;
   if (!id || id.length < 6) {
     return NextResponse.json(
@@ -325,7 +332,9 @@ export async function PATCH(
       fallbackMode: "manual_upload",
     },
   });
-}
+  },
+  "PATCH /api/verification/[id]"
+);
 
 export async function OPTIONS() {
   return new NextResponse(null, {

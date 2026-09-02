@@ -116,6 +116,34 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${inter.variable} ${mono.variable} ${cairo.variable} font-sans antialiased bg-background text-foreground`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "AURIENTA",
+              description:
+                "Constitutional Enterprise Infrastructure — a noncustodial infrastructure of structural trust that transforms everyday capital into real-economy corporate ownership.",
+              url: "https://aurienta.vercel.app",
+              logo: "https://aurienta.vercel.app/og-image.png",
+              founder: {
+                "@type": "Person",
+                name: "Mohamed Eltonsy",
+                jobTitle: "Founder & Sole Owner",
+              },
+              slogan: "Your capital, your work, your company — no speculation required.",
+              areaServed: "EG",
+              knowsAbout: [
+                "Constitutional Enterprise Infrastructure",
+                "Zero Custody",
+                "AI-Enforced Governance",
+                "Equity Units",
+                "Law Firm Client Account",
+              ],
+            }),
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

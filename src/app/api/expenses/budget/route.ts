@@ -9,13 +9,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { aggregateExpensesByCategory, getVisibleExpenseCategories } from "@/lib/aurienta/transparency";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // GET /api/expenses/budget?enterpriseId=xxx&period=month|quarter
 // Returns the budget-vs-actual dashboard data per blueprint §8.14.3
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -166,4 +167,4 @@ export async function GET(req: NextRequest) {
     isBoard,
     visibleCategories,
   });
-}
+}, "GET /api/expenses/budget");

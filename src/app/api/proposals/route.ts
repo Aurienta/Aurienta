@@ -6,6 +6,7 @@ import { appendLedgerEvent, enforceConsultingOptOut, enforceDividendLock, enforc
 import { proposalSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 // Parse durations like "48h", "14 days", "7 days", "0".
 function parseDuration(input: string): number {
@@ -24,7 +25,7 @@ function parseDuration(input: string): number {
 const BOARD_ONLY_TYPES = new Set(["constitutional_amendment", "emergency_freeze"]);
 
 // POST /api/proposals — create a constitutional proposal.
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -281,4 +282,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ proposal }, { status: 201 });
-}
+}, "POST /api/proposals");

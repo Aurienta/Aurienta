@@ -26,6 +26,7 @@ import { db } from "@/lib/db";
 import { appendLedgerEvent, enforceEmergencyFreeze } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { parseBody } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,7 +74,7 @@ function buildAssertionHash(params: {
 
 // GET /api/solvency?enterpriseId=xxx — return the most recent SolvencyAssertion
 // for the named enterprise along with the current health level. Auth required.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -126,14 +127,14 @@ export async function GET(req: NextRequest) {
     assertion: latest,
     healthLevel: latest?.healthLevel ?? 0,
   });
-}
+}, "GET /api/solvency");
 
 // POST /api/solvency — submit a signed balance assertion from the law firm.
 // The CRE computes the variance against the internal ledger, classifies the
 // health level (0–3), and — if the variance exceeds the freeze threshold —
 // triggers an emergency freeze of the enterprise. Auth required
 // (law_firm_rep or aurienta_rep only).
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
@@ -300,4 +301,4 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
-}
+}, "POST /api/solvency");

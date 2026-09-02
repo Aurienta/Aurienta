@@ -81,6 +81,13 @@ model User {
   settings              PlatformSetting[] @relation("SettingUpdater")
   authoredUpdates       EnterpriseUpdate[] @relation("UpdateAuthor")
   engagements           PartnerEngagement[] @relation("EngagementUser")
+
+  @@index([tier])
+  @@index([verificationLevel])
+  @@index([nationality])
+  @@index([primaryIntent])
+  @@index([sovereignTrustScore])
+  @@index([createdAt])
 }
 
 // ───────────────────────────────────────────────────────────
@@ -268,6 +275,9 @@ model OwnershipRecord {
   user          User       @relation("UserOwnership", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([enterpriseId, userId])
+  @@index([enterpriseId])
+  @@index([userId])
+  @@index([createdAt])
   @@map("Shareholding") // CONSTITUTIONAL: OwnershipRecord. Legacy DB table: Shareholding
 }
 
@@ -363,6 +373,9 @@ model Vote {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([proposalId, userId])
+  @@index([proposalId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 // ───────────────────────────────────────────────────────────
@@ -629,6 +642,9 @@ model SyndicateMember {
   user         User      @relation("SyndicateMember", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([syndicateId, userId])
+  @@index([syndicateId])
+  @@index([userId])
+  @@index([joinedAt])
 }
 
 // ── Dividend Reinvestment Plan (#8) ──
@@ -643,6 +659,9 @@ model DripEnrollment {
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, enterpriseId])
+  @@index([userId])
+  @@index([enterpriseId])
+  @@index([active])
 }
 
 // ── Workforce Partner Career Ledger (#10) ──

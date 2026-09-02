@@ -24,6 +24,7 @@ import { createSession } from "@/lib/aurienta/auth";
 import { hashPassword } from "@/lib/aurienta/password";
 import { generateUserKeypair, signWithUserKey } from "@/lib/aurienta/signing";
 import { encryptField } from "@/lib/aurienta/encryption";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,7 +37,7 @@ function clientIp(req: NextRequest): string {
   return "unknown";
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
 
@@ -142,4 +143,4 @@ export async function POST(req: NextRequest) {
     { user: newUser },
     { status: 201 }
   );
-}
+}, "POST /api/auth/register");

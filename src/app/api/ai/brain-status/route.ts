@@ -4,11 +4,12 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { checkAiProviders } from "@/lib/aurienta/ai-router";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
@@ -24,4 +25,4 @@ export async function GET() {
     providers,
     timestamp: new Date().toISOString(),
   });
-}
+}, "GET /api/ai/brain-status");

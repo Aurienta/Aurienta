@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,7 +10,8 @@ export const dynamic = "force-dynamic";
  * Open Constitutional API — public enterprise profile JSON.
  * CORS-enabled for cross-origin embedding.  No auth required.
  */
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export const GET = withErrorHandler(async (_req: Request, ctx: { params: Promise<{ slug: string }> }) => {
+  const { params } = ctx;
   const { slug } = await params;
   const ent = await db.enterprise.findUnique({
     where: { slug },
@@ -73,4 +75,4 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   res.headers.set("Cache-Control", "no-store");
   res.headers.set("X-Aurienta-Constitutional-Api", "v1");
   return res;
-}
+}, "GET /api/public/enterprise/[slug]");
