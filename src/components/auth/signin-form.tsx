@@ -111,8 +111,9 @@ export function SigninForm({ onReady }: SigninFormProps) {
       // Fill the form fields so the user can see what was submitted.
       form.setValue("email", email, { shouldValidate: true });
       form.setValue("password", password ?? "aurienta2026", { shouldValidate: true });
-      // Defer submit to the next tick so the form values settle.
-      window.setTimeout(() => form.handleSubmit(onSubmit)(), 0);
+      // Defer submit so the form values settle (100ms is enough for React to
+      // flush the setValue updates + zod validation before handleSubmit runs).
+      window.setTimeout(() => form.handleSubmit(onSubmit)(), 100);
     });
   }, [onReady, form, onSubmit]);
 
