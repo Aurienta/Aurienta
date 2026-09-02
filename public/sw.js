@@ -15,7 +15,7 @@
  * fetch the latest SW version, which triggers activation + cache cleanup.
  */
 
-const CACHE_NAME = "aurienta-v2-csrf-fix";
+const CACHE_NAME = "aurienta-v3-no-nav-intercept";
 const STATIC_ASSETS = ["/", "/manifest.json", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -55,13 +55,14 @@ self.addEventListener("fetch", (event) => {
   // and POST requests must always hit the network (never a cache).
   if (url.pathname.startsWith("/api/")) return;
 
-  // Network-first for navigation: always fetch the latest HTML from the
-  // network. Only fall back to the cached shell if the network fails
-  // (offline). This ensures users always get the latest JS bundle refs.
-  if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request).catch(() => caches.match("/")));
-    return;
-  }
+  // CRITICAL: Never intercept navigation requests (page loads).
+  // The service worker's fetch(event.request) for navigations can DROP the
+  // session cookie in some browsers, causing the dashboard layout's
+  // getCurrentUser() to return null → redirect to signin. By NOT calling
+  // event.respondWith(), we let the browser handle the navigation natively,
+  // which always sends cookies correctly. The SW only caches the app shell
+  // for offline use — it does NOT need to intercept navigations.
+  if (event.request.mode === "navigate") return;
 
   // Cache-first for the small set of static app-shell assets.
   if (STATIC_ASSETS.includes(url.pathname)) {
