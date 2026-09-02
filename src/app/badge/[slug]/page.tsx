@@ -25,7 +25,14 @@ import {
   Activity,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// ISR: public constitutional badge. The badge reflects the enterprise's tier,
+// health rating, and constitutional compliance flags — all of which change
+// infrequently (tier transitions and compliance attestations are rare
+// constitutional events). A 5-minute stale-while-revalidate window is safe
+// because this page reads only the `slug` route param (no cookies/headers/
+// searchParams) and the underlying data mutates slowly. Public embed
+// consumers benefit massively from edge caching.
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { User as UserIcon, ShieldCheck, KeyRound, Fingerprint, Award, Clock, CheckCircle2, XCircle, Building2 } from "lucide-react";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const metadata = { title: "Profile · AURIENTA" };
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export default async function ProfilePage() {
   const policeExpires = user.policeClearanceExpiresAt ? new Date(user.policeClearanceExpiresAt).toLocaleDateString("en-GB") : null;
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <PageTransition className="mx-auto max-w-4xl">
       <header className="mb-6">
         <div className="flex items-center gap-2">
           <UserIcon className="h-5 w-5 text-gold" />
@@ -203,7 +204,7 @@ export default async function ProfilePage() {
           Profile last updated {new Date(user.updatedAt).toLocaleString("en-GB")}
         </p>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

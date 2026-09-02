@@ -14,7 +14,14 @@ export const metadata: Metadata = {
     "Browse every active AURIENTA constitutional enterprise — A–F tier, sector, tagline, and a one-line description. Each profile links to the full enterprise public profile.",
 };
 
-export const dynamic = "force-dynamic";
+// ISR: public read-only directory of enterprises. The underlying enterprise
+// rows change infrequently (new enterprises are added only at onboarding, and
+// tier/status transitions are rare constitutional events). A 5-minute
+// stale-while-revalidate window keeps the directory fresh for visitors while
+// letting the edge serve a cached page for the vast majority of requests.
+// No cookies()/headers()/searchParams are used on this page, so it is fully
+// cacheable.
+export const revalidate = 300;
 
 type DirectoryEntry = {
   slug: string;

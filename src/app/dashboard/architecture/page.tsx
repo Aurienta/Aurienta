@@ -32,6 +32,7 @@ import {
   XCircle,
   ArrowRight,
 } from "lucide-react";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const metadata = { title: "Institutional Architecture · AURIENTA" };
 export const dynamic = "force-dynamic";
@@ -82,7 +83,7 @@ export default async function ArchitecturePage() {
   const regulatory = arch.regulatoryPositioning;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 py-2">
+    <PageTransition className="mx-auto max-w-6xl space-y-8 py-2">
       {/* ─── 1. HEADER ───────────────────────────────────────────────────── */}
       <header className="space-y-2.5">
         <div className="flex flex-wrap items-center gap-2">
@@ -1003,7 +1004,7 @@ export default async function ArchitecturePage() {
         AURIENTA · Constitutional Enterprise Infrastructure · Egypt-Fortress
         Production v2.0
       </footer>
-    </div>
+    </PageTransition>
   );
 }
 

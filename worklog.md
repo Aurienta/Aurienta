@@ -12302,3 +12302,38 @@ Stage Summary:
 - Phased standup documented (Phase 1 Pilot → Phase 4 full 5-entity) to match capital efficiency.
 - Build EXIT=0 (41s), lint 0 errors. Vercel deploy sha 4bfd607: READY. Live architecture page renders (auth-protected, title confirmed).
 - Blueprint alignment: FULLY VERIFIED — zero deviations from the zero-custody constitutional doctrine.
+
+---
+Task ID: POLISH-UI
+Agent: UI-polish subagent
+Task: Polish the AURIENTA platform UI by (Part 1) applying the shared `PageTransition` wrapper to 6 more high-traffic dashboard pages, and (Part 2) converting 3 public pages from `force-dynamic` to ISR (`revalidate = 300`) for edge-cache performance.
+
+Work Log:
+- Read `/home/z/my-project/worklog.md` to load prior context — confirmed MISSING-B created `src/components/dashboard/page-transition.tsx` (a `"use client"` framer-motion wrapper, 300ms fade + 6px translate-y, `useReducedMotion`-aware) and applied it to 4 dashboard pages (portfolio, governance, graduation, escrow). Confirmed P2-4-TRUST-OPTIMIZATION converted `/trust` to ISR (`revalidate = 300`). Read the `PageTransition` component to confirm its API: `({ children, className })`, renders `motion.div` with the same className so it can replace the root `<div>` cleanly.
+- Part 1 — Applied `PageTransition` to 6 dashboard pages. For each: added `import { PageTransition } from "@/components/dashboard/page-transition";` and replaced the root `<div className="…">…</div>` with `<PageTransition className="…">…</PageTransition>` (preserving the original layout classes, so the motion.div IS the page root). No business logic, data fetching, or styling was changed. All 6 pages remain async server components — only the `PageTransition` boundary is client-side:
+  1. `src/app/dashboard/constitution/page.tsx` — root `<div className="flex flex-col gap-6 sm:gap-8">` → `<PageTransition className="flex flex-col gap-6 sm:gap-8">`.
+  2. `src/app/dashboard/compliance/page.tsx` — root `<div className="flex flex-col gap-6 sm:gap-8">` → `<PageTransition className="flex flex-col gap-6 sm:gap-8">`.
+  3. `src/app/dashboard/vault/page.tsx` — root `<div className="flex min-h-screen flex-col">` → `<PageTransition className="flex min-h-screen flex-col">` (the page's own min-h-screen flex layout with sticky `<footer className="mt-auto …">` is preserved; PageTransition is the flex container).
+  4. `src/app/dashboard/founder/page.tsx` — this page returned a bare `<FounderStudioClient …/>` (no wrapper div). Wrapped it: `<PageTransition><FounderStudioClient …/></PageTransition>` (no className needed — the client component owns its own layout).
+  5. `src/app/dashboard/profile/page.tsx` — root `<div className="mx-auto max-w-4xl">` → `<PageTransition className="mx-auto max-w-4xl">`.
+  6. `src/app/dashboard/architecture/page.tsx` (the v2.0 rewrite, 1123 lines) — main return's root `<div className="mx-auto max-w-6xl space-y-8 py-2">` → `<PageTransition className="mx-auto max-w-6xl space-y-8 py-2">`. Sub-components (`SectionTitle`, `SubsidiaryCard`) defined later in the same file were NOT touched — only the `ArchitecturePage()` function's root return element was wrapped, per instructions. Closing `</div>` at the matching `</footer>` → `</PageTransition>`.
+- Part 2 — Converted 3 public pages from `force-dynamic` to ISR (`revalidate = 300` = 5 minutes). For each: replaced `export const dynamic = "force-dynamic";` with `export const revalidate = 300;` plus a multi-line comment explaining why ISR is safe (public data, low mutation rate, no cookies/headers/searchParams). Verified before conversion (via ripgrep) that none of the 3 pages use `cookies()`, `headers()`, or `searchParams` — all are pure DB-read public pages, so they are fully cacheable per-path at the edge:
+  1. `src/app/enterprise/page.tsx` — public enterprise directory. Reads `db.enterprise.findMany` (active, non-draft). Mutates only at enterprise onboarding / rare tier/status transitions.
+  2. `src/app/enterprise/[slug]/page.tsx` — individual enterprise public profile. Reads only the `slug` route param + DB. Mutates a few times per day (milestone releases, quarterly uploads, occasional ownership transfers). The dynamic route still benefits from ISR via on-demand generation + 5-min revalidate.
+  3. `src/app/badge/[slug]/page.tsx` — public constitutional guarantee badge. Reads only `slug` route param + DB. The badge reflects tier/health/compliance flags that change rarely (constitutional events). Public embed consumers benefit massively from edge caching.
+- All 3 ISR pages still render identical content — the only behavioral change is that the page output is now cached at the edge for 5 minutes and regenerated in the background (stale-while-revalidate). `generateMetadata` is unchanged and still works correctly under ISR.
+- Verification:
+  - `bun run lint` → 0 errors. Only pre-existing warnings remain; none were introduced by these edits. The 2 warnings in touched files (`compliance/page.tsx:15` non-null assertion on `getCurrentUser()!`, `profile/page.tsx:5` unused `decryptField` import) both predate this task and are unrelated to the PageTransition wrapping.
+  - Dev server (`bun run dev`, auto-run) is serving `/` with 200 responses; no compile errors after the edits.
+  - Did NOT run `bun run build` (orchestrator verifies).
+  - Did NOT touch any files outside the 9-file scope (6 dashboard + 3 public).
+  - Wrote per-agent record at `/home/z/my-project/agent-ctx/POLISH-UI-ui-polish-subagent.md`.
+
+Stage Summary:
+- Audit finding "Dashboard pages don't use Framer Motion for page-enter transitions" → now FULLY RESOLVED for the 10 most-visited dashboard pages (the original 4 from MISSING-B + these 6: constitution, compliance, vault, founder, profile, architecture). Each mounts via a 300ms fade + 6px translate-y with the calm institutional ease-out `[0.22, 1, 0.36, 1]`, and all honor `prefers-reduced-motion` (rendering a plain div with no animation when reduced motion is requested). The shared `PageTransition` component continues to be the single client boundary, so all 10 pages stay async server components.
+- Public-pages performance: 3 high-traffic public surfaces (`/enterprise` directory, `/enterprise/[slug]` profile, `/badge/[slug]` constitutional badge) are now ISR-cached for 5 minutes at the edge, joining `/trust` (P2-4). This dramatically reduces DB load and TTFB for anonymous visitors and embed consumers without sacrificing freshness — public enterprise data mutates slowly by design (constitutional cadence, not per-request).
+- Files modified (9 total):
+  - PageTransition applied (6): `src/app/dashboard/constitution/page.tsx`, `src/app/dashboard/compliance/page.tsx`, `src/app/dashboard/vault/page.tsx`, `src/app/dashboard/founder/page.tsx`, `src/app/dashboard/profile/page.tsx`, `src/app/dashboard/architecture/page.tsx`.
+  - ISR conversion (3): `src/app/enterprise/page.tsx`, `src/app/enterprise/[slug]/page.tsx`, `src/app/badge/[slug]/page.tsx`.
+- Files skipped: none. All 9 in-scope files were modified as specified. No page was already a client component or already had motion (verified by reading each before editing).
+- Next opportunities (not in scope): the remaining dashboard pages (constitutional-audit, reality-sync, intel, registry, etc.) could adopt `PageTransition` incrementally using the same pattern; the public `/registry`, `/enterprise/[slug]/financials`, `/enterprise/[slug]/governance-log`, `/enterprise/[slug]/trades`, `/enterprise/[slug]/annual-report` sub-routes are also `force-dynamic` candidates for ISR if they don't use cookies/headers/searchParams.

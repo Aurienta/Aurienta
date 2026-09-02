@@ -50,7 +50,7 @@ export const COMMERCIAL_ORGANIZATION: CommercialEntity[] = [
     responsibilities: ["Owns commercial P&L", "Closes strategic/enterprise accounts", "Owns government relationships", "Approves >1M EGP deals", "Sets commercial strategy"],
   },
   {
-    entityId: "CO-02", entity: "AURIENTA Holding Group", commercialRole: "Strategic Commercial Owner",
+    entityId: "CO-02", entity: "AURIENTA Holding S.A.E.", commercialRole: "Strategic Commercial Owner",
     activatesAt: "Now",
     responsibilities: ["Owns commercial IP (brand, methodology, certification)", "Capital allocation to commercial", "Approves major partnerships", "Owns revenue recognition policy"],
   },

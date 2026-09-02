@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
 import { ConstitutionAssistant } from "@/components/dashboard/intel/constitution-assistant";
+import { PageTransition } from "@/components/dashboard/page-transition";
 import { Languages } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export default async function ConstitutionPage() {
   if (!user) redirect("/signin?next=/dashboard/constitution");
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
+    <PageTransition className="flex flex-col gap-6 sm:gap-8">
       <SonnerToaster
         position="top-center"
         toastOptions={{
@@ -38,6 +39,6 @@ export default async function ConstitutionPage() {
       />
 
       <ConstitutionAssistant />
-    </div>
+    </PageTransition>
   );
 }

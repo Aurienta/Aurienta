@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
 import { FounderStudioClient } from "@/components/dashboard/founder/founder-studio-client";
+import { PageTransition } from "@/components/dashboard/page-transition";
 import type {
   FounderEnterprise,
   FounderMilestone,
@@ -130,10 +131,12 @@ export default async function FounderStudioPage() {
   }));
 
   return (
-    <FounderStudioClient
-      enterprises={enterprises}
-      constitutionalHash={CONSTITUTIONAL_HASH}
-      founderName={user.legalName}
-    />
+    <PageTransition>
+      <FounderStudioClient
+        enterprises={enterprises}
+        constitutionalHash={CONSTITUTIONAL_HASH}
+        founderName={user.legalName}
+      />
+    </PageTransition>
   );
 }

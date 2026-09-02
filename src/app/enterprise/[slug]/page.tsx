@@ -13,7 +13,14 @@ import { egp, pct, shortHash, timeAgo } from "@/lib/aurienta/format";
 import { ArrowLeft, Building2, HeartPulse, Scale, ShieldCheck, TrendingUp, Users, FileText, ScrollText, Activity } from "lucide-react";
 import { TransparencyScoreBadge } from "@/components/transparency/transparency-score-badge";
 
-export const dynamic = "force-dynamic";
+// ISR: public enterprise profile. The enterprise row, counterparties,
+// quarterly reports and ledger events mutate at most a few times per day
+// (milestone releases, quarterly uploads, occasional ownership transfers) —
+// never per-request. A 5-minute revalidate window serves the cached page to
+// the vast majority of public visitors while keeping the data reasonably
+// fresh. This page reads only the `slug` route param (no cookies/headers/
+// searchParams), so it is safe to cache per-path at the edge.
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

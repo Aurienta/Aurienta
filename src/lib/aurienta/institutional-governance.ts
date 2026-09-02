@@ -39,7 +39,7 @@ export const GOVERNANCE_MANUAL = {
   decisionHierarchy: [
     { level: 0, authority: "Constitutional Charter (non-amendable rules)", override: "None — not even the Founder can override" },
     { level: 1, authority: "Founder & Sole Owner", override: "Can override any non-constitutional decision" },
-    { level: 2, authority: "AURIENTA Holding Group (Board, when constituted)", override: "Subject to Founder approval until institutional maturity" },
+    { level: 2, authority: "AURIENTA Holding S.A.E. (Board, when constituted)", override: "Subject to Founder approval until institutional maturity" },
     { level: 3, authority: "AURIENTA Operations (CEO/COO, when appointed)", override: "Within delegated authority limits" },
     { level: 4, authority: "AURIENTA Advisory (Advisory Director, when appointed)", override: "Within partnership/ecosystem scope" },
     { level: 5, authority: "Committee Chairs", override: "Within committee charter" },

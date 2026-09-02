@@ -6,6 +6,7 @@ import { ComplianceMatrix } from "@/components/dashboard/institutional/complianc
 import { AiOversightPanel } from "@/components/dashboard/institutional/ai-oversight-panel";
 import { AuditLogFeed } from "@/components/dashboard/institutional/audit-log-feed";
 import { RegulatoryIntegrations } from "@/components/dashboard/institutional/regulatory-integrations";
+import { PageTransition } from "@/components/dashboard/page-transition";
 import { ShieldCheck, Lock, ScrollText, Building2 } from "lucide-react";
 
 export const metadata = { title: "Compliance · AURIENTA" };
@@ -48,7 +49,7 @@ export default async function CompliancePage() {
   }));
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
+    <PageTransition className="flex flex-col gap-6 sm:gap-8">
       <PageHeader
         eyebrow="Constitutional Compliance"
         icon={ShieldCheck}
@@ -77,7 +78,7 @@ export default async function CompliancePage() {
         Compliance attestations are sealed to the immutable ledger and hash-chained. Regulators receive
         read-only mirrors — AURIENTA never modifies or reverses a CRE decision.
       </p>
-    </div>
+    </PageTransition>
   );
 }
 

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { VaultClient } from "@/components/dashboard/transparency/vault-client";
+import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +44,7 @@ export default async function VaultPage() {
   ]);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <PageTransition className="flex min-h-screen flex-col">
       <main className="flex-1">
         <VaultClient
           enterprises={enterprises.map((e) => ({
@@ -73,6 +74,6 @@ export default async function VaultPage() {
         AURIENTA Anti-Fragility Insurance Vault · Blueprint §5.4 · 0.5% levy ·
         20% cap · 24-month non-recourse.
       </footer>
-    </div>
+    </PageTransition>
   );
 }
