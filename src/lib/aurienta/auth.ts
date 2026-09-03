@@ -5,7 +5,7 @@
 // - sameSite=Lax (sufficient for same-site; CSRF middleware handles cross-site).
 // - Signed session token (tokenHash = SHA3-256 of token).
 
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { createHash, randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { env } from "./env";
@@ -22,54 +22,36 @@ function generateSessionToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-/**
- * Read the session token directly from the raw Cookie header.
- * This bypasses the Next.js cookies() API entirely, which can have
- * edge-case issues on Vercel serverless (cookie not detected on some
- * cold-start invocations, or the API modifying response cookies).
- */
 export async function getCurrentUser() {
-  try {
-    // Read the session token directly from the raw Cookie header.
-    // This bypasses the cookies() API which may have side effects
-    // on response cookies in Next.js 16 / Vercel serverless.
-    const h = await headers();
-    const cookieHeader = h.get("cookie");
-    if (!cookieHeader) return null;
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
 
-    const tokenMatch = cookieHeader.match(/(?:^|;\s*)aurienta_session=([^;]+)/);
-    const token = tokenMatch?.[1];
-    if (!token) return null;
-
-    const tokenHash = hashToken(token);
-    const session = await db.session.findUnique({
-      where: { tokenHash },
-      include: {
-        user: {
-          include: {
-            memberships: { include: { enterprise: true } },
-            ownershipRecords: { include: { enterprise: true } },
-            tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
-            notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
-          },
+  const tokenHash = hashToken(token);
+  const session = await db.session.findUnique({
+    where: { tokenHash },
+    include: {
+      user: {
+        include: {
+          memberships: { include: { enterprise: true } },
+          ownershipRecords: { include: { enterprise: true } },
+          tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
+          notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
         },
       },
-    });
+    },
+  });
 
-    if (!session) return null;
-    if (session.revokedAt) return null;
-    if (session.expiresAt.getTime() < Date.now()) return null;
+  if (!session) return null;
+  if (session.revokedAt) return null;
+  if (session.expiresAt.getTime() < Date.now()) return null;
 
-    // Touch lastSeenAt (non-blocking — fire-and-forget).
-    db.session.update({
-      where: { id: session.id },
-      data: { lastSeenAt: new Date() },
-    }).catch(() => {});
+  // NOTE: lastSeenAt update removed — it was causing side effects on Vercel
+  // serverless (the DB write was interfering with the response cookies).
+  // Session rotation also removed — it was overwriting the session cookie
+  // on every request via store.set().
 
-    return session.user;
-  } catch {
-    return null;
-  }
+  return session.user;
 }
 
 export async function requireUser() {
@@ -107,8 +89,8 @@ export async function requireRole(
 function sessionCookieOptions(expiresAt: Date) {
   return {
     httpOnly: true,
-    sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none" as const,
+    secure: true,
     expires: expiresAt,
     path: "/",
   };
