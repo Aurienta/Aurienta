@@ -23,35 +23,35 @@ function generateSessionToken(): string {
 }
 
 export async function getCurrentUser() {
-  const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  try {
+    const store = await cookies();
+    const token = store.get(SESSION_COOKIE)?.value;
+    if (!token) return null;
 
-  const tokenHash = hashToken(token);
-  const session = await db.session.findUnique({
-    where: { tokenHash },
-    include: {
-      user: {
-        include: {
-          memberships: { include: { enterprise: true } },
-          ownershipRecords: { include: { enterprise: true } },
-          tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
-          notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
+    const tokenHash = hashToken(token);
+    const session = await db.session.findUnique({
+      where: { tokenHash },
+      include: {
+        user: {
+          include: {
+            memberships: { include: { enterprise: true } },
+            ownershipRecords: { include: { enterprise: true } },
+            tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
+            notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!session) return null;
-  if (session.revokedAt) return null;
-  if (session.expiresAt.getTime() < Date.now()) return null;
+    if (!session) return null;
+    if (session.revokedAt) return null;
+    if (session.expiresAt.getTime() < Date.now()) return null;
 
-  // NOTE: lastSeenAt update removed — it was causing side effects on Vercel
-  // serverless (the DB write was interfering with the response cookies).
-  // Session rotation also removed — it was overwriting the session cookie
-  // on every request via store.set().
-
-  return session.user;
+    return session.user;
+  } catch (e) {
+    console.error("[auth] getCurrentUser error:", e);
+    return null;
+  }
 }
 
 export async function requireUser() {
@@ -88,9 +88,9 @@ export async function requireRole(
 
 function sessionCookieOptions(expiresAt: Date) {
   return {
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "lax" as const,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     expires: expiresAt,
     path: "/",
   };
