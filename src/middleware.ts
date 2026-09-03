@@ -34,6 +34,11 @@ export function middleware(req: NextRequest) {
     res.headers.set("X-Frame-Options", "SAMEORIGIN");
     res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    // CRITICAL: Prevent the browser from caching GET responses, including
+    // Next.js RSC prefetches. Without this, the browser may cache an
+    // UNAUTHENTICATED response (e.g., a redirect to /signin from a prefetch
+    // before login) and serve it AFTER login when the user clicks a link.
+    res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
     return res;
   }
 
