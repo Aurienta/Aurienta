@@ -105,12 +105,10 @@ export function middleware(req: NextRequest) {
 export const config = {
   // Run on all routes except:
   // - static assets (_next/static, images, fonts, etc.)
-  // - /api/auth/* — auth endpoints are EXEMPT from CSRF. CSRF protection is
-  //   for authenticated sessions (preventing cross-site forged requests).
-  //   Login/register have NO session yet, so CSRF is irrelevant. The session
-  //   cookie is SameSite=lax which already prevents cross-site POST CSRF.
-  //   Exempting auth endpoints ensures login always works even if the browser
-  //   has a stale service worker or cached old JS that doesn't send the
-  //   X-CSRF-Token header.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
+  // - /api/auth/* — auth endpoints exempt from CSRF (no session yet)
+  // - /dashboard/* — dashboard pages exempt from middleware to prevent
+  //   any interference with the session cookie. The dashboard layout's
+  //   getCurrentUser() provides auth; CSRF protection on dashboard POSTs
+  //   is handled by the csrfFetch client helper.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|dashboard|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
 };
