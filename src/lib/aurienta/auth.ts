@@ -6,6 +6,7 @@
 // - Signed session token (tokenHash = SHA3-256 of token).
 
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { createHash, randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { env } from "./env";
@@ -22,7 +23,13 @@ function generateSessionToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-export async function getCurrentUser() {
+/**
+ * Get the current authenticated user. Cached per-request via React.cache()
+ * so that multiple calls within the same request (layout + page + components)
+ * share the SAME DB lookup — prevents the 2nd+ call from failing if the DB
+ * connection is cold or slow.
+ */
+export const getCurrentUser = cache(async () => {
   try {
     const store = await cookies();
     const token = store.get(SESSION_COOKIE)?.value;
@@ -52,7 +59,7 @@ export async function getCurrentUser() {
     console.error("[auth] getCurrentUser error:", e);
     return null;
   }
-}
+});
 
 export async function requireUser() {
   const user = await getCurrentUser();
