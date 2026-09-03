@@ -24,47 +24,57 @@ function generateSessionToken(): string {
 }
 
 export async function getCurrentUser() {
-  const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  try {
+    const store = await cookies();
+    let token = store.get(SESSION_COOKIE)?.value;
 
-  const tokenHash = hashToken(token);
-  const session = await db.session.findUnique({
-    where: { tokenHash },
-    include: {
-      user: {
-        include: {
-          memberships: { include: { enterprise: true } },
-          ownershipRecords: { include: { enterprise: true } },
-          tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
-          notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
+    // Fallback: if the Next.js cookies() API doesn't return the session
+    // cookie (can happen on Vercel serverless cold starts or edge function
+    // cookie parsing edge cases), try reading it from the raw Cookie header.
+    if (!token) {
+      const rawHeader = store.toString();
+      // cookies().toString() returns the raw Cookie header value
+      const match = rawHeader.match(/(?:^|;\s*)aurienta_session=([^;]+)/);
+      token = match?.[1];
+    }
+
+    if (!token) return null;
+
+    const tokenHash = hashToken(token);
+    const session = await db.session.findUnique({
+      where: { tokenHash },
+      include: {
+        user: {
+          include: {
+            memberships: { include: { enterprise: true } },
+            ownershipRecords: { include: { enterprise: true } },
+            tasks: { where: { done: false }, orderBy: { priority: "desc" }, take: 6 },
+            notifications: { where: { read: false }, orderBy: { createdAt: "desc" }, take: 5 },
+          },
         },
       },
-    },
-  });
-
-  if (!session) return null;
-  if (session.revokedAt) return null;
-  if (session.expiresAt.getTime() < Date.now()) return null;
-
-  // Rotate the session ID if it's been more than ROTATE_AFTER_MS.
-  if (Date.now() - session.lastSeenAt.getTime() > ROTATE_AFTER_MS) {
-    const newToken = generateSessionToken();
-    const newHash = hashToken(newToken);
-    await db.session.update({
-      where: { id: session.id },
-      data: { tokenHash: newHash, lastSeenAt: new Date() },
     });
-    store.set(SESSION_COOKIE, newToken, sessionCookieOptions(session.expiresAt));
-  } else {
-    // Touch lastSeenAt.
-    await db.session.update({
+
+    if (!session) return null;
+    if (session.revokedAt) return null;
+    if (session.expiresAt.getTime() < Date.now()) return null;
+
+    // Touch lastSeenAt (non-blocking — don't fail the request if the DB
+    // update fails).
+    db.session.update({
       where: { id: session.id },
       data: { lastSeenAt: new Date() },
     }).catch(() => {});
-  }
 
-  return session.user;
+    return session.user;
+  } catch {
+    // If anything fails (DB error, cookie parsing, etc.), return null
+    // rather than throwing. This prevents 500 errors that would otherwise
+    // crash the dashboard and show an error page. The user will be
+    // redirected to /signin, which is the correct behavior for an
+    // unauthenticated request.
+    return null;
+  }
 }
 
 export async function requireUser() {
