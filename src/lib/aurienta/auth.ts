@@ -5,7 +5,7 @@
 // - sameSite=Lax (sufficient for same-site; CSRF middleware handles cross-site).
 // - Signed session token (tokenHash = SHA3-256 of token).
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createHash, randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { env } from "./env";
@@ -13,7 +13,6 @@ import { env } from "./env";
 export const SESSION_COOKIE = "aurienta_session";
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-const ROTATE_AFTER_MS = 24 * 60 * 60 * 1000; // rotate session ID daily
 
 function hashToken(token: string): string {
   return createHash("sha3-256").update(token).digest("hex");
@@ -23,21 +22,23 @@ function generateSessionToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
+/**
+ * Read the session token directly from the raw Cookie header.
+ * This bypasses the Next.js cookies() API entirely, which can have
+ * edge-case issues on Vercel serverless (cookie not detected on some
+ * cold-start invocations, or the API modifying response cookies).
+ */
 export async function getCurrentUser() {
   try {
-    const store = await cookies();
-    let token = store.get(SESSION_COOKIE)?.value;
+    // Read the session token directly from the raw Cookie header.
+    // This bypasses the cookies() API which may have side effects
+    // on response cookies in Next.js 16 / Vercel serverless.
+    const h = await headers();
+    const cookieHeader = h.get("cookie");
+    if (!cookieHeader) return null;
 
-    // Fallback: if the Next.js cookies() API doesn't return the session
-    // cookie (can happen on Vercel serverless cold starts or edge function
-    // cookie parsing edge cases), try reading it from the raw Cookie header.
-    if (!token) {
-      const rawHeader = store.toString();
-      // cookies().toString() returns the raw Cookie header value
-      const match = rawHeader.match(/(?:^|;\s*)aurienta_session=([^;]+)/);
-      token = match?.[1];
-    }
-
+    const tokenMatch = cookieHeader.match(/(?:^|;\s*)aurienta_session=([^;]+)/);
+    const token = tokenMatch?.[1];
     if (!token) return null;
 
     const tokenHash = hashToken(token);
@@ -59,8 +60,7 @@ export async function getCurrentUser() {
     if (session.revokedAt) return null;
     if (session.expiresAt.getTime() < Date.now()) return null;
 
-    // Touch lastSeenAt (non-blocking — don't fail the request if the DB
-    // update fails).
+    // Touch lastSeenAt (non-blocking — fire-and-forget).
     db.session.update({
       where: { id: session.id },
       data: { lastSeenAt: new Date() },
@@ -68,11 +68,6 @@ export async function getCurrentUser() {
 
     return session.user;
   } catch {
-    // If anything fails (DB error, cookie parsing, etc.), return null
-    // rather than throwing. This prevents 500 errors that would otherwise
-    // crash the dashboard and show an error page. The user will be
-    // redirected to /signin, which is the correct behavior for an
-    // unauthenticated request.
     return null;
   }
 }
