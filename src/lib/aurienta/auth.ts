@@ -88,9 +88,9 @@ export async function requireRole(
 
 function sessionCookieOptions(expiresAt: Date) {
   return {
-    httpOnly: true,
-    sameSite: "none" as const,
-    secure: true,
+    httpOnly: false,
+    sameSite: "lax" as const,
+    secure: false,
     expires: expiresAt,
     path: "/",
   };
