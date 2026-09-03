@@ -99,12 +99,16 @@ export function ConstitutionalFooter({ className }: { className?: string }) {
           <span className="text-gold/15" aria-hidden>
             ·
           </span>
-          <Link
-            href="/api/auth/signout"
-            className="font-medium text-muted-foreground transition-colors hover:text-gold-light"
-          >
-            Sign out
-          </Link>
+          {/* POST form — NOT a <Link>. A <Link href="/api/auth/signout"> would
+              be prefetched by Next.js, silently revoking the session. */}
+          <form action="/api/auth/signout" method="post" className="inline">
+            <button
+              type="submit"
+              className="font-medium text-muted-foreground transition-colors hover:text-gold-light"
+            >
+              Sign out
+            </button>
+          </form>
         </nav>
       </div>
     </footer>

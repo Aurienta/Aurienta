@@ -634,9 +634,13 @@ export function DashboardShell({
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-gold/10" />
               <DropdownMenuItem asChild>
-                <Link href="/api/auth/signout" className="cursor-pointer text-destructive focus:text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" /> Sign out
-                </Link>
+                {/* POST form — NOT a <Link>. A <Link href="/api/auth/signout">
+                    would be prefetched by Next.js, silently revoking the session. */}
+                <form action="/api/auth/signout" method="post" className="w-full cursor-pointer text-destructive focus:text-destructive">
+                  <button type="submit" className="flex w-full items-center">
+                    <LogOut className="mr-2 h-4 w-4" /> Sign out
+                  </button>
+                </form>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

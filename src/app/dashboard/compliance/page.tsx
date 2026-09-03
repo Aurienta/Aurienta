@@ -21,7 +21,10 @@ export default async function CompliancePage() {
     : [];
 
   // Audit log: real entries if any, else the feed shows the curated fallback set.
+  // P0-2 tenant filter: AuditLog has no enterpriseId column, so scope to the
+  // current user's own audit events to avoid leaking platform-wide actor PII.
   const auditLogs = await db.auditLog.findMany({
+    where: { actorId: user.id },
     orderBy: { timestamp: "desc" },
     take: 12,
     include: { actor: true },

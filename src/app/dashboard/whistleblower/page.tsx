@@ -19,21 +19,25 @@ export default async function WhistleblowerPage() {
 
   const enterpriseIds = user.memberships.map((m) => m.enterpriseId);
 
-  // Reports visible to the user:
-  //  - their own filings (any status)
-  //  - reports on enterprises they belong to (with aiSummary but not the raw description for non-steward viewers)
+  // Reports visible to the user, scoped to the user's enterprises.
+  // P0-3 tenant filter: WhistleblowerReport has no filedById column, so we
+  // scope by enterpriseId to the enterprises the user belongs to. When the
+  // user has no enterprise memberships, return an impossible filter (no rows)
+  // rather than an empty `where: {}` which would leak ALL platform reports.
+  const reportScope =
+    enterpriseIds.length > 0
+      ? { enterpriseId: { in: enterpriseIds } }
+      : { id: "__none__" };
+
   const [myReports, visibleReports] = await Promise.all([
     db.whistleblowerReport.findMany({
-      where: {
-        // We can't easily map report→filer by userId directly (no userId field).
-        // For now show all reports the user can see; the client filters by tracking code.
-      },
+      where: reportScope,
       include: { enterprise: { select: { id: true, name: true, slug: true, tier: true } } },
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
     db.whistleblowerReport.findMany({
-      where: enterpriseIds.length > 0 ? { enterpriseId: { in: enterpriseIds } } : {},
+      where: reportScope,
       include: { enterprise: { select: { id: true, name: true, slug: true, tier: true } } },
       orderBy: { createdAt: "desc" },
       take: 50,

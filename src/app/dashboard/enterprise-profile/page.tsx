@@ -89,6 +89,13 @@ export default async function EnterpriseProfilePage({
     );
   }
 
+  // IDOR guard (P0-4): verify the user has a membership for the requested
+  // enterprise BEFORE fetching/rendering the full record. Without this, any
+  // authenticated user could read any enterprise's full profile by guessing
+  // or enumerating IDs in the `?id=` search param.
+  const hasMembership = user.memberships.some((m) => m.enterpriseId === id);
+  if (!hasMembership) redirect("/dashboard");
+
   // Fetch the full enterprise profile
   const enterprise = await db.enterprise.findUnique({
     where: { id },

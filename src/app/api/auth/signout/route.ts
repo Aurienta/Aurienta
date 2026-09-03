@@ -1,11 +1,9 @@
 // AURIENTA sign-out — revokes the current Session row and clears the cookie.
 //
-// Supports two response modes:
-// - JSON (Accept: application/json) → returns { ok: true }
-// - HTML (default) → 303 redirect to /signin
-//
-// Both GET and POST are accepted so the route works from <form> posts,
-// fetch() calls, and direct navigations ("Sign out" link).
+// POST-ONLY: The GET handler was removed because Next.js <Link> prefetches
+// linked URLs, and a GET /api/auth/signout prefetch would silently revoke
+// the user's session (the "tabs cause logout" root cause). Sign-out is now
+// only possible via an explicit POST (form submit or fetch).
 
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,7 +14,7 @@ import { withErrorHandler } from "@/lib/aurienta/api-handler";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-async function doSignOut(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   await signOut();
   await audit({
     action: "auth.signout",
@@ -33,17 +31,5 @@ async function doSignOut(req: NextRequest) {
   if (accept.includes("application/json")) {
     return NextResponse.json({ ok: true });
   }
-  return null; // fall through to redirect
-}
-
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const json = await doSignOut(req);
-  if (json) return json;
   redirect("/signin");
 }, "POST /api/auth/signout");
-
-export const GET = withErrorHandler(async (req: NextRequest) => {
-  const json = await doSignOut(req);
-  if (json) return json;
-  redirect("/signin");
-}, "GET /api/auth/signout");

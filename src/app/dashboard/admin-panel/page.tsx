@@ -15,8 +15,13 @@ export default async function AdminPanelPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/signin?next=/dashboard/admin-panel");
 
-  // During build phase: no password required, any authenticated user can access
-  // TODO: Add admin password gate before production
+  // RBAC (P0-1): platform-wide admin panel is restricted to Aurienta reps
+  // (platform staff). Anyone else is redirected away — no platform-wide counts,
+  // user lists, or session data should be exposed to non-staff.
+  const isAurientaRep =
+    user.primaryIntent === "aurienta_rep" ||
+    user.memberships.some((m) => m.role === "aurienta_rep");
+  if (!isAurientaRep) redirect("/dashboard");
 
   const [
     totalUsers,
