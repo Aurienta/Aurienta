@@ -22,6 +22,64 @@ import { withErrorHandler } from "@/lib/aurienta/api-handler";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Helper: create or merge an OwnershipRecord for the (enterpriseId, userId) pair.
+// The unique constraint @@unique([enterpriseId, userId]) means a Capital Partner
+// has at most one row per enterprise — every subsequent reservation must merge
+// into it (weighted-average price, summed units).
+async function upsertOwnershipRecord(
+  tx: Parameters<Parameters<typeof db.$transaction>[0]>[0],
+  args: {
+    enterpriseId: string;
+    userId: string;
+    equityUnits: number;
+    amountEgp: number;
+  }
+) {
+  const unitPrice = args.equityUnits > 0 ? args.amountEgp / args.equityUnits : 0;
+  const existing = await tx.ownershipRecord.findUnique({
+    where: {
+      enterpriseId_userId: {
+        enterpriseId: args.enterpriseId,
+        userId: args.userId,
+      },
+    },
+  });
+
+  if (!existing) {
+    return tx.ownershipRecord.create({
+      data: {
+        enterpriseId: args.enterpriseId,
+        userId: args.userId,
+        equityUnits: args.equityUnits,
+        avgPriceEgp: unitPrice,
+      },
+    });
+  }
+
+  // Weighted-average merge so the partner's portfolio reflects their
+  // true blended cost basis across multiple reservations.
+  const totalUnits = existing.equityUnits + args.equityUnits;
+  const blendedPrice =
+    totalUnits > 0
+      ? (existing.equityUnits * existing.avgPriceEgp +
+          args.equityUnits * unitPrice) /
+        totalUnits
+      : unitPrice;
+
+  return tx.ownershipRecord.update({
+    where: {
+      enterpriseId_userId: {
+        enterpriseId: args.enterpriseId,
+        userId: args.userId,
+      },
+    },
+    data: {
+      equityUnits: totalUnits,
+      avgPriceEgp: blendedPrice,
+    },
+  });
+}
+
 // POST /api/reservations/[id]/confirm
 // Only law_firm_rep or aurienta_rep can confirm fund receipt.
 export const POST = withErrorHandler(
@@ -65,6 +123,26 @@ export const POST = withErrorHandler(
     return NextResponse.json({ error: "Reservation not found" }, { status: 404 });
   }
 
+  // P1 IDOR fix: a law_firm_rep must be scoped to the reservation's
+  // enterprise. Aurienta reps are platform-wide and bypass this scope check.
+  const isAurientaRep = user.memberships.some((m) => m.role === "aurienta_rep");
+  const hasEnterpriseScope = user.memberships.some(
+    (m) => m.role === "law_firm_rep" && m.enterpriseId === reservation.enterpriseId
+  );
+  if (!isAurientaRep && !hasEnterpriseScope) {
+    await audit({
+      actorId: user.id,
+      action: "reservation.confirm",
+      target: `reservation:${reservationId}`,
+      result: "denied",
+      reason: "enterprise_scope_mismatch",
+    });
+    return NextResponse.json(
+      { error: "Your law-firm role is not scoped to this enterprise" },
+      { status: 403 }
+    );
+  }
+
   if (reservation.status !== "reserved") {
     return NextResponse.json(
       { error: `Reservation status is "${reservation.status}" — only "reserved" reservations can be confirmed` },
@@ -83,8 +161,10 @@ export const POST = withErrorHandler(
   // Atomic transaction:
   // 1. Update reservation status → confirmed
   // 2. Increment law firm client account balance
-  // 3. Append ledger event
-  // 4. Contribute 0.5% to Anti-Fragility Vault
+  // 3. Create / merge the Capital Partner's OwnershipRecord (DE-04 fix):
+  //    without this, the partner's portfolio never reflects paid capital.
+  // 4. Append ledger event
+  // 5. Contribute 0.5% to Anti-Fragility Vault
   const vaultContribution = Math.round(reservation.amountEgp * 0.005);
 
   const result = await db.$transaction(async (tx) => {
@@ -102,7 +182,22 @@ export const POST = withErrorHandler(
       },
     });
 
-    // 3. Append ledger event
+    // 3. Create / merge OwnershipRecord so the partner's portfolio reflects
+    //    the confirmed capital. Also bumps enterprise.raisedEgp so the Capital
+    //    Formation progress bar advances.
+    await upsertOwnershipRecord(tx, {
+      enterpriseId: reservation.enterpriseId,
+      userId: reservation.userId,
+      equityUnits: reservation.equityUnits,
+      amountEgp: reservation.amountEgp,
+    });
+
+    await tx.enterprise.update({
+      where: { id: reservation.enterpriseId },
+      data: { raisedEgp: { increment: reservation.amountEgp } },
+    });
+
+    // 4. Append ledger event
     await appendLedgerEvent(tx, {
       enterpriseId: reservation.enterpriseId,
       eventType: "funds_confirmed",
@@ -157,6 +252,19 @@ export const POST = withErrorHandler(
     metadata: {
       amountEgp: reservation.amountEgp,
       vaultContribution,
+    },
+  });
+
+  // ── DE-04 companion fix: emit a Notification so the Capital Partner's ──
+  // dashboard reflects the confirmed capital. Without this the notifications
+  // inbox is empty for every real workflow event.
+  await db.notification.create({
+    data: {
+      userId: reservation.userId,
+      enterpriseId: reservation.enterpriseId,
+      category: "treasury",
+      title: "Reservation Confirmed",
+      body: `Your reservation has been confirmed. ${reservation.equityUnits.toLocaleString()} Equity Units added to your portfolio.`,
     },
   });
 

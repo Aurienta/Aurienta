@@ -266,6 +266,26 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       actorId: user.id,
     });
 
+    // ── Notify every enterprise member that a new proposal is open for voting. ──
+    // The audit found zero state-mutating endpoints emitted Notifications — the
+    // inbox was empty for every real workflow event. We fan-out one row per
+    // member here (excluding the creator, who already has UI feedback).
+    const members = await tx.enterpriseMember.findMany({
+      where: { enterpriseId, userId: { not: user.id } },
+      select: { userId: true },
+    });
+    if (members.length > 0) {
+      await tx.notification.createMany({
+        data: members.map((m) => ({
+          userId: m.userId,
+          enterpriseId,
+          category: "governance",
+          title: "New proposal",
+          body: `New proposal: ${created.title}. Voting is now open.`,
+        })),
+      });
+    }
+
     return created;
   });
 

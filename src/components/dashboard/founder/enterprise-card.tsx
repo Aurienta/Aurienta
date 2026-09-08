@@ -7,10 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { egp, pct } from "@/lib/aurienta/format";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
+import { toast } from "sonner";
 import {
-  Building2,
   ChevronRight,
   Clock,
+  Loader2,
+  Rocket,
   Sparkles,
   Target,
   TrendingUp,
@@ -23,10 +26,13 @@ import { enterpriseStatus, HealthPill, TierBadge } from "./badges";
 export function EnterpriseCard({
   enterprise,
   onOpen,
+  onStatusChange,
 }: {
   enterprise: FounderEnterprise;
   onOpen: () => void;
+  onStatusChange?: (next: { id: string; status: string }) => void;
 }) {
+  const [listing, setListing] = React.useState(false);
   const raisedPct = enterprise.fundraisingGoalEgp > 0
     ? Math.min(100, (enterprise.raisedEgp / enterprise.fundraisingGoalEgp) * 100)
     : 0;
@@ -35,6 +41,39 @@ export function EnterpriseCard({
       ? enterprise.lawFirmClientAccountBalanceEgp / enterprise.monthlyBurnEgp
       : 0;
   const s = enterpriseStatus(enterprise.status);
+  const isDraft = enterprise.status === "draft";
+
+  const onListForCapitalFormation = async () => {
+    if (listing || !isDraft) return;
+    setListing(true);
+    try {
+      const res = await csrfFetch(`/api/enterprises/${enterprise.id}/list`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error("Listing rejected by the CRE", {
+          description:
+            data?.error ??
+            data?.message ??
+            "The enterprise could not be listed for Capital Formation.",
+        });
+        return;
+      }
+      toast.success("Listed for Capital Formation", {
+        description: `${enterprise.name} is now visible to Constitutional Partners. The CRE has sealed the act on the immutable ledger.`,
+      });
+      // Optimistically reflect the new status locally + bubble up to parent.
+      onStatusChange?.({ id: enterprise.id, status: "fundraising_active" });
+    } catch {
+      toast.error("Network error", {
+        description: "The CRE could not be reached. Please try again.",
+      });
+    } finally {
+      setListing(false);
+    }
+  };
 
   return (
     <motion.article
@@ -120,8 +159,8 @@ export function EnterpriseCard({
       </div>
 
       {/* Footer */}
-      <div className="relative mt-auto flex items-center justify-between border-t border-gold/8 pt-3">
-        <div className="flex items-center gap-3 font-mono text-xs text-muted-foreground">
+      <div className="relative mt-auto flex flex-col gap-3 border-t border-gold/8 pt-3">
+        <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <Sparkles className="h-3 w-3 text-gold/70" />
             {pct(enterprise.founderEquityPct, 0)} founder
@@ -131,15 +170,36 @@ export function EnterpriseCard({
             {enterprise.milestones.length} milestones
           </span>
         </div>
-        <Button
-          onClick={onOpen}
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-1 px-3 text-xs font-medium text-gold-light hover:bg-gold/5 hover:text-gold"
-        >
-          View details
-          <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-        </Button>
+        <div className="flex items-center justify-between gap-2">
+          {isDraft ? (
+            <Button
+              type="button"
+              onClick={onListForCapitalFormation}
+              disabled={listing}
+              className="h-9 gap-1.5 rounded-lg bg-gold-gradient px-3 text-xs font-semibold text-black hover:opacity-95"
+            >
+              {listing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Rocket className="h-3.5 w-3.5" />
+              )}
+              {listing ? "Listing…" : "List for Capital Formation"}
+            </Button>
+          ) : (
+            <span className="font-sans text-[11px] text-muted-foreground">
+              {s.label}
+            </span>
+          )}
+          <Button
+            onClick={onOpen}
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1 px-3 text-xs font-medium text-gold-light hover:bg-gold/5 hover:text-gold"
+          >
+            View details
+            <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </div>
       </div>
     </motion.article>
   );

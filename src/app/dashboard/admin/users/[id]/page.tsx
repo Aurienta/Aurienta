@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { shortHash, timeAgo } from "@/lib/aurienta/format";
 import {
   ShieldCheck,
@@ -79,7 +80,7 @@ export default async function AdminUserDetailPage({
   const me = await getCurrentUser();
   if (!me) redirect(`/signin?next=/dashboard/admin/users/${(await params).id}`);
   const hasRole = me.memberships.some((m) => m.role === "aurienta_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="AURIENTA Representative" />;
 
   const { id } = await params;
 

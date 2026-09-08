@@ -12931,3 +12931,200 @@ Stage Summary:
 **ALL 20 dashboard tabs verified working** for Layla + Ahmed — 0 logouts.
 **Documentation created:** 7 audit artifacts in docs/ (NAVIGATION_MAP, ROUTE_INVENTORY, TAB_AVAILABILITY_MATRIX, AUTH_REDIRECT_INCIDENTS, WORKFLOW_HARMONY_AUDIT, CROSS_MODULE_DATA_FLOW, PAGE_CONTRACT_MATRIX).
 **Certification: CONDITIONALLY NAVIGATION READY** (P0 issues fixed + verified; P1/P2 workflow dead-ends documented for next sprint).
+
+---
+Task ID: FIX-P1-IDOR-NULL
+Agent: Security/Stability Fix Agent (P1 IDOR + null-assertion sweep)
+
+Task: Fix 8 dashboard pages that crash with HTTP 500 when getCurrentUser() returns null (session expired) instead of redirecting to /signin, and fix 5 API IDOR vulnerabilities on dynamic [id] routes that allowed authenticated users to read/act on resources belonging to enterprises they are not a member of.
+
+Work Log:
+
+Part 1 — Non-null assertion → null-check + redirect (8 dashboard pages)
+- Read each target file first to confirm the exact line and existing imports.
+- None of the 8 target files imported `redirect` from `next/navigation`, so the import was added to each.
+- Pattern applied uniformly:
+    const user = await getCurrentUser();
+    if (!user) redirect("/signin?next=/dashboard/<route>");
+- Files fixed:
+  1. src/app/dashboard/portfolio/page.tsx — added `redirect` import; replaced `const user = (await getCurrentUser())!;` with null-check + `redirect("/signin?next=/dashboard/portfolio")`.
+  2. src/app/dashboard/manager/page.tsx — same pattern, redirect to `/dashboard/manager`.
+  3. src/app/dashboard/copilot/page.tsx — same pattern, redirect to `/dashboard/copilot`.
+  4. src/app/dashboard/opportunities/page.tsx — same pattern, redirect to `/dashboard/opportunities`.
+  5. src/app/dashboard/market/page.tsx — same pattern, redirect to `/dashboard/market`.
+  6. src/app/dashboard/graduation/page.tsx — same pattern, redirect to `/dashboard/graduation`.
+  7. src/app/dashboard/skill-equity/page.tsx — same pattern, redirect to `/dashboard/skill-equity`.
+  8. src/app/dashboard/compliance/page.tsx — VERIFIED the file DID contain the `!` (despite the spec hedging that it might already be safe). Fixed with the same pattern, redirect to `/dashboard/compliance`.
+- Verified via grep: 0 remaining occurrences of `(await getCurrentUser())!` in `src/app/dashboard/`.
+
+Part 2 — API IDOR fixes on dynamic [id] routes (4 routes modified; 1 intentionally skipped)
+- Pattern: after `getCurrentUser()` returns a non-null user, verify `user.memberships.some(m => m.enterpriseId === <id>)` before returning the protected payload; otherwise return 403.
+
+  1. src/app/api/enterprises/[id]/milestones/route.ts — GET handler: after the auth check and `id` extraction, added `const hasAccess = user.memberships.some((m) => m.enterpriseId === enterpriseId); if (!hasAccess) return 403;` before the `db.milestone.findMany` query. POST handler already had a stricter role-based membership check via `db.enterpriseMember.findFirst` (founding_operator/manager/board_member), so it was left untouched.
+
+  2. src/app/api/vault/loan/[id]/route.ts — GET handler: after fetching the loan (which yields `loan.enterpriseId`), added `const hasAccess = user.memberships.some((m) => m.enterpriseId === loan.enterpriseId); if (!hasAccess) return 403;`. PATCH handler already had a full RBAC block (aurienta_rep for approve/reject, REPAY_ROLES list for repay) so it was left untouched.
+
+  3. src/app/api/evidence/[cid]/route.ts — INTENTIONALLY SKIPPED per Blueprint §8.6: IPFS evidence is public (radical transparency). The file's own header comment confirms "Public, no auth". The route already has CORS headers `Access-Control-Allow-Origin: *`. No change made.
+
+  4. src/app/api/reservations/[id]/confirm/route.ts — POST handler: after the existing `canConfirm` (role-shape) check passes and the reservation is fetched, added an enterprise-scope check: `isAurientaRep` (platform-wide, bypasses) OR `hasEnterpriseScope` (`role === "law_firm_rep" && m.enterpriseId === reservation.enterpriseId`). If neither, audit-logs `result: "denied", reason: "enterprise_scope_mismatch"` and returns 403. This closes the IDOR where any law_firm_rep could confirm any reservation on the platform, not just those for enterprises they are scoped to.
+
+  5. src/app/api/enterprises/[id]/profile/route.ts — GET handler: after the enterprise lookup + 404 check, added `const hasAccess = user.memberships.some((m) => m.enterpriseId === enterpriseId); if (!hasAccess) return 403;` before returning the full institutional profile (financials, founder bio, documents list, milestone list, ownership records). PATCH handler already had founder/company_owner RBAC and was left untouched. (Note: the downstream `buildViewerContext` + employee sanitisation remains in place for defence-in-depth, but now only runs for actual enterprise members.)
+
+Verification:
+- `bun run lint` — 0 errors, 350 warnings (all pre-existing in untouched files; no new warnings introduced by these changes).
+- Did NOT run `bun run build` (per task rules — orchestrator verifies).
+- Touched files: ONLY the 12 listed (8 dashboard pages + 4 API routes). The evidence/[cid] route was intentionally not modified.
+
+Stage Summary:
+- 8 dashboard pages hardened against 500-on-expired-session: now redirect to /signin?next=<original-path> instead of crashing.
+- 4 API IDOR vulnerabilities closed: enterprise milestones list, vault loan fetch, reservation confirm (enterprise-scope for law_firm_rep), enterprise profile fetch. All return HTTP 403 for non-members.
+- 1 route intentionally left public (IPFS evidence) per Blueprint §8.6.
+- Pattern reused existing codebase conventions: `redirect` from `next/navigation` (matches salary/risk-disclosure/whistleblower pages) and `user.memberships.some((m) => m.enterpriseId === id)` membership check (matches admin/enterprises/[id], enterprise-profile RBAC, etc.).
+
+---
+Task ID: FIX-P1-RBAC-NAV
+Agent: P1 Navigation & RBAC UX fix agent
+Task: Fix P1 navigation and RBAC UX issues — (1) university_rep nav visibility, (2) Profile sidebar entry, (3) replace silent `redirect("/dashboard")` RBAC denials on 13 pages with a proper AccessRestricted screen.
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail to load prior context (IDOR + 500-on-expired-session fixes by the previous agent).
+- Read /home/z/my-project/src/components/dashboard/dashboard-shell.tsx (full file, ~904 lines) to locate the `visibleGroupsForRoles()` function, the `NAV` array, and the lucide-react import block.
+
+Part 1 — P1-001: university_rep nav visibility (dashboard-shell.tsx)
+- In `visibleGroupsForRoles()` the Platform Admin visibility branch previously allowed only `aurienta_rep`, `law_firm_rep`, `accounting_firm_rep`, `company_owner`. A `university_rep` therefore could not see the "Platform Admin" group in the sidebar and could not reach `/dashboard/university` from the nav — it appeared only in the command palette / avatar dropdown.
+- Fix: added `has("university_rep")` to that branch, alongside `aurienta_rep`. Updated the preceding JSDoc comment block (the "Platform Admin → only if user holds an …" line) to include `university_rep`.
+- Result: university reps now see the Platform Admin group (incl. University Rep Console) in the sidebar.
+
+Part 2 — P1-002: Add "Profile & Identity" to sidebar (dashboard-shell.tsx)
+- `/dashboard/profile` was only reachable via the avatar dropdown (top-right). On mobile this is undiscoverable because the dropdown collapses behind the hamburger.
+- Fix: added `UserCircle` to the lucide-react import block, and added a new entry to the `NAV` array in the "Workspace" group (right after `Enterprise Updates`):
+  `{ href: "/dashboard/profile", label: "Profile & Identity", icon: UserCircle, group: "Workspace" }`
+- Also registered an i18n key (`"Profile & Identity": "nav.profile"`) in the `NAV_I18N` map so the language switcher can translate it later.
+
+Part 3 — P1-RBAC: Replace silent `redirect("/dashboard")` with `<AccessRestricted>` on 13 pages
+
+3a. New reusable component:
+- Created `/home/z/my-project/src/components/dashboard/access-restricted.tsx` (server-component-safe, no "use client"). Renders a centred card with a `ShieldAlert` (gold) icon, an "Access Restricted" serif heading, a muted paragraph naming the required role (in `text-gold-light`), and a "Return to Dashboard" button linking to `/dashboard`. Uses only existing Tailwind tokens (`text-gold`, `text-gold-light`, `text-muted-foreground`, `font-serif`, `font-sans`) — no new CSS, no new deps.
+
+3b. 13 pages updated — pattern: replace `if (!hasRole) redirect("/dashboard");` with `if (!hasRole) return <AccessRestricted requiredRole="…" />;` and add the import. The pre-existing `redirect("/signin?next=…")` for unauthenticated users was left in place (so `redirect` import remains used — no unused-import lint warning).
+
+  1. src/app/dashboard/law-firm/page.tsx                  → requiredRole="Law Firm Representative"                       (role checked: law_firm_rep)
+  2. src/app/dashboard/accounting/page.tsx               → requiredRole="Accounting Firm Representative"               (role checked: accounting_firm_rep)
+  3. src/app/dashboard/company-owner/page.tsx            → requiredRole="Company Owner"                                (role checked: company_owner)
+  4. src/app/dashboard/university/page.tsx               → requiredRole="University Representative"                    (role checked: university_rep)
+  5. src/app/dashboard/fra/page.tsx                       → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  6. src/app/dashboard/steward/page.tsx                   → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  7. src/app/dashboard/partner-crm/page.tsx              → requiredRole="Founding Operator or Company Owner"           (roles checked: founding_operator, company_owner; pattern was `if (crmMemberships.length === 0) { redirect("/dashboard"); }` → wrapped return inside the existing `if` block)
+  8. src/app/dashboard/admin/users/page.tsx              → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  9. src/app/dashboard/admin/users/[id]/page.tsx         → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  10. src/app/dashboard/admin/enterprises/page.tsx       → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  11. src/app/dashboard/admin/enterprises/[id]/page.tsx  → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  12. src/app/dashboard/admin/audit/page.tsx             → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+  13. src/app/dashboard/admin/settings/page.tsx           → requiredRole="AURIENTA Representative"                      (role checked: aurienta_rep)
+
+Verification:
+- `bun run lint` → 0 errors, 353 warnings (all pre-existing; zero new warnings on touched files). The new `access-restricted.tsx` produces zero warnings.
+- Did NOT run `bun run build` (per task rules — orchestrator verifies).
+- Touched files: ONLY the 13 listed pages + the new `access-restricted.tsx` component + `dashboard-shell.tsx` (Part 1 + Part 2). No test code written.
+
+Stage Summary:
+- university_rep users now see the Platform Admin group in the sidebar (previously hidden) — P1-001 closed.
+- /dashboard/profile now has a sidebar entry ("Profile & Identity", UserCircle icon, in the Workspace group) so it is discoverable on mobile without opening the avatar dropdown — P1-002 closed.
+- 13 RBAC-denied routes that previously hard-redirected to /dashboard (looking like a broken link) now render an explicit, on-brand "Access Restricted" screen naming the required role, with a clear return-to-dashboard CTA — P1-RBAC closed. UX is consistent across institutional, university, law-firm, accounting, company-owner, partner-CRM, FRA, steward, and admin surfaces.
+
+---
+Task ID: FIX-P1-WORKFLOW
+Agent: P1 Workflow Remediation Agent
+Task: Fix the TOP 5 most critical P1 workflow dead-ends in the AURIENTA platform — endpoints existed but had zero UI callers, and data did not flow between modules.
+
+Work Log:
+- Read worklog.md (last 200 lines) for prior context — confirmed P0 audit findings (FIX-P0-SECURITY) and the workflow audit (AUDIT-3-WORKFLOW, 23 dead-ends catalogued).
+- Read prisma/schema.prisma for exact model field names on Enterprise, OwnershipRecord, Reservation, Proposal, Milestone, Notification, SkillEquityClaim, EnterpriseMember.
+  - Key findings: Notification uses `category` (not `type`); OwnershipRecord has `equityUnits` (`@map("shares")`) + `avgPriceEgp: Float` + `@@unique([enterpriseId, userId])`; Reservation has `amountEgp` (not `priceEgp`); Milestone has `title`, `amountEgp`, `status`; SkillEquityClaim has `employeeId`, `userId`, `enterpriseId`, `status`, `reviewedById`, `equityGrantPct`.
+- Read every target file FIRST before modifying (csrf-client, founder/page.tsx, founder-studio-client.tsx, enterprise-card.tsx, api/enterprises/[id]/list/route.ts, api/enterprises/[id]/close-capital-formation/route.ts, api/reservations/[id]/confirm/route.ts, api/proposals/route.ts, api/milestones/[id]/accountant-release/route.ts, api/graduation/execute/route.ts, dashboard/graduation/page.tsx, components/dashboard/institutional/call-vote-button.tsx, api/proposals/[id]/vote/route.ts, dashboard/manager/page.tsx, dashboard/skill-equity/page.tsx, api/skill-equity/[id]/review/route.ts, components/dashboard/manager/approve-expense-button.tsx).
+
+Fix 1 — DE-01 "List for Capital Formation" button (founder dashboard):
+- Modified `src/components/dashboard/founder/enterprise-card.tsx`:
+  - Added `csrfFetch` import + `toast` + `Loader2`/`Rocket` icons.
+  - Added new optional `onStatusChange?: (next: { id: string; status: string }) => void` prop.
+  - Added `listing` busy state + `onListForCapitalFormation` handler that POSTs to `/api/enterprises/${id}/list` via `csrfFetch`.
+  - Added "List for Capital Formation" button in the card footer that is conditionally rendered ONLY when `enterprise.status === "draft"` (gold-gradient style, matches existing design system).
+  - Refactored footer layout: status label collapses to a small text when not draft, button is the primary action when draft.
+  - Removed the unused `Building2` import (was already unused pre-existing).
+- Modified `src/components/dashboard/founder/founder-studio-client.tsx`:
+  - Added `onEnterpriseStatusChange` useCallback that mirrors the new status into both the local `list` state and the open detail dialog.
+  - Passed the callback to `<EnterpriseCard onStatusChange={onEnterpriseStatusChange} />` so the card flips draft → "Capital Formation Active" without a server refresh.
+
+Fix 2 — DE-04 OwnershipRecord creation on reservation confirm:
+- Modified `src/app/api/reservations/[id]/confirm/route.ts`:
+  - Added `upsertOwnershipRecord(tx, args)` helper that respects the `@@unique([enterpriseId, userId])` constraint by doing a `findUnique` + conditional `create`/`update` inside the existing `db.$transaction`.
+  - On existing record: weighted-average merge of `equityUnits` (sum) and `avgPriceEgp` (cost-basis-weighted blend). On new record: insert with `equityUnits` + `unitPrice = amountEgp / equityUnits`.
+  - Inserted the call inside the existing transaction, right after the law-firm-balance increment.
+  - Also bumped `enterprise.raisedEgp` by `reservation.amountEgp` so the Capital Formation progress bar advances in real time.
+  - Used `reservation.amountEgp` (NOT the prompt example's `reservation.priceEgp`, which doesn't exist on the schema) and computed `unitPrice = amountEgp / equityUnits` for `avgPriceEgp` (Float).
+- Note: the partner's portfolio now reflects paid capital — fixes the broken cross-module data continuity identified in AUDIT-3-WORKFLOW.
+
+Fix 3 — DE-07 Graduation execute UI button:
+- Created `src/components/dashboard/institutional/execute-graduation-button.tsx` (new "use client" component, ~120 LOC):
+  - `ExecuteGraduationButton` props: `enterpriseId`, `enterpriseName`, `readinessScore`, optional `className`.
+  - POSTs `{ enterpriseId }` to `/api/graduation/execute` via `csrfFetch`.
+  - Surfaces all API error codes verbatim (`READINESS_NOT_MET`, `FORBIDDEN`, `alreadyGraduated`) via `sonner` toast.
+  - Disabled state when `readinessScore < 75` with explanatory caption.
+  - On success calls `router.refresh()` so the server-rendered readiness + status update.
+  - Visual treatment: gold-gradient button with shadow, matches existing `CallVoteButton` design language.
+- Modified `src/app/dashboard/graduation/page.tsx` (server component):
+  - Imported `ExecuteGraduationButton`.
+  - Added `passedGraduationProposal` query: `db.proposal.findFirst({ where: { enterpriseId, type: "graduation", status: "executed" } })` — a graduation proposal whose vote auto-executed on quorum (per the existing `/api/proposals/[id]/vote` route). Only queried when `primary.status !== "graduated"` so the button is hidden once the enterprise has already flipped.
+  - Added a new emerald-accented `<section>` rendered conditionally between the CallVoteButton CTA banner and the VoteParamsCard/PostGraduationCard grid. The section explains the constitutional significance ("Article IV supermajority confirmed", "Sovereignty awaits your seal") and hosts the new button.
+  - The button appears ONLY when a graduation vote has actually passed, exactly per the task instruction.
+
+Fix 4 — Notifications on 3 key workflow transitions:
+- Verified the Notification schema has NO `type` field — only `category` (enum hint: governance, treasury, compliance, milestone, dividend, system). Used `category` correctly in all 3 sites (NOT the prompt example's `type`).
+- `src/app/api/reservations/[id]/confirm/route.ts`:
+  - After the audit log, added `db.notification.create({ userId: reservation.userId, enterpriseId, category: "treasury", title: "Reservation Confirmed", body: "Your reservation has been confirmed. {N} Equity Units added to your portfolio." })` — body uses `reservation.equityUnits.toLocaleString()`.
+- `src/app/api/proposals/route.ts`:
+  - Inside the existing `db.$transaction`, after `appendLedgerEvent`, fetched all `EnterpriseMember` rows for the enterprise (excluding the creator) via `tx.enterpriseMember.findMany`.
+  - Bulk-inserted one Notification per member via `tx.notification.createMany({ data: members.map(m => ({ userId: m.userId, enterpriseId, category: "governance", title: "New proposal", body: "New proposal: {title}. Voting is now open." })) })` — uses `createMany` (single SQL round-trip, atomic with the proposal).
+- `src/app/api/milestones/[id]/accountant-release/route.ts`:
+  - Added `founderId: true` to the enterprise `select` in the initial `db.milestone.findUnique` payload.
+  - Inside the existing `db.$transaction`, after `appendLedgerEvent`, added `tx.notification.create({ userId: milestone.enterprise.founderId, enterpriseId, category: "milestone", title: "Milestone funds released", body: "Milestone \"{title}\" funds released from Law Firm Client Account. Net {N} EGP credited to enterprise operations." })` — body uses `netReleasedEgp.toLocaleString()` so the founder sees the actual net (post platform + consulting fees).
+- All 3 notifications use `category` (not `type`), respect the schema, and are written inside the existing transactions so they roll back on failure (atomicity preserved).
+
+Fix 5 — DE-08 Skill-equity review queue on manager dashboard:
+- Created `src/components/dashboard/manager/skill-equity-review-buttons.tsx` (new "use client" component, ~120 LOC):
+  - `SkillEquityReviewButtons` props: `claimId`, `claimantName`, `credentialName`, optional `equityGrantPct` (default 0.5, capped at 2% by the API).
+  - Two buttons: gold-gradient "Approve" (Check icon) + outlined destructive "Reject" (X icon).
+  - POSTs `{ decision: "approve" | "reject", equityGrantPct }` to `/api/skill-equity/[id]/review` via `csrfFetch`.
+  - "busy" state distinguishes between the two actions so the user sees which one is pending.
+  - Surfaces API errors (CRE denial, rate-limit, self-review) verbatim.
+  - On success calls `router.refresh()` so the claim disappears from the queue.
+- Modified `src/app/dashboard/manager/page.tsx` (server component):
+  - Added `SkillEquityReviewButtons` import + `Award` icon.
+  - Added `db.skillEquityClaim.findMany({ where: { enterpriseId: selected.id, status: "pending" }, include: { user, enterprise } })` to the parallel `Promise.all` query (zero extra round-trips).
+  - Added a new "Pending Skill-Equity Claims" section after the Milestones mini-panel, rendered only when `pendingSkillEquityClaims.length > 0`.
+  - Each claim row shows: claimant legal name, credential-type badge, tenure (months), credential name + issuer + filed-at relative time, and the `SkillEquityReviewButtons` component.
+  - Section header shows the count + the "2% discretionary pool" reminder.
+  - Explanatory paragraph: "Workforce partners with ≥24 months tenure may file a credential-backed claim…" so the manager understands the constitutional context.
+  - Removed the unused `Progress` import (was already unused pre-existing in this file).
+
+Verification:
+- Ran `bun run lint`: 0 errors, 350 warnings (all pre-existing in unrelated files: lib/aurienta/*.ts, tailwind.config.ts, etc.). Verified NO new warnings in any touched file. Confirmed by grepping the lint output for each touched file path — zero hits.
+- Did NOT run `bun run build` per the task rules (orchestrator verifies).
+- Dev server log confirms the modified pages compile and serve (GET / 200 responses, no compile errors).
+- Did NOT modify any other files. No business logic, styling, or layout changes outside the 5 dead-end fixes.
+
+Files Created (2):
+- `src/components/dashboard/institutional/execute-graduation-button.tsx` (Fix 3 — DE-07)
+- `src/components/dashboard/manager/skill-equity-review-buttons.tsx` (Fix 5 — DE-08)
+
+Files Modified (7):
+- `src/components/dashboard/founder/enterprise-card.tsx` (Fix 1)
+- `src/components/dashboard/founder/founder-studio-client.tsx` (Fix 1)
+- `src/app/api/reservations/[id]/confirm/route.ts` (Fix 2 + Fix 4 — reservation notification)
+- `src/app/dashboard/graduation/page.tsx` (Fix 3)
+- `src/app/api/proposals/route.ts` (Fix 4 — proposal notification fan-out)
+- `src/app/api/milestones/[id]/accountant-release/route.ts` (Fix 4 — milestone notification)
+- `src/app/dashboard/manager/page.tsx` (Fix 5)
+
+Stage Summary:
+**ALL 5 P1 WORKFLOW DEAD-ENDS FIXED.** (1) Founder dashboard now shows a "List for Capital Formation" button next to every draft enterprise — wired via `csrfFetch` to the existing `POST /api/enterprises/[id]/list` endpoint, with optimistic local state flip so the card transitions draft → "Capital Formation Active" instantly. (2) Reservation confirm endpoint now creates/merges an `OwnershipRecord` inside the existing transaction (weighted-average price, sum-of-units, respects the unique constraint) AND bumps `enterprise.raisedEgp` — partner portfolios and Capital Formation progress bars now reflect paid capital. (3) New `ExecuteGraduationButton` client component added to the graduation page, surfaced only when a graduation vote has actually passed (proposal status "executed") AND the enterprise is not yet sovereign — wired via `csrfFetch` to `POST /api/graduation/execute`. (4) Three state-mutating endpoints now emit Notifications inside their existing transactions: reservation confirm (to the partner), proposal create (fan-out to all enterprise members except the creator, via `createMany`), milestone accountant-release (to the enterprise founder). Notifications inbox is no longer empty for real workflow events. (5) Manager dashboard now has a "Pending Skill-Equity Claims" review queue with per-claim Approve/Reject buttons — wired via `csrfFetch` to the existing `POST /api/skill-equity/[id]/review` endpoint. Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.

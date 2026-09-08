@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { egp, pct } from "@/lib/aurienta/format";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export default async function CompanyOwnerPage() {
   // RBAC: only Company Owners may view this console. Any other authenticated
   // user is bounced to their own dashboard.
   const hasRole = user.memberships.some((m) => m.role === "company_owner");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="Company Owner" />;
 
   // Tier D enterprises the user is a member of with a "company_owner" or "board_member" role.
   const memberEnts = await db.enterpriseMember.findMany({

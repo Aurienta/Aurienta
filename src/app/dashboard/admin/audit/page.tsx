@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { GoldStar } from "@/components/aurienta-logo";
 import { timeAgo } from "@/lib/aurienta/format";
 import { Prisma } from "@prisma/client";
@@ -122,7 +123,7 @@ export default async function AuditLogViewerPage({
   const user = await getCurrentUser();
   if (!user) redirect("/signin?next=/dashboard/admin/audit");
   const hasRole = user.memberships.some((m) => m.role === "aurienta_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="AURIENTA Representative" />;
 
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const where = buildWhere(sp);

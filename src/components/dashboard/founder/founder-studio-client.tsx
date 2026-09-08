@@ -38,6 +38,23 @@ export function FounderStudioClient({
     setDetailOpen(true);
   };
 
+  // Reflect status transitions triggered by a child card (e.g. draft →
+  // fundraising_active when the founder clicks "List for Capital Formation")
+  // in the local list so the UI stays in sync without a full server refresh.
+  const onEnterpriseStatusChange = React.useCallback(
+    (next: { id: string; status: string }) => {
+      setList((prev) =>
+        prev.map((e) =>
+          e.id === next.id ? { ...e, status: next.status } : e
+        )
+      );
+      setDetailEnterprise((cur) =>
+        cur && cur.id === next.id ? { ...cur, status: next.status } : cur
+      );
+    },
+    []
+  );
+
   const onMilestoneSubmitted = (updated: FounderMilestone) => {
     if (!detailEnterprise) return;
     const next: FounderEnterprise = {
@@ -130,7 +147,12 @@ export function FounderStudioClient({
           ) : (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {list.map((e) => (
-                <EnterpriseCard key={e.id} enterprise={e} onOpen={() => openDetail(e)} />
+                <EnterpriseCard
+                  key={e.id}
+                  enterprise={e}
+                  onOpen={() => openDetail(e)}
+                  onStatusChange={onEnterpriseStatusChange}
+                />
               ))}
             </div>
           )}

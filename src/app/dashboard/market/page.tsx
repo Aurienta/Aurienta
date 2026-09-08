@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { SECTORS, CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
@@ -28,7 +29,8 @@ export default async function MarketPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/market");
   const sp = await searchParams;
   const initialSlug =
     typeof sp.enterprise === "string" ? sp.enterprise : undefined;

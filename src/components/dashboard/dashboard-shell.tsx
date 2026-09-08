@@ -14,6 +14,7 @@ import {
   Vault, FileText, Gavel, Truck, Cpu, ShieldAlert, KeyRound, Network, Presentation,
   Layers, Activity, SlidersHorizontal, ScrollText,
   Newspaper, Contact, Workflow, Shield, ClipboardCheck, Flag, Crown, BadgeCheck, Zap, Megaphone, GitBranch, Handshake, Crosshair,
+  UserCircle,
 } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { cn } from "@/lib/utils";
@@ -127,6 +128,7 @@ const NAV_I18N: Record<string, string> = {
   "Federation": "nav.federation",
   "VC Wallet": "nav.credentials",
   "University Rep Console": "nav.university",
+  "Profile & Identity": "nav.profile",
 };
 
 // Group translation map
@@ -151,6 +153,9 @@ const NAV: NavItem[] = [
   { href: "/dashboard/priority-windows", label: "Priority Windows", icon: Hourglass, group: "Workspace" },
   { href: "/dashboard/calendar", label: "Constitutional Calendar", icon: CalendarDays, group: "Workspace" },
   { href: "/dashboard/updates", label: "Enterprise Updates", icon: Newspaper, group: "Workspace" },
+  // P1-002: Profile entry in the sidebar so it is discoverable on mobile
+  // (previously only reachable via the avatar dropdown).
+  { href: "/dashboard/profile", label: "Profile & Identity", icon: UserCircle, group: "Workspace" },
 
   // ── Capital & Workforce (5) ──
   { href: "/dashboard/syndicates", label: "Syndicates", icon: Users, group: "Capital & Workforce" },
@@ -280,8 +285,8 @@ function groupOrderForRoles(roles: Set<string>): string[] {
  *    board_member / company_owner / law_firm_rep seat.
  *  - Graduation & Sovereignty → only if user holds a founding_operator /
  *    company_owner / board_member seat.
- *  - Platform Admin → only if user holds an aurienta_rep / law_firm_rep /
- *    accounting_firm_rep / company_owner seat.
+ *  - Platform Admin → only if user holds an aurienta_rep / university_rep /
+ *    law_firm_rep / accounting_firm_rep / company_owner seat.
  *
  * A pure capital_partner sees 5 groups (27 routes) instead of 51.
  */
@@ -328,9 +333,11 @@ function visibleGroupsForRoles(roles: Set<string>): Set<string> {
     visible.add("Graduation & Sovereignty");
   }
 
-  // Platform Admin — institutional reps + company owners.
+  // Platform Admin — institutional reps + company owners + university reps.
+  // P1-001: university_rep added so university reps can reach /dashboard/university.
   if (
     has("aurienta_rep") ||
+    has("university_rep") ||
     has("law_firm_rep") ||
     has("accounting_firm_rep") ||
     has("company_owner")

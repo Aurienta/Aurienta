@@ -1,13 +1,14 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { ManagerHeader } from "@/components/dashboard/manager/manager-header";
 import { ManagerSummaryCards } from "@/components/dashboard/manager/manager-summary-cards";
 import { ExpenseDashboard, type ExpenseRow } from "@/components/dashboard/manager/expense-dashboard";
+import { SkillEquityReviewButtons } from "@/components/dashboard/manager/skill-equity-review-buttons";
 import { egp, timeAgo } from "@/lib/aurienta/format";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Users, HardHat, TrendingUp, Wallet } from "lucide-react";
+import { Award, Users, HardHat, TrendingUp, Wallet } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = { title: "Manager Console · AURIENTA" };
@@ -17,7 +18,8 @@ export default async function ManagerPage({
 }: {
   searchParams: Promise<{ enterprise?: string }>;
 }) {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/manager");
   const sp = await searchParams;
 
   // Find enterprises where the user is manager or founding_operator
@@ -57,7 +59,7 @@ export default async function ManagerPage({
     enterprises.find((e) => e.id === sp.enterprise || e.slug === sp.enterprise) ?? enterprises[0];
 
   // Fetch expenses, employees, milestones for the selected enterprise
-  const [expenses, employees, milestones] = await Promise.all([
+  const [expenses, employees, milestones, pendingSkillEquityClaims] = await Promise.all([
     db.expense.findMany({
       where: { enterpriseId: selected.id },
       orderBy: { createdAt: "desc" },
@@ -73,6 +75,18 @@ export default async function ManagerPage({
       where: { enterpriseId: selected.id },
       orderBy: { dueAt: "asc" },
       take: 5,
+    }),
+    // DE-08: Skill-equity claims can be filed but never reviewed — surface
+    // pending claims for the manager's selected enterprise so they can act on
+    // them. (Manager page scope already restricts enterpriseIds to seats
+    // where the user is manager / founding_operator.)
+    db.skillEquityClaim.findMany({
+      where: { enterpriseId: selected.id, status: "pending" },
+      include: {
+        user: { select: { id: true, legalName: true } },
+        enterprise: { select: { id: true, name: true, tier: true } },
+      },
+      orderBy: { submittedAt: "asc" },
     }),
   ]);
 
@@ -291,6 +305,66 @@ export default async function ManagerPage({
                 >
                   {m.status.replace(/_/g, " ")}
                 </Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* DE-08 — Pending Skill-Equity Claims review queue.
+          The /api/skill-equity/[id]/review endpoint existed but had zero UI
+          callers. Claims could be filed by workforce partners but never
+          approved or rejected — leaving them stuck in `pending` forever. */}
+      {pendingSkillEquityClaims.length > 0 && (
+        <div className="rounded-2xl border border-gold/12 glass p-5 sm:p-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <Award className="h-4 w-4 text-gold" />
+              <h2 className="font-serif text-lg font-semibold">
+                Pending Skill-Equity Claims
+              </h2>
+            </div>
+            <span className="font-mono text-xs text-muted-foreground">
+              {pendingSkillEquityClaims.length} pending · 2% discretionary pool
+            </span>
+          </div>
+          <p className="mb-4 font-sans text-xs leading-relaxed text-muted-foreground">
+            Workforce partners with ≥24 months tenure may file a credential-backed
+            claim for equity from the board discretionary pool. Review and act on
+            each pending claim below — the Constitutional Runtime Engine will
+            enforce the salary-to-equity gates and seal the decision on the ledger.
+          </p>
+          <div className="flex flex-col gap-2.5">
+            {pendingSkillEquityClaims.map((claim) => (
+              <div
+                key={claim.id}
+                className="flex flex-col gap-3 rounded-xl border border-gold/10 bg-background/40 p-3.5 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-sans text-sm font-medium">
+                      {claim.user.legalName}
+                    </p>
+                    <Badge
+                      variant="outline"
+                      className="border-gold/20 text-[10px] text-muted-foreground"
+                    >
+                      {claim.credentialType.replace(/_/g, " ")}
+                    </Badge>
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {claim.tenureMonths} mo tenure
+                    </span>
+                  </div>
+                  <p className="mt-0.5 truncate font-sans text-[12px] text-muted-foreground">
+                    {claim.credentialName} · {claim.issuer} · filed{" "}
+                    {timeAgo(claim.submittedAt)}
+                  </p>
+                </div>
+                <SkillEquityReviewButtons
+                  claimId={claim.id}
+                  claimantName={claim.user.legalName}
+                  credentialName={claim.credentialName}
+                />
               </div>
             ))}
           </div>

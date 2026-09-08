@@ -1,11 +1,18 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ConstitutionalFooter } from "@/components/dashboard/constitutional-footer";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) redirect("/signin?next=/dashboard/portfolio");
+  if (!user) {
+    // Use the actual requested URL as the next= param so the user returns
+    // to the page they intended, not always /dashboard/portfolio.
+    const h = await headers();
+    const pathname = h.get("x-pathname") ?? "/dashboard/portfolio";
+    redirect(`/signin?next=${encodeURIComponent(pathname)}`);
+  }
 
   // Wrap the dashboard shell + shared footer in a min-h-screen flex column so
   // the footer sticks to the bottom of the viewport on short pages and is

@@ -214,6 +214,12 @@ export async function GET(
       return NextResponse.json({ error: "Enterprise not found" }, { status: 404 });
     }
 
+    // P1 IDOR fix: only members of this enterprise may view the full profile.
+    const hasAccess = user.memberships.some((m) => m.enterpriseId === enterpriseId);
+    if (!hasAccess) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+
     // ── AURIENTA Transparency Authorization (§8.6.2) ──
     // Determine the viewer's role in this enterprise, then sanitize the
     // employee list so that protected personal data (NOSI number, national ID,

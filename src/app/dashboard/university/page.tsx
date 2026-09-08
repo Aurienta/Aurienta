@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { GraduationCap, FlaskConical, FileText, Award, Building2, BookOpen } from "lucide-react";
 
 export const metadata = { title: "University Representative Console · AURIENTA" };
@@ -14,7 +15,7 @@ export default async function UniversityPage() {
   // RBAC: only University Representatives may view the Tier E governance
   // console. Any other authenticated user is bounced to their own dashboard.
   const hasRole = user.memberships.some((m) => m.role === "university_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="University Representative" />;
 
   // Tier E (University SPV) enterprises — these are research spinouts.
   const tierEEnterprises = await db.enterprise.findMany({

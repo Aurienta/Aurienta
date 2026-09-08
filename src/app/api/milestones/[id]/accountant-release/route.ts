@@ -40,6 +40,7 @@ export const POST = withErrorHandler(async (req: NextRequest, ctx: { params: Pro
       enterprise: {
         select: {
           id: true, name: true, lawFirmClientAccountBalanceEgp: true, status: true,
+          founderId: true,
           accountingFirmId: true,
           accountingFirm: { select: { id: true, name: true, status: true, esaaLicense: true } },
           lawFirm: { select: { id: true, name: true, status: true } },
@@ -165,6 +166,20 @@ export const POST = withErrorHandler(async (req: NextRequest, ctx: { params: Pro
       },
       actorId: user.id,
     });
+
+    // ── Notify the enterprise founder that funds have been released. ──
+    // The audit found zero state-mutating endpoints emitted Notifications.
+    if (milestone.enterprise.founderId) {
+      await tx.notification.create({
+        data: {
+          userId: milestone.enterprise.founderId,
+          enterpriseId: milestone.enterprise.id,
+          category: "milestone",
+          title: "Milestone funds released",
+          body: `Milestone "${milestone.title}" funds released from Law Firm Client Account. Net ${netReleasedEgp.toLocaleString()} EGP credited to enterprise operations.`,
+        },
+      });
+    }
 
     return updated;
   });

@@ -79,6 +79,17 @@ export const GET = withErrorHandler(async (_req: NextRequest, ctx: Params) => {
     );
   }
 
+  // P1 IDOR fix: only members of the loan's enterprise may fetch it.
+  const hasAccess = user.memberships.some(
+    (m) => m.enterpriseId === loan.enterpriseId
+  );
+  if (!hasAccess) {
+    return NextResponse.json(
+      { error: "forbidden", code: "forbidden" },
+      { status: 403 }
+    );
+  }
+
   return NextResponse.json({ loan });
 }, "GET /api/vault/loan/[id]");
 

@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { SkillEquityClient } from "@/components/dashboard/workforce/skill-equity-client";
@@ -6,7 +7,8 @@ import { SkillEquityClient } from "@/components/dashboard/workforce/skill-equity
 export const metadata = { title: "Skill-to-Equity · AURIENTA" };
 
 export default async function SkillEquityPage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/skill-equity");
 
   // Fetch the user's employment records
   const employees = await db.employee.findMany({

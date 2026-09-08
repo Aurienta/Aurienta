@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
@@ -9,7 +10,8 @@ import { Bot } from "lucide-react";
 export const metadata = { title: "AI Copilot · AURIENTA" };
 
 export default async function CopilotPage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/copilot");
 
   // Load chat history (oldest → newest) — capped at the most recent 60 messages.
   const historyRows = await db.copilotChat.findMany({

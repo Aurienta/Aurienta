@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { computeGraduationReadiness } from "@/lib/aurienta/cre";
@@ -13,13 +14,15 @@ import { VoteParamsCard } from "@/components/dashboard/institutional/vote-params
 import { PostGraduationCard } from "@/components/dashboard/institutional/post-graduation-card";
 import { ExportPackageCard } from "@/components/dashboard/institutional/export-package-card";
 import { CallVoteButton } from "@/components/dashboard/institutional/call-vote-button";
+import { ExecuteGraduationButton } from "@/components/dashboard/institutional/execute-graduation-button";
 import { GraduationCap } from "lucide-react";
 import { PageTransition } from "@/components/dashboard/page-transition";
 
 export const metadata = { title: "Graduation · AURIENTA" };
 
 export default async function GraduationPage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/graduation");
 
   // Pull user's enterprises and pick the primary — the one with the highest
   // readiness score (e.g. Nile Brew for the seeded demo user).
@@ -39,6 +42,22 @@ export default async function GraduationPage() {
         where: { enterpriseId: primary.id, type: "graduation", status: "voting_open" },
       })
     : null;
+
+  // DE-07: detect a *passed* graduation proposal so the "Execute Graduation"
+  // button can be surfaced. A passed proposal has status "executed" (the vote
+  // endpoint auto-flips it on quorum + threshold). We hide the button once the
+  // enterprise itself has flipped to "graduated" (already sovereign).
+  const passedGraduationProposal =
+    primary && primary.status !== "graduated"
+      ? await db.proposal.findFirst({
+          where: {
+            enterpriseId: primary.id,
+            type: "graduation",
+            status: "executed",
+          },
+          orderBy: { executedAt: "desc" },
+        })
+      : null;
 
   // Component breakdown — weights from the blueprint (governance 30 / financial 25
   // / operational 20 / compliance 15 / platform-dependency 10).
@@ -113,6 +132,36 @@ export default async function GraduationPage() {
               />
             </div>
           </section>
+
+          {/* DE-07: Execute Graduation — only shown once a graduation proposal
+              has passed (status "executed") AND the enterprise has not yet
+              flipped to "graduated". The endpoint exists but had zero UI
+              callers before this button. */}
+          {passedGraduationProposal && (
+            <section className="relative overflow-hidden rounded-2xl border border-emerald-400/25 bg-emerald-400/[0.03] p-5 sm:p-6">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-emerald-400/10 blur-3xl" />
+              <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-[0.22em] text-emerald-400/85">
+                    Graduation vote passed · Article IV supermajority confirmed
+                  </p>
+                  <h3 className="mt-1.5 font-serif text-xl font-semibold">
+                    Sovereignty awaits your seal.
+                  </h3>
+                  <p className="mt-1 font-sans text-[12px] text-muted-foreground">
+                    The constitutional vote has carried. Execute the irreversible act to flip
+                    {" "}{primary.name} to a sovereign JSC and append the graduation_executed ledger event.
+                  </p>
+                </div>
+                <ExecuteGraduationButton
+                  enterpriseId={primary.id}
+                  enterpriseName={primary.name}
+                  readinessScore={readiness.score}
+                  className="lg:w-80"
+                />
+              </div>
+            </section>
+          )}
 
           <div className="grid gap-6 lg:grid-cols-2">
             <VoteParamsCard

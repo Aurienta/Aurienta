@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { SECTORS, CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
@@ -14,7 +15,8 @@ import { Compass, ShieldCheck, Scale, Lock } from "lucide-react";
 export const metadata = { title: "Capital Participation · AURIENTA" };
 
 export default async function OpportunitiesPage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/opportunities");
 
   // All enterprises open to capital — exclude draft and graduated (sovereign).
   const enterprises = await db.enterprise.findMany({

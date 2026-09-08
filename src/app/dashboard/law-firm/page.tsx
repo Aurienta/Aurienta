@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { egp, timeAgo } from "@/lib/aurienta/format";
 import Link from "next/link";
@@ -32,7 +33,7 @@ export default async function LawFirmPage() {
   // bounced to their own dashboard — no fallback to "any of the user's
   // enterprises" (that pattern previously leaked privileged escrow data).
   const hasRole = user.memberships.some((m) => m.role === "law_firm_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="Law Firm Representative" />;
 
   // Find enterprises where this user is a law_firm_rep (via membership role).
   const memberEnts = await db.enterpriseMember.findMany({

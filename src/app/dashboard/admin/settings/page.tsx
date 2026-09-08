@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { AurientaMark } from "@/components/aurienta-logo";
 import { ShieldCheck, AlertCircle } from "lucide-react";
 import { SettingsConsole, type GroupedSettings } from "./settings-console";
@@ -67,7 +68,7 @@ export default async function PlatformSettingsPage() {
   if (!user) redirect("/signin?next=/dashboard/admin/settings");
   // RBAC: only AURIENTA Stewards (aurienta_rep) may tune platform settings.
   const hasRole = user.memberships.some((m) => m.role === "aurienta_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="AURIENTA Representative" />;
 
   // Fetch all settings directly via Prisma. The settings API upserts defaults
   // on first read, but we mirror the seeds here so a fresh DB still renders.

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { GoldStar, AurientaMark } from "@/components/aurienta-logo";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
 import { shortHash, timeAgo, egp, pct } from "@/lib/aurienta/format";
@@ -58,7 +59,7 @@ export default async function StewardPage() {
   // RBAC: only AURIENTA Stewards (aurienta_rep) may view the platform-health
   // console. Any other authenticated user is bounced to their own dashboard.
   const hasRole = user.memberships.some((m) => m.role === "aurienta_rep");
-  if (!hasRole) redirect("/dashboard");
+  if (!hasRole) return <AccessRestricted requiredRole="AURIENTA Representative" />;
 
   // ── Time windows ──
   const now = Date.now();

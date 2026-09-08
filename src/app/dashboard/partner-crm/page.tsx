@@ -6,6 +6,7 @@ import {
   PartnerCRMClient,
   type Partner,
 } from "@/components/dashboard/engagement/partner-crm-client";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { GoldStar } from "@/components/aurienta-logo";
 import { Users, Crown } from "lucide-react";
 
@@ -31,7 +32,7 @@ export default async function PartnerCRMPage() {
   // ── RBAC ── founding_operator + company_owner only
   const crmMemberships = user.memberships.filter((m) => CRM_ROLES.has(m.role));
   if (crmMemberships.length === 0) {
-    redirect("/dashboard");
+    return <AccessRestricted requiredRole="Founding Operator or Company Owner" />;
   }
 
   const entIds = crmMemberships.map((m) => m.enterpriseId);

@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { SECTORS, CONSTITUTIONAL_HASH, TIER_META } from "@/lib/aurienta/constants";
@@ -26,7 +27,8 @@ import { PageTransition } from "@/components/dashboard/page-transition";
 export const metadata = { title: "Constitutional Holdings · AURIENTA" };
 
 export default async function PortfolioPage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/portfolio");
 
   // User's holdings (shares > 0).
   const holdings = user.ownershipRecords

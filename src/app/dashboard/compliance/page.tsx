@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/dashboard/institutional/page-header";
@@ -12,7 +13,8 @@ import { ShieldCheck, Lock, ScrollText, Building2 } from "lucide-react";
 export const metadata = { title: "Compliance · AURIENTA" };
 
 export default async function CompliancePage() {
-  const user = (await getCurrentUser())!;
+  const user = await getCurrentUser();
+  if (!user) redirect("/signin?next=/dashboard/compliance");
 
   // Pull the user's enterprises
   const enterpriseIds = user.memberships.map((m) => m.enterpriseId);

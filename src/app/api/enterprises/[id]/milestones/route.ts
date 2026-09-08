@@ -155,6 +155,11 @@ export async function GET(
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
+  // P1 IDOR fix: only members of this enterprise may list its milestones.
+  const hasAccess = user.memberships.some((m) => m.enterpriseId === enterpriseId);
+  if (!hasAccess) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
   const milestones = await db.milestone.findMany({
     where: { enterpriseId },
     orderBy: { createdAt: "asc" },
