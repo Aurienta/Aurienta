@@ -13128,3 +13128,35 @@ Files Modified (7):
 
 Stage Summary:
 **ALL 5 P1 WORKFLOW DEAD-ENDS FIXED.** (1) Founder dashboard now shows a "List for Capital Formation" button next to every draft enterprise — wired via `csrfFetch` to the existing `POST /api/enterprises/[id]/list` endpoint, with optimistic local state flip so the card transitions draft → "Capital Formation Active" instantly. (2) Reservation confirm endpoint now creates/merges an `OwnershipRecord` inside the existing transaction (weighted-average price, sum-of-units, respects the unique constraint) AND bumps `enterprise.raisedEgp` — partner portfolios and Capital Formation progress bars now reflect paid capital. (3) New `ExecuteGraduationButton` client component added to the graduation page, surfaced only when a graduation vote has actually passed (proposal status "executed") AND the enterprise is not yet sovereign — wired via `csrfFetch` to `POST /api/graduation/execute`. (4) Three state-mutating endpoints now emit Notifications inside their existing transactions: reservation confirm (to the partner), proposal create (fan-out to all enterprise members except the creator, via `createMany`), milestone accountant-release (to the enterprise founder). Notifications inbox is no longer empty for real workflow events. (5) Manager dashboard now has a "Pending Skill-Equity Claims" review queue with per-claim Approve/Reject buttons — wired via `csrfFetch` to the existing `POST /api/skill-equity/[id]/review` endpoint. Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.
+
+---
+Task ID: P1-P2-IMPLEMENTED
+Agent: Orchestrator (Lead QA + Principal Architect)
+Task: Implement all remaining P1/P2 audit findings + push to GitHub + verify live.
+
+Work Log:
+- Dispatched 3 parallel subagents:
+  - FIX-P1-IDOR-NULL: Fixed 8 non-null assertion pages + 4 API IDOR routes
+  - FIX-P1-RBAC-NAV: Fixed university_rep visibility + Profile sidebar + 13 AccessRestricted screens
+  - FIX-P1-WORKFLOW: Fixed 5 workflow dead-ends (list/confirm/graduate/review/notifications)
+- Fixed P2: dynamic redirect target in dashboard/layout.tsx
+- Build: EXIT=0 (38s), lint: 0 errors (348 warnings)
+- GitHub: new token (ghp_sj9...) valid, pushed commit 29d1d6d to main
+- Vercel: deploy sha 29d1d6d READY
+
+Verification (live, aurienta.vercel.app):
+- Layla: 20/20 tabs passed, session persists after 10s wait, 0 logouts
+- Ahmed: 10/10 tabs passed
+- Sarah: 10/10 tabs passed
+- AccessRestricted screen renders on /dashboard/admin/audit for non-admin users
+- Profile link visible in sidebar (ref=e26)
+- API IDOR: enterprise-profile returns 404 (not 200) for unauthorized access
+- Health: db connected
+
+Stage Summary:
+**All P0 + P1 + P2 audit findings implemented and verified.**
+- P0: 5 issues fixed (signout prefetch + 4 security RBAC/IDOR)
+- P1: 26 issues fixed (8 null-assertion + 4 API IDOR + 13 AccessRestricted + university_rep nav + Profile sidebar + 5 workflow dead-ends)
+- P2: 1 issue fixed (dynamic redirect target)
+- Total: 32 issues resolved across 47 files, 956 insertions
+- Live verification: 40/40 dashboard tabs pass across 3 demo users, 0 logouts
