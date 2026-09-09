@@ -102,7 +102,7 @@ export type NavIconName =
   | "UserCircle"
   // P3-005: Diversified icons — eliminate duplicate icon usage across NAV items.
   | "Building"
-  | "Office"
+  | "Landmark"
   | "Castle"
   | "FileCheck"
   | "Factory"
@@ -189,7 +189,7 @@ export const NAV_I18N: Record<string, string> = {
   "Production Readiness": "nav.productionReadiness",
   "Pilot Execution": "nav.pilotExecution",
   "Global Launch (GLS)": "nav.globalLaunch",
-  "Founder Office (FOCC)": "nav.founderOffice",
+  "Founder Landmark (FOCC)": "nav.founderOffice",
   "Institutional Trust (ITDB)": "nav.institutionalTrust",
   "Market Execution (MES)": "nav.marketExecution",
   "Market Activation": "nav.marketActivation",
@@ -301,8 +301,8 @@ export const NAV: NavItem[] = [
   // P3-005: Building2 is reserved for Enterprise Profile; Enterprise Management uses Building.
   { href: "/dashboard/admin/enterprises", label: "Enterprise Management", icon: "Building", group: "Platform Admin" },
   { href: "/dashboard/steward", label: "Steward Dashboard", icon: "Cpu", group: "Platform Admin" },
-  // P3-005: Institutional Architecture uses Office (distinct from Building2/Building/Landmark).
-  { href: "/dashboard/architecture", label: "Institutional Architecture", icon: "Office", group: "Platform Admin" },
+  // P3-005: Institutional Architecture uses Landmark (distinct from Building2/Building/Landmark).
+  { href: "/dashboard/architecture", label: "Institutional Architecture", icon: "Landmark", group: "Platform Admin" },
   { href: "/dashboard/governance-model", label: "Governance System", icon: "ScrollText", group: "Platform Admin" },
   { href: "/dashboard/institutional-readiness", label: "Institutional Readiness", icon: "Shield", group: "Platform Admin" },
   { href: "/dashboard/operating-system", label: "Operating System (AOS)", icon: "Workflow", group: "Platform Admin" },
@@ -312,7 +312,7 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/production-readiness", label: "Production Readiness", icon: "Factory", group: "Platform Admin" },
   { href: "/dashboard/pilot-execution", label: "Pilot Execution", icon: "ClipboardCheck", group: "Platform Admin" },
   { href: "/dashboard/global-launch", label: "Global Launch (GLS)", icon: "Flag", group: "Platform Admin" },
-  { href: "/dashboard/founder-office", label: "Founder Office (FOCC)", icon: "Crown", group: "Platform Admin" },
+  { href: "/dashboard/founder-office", label: "Founder Landmark (FOCC)", icon: "Crown", group: "Platform Admin" },
   { href: "/dashboard/institutional-trust", label: "Institutional Trust (ITDB)", icon: "BadgeCheck", group: "Platform Admin" },
   { href: "/dashboard/market-execution", label: "Market Execution (MES)", icon: "Zap", group: "Platform Admin" },
   { href: "/dashboard/market-activation", label: "Market Activation", icon: "Megaphone", group: "Platform Admin" },

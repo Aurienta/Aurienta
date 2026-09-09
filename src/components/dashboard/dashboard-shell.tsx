@@ -16,7 +16,7 @@ import {
   Newspaper, Contact, Workflow, Shield, ClipboardCheck, Flag, Crown, BadgeCheck, Zap, Megaphone, GitBranch, Handshake, Crosshair,
   UserCircle,
   // P3-005: Diversified icons to eliminate duplicates across NAV items.
-  Building, Office, Castle, FileCheck, Factory,
+  Building, Landmark, Castle, FileCheck, Factory,
   Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase,
 } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
@@ -133,7 +133,7 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ElementType> = {
   // P3-005: Diversified icons — must be registered so NAV items that
   // reference them by name resolve correctly via resolveNavIcon().
   Building,
-  Office,
+  Landmark,
   Castle,
   FileCheck,
   Factory,

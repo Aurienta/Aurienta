@@ -75,7 +75,7 @@ import {
   // P3-005: Diversified icons — must be imported here too so the registry
   // below can resolve them when the new NAV items reference them by name.
   Building,
-  Office,
+  Landmark,
   Castle,
   FileCheck,
   Factory,
@@ -180,7 +180,7 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ComponentType<{ className?: s
   // P3-005: Diversified icons — registered here so NAV items that reference
   // them by name resolve correctly via resolveNavIcon().
   Building,
-  Office,
+  Landmark,
   Castle,
   FileCheck,
   Factory,
