@@ -179,7 +179,6 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ComponentType<{ className?: s
   // P3-005: Diversified icons — registered here so NAV items that reference
   // them by name resolve correctly via resolveNavIcon().
   Building,
-  Landmark,
   Castle,
   FileCheck,
   Factory,
