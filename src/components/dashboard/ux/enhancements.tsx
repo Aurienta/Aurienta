@@ -4,10 +4,36 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Plus, Vote, LineChart, FileText, Bot, X, HelpCircle, Sparkles } from "lucide-react";
+import {
+  ChevronRight, Plus, Vote, LineChart, FileText, Bot, X, HelpCircle, Sparkles,
+  // P3-003: additional icons for institutional-rep quick actions.
+  Building2, ClipboardList, Newspaper, Vault, Target, FileSearch,
+  ClipboardCheck, Calculator, ShieldCheck, Users, ShieldAlert,
+  SlidersHorizontal, GraduationCap, FlaskConical,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+// FIX-P2-NAV-CENTRALIZE: breadcrumbs now resolve labels from the centralized
+// NAV config so they match the sidebar exactly (e.g. /dashboard/admin-panel
+// shows "Platform Admin Panel" not "Admin Panel"). Falls back to slug-derived
+// title-case for non-nav paths (e.g. /dashboard/admin which has no NAV entry).
+import { getNavLabel, NAV_GROUPS, NAV } from "@/lib/aurienta/nav-config";
 
-// I2: Breadcrumbs — derives trail from pathname
+// Helper: title-case a URL slug (e.g. "career-ledger" → "Career Ledger").
+function slugToTitleCase(slug: string): string {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+// I2: Breadcrumbs — derives trail from pathname.
+//
+// FIX-P2-NAV-CENTRALIZE (P2-002): labels are now resolved from the centralized
+// NAV config so they always match the sidebar (e.g. /dashboard/admin-panel →
+// "Platform Admin Panel", not the slug-derived "Admin Panel"). The dashboard
+// root keeps its "Workspace" label (sidebar GROUP name) for backward UX
+// consistency. For paths not in NAV (e.g. /dashboard/admin parent of
+// /dashboard/admin/users), falls back to slug title-case.
 export function Breadcrumbs({ pathname }: { pathname: string }) {
   const segments = pathname.split("/").filter(Boolean);
   if (segments.length <= 1) return null;
@@ -16,10 +42,17 @@ export function Breadcrumbs({ pathname }: { pathname: string }) {
   let path = "";
   for (const seg of segments) {
     path += "/" + seg;
-    const label = seg === "dashboard" ? "Workspace" : seg
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
+    let label: string;
+    if (seg === "dashboard") {
+      // Dashboard root: keep the long-standing "Workspace" label (the sidebar
+      // GROUP name) so the breadcrumb trail reads "Workspace / Constitutional
+      // Holdings" rather than "Overview / Constitutional Holdings".
+      label = "Workspace";
+    } else {
+      // Resolve the canonical sidebar label for this full path; fall back to
+      // slug-derived title-case for non-nav paths (e.g. /dashboard/admin).
+      label = getNavLabel(path) ?? slugToTitleCase(seg);
+    }
     trail.push({ label, href: path });
   }
 
@@ -159,12 +192,18 @@ export function SkeletonCard() {
 // I4: Onboarding Tour
 export function OnboardingTour({ onClose }: { onClose: () => void }) {
   const [step, setStep] = React.useState(0);
+  // FIX-P3-002 (P3-002): The onboarding copy previously hard-coded "9 groups,
+  // 51 features" — but the actual NAV has 83 items across 9 groups, so the
+  // copy was stale. Now derives counts dynamically from the centralized NAV
+  // config so it's always accurate (today: 9 groups, 83 features).
+  const featureCount = NAV.length;
+  const groupCount = NAV_GROUPS.length;
   const steps = [
     { title: "Welcome to your Constitutional Workspace", body: "Your unified dashboard for every role — Capital Partner, Founding Operator, Workforce Partner, and more." },
     { title: "Your portfolio shows ownership %", body: "View your Equity Unit holdings as ownership percentage, valued at the Constitutional Percentage Price (CPP)." },
     { title: "Vote on constitutional proposals", body: "Every Equity Unit carries one vote. Participate in governance through constitutional consensus." },
     { title: "Ask the AI Copilot anything", body: "Press ⌘K (or Ctrl+K) to open the command palette. Ask about Zero Custody, graduation, or your portfolio." },
-    { title: "Explore all features in the sidebar", body: "9 groups, 51 features. Click any group to expand it. Your active role reorders the groups automatically." },
+    { title: "Explore all features in the sidebar", body: `${groupCount} groups, ${featureCount} features. Click any group to expand it. Your active role reorders the groups automatically.` },
   ];
 
   return (
@@ -297,7 +336,35 @@ export function QuickActions({ roles }: { roles: Set<string> } ) {
     { label: "Place a trade", href: "/dashboard/market", icon: LineChart, roles: ["capital_partner", "board_member", "founding_operator"] },
     { label: "Create proposal", href: "/dashboard/governance", icon: FileText, roles: ["board_member", "founding_operator", "capital_partner"] },
     { label: "Submit expense", href: "/dashboard/manager", icon: FileText, roles: ["manager", "founding_operator"] },
-    { label: "Ask AI Copilot", href: "/dashboard/copilot", icon: Bot, roles: ["capital_partner", "board_member", "founding_operator", "manager", "workforce_partner"] },
+    // P3-003: AI Copilot is now universal — every signed-in partner (including
+    // the 5 institutional-rep roles) gets at least one quick action so the FAB
+    // is never empty. Previously the FAB rendered 0 actions for company_owner,
+    // law_firm_rep, accounting_firm_rep, aurienta_rep, and university_rep.
+    { label: "Ask AI Copilot", href: "/dashboard/copilot", icon: Bot, roles: ["capital_partner", "board_member", "founding_operator", "manager", "workforce_partner", "company_owner", "law_firm_rep", "accounting_firm_rep", "aurienta_rep", "university_rep"] },
+
+    // ── P3-003: company_owner quick actions ──
+    { label: "View Enterprise", href: "/dashboard/enterprise-profile", icon: Building2, roles: ["company_owner"] },
+    { label: "Board Briefing", href: "/dashboard/board-briefings", icon: ClipboardList, roles: ["company_owner"] },
+    { label: "Shareholder Update", href: "/dashboard/updates", icon: Newspaper, roles: ["company_owner"] },
+
+    // ── P3-003: law_firm_rep quick actions ──
+    { label: "Client Accounts", href: "/dashboard/escrow", icon: Vault, roles: ["law_firm_rep"] },
+    { label: "Milestone Releases", href: "/dashboard/milestone-designer", icon: Target, roles: ["law_firm_rep"] },
+    { label: "Evidence Review", href: "/dashboard/precedents", icon: FileSearch, roles: ["law_firm_rep"] },
+
+    // ── P3-003: accounting_firm_rep quick actions ──
+    { label: "Expense Approvals", href: "/dashboard/manager", icon: ClipboardCheck, roles: ["accounting_firm_rep"] },
+    { label: "Budget Review", href: "/dashboard/accounting", icon: Calculator, roles: ["accounting_firm_rep"] },
+    { label: "Solvency Check", href: "/dashboard/solvency", icon: ShieldCheck, roles: ["accounting_firm_rep"] },
+
+    // ── P3-003: aurienta_rep quick actions ──
+    { label: "User Management", href: "/dashboard/admin/users", icon: Users, roles: ["aurienta_rep"] },
+    { label: "Enterprise Audit", href: "/dashboard/constitutional-audit", icon: ShieldAlert, roles: ["aurienta_rep"] },
+    { label: "Platform Settings", href: "/dashboard/admin/settings", icon: SlidersHorizontal, roles: ["aurienta_rep"] },
+
+    // ── P3-003: university_rep quick actions ──
+    { label: "University Console", href: "/dashboard/university", icon: GraduationCap, roles: ["university_rep"] },
+    { label: "Research Projects", href: "/dashboard/first-research", icon: FlaskConical, roles: ["university_rep"] },
   ];
 
   const actions = allActions.filter((a) => a.roles.some((r) => roles.has(r)));

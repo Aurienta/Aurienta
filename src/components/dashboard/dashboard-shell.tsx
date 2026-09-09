@@ -15,6 +15,9 @@ import {
   Layers, Activity, SlidersHorizontal, ScrollText,
   Newspaper, Contact, Workflow, Shield, ClipboardCheck, Flag, Crown, BadgeCheck, Zap, Megaphone, GitBranch, Handshake, Crosshair,
   UserCircle,
+  // P3-005: Diversified icons to eliminate duplicates across NAV items.
+  Building, Office, Castle, FileCheck, Factory,
+  Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase,
 } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { cn } from "@/lib/utils";
@@ -30,6 +33,15 @@ import {
 } from "@/components/ui/tooltip";
 import { stsLevel } from "@/lib/aurienta/constants";
 import { egp } from "@/lib/aurienta/format";
+import {
+  NAV,
+  NAV_I18N,
+  GROUP_I18N,
+  DEFAULT_GROUP_ORDER,
+  groupOrderForRoles,
+  visibleGroupsForRoles,
+  type NavIconName,
+} from "@/lib/aurienta/nav-config";
 import { CommandPalette } from "@/components/dashboard/ux/command-palette";
 import { Breadcrumbs, EnterpriseSwitcher, OnboardingTour, HelpButton, QuickActions } from "@/components/dashboard/ux/enhancements";
 import { RoleContextBar } from "@/components/dashboard/role-context-bar";
@@ -41,311 +53,102 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLanguage } from "@/lib/i18n/language-context";
 
-type NavItem = { href: string; label: string; icon: React.ElementType; group: string };
-
-// Translation map: English label → i18n key
-const NAV_I18N: Record<string, string> = {
-  "Overview": "nav.overview",
-  "Constitutional Holdings": "nav.portfolio",
-  "Capital Participation": "nav.opportunities",
-  "Enterprise Registry": "nav.market",
-  "Priority Windows": "nav.priorityWindows",
-  "Constitutional Calendar": "nav.calendar",
-  "Enterprise Updates": "nav.updates",
-  "Syndicates": "nav.syndicates",
-  "Career Ledger": "nav.careerLedger",
-  "Mentorship": "nav.mentorship",
-  "Skill-to-Equity": "nav.skillEquity",
-  "AI Salary Engine": "nav.salary",
-  "Diaspora Bridge": "nav.diaspora",
-  "Governance": "nav.governance",
-  "Manager Console": "nav.manager",
-  "Founding Operator Studio": "nav.founder",
-  "Enterprise Profile": "nav.enterpriseProfile",
-  "Pitch Deck Generator": "nav.pitchDeck",
-  "Milestone Designer": "nav.milestoneDesigner",
-  "Board Member Console": "nav.boardMember",
-  "Board Briefings": "nav.boardBriefings",
-  "Succession Planner": "nav.succession",
-  "Partner CRM": "nav.partnerCrm",
-  "Brain AI Status": "nav.brainAi",
-  "Precedent Engine": "nav.precedents",
-  "Drift Detector": "nav.drift",
-  "Anomaly Narration": "nav.anomalies",
-  "Charter Diff": "nav.charterDiff",
-  "Constitution Guide": "nav.constitutionGuide",
-  "Notifications": "nav.notifications",
-  "AI Copilot": "nav.copilot",
-  "Compliance": "nav.compliance",
-  "Workforce Registry": "nav.workforce",
-  "Whistleblower": "nav.whistleblower",
-  "Appeal Court": "nav.appeals",
-  "Risk Disclosure": "nav.riskDisclosure",
-  "Vendor Portal": "nav.vendorPortal",
-  "Law Firm Client Accounts": "nav.escrow",
-  "Anti-Fragility Vault": "nav.antifragility",
-  "Insurance Vault": "nav.vault",
-  "Proof-of-Solvency": "nav.solvency",
-  "Oracle Mirror": "nav.oracleMirror",
-  "Reality Sync": "nav.realitySync",
-  "Institutional Memory": "nav.institutionalMemory",
-  "Graduation": "nav.graduation",
-  "Graduation Coach": "nav.graduationCoach",
-  "Graduation Simulator": "nav.graduationSimulator",
-  "Survival Drill": "nav.survivalDrill",
-  "Alumni Hall": "nav.alumni",
-  "Tax Optimizer": "nav.tax",
-  "Capital Partner Relations": "nav.ir",
-  "DRIP (Dividend Reinvest)": "nav.drip",
-  "Partner Management": "nav.adminUsers",
-  "Enterprise Management": "nav.adminEnterprises",
-  "Steward Dashboard": "nav.steward",
-  "Institutional Architecture": "nav.architecture",
-  "Governance System": "nav.governanceModel",
-  "Institutional Readiness": "nav.institutionalReadiness",
-  "Operating System (AOS)": "nav.operatingSystem",
-  "Commercialization (ACS)": "nav.commercialization",
-  "Production Readiness": "nav.productionReadiness",
-  "Pilot Execution": "nav.pilotExecution",
-  "Global Launch (GLS)": "nav.globalLaunch",
-  "Founder Office (FOCC)": "nav.founderOffice",
-  "Institutional Trust (ITDB)": "nav.institutionalTrust",
-  "Market Execution (MES)": "nav.marketExecution",
-  "Market Activation": "nav.marketActivation",
-  "Customer Conversion": "nav.customerConversion",
-  "Strategic Partners": "nav.strategicPartners",
-  "Execution War Room": "nav.executionWarRoom",
-  "First 25 Research": "nav.firstResearch",
-  "Constitutional Audit": "nav.constitutionalAudit",
-  "Audit Log Viewer": "nav.auditLog",
-  "Institutional Settings": "nav.adminSettings",
-  "Platform Admin Panel": "nav.adminPanel",
-  "FRA Regulatory": "nav.fra",
-  "Company Owner": "nav.companyOwner",
-  "Law Firm Rep": "nav.lawFirm",
-  "Accounting Firm": "nav.accounting",
-  "Industry Modules": "nav.industry",
-  "Federation": "nav.federation",
-  "VC Wallet": "nav.credentials",
-  "University Rep Console": "nav.university",
-  "Profile & Identity": "nav.profile",
+// FIX-P2-NAV-CENTRALIZE: ICON REGISTRY
+//
+// nav-config.ts stores nav icons by NAME (string) so the data module stays
+// free of React/JSX imports and can be consumed from server code (breadcrumbs,
+// server components). This registry is the consumer-side resolver that maps a
+// NavIconName string back to the actual Lucide icon component, so the sidebar
+// can still render `<Icon className=.../>`.
+//
+// If you add a new icon to a NAV item, add the corresponding entry here too.
+const NAV_ICON_REGISTRY: Record<NavIconName, React.ElementType> = {
+  LayoutDashboard,
+  Wallet,
+  Compass,
+  LineChart,
+  Scale,
+  Settings2,
+  Rocket,
+  ShieldCheck,
+  GraduationCap,
+  Award,
+  Bot,
+  User: UserIcon,
+  Bell,
+  Search,
+  Menu,
+  X,
+  ChevronDown,
+  LogOut,
+  ExternalLink,
+  CalendarDays,
+  Hourglass,
+  Users,
+  HardHat,
+  Globe,
+  Brain,
+  GitCompare,
+  Languages,
+  FileSearch,
+  AlertTriangle,
+  TrendingUp,
+  Target,
+  ClipboardList,
+  UserCheck,
+  Calculator,
+  MessageSquare,
+  FlaskConical,
+  HeartPulse,
+  Building2,
+  Landmark,
+  Database,
+  Vault,
+  FileText,
+  Gavel,
+  Truck,
+  Cpu,
+  ShieldAlert,
+  KeyRound,
+  Network,
+  Presentation,
+  Layers,
+  Activity,
+  SlidersHorizontal,
+  ScrollText,
+  Newspaper,
+  Contact,
+  Workflow,
+  Shield,
+  ClipboardCheck,
+  Flag,
+  Crown,
+  BadgeCheck,
+  Zap,
+  Megaphone,
+  GitBranch,
+  Handshake,
+  Crosshair,
+  UserCircle,
+  // P3-005: Diversified icons — must be registered so NAV items that
+  // reference them by name resolve correctly via resolveNavIcon().
+  Building,
+  Office,
+  Castle,
+  FileCheck,
+  Factory,
+  Banknote,
+  Receipt,
+  BarChart3,
+  Gauge,
+  PieChart,
+  CheckCircle2,
+  Briefcase,
 };
 
-// Group translation map
-const GROUP_I18N: Record<string, string> = {
-  "Workspace": "group.workspace",
-  "Capital & Workforce": "group.capitalWorkforce",
-  "Enterprise": "group.enterprise",
-  "Intelligence": "group.intelligence",
-  "Compliance & Transparency": "group.compliance",
-  "Treasury & Infrastructure": "group.treasury",
-  "Graduation & Sovereignty": "group.graduation",
-  "Institutional Services": "group.services",
-  "Platform Admin": "group.admin",
-};
-
-const NAV: NavItem[] = [
-  // ── Workspace (6) ──
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
-  { href: "/dashboard/portfolio", label: "Constitutional Holdings", icon: Wallet, group: "Workspace" },
-  { href: "/dashboard/opportunities", label: "Capital Participation", icon: Compass, group: "Workspace" },
-  { href: "/dashboard/market", label: "Enterprise Registry", icon: LineChart, group: "Workspace" },
-  { href: "/dashboard/priority-windows", label: "Priority Windows", icon: Hourglass, group: "Workspace" },
-  { href: "/dashboard/calendar", label: "Constitutional Calendar", icon: CalendarDays, group: "Workspace" },
-  { href: "/dashboard/updates", label: "Enterprise Updates", icon: Newspaper, group: "Workspace" },
-  // P1-002: Profile entry in the sidebar so it is discoverable on mobile
-  // (previously only reachable via the avatar dropdown).
-  { href: "/dashboard/profile", label: "Profile & Identity", icon: UserCircle, group: "Workspace" },
-
-  // ── Capital & Workforce (5) ──
-  { href: "/dashboard/syndicates", label: "Syndicates", icon: Users, group: "Capital & Workforce" },
-  { href: "/dashboard/career-ledger", label: "Career Ledger", icon: HardHat, group: "Capital & Workforce" },
-  { href: "/dashboard/mentorship", label: "Mentorship", icon: UserCheck, group: "Capital & Workforce" },
-  { href: "/dashboard/skill-equity", label: "Skill-to-Equity", icon: Award, group: "Capital & Workforce" },
-  { href: "/dashboard/salary", label: "AI Salary Engine", icon: Calculator, group: "Capital & Workforce" },
-  { href: "/dashboard/diaspora", label: "Diaspora Bridge", icon: Globe, group: "Capital & Workforce" },
-
-  // ── Enterprise (8) ──
-  { href: "/dashboard/governance", label: "Governance", icon: Scale, group: "Enterprise" },
-  { href: "/dashboard/manager", label: "Manager Console", icon: Settings2, group: "Enterprise" },
-  { href: "/dashboard/founder", label: "Founding Operator Studio", icon: Rocket, group: "Enterprise" },
-  { href: "/dashboard/enterprise-profile", label: "Enterprise Profile", icon: Building2, group: "Enterprise" },
-  { href: "/dashboard/pitch-deck", label: "Pitch Deck Generator", icon: Presentation, group: "Enterprise" },
-  { href: "/dashboard/milestone-designer", label: "Milestone Designer", icon: Target, group: "Enterprise" },
-  { href: "/dashboard/board-member", label: "Board Member Console", icon: Gavel, group: "Enterprise" },
-  { href: "/dashboard/board-briefings", label: "Board Briefings", icon: ClipboardList, group: "Enterprise" },
-  { href: "/dashboard/succession", label: "Succession Planner", icon: UserCheck, group: "Enterprise" },
-  { href: "/dashboard/partner-crm", label: "Partner CRM", icon: Contact, group: "Enterprise" },
-
-  // ── Intelligence (8) ──
-  { href: "/dashboard/brain-ai", label: "Brain AI Status", icon: Brain, group: "Intelligence" },
-  { href: "/dashboard/precedents", label: "Precedent Engine", icon: FileSearch, group: "Intelligence" },
-  { href: "/dashboard/drift", label: "Drift Detector", icon: TrendingUp, group: "Intelligence" },
-  { href: "/dashboard/anomalies", label: "Anomaly Narration", icon: AlertTriangle, group: "Intelligence" },
-  { href: "/dashboard/charter-diff", label: "Charter Diff", icon: GitCompare, group: "Intelligence" },
-  { href: "/dashboard/constitution", label: "Constitution Guide", icon: Languages, group: "Intelligence" },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell, group: "Intelligence" },
-  { href: "/dashboard/copilot", label: "AI Copilot", icon: Bot, group: "Intelligence" },
-
-  // ── Compliance & Transparency (6) ──
-  { href: "/dashboard/compliance", label: "Compliance", icon: ShieldCheck, group: "Compliance & Transparency" },
-  { href: "/dashboard/workforce", label: "Workforce Registry", icon: Users, group: "Compliance & Transparency" },
-  { href: "/dashboard/whistleblower", label: "Whistleblower", icon: ShieldAlert, group: "Compliance & Transparency" },
-  { href: "/dashboard/appeals", label: "Appeal Court", icon: Gavel, group: "Compliance & Transparency" },
-  { href: "/dashboard/risk-disclosure", label: "Risk Disclosure", icon: AlertTriangle, group: "Compliance & Transparency" },
-  { href: "/dashboard/vendor-portal", label: "Vendor Portal", icon: Truck, group: "Compliance & Transparency" },
-
-  // ── Treasury & Infrastructure (5) ──
-  { href: "/dashboard/escrow", label: "Law Firm Client Accounts", icon: Vault, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/antifragility", label: "Anti-Fragility Vault", icon: Database, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/vault", label: "Insurance Vault", icon: Database, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/solvency", label: "Proof-of-Solvency", icon: ShieldCheck, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/oracle-mirror", label: "Oracle Mirror", icon: FileText, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/reality-sync", label: "Reality Sync", icon: Activity, group: "Treasury & Infrastructure" },
-  { href: "/dashboard/institutional-memory", label: "Institutional Memory", icon: Layers, group: "Treasury & Infrastructure" },
-
-  // ── Graduation & Sovereignty (5) ──
-  { href: "/dashboard/graduation", label: "Graduation", icon: GraduationCap, group: "Graduation & Sovereignty" },
-  { href: "/dashboard/graduation-coach", label: "Graduation Coach", icon: TrendingUp, group: "Graduation & Sovereignty" },
-  { href: "/dashboard/graduation-simulator", label: "Graduation Simulator", icon: FlaskConical, group: "Graduation & Sovereignty" },
-  { href: "/dashboard/survival-drill", label: "Survival Drill", icon: HeartPulse, group: "Graduation & Sovereignty" },
-  { href: "/dashboard/alumni", label: "Alumni Hall", icon: Award, group: "Graduation & Sovereignty" },
-
-  // ── Platform Admin (10) ──
-  { href: "/dashboard/admin/users", label: "Partner Management", icon: Users, group: "Platform Admin" },
-  { href: "/dashboard/admin/enterprises", label: "Enterprise Management", icon: Building2, group: "Platform Admin" },
-  { href: "/dashboard/steward", label: "Steward Dashboard", icon: Cpu, group: "Platform Admin" },
-  { href: "/dashboard/architecture", label: "Institutional Architecture", icon: Building2, group: "Platform Admin" },
-  { href: "/dashboard/governance-model", label: "Governance System", icon: ScrollText, group: "Platform Admin" },
-  { href: "/dashboard/institutional-readiness", label: "Institutional Readiness", icon: Shield, group: "Platform Admin" },
-  { href: "/dashboard/operating-system", label: "Operating System (AOS)", icon: Workflow, group: "Platform Admin" },
-  { href: "/dashboard/commercialization", label: "Commercialization (ACS)", icon: TrendingUp, group: "Platform Admin" },
-  { href: "/dashboard/production-readiness", label: "Production Readiness", icon: ShieldCheck, group: "Platform Admin" },
-  { href: "/dashboard/pilot-execution", label: "Pilot Execution", icon: ClipboardCheck, group: "Platform Admin" },
-  { href: "/dashboard/global-launch", label: "Global Launch (GLS)", icon: Flag, group: "Platform Admin" },
-  { href: "/dashboard/founder-office", label: "Founder Office (FOCC)", icon: Crown, group: "Platform Admin" },
-  { href: "/dashboard/institutional-trust", label: "Institutional Trust (ITDB)", icon: BadgeCheck, group: "Platform Admin" },
-  { href: "/dashboard/market-execution", label: "Market Execution (MES)", icon: Zap, group: "Platform Admin" },
-  { href: "/dashboard/market-activation", label: "Market Activation", icon: Megaphone, group: "Platform Admin" },
-  { href: "/dashboard/customer-conversion", label: "Customer Conversion", icon: GitBranch, group: "Platform Admin" },
-  { href: "/dashboard/strategic-partners", label: "Strategic Partners", icon: Handshake, group: "Platform Admin" },
-  { href: "/dashboard/execution-war-room", label: "Execution War Room", icon: Crosshair, group: "Platform Admin" },
-  { href: "/dashboard/first-research", label: "First 25 Research", icon: Target, group: "Platform Admin" },
-  { href: "/dashboard/constitutional-audit", label: "Constitutional Audit", icon: Scale, group: "Platform Admin" },
-  { href: "/dashboard/admin/audit", label: "Audit Log Viewer", icon: ScrollText, group: "Platform Admin" },
-  { href: "/dashboard/admin/settings", label: "Institutional Settings", icon: SlidersHorizontal, group: "Platform Admin" },
-  { href: "/dashboard/admin-panel", label: "Platform Admin Panel", icon: ShieldAlert, group: "Platform Admin" },
-  { href: "/dashboard/fra", label: "FRA Regulatory", icon: Landmark, group: "Platform Admin" },
-  { href: "/dashboard/company-owner", label: "Company Owner", icon: Building2, group: "Platform Admin" },
-  { href: "/dashboard/law-firm", label: "Law Firm Rep", icon: Scale, group: "Platform Admin" },
-  { href: "/dashboard/accounting", label: "Accounting Firm", icon: Calculator, group: "Platform Admin" },
-  { href: "/dashboard/industry", label: "Industry Modules", icon: FlaskConical, group: "Platform Admin" },
-  { href: "/dashboard/federation", label: "Federation", icon: Network, group: "Platform Admin" },
-  { href: "/dashboard/credentials", label: "VC Wallet", icon: KeyRound, group: "Platform Admin" },
-  { href: "/dashboard/university", label: "University Rep Console", icon: GraduationCap, group: "Platform Admin" },
-
-  // ── Institutional Services (3) ──
-  { href: "/dashboard/tax", label: "Tax Optimizer", icon: Calculator, group: "Institutional Services" },
-  { href: "/dashboard/ir", label: "Capital Partner Relations", icon: MessageSquare, group: "Institutional Services" },
-  { href: "/dashboard/drip", label: "DRIP (Dividend Reinvest)", icon: TrendingUp, group: "Institutional Services" },
-];
-
-const DEFAULT_GROUP_ORDER = [
-  "Workspace",
-  "Capital & Workforce",
-  "Enterprise",
-  "Intelligence",
-  "Compliance & Transparency",
-  "Treasury & Infrastructure",
-  "Graduation & Sovereignty",
-  "Institutional Services",
-  "Platform Admin",
-];
-
-function groupOrderForRoles(roles: Set<string>): string[] {
-  const isOperator = roles.has("manager") || roles.has("founding_operator");
-  if (isOperator) {
-    return ["Enterprise", "Workspace", "Intelligence", "Capital & Workforce", "Compliance & Transparency", "Treasury & Infrastructure", "Graduation & Sovereignty", "Institutional Services", "Platform Admin"];
-  }
-  return DEFAULT_GROUP_ORDER;
-}
-
-/**
- * REMED-1D — Role-based nav FILTERING (not just reorder).
- *
- * Returns the set of nav groups a user with the given roles is allowed to see.
- * Groups not in the returned set are hidden entirely from the sidebar.
- *
- * Rules (from the CTO audit remediation spec):
- *  - Workspace / Capital & Workforce / Intelligence / Compliance & Transparency /
- *    Institutional Services → visible to everyone (universal partner tools).
- *  - Enterprise → only if user holds a manager / founding_operator / board_member /
- *    company_owner / accounting_firm_rep seat.
- *  - Treasury & Infrastructure → only if user holds a manager / founding_operator /
- *    board_member / company_owner / law_firm_rep seat.
- *  - Graduation & Sovereignty → only if user holds a founding_operator /
- *    company_owner / board_member seat.
- *  - Platform Admin → only if user holds an aurienta_rep / university_rep /
- *    law_firm_rep / accounting_firm_rep / company_owner seat.
- *
- * A pure capital_partner sees 5 groups (27 routes) instead of 51.
- */
-function visibleGroupsForRoles(roles: Set<string>): Set<string> {
-  const has = (r: string) => roles.has(r);
-
-  // Universal groups — every signed-in partner gets these.
-  const visible = new Set<string>([
-    "Workspace",
-    "Capital & Workforce",
-    "Intelligence",
-    "Compliance & Transparency",
-    "Institutional Services",
-  ]);
-
-  // Enterprise tools — operator/accounting seats only.
-  if (
-    has("manager") ||
-    has("founding_operator") ||
-    has("board_member") ||
-    has("company_owner") ||
-    has("accounting_firm_rep")
-  ) {
-    visible.add("Enterprise");
-  }
-
-  // Treasury & Infrastructure — operator + law-firm seats.
-  if (
-    has("manager") ||
-    has("founding_operator") ||
-    has("board_member") ||
-    has("company_owner") ||
-    has("law_firm_rep")
-  ) {
-    visible.add("Treasury & Infrastructure");
-  }
-
-  // Graduation & Sovereignty — sovereignty-class seats only.
-  if (
-    has("founding_operator") ||
-    has("company_owner") ||
-    has("board_member")
-  ) {
-    visible.add("Graduation & Sovereignty");
-  }
-
-  // Platform Admin — institutional reps + company owners + university reps.
-  // P1-001: university_rep added so university reps can reach /dashboard/university.
-  if (
-    has("aurienta_rep") ||
-    has("university_rep") ||
-    has("law_firm_rep") ||
-    has("accounting_firm_rep") ||
-    has("company_owner")
-  ) {
-    visible.add("Platform Admin");
-  }
-
-  return visible;
+// Helper: resolve a NavIconName to a React component (with a safe fallback).
+function resolveNavIcon(name: NavIconName): React.ElementType {
+  return NAV_ICON_REGISTRY[name] ?? LayoutDashboard;
 }
 
 export function DashboardShell({
@@ -501,7 +304,7 @@ export function DashboardShell({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-background">
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} roles={roles} />
 
       {/* Skip-to-content link for keyboard users (a11y) */}
       <a
@@ -764,7 +567,10 @@ function SidebarContent({
   // groups the user is allowed to see based on their role set, then intersect
   // with `groupOrder` so the operator reordering (Enterprise first) still wins
   // for users who can see that group. A pure capital_partner sees only the 5
-  // universal groups (27 routes) instead of all 51.
+  // universal groups (Workspace / Capital & Workforce / Intelligence /
+  // Compliance & Transparency / Institutional Services) — a subset of all
+  // routes defined in nav-config.ts. Counts are computed dynamically from
+  // NAV, so do not hardcode them here.
   const userRoles = React.useMemo(
     () => new Set(user.memberships.map((m) => m.role)),
     [user.memberships]
@@ -872,6 +678,7 @@ function SidebarContent({
                     <div className="flex flex-col gap-0.5 pb-1">
                       {items.map((item) => {
                         const active = pathname === item.href;
+                        const Icon = resolveNavIcon(item.icon);
                         return (
                           <Link
                             key={item.href}
@@ -884,7 +691,7 @@ function SidebarContent({
                                 : "text-muted-foreground hover:bg-gold/5 hover:text-foreground"
                             )}
                           >
-                            <item.icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-gold/70 group-hover:text-gold")} />
+                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-gold/70 group-hover:text-gold")} />
                             <span className="truncate">{tNav(item.label)}</span>
                           </Link>
                         );

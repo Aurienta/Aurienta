@@ -13160,3 +13160,113 @@ Stage Summary:
 - P2: 1 issue fixed (dynamic redirect target)
 - Total: 32 issues resolved across 47 files, 956 insertions
 - Live verification: 40/40 dashboard tabs pass across 3 demo users, 0 logouts
+
+---
+Task ID: FIX-P2-NAV-CENTRALIZE
+Agent: Navigation Centralization Agent
+Task: Centralize the AURIENTA navigation system into a single shared module to fix 3 audit findings — P2-001 (command palette covers only 28/83 sidebar routes), P2-002 (breadcrumbs derive labels from URL slugs not sidebar labels), P3-002 (onboarding tour copy says "9 groups, 51 features" but actual is 9 groups, 84 features).
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail for prior context (P0/P1/P2 audit history; confirmed the audit's "83 features" claim was a slight miscount — actual is 84).
+- Read src/components/dashboard/dashboard-shell.tsx (911 LOC pre-refactor) — contained inline NAV, NAV_I18N, GROUP_I18N, DEFAULT_GROUP_ORDER, groupOrderForRoles, visibleGroupsForRoles (~310 LOC, lines 44-349).
+- Read src/components/dashboard/ux/command-palette.tsx — hardcoded COMMANDS array with 14 navigation + 8 actions + 6 queries = 28 total (matches audit "28/83 routes" finding).
+- Read src/components/dashboard/ux/enhancements.tsx — Breadcrumbs() with slug-derived labels + OnboardingTour() with hardcoded "9 groups, 51 features" copy.
+
+Part 1 — Extract NAV config to a shared module (new file: src/lib/aurienta/nav-config.ts):
+- Created a PURE DATA module with ZERO React/JSX imports — icons are stored by NAME (string) not as component references.
+- Exported: NavItem type, NavIconName type (70-entry string union), NAV (84 items across 9 groups), NAV_I18N (84 label→key pairs), GROUP_I18N (9 group→key pairs), NAV_GROUPS (ordered list of 9 group names), DEFAULT_GROUP_ORDER (alias), visibleGroupsForRoles (REMED-1D role-based filtering), groupOrderForRoles (operator Enterprise-first reorder), getNavLabel (href→label), getNavIconName (href→icon name), getNavGroup (href→group), getAllNavRoutes (all unique hrefs), navItemsForGroups (NAV filtered to a group set).
+
+Part 2 — Update dashboard-shell.tsx to import from the new module:
+- Removed the inline NAV/NAV_I18N/GROUP_I18N/DEFAULT_GROUP_ORDER/groupOrderForRoles/visibleGroupsForRoles definitions (~310 LOC deleted).
+- Added NAV_ICON_REGISTRY (Record<NavIconName, React.ElementType>) that maps icon NAME strings back to Lucide components — mirrors the canonical lucide-react import list.
+- Added resolveNavIcon(name) helper with a LayoutDashboard fallback.
+- Updated the sidebar link rendering from `<item.icon className=.../>` to `<Icon className=.../>` where `Icon = resolveNavIcon(item.icon)`.
+- Sidebar behavior is identical — same items, same groups, same role filtering, same reorder logic, same i18n translation via NAV_I18N/GROUP_I18N (now imported).
+- Also removed 12 dead P3-005 icon imports (Building, Office, Castle, FileCheck, Factory, Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase) that a prior agent had added but never wired up to any NAV item.
+
+Part 3 — Fix command palette to cover all routes (command-palette.tsx):
+- Replaced the hardcoded COMMANDS array (14 nav + 8 actions + 6 queries = 28) with dynamic generation from NAV.
+- Added a `roles?: Set<string>` prop; when provided, only NAV items whose sidebar group is visible for those roles are surfaced (via visibleGroupsForRoles). When omitted, all NAV items are shown as a safe default.
+- Added NAV_ICON_REGISTRY + resolveNavIcon() in command-palette.tsx (mirrors the dashboard-shell registry).
+- New commands = NAV items (84) + ACTION_COMMANDS (8 static) + QUERY_COMMANDS (6 static) = 98 total. Pure capital_partner sees 36 nav commands; multi-role manager+capital_partner sees 70 nav commands.
+- Grouped headings use the sidebar group name (Workspace, Capital & Workforce, …, then Actions, then Constitutional queries) — palette reflects the same group taxonomy the user sees in the sidebar.
+- URL slug appended to cmdk search value as keywords (e.g. /dashboard/career-ledger → "career ledger") so users can search by path.
+- Wired the new roles prop: dashboard-shell.tsx now passes `<CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} roles={roles} />`.
+- Coverage went from 28/83 (34%) to 84/84 (100%) — adding a new sidebar route now automatically makes it searchable via Cmd+K.
+
+Part 4 — Fix breadcrumb labels (enhancements.tsx):
+- Imported getNavLabel from nav-config.
+- Added slugToTitleCase() helper (extracted from the old inline logic).
+- Updated Breadcrumbs() to use `getNavLabel(path) ?? slugToTitleCase(seg)` for each path segment.
+- Kept the special-case for the dashboard root segment ("dashboard" → "Workspace") for backward UX consistency — the breadcrumb trail still reads "Workspace / Constitutional Holdings" rather than "Overview / Constitutional Holdings". This is the only intentional divergence from getNavLabel; all other paths now resolve to their sidebar label exactly.
+- Example wins: /dashboard/admin-panel now shows "Platform Admin Panel" (was "Admin Panel"); /dashboard/calendar shows "Constitutional Calendar" (was "Calendar"); /dashboard/career-ledger shows "Career Ledger" (unchanged because slug title-case happened to match, but now consistently sourced).
+- For non-nav intermediate paths like /dashboard/admin (parent of /dashboard/admin/users), falls back to slug title-case ("Admin").
+
+Part 5 — Fix onboarding tour copy (enhancements.tsx):
+- Imported NAV_GROUPS and NAV from nav-config.
+- In OnboardingTour(), computed `const featureCount = NAV.length; const groupCount = NAV_GROUPS.length;`.
+- Replaced the hardcoded "9 groups, 51 features. Click any group…" body string with the template literal `\`${groupCount} groups, ${featureCount} features. Click any group…\``.
+- The copy now renders as "9 groups, 84 features. Click any group to expand it. Your active role reorders the groups automatically." If a future agent adds/removes a nav item, the copy updates automatically.
+
+Verification:
+- `bun run lint` → 0 errors, 348 warnings (down from 350 baseline). The 2 warning reductions: (a) removed the 12 dead P3-005 icon imports in dashboard-shell.tsx, (b) removed the unused NAV import in command-palette.tsx after switching to navItemsForGroups().
+- Verified NO new warnings on any touched file. Remaining warnings on touched files are all PRE-EXISTING (dashboard-shell.tsx:177,182 tNav/tGroup defined-but-unused in DashboardShell component — the same helpers ARE used in SidebarContent; enhancements.tsx:5 usePathname imported-but-unused — pre-existing).
+- Did NOT run `bun run build` (per task rules — orchestrator verifies).
+- Dev server log confirms GET / 200 OK with no compile errors after every change.
+- Touched files: 1 created (nav-config.ts) + 3 modified (dashboard-shell.tsx, command-palette.tsx, enhancements.tsx). No test code written.
+
+Stage Summary:
+- P2-001 CLOSED — Command palette coverage: 84/84 sidebar routes (was 14/83). Role-filtered via visibleGroupsForRoles so unauthorized routes never appear. Adding a sidebar route now auto-makes it Cmd+K searchable.
+- P2-002 CLOSED — Breadcrumbs now use getNavLabel(href) from the centralized config, so labels match the sidebar exactly (e.g. "Platform Admin Panel" not "Admin Panel"). Slug fallback only for non-nav intermediate paths.
+- P3-002 CLOSED — Onboarding tour copy now uses `${NAV_GROUPS.length} groups, ${NAV.length} features` dynamically (currently renders "9 groups, 84 features"). Always accurate; zero drift.
+- nav-config.ts is the single source of truth for AURIENTA navigation: adding a route there auto-propagates to (1) sidebar, (2) command palette, (3) breadcrumbs, (4) onboarding copy — with zero manual sync required.
+- Pure-data module (no React imports) so it can be consumed from server components, breadcrumbs, or future tests.
+- Agent work record: /home/z/my-project/agent-ctx/FIX-P2-NAV-CENTRALIZE-navigation-agent.md
+
+---
+Task ID: FIX-P3-COSMETIC
+Agent: P3 Cosmetic Fix Agent
+Task: Fix 5 P3 cosmetic/documentation issues — stale group-count comments, stale onboarding copy, empty Quick Actions FAB for 5 institutional-rep roles, stale /dashboard/portfolio redirect fallback, and duplicate icons across NAV items.
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail for prior context. Discovered that FIX-P2-NAV-CENTRALIZE had already extracted NAV to `src/lib/aurienta/nav-config.ts` and refactored `dashboard-shell.tsx` + `command-palette.tsx` to consume it (icons stored by NAME string, resolved at consumer side via `NAV_ICON_REGISTRY`). Redirected P3-001 + P3-005 fixes accordingly.
+- Verified P3-002 was already fixed by the previous agent (OnboardingTour derives counts dynamically from `NAV_GROUPS.length` / `NAV.length` — see enhancements.tsx lines 189-201). No change made for P3-002.
+- Read every target file FIRST before modifying: dashboard-shell.tsx, nav-config.ts, command-palette.tsx, enhancements.tsx, dashboard/layout.tsx.
+
+P3-001 (stale group-count comments in dashboard-shell.tsx):
+- Updated the stale REMED-1D comment that hard-coded "27 routes / all 51" — replaced with descriptive text naming the 5 universal groups explicitly and pointing to nav-config.ts as the single source of truth. The per-group section-header count comments (`// ── Workspace (6) ──` etc.) had already been removed by the centralization refactor.
+
+P3-003 (Quick Actions empty for institutional-rep roles):
+- In enhancements.tsx QuickActions: imported 14 new lucide-react icons; extended "Ask AI Copilot" roles array to include company_owner, law_firm_rep, accounting_firm_rep, aurienta_rep, university_rep; added 14 new role-specific quick actions:
+  - company_owner: View Enterprise, Board Briefing, Shareholder Update
+  - law_firm_rep: Client Accounts, Milestone Releases, Evidence Review
+  - accounting_firm_rep: Expense Approvals, Budget Review, Solvency Check
+  - aurienta_rep: User Management, Enterprise Audit, Platform Settings
+  - university_rep: University Console, Research Projects
+- Net: capital_partner still sees 5 actions; each institutional-rep role now sees 3-4 actions + universal Copilot. FAB is never empty.
+
+P3-004 (stale /dashboard/portfolio fallback):
+- In src/app/dashboard/layout.tsx: changed unauthenticated-redirect fallback from `/dashboard/portfolio` to `/dashboard` (Overview, which is now a real landing page post-REMED-1D). Rewrote the comment to explain the rationale and reference REMED-1D.
+- Intentionally did NOT touch signin-form.tsx line 102 (`params.get("next") ?? "/dashboard/portfolio"`) — that's the client-side post-auth redirect target, distinct from the unauthenticated redirect in dashboard/layout.tsx, and the audit explicitly scoped P3-004 to dashboard/layout.tsx only.
+
+P3-005 (duplicate icons across NAV items):
+- The audit specifically called out 5 icons used 3-5 times each: Building2, ShieldCheck, Calculator, TrendingUp, Scale. Updated 3 files in lock-step:
+  - nav-config.ts: added 12 new entries to NavIconName type union (Building, Office, Castle, FileCheck, Factory, Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase); updated NAV array to use the new icon names for the duplicate items, leaving one canonical use of each previously-duplicate icon in place.
+  - dashboard-shell.tsx: imported the 12 new icons; added them to NAV_ICON_REGISTRY so resolveNavIcon() can resolve the new icon NAME strings.
+  - command-palette.tsx: imported the 12 new icons; added them to its own NAV_ICON_REGISTRY (kept in lock-step with dashboard-shell's per the existing FIX-P2-NAV-CENTRALIZE comments).
+- Net result: each previously-duplicate icon now appears exactly once in the NAV array (with the most semantically canonical item) plus once in the NavIconName type union. Each replacement has an inline `// P3-005:` comment explaining the semantic rationale.
+
+Verification:
+- `bun run lint` → 0 errors, 348 warnings (all pre-existing in unrelated files). Verified by grepping the lint output for the touched file paths — touched files show only pre-existing warnings (unused tNav/tGroup in dashboard-shell.tsx, unused usePathname in enhancements.tsx, missing useEffect deps — none introduced by these changes).
+- Did NOT run `bun run build` per task rules — orchestrator verifies.
+- Dev server log shows GET / 200 responses with no compile errors.
+
+Files Touched (5):
+1. src/components/dashboard/dashboard-shell.tsx (P3-001 + P3-005)
+2. src/components/dashboard/ux/enhancements.tsx (P3-003)
+3. src/lib/aurienta/nav-config.ts (P3-005)
+4. src/components/dashboard/ux/command-palette.tsx (P3-005)
+5. src/app/dashboard/layout.tsx (P3-004)
+
+Stage Summary:
+**ALL 5 P3 COSMETIC ISSUES RESOLVED.** (1) Stale "27 routes / all 51" comment in dashboard-shell.tsx replaced with descriptive text + reference to nav-config.ts as single source of truth. (2) Onboarding copy already dynamic (verified). (3) 14 new role-specific quick actions added for the 5 institutional-rep roles + universal AI Copilot action extended to all 5 roles — FAB is never empty for any signed-in partner. (4) Stale /dashboard/portfolio fallback in dashboard/layout.tsx replaced with /dashboard (Overview). (5) 5 duplicate icons (Building2, ShieldCheck, Calculator, TrendingUp, Scale) diversified to 1 use each via 12 new icon imports registered across 3 consumer files (nav-config.ts, dashboard-shell.tsx, command-palette.tsx). Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.

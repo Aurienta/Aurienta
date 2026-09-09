@@ -7,10 +7,14 @@ import { ConstitutionalFooter } from "@/components/dashboard/constitutional-foot
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   if (!user) {
-    // Use the actual requested URL as the next= param so the user returns
-    // to the page they intended, not always /dashboard/portfolio.
+    // P3-004: redirect target is the actual requested URL (from the
+    // x-pathname middleware header) so the user returns to the page they
+    // intended after signing in. Falls back to /dashboard (Overview) — the
+    // historical hard-coded /dashboard/portfolio fallback was stale post-
+    // REMED-1D (Overview is now a real landing page, not a redirect to
+    // /dashboard/portfolio).
     const h = await headers();
-    const pathname = h.get("x-pathname") ?? "/dashboard/portfolio";
+    const pathname = h.get("x-pathname") ?? "/dashboard";
     redirect(`/signin?next=${encodeURIComponent(pathname)}`);
   }
 

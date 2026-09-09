@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { Command as CommandPrimitive } from "cmdk";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  // FIX-P2-NAV-CENTRALIZE: full icon set so the palette can resolve any
+  // icon NAME stored in nav-config.ts back to its Lucide component.
+  // The registry below mirrors the NAV_ICON_REGISTRY in dashboard-shell.tsx;
+  // when you add an icon to a NAV item, add the corresponding entry here.
   Search,
   CornerDownLeft,
   LayoutDashboard,
@@ -18,50 +22,202 @@ import {
   GraduationCap,
   Award,
   Bot,
-  CalendarDays,
+  User as UserIcon,
   Bell,
+  CalendarDays,
   Hourglass,
+  Users,
+  HardHat,
+  Globe,
+  Brain,
+  GitCompare,
+  Languages,
+  FileSearch,
+  AlertTriangle,
+  TrendingUp,
+  Target,
+  ClipboardList,
+  UserCheck,
+  Calculator,
+  MessageSquare,
+  FlaskConical,
+  HeartPulse,
+  Building2,
+  Landmark,
+  Database,
+  Vault,
+  FileText,
+  Gavel,
+  Truck,
+  Cpu,
+  ShieldAlert,
+  KeyRound,
+  Network,
+  Presentation,
+  Layers,
+  Activity,
+  SlidersHorizontal,
+  ScrollText,
+  Newspaper,
+  Contact,
+  Workflow,
+  Shield,
+  ClipboardCheck,
+  Flag,
+  Crown,
+  BadgeCheck,
+  Zap,
+  Megaphone,
+  GitBranch,
+  Handshake,
+  Crosshair,
+  UserCircle,
+  // P3-005: Diversified icons — must be imported here too so the registry
+  // below can resolve them when the new NAV items reference them by name.
+  Building,
+  Office,
+  Castle,
+  FileCheck,
+  Factory,
+  Banknote,
+  Receipt,
+  BarChart3,
+  Gauge,
+  PieChart,
+  CheckCircle2,
+  Briefcase,
+  // Static action/query icons (kept for the non-nav command groups).
   Vote,
   HandCoins,
   CandlestickChart,
   Sparkles,
-  ScrollText,
   HelpCircle,
   Coins,
-  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  NAV_GROUPS,
+  visibleGroupsForRoles,
+  navItemsForGroups,
+  type NavIconName,
+} from "@/lib/aurienta/nav-config";
 
-type CmdGroup = "Navigation" | "Actions" | "Constitutional queries";
+// ─── Icon registry ──────────────────────────────────────────────────────
+//
+// nav-config.ts stores icons by NAME (string) so the data module has zero
+// React/JSX imports. This registry is the consumer-side resolver for the
+// command palette. Keeping it in lock-step with the NAV_ICON_REGISTRY in
+// dashboard-shell.tsx — when you add a new icon to a NAV item, add an entry
+// here too (and to the dashboard-shell registry).
+const NAV_ICON_REGISTRY: Record<NavIconName, React.ComponentType<{ className?: string }>> = {
+  LayoutDashboard,
+  Wallet,
+  Compass,
+  LineChart,
+  Scale,
+  Settings2,
+  Rocket,
+  ShieldCheck,
+  GraduationCap,
+  Award,
+  Bot,
+  User: UserIcon,
+  Bell,
+  Search,
+  Menu: Search,            // not used by NAV; alias for type completeness
+  X: Search,               // not used by NAV; alias for type completeness
+  ChevronDown: Search,     // not used by NAV; alias for type completeness
+  LogOut: Search,          // not used by NAV; alias for type completeness
+  ExternalLink: Search,   // not used by NAV; alias for type completeness
+  CalendarDays,
+  Hourglass,
+  Users,
+  HardHat,
+  Globe,
+  Brain,
+  GitCompare,
+  Languages,
+  FileSearch,
+  AlertTriangle,
+  TrendingUp,
+  Target,
+  ClipboardList,
+  UserCheck,
+  Calculator,
+  MessageSquare,
+  FlaskConical,
+  HeartPulse,
+  Building2,
+  Landmark,
+  Database,
+  Vault,
+  FileText,
+  Gavel,
+  Truck,
+  Cpu,
+  ShieldAlert,
+  KeyRound,
+  Network,
+  Presentation,
+  Layers,
+  Activity,
+  SlidersHorizontal,
+  ScrollText,
+  Newspaper,
+  Contact,
+  Workflow,
+  Shield,
+  ClipboardCheck,
+  Flag,
+  Crown,
+  BadgeCheck,
+  Zap,
+  Megaphone,
+  GitBranch,
+  Handshake,
+  Crosshair,
+  UserCircle,
+  // P3-005: Diversified icons — registered here so NAV items that reference
+  // them by name resolve correctly via resolveNavIcon().
+  Building,
+  Office,
+  Castle,
+  FileCheck,
+  Factory,
+  Banknote,
+  Receipt,
+  BarChart3,
+  Gauge,
+  PieChart,
+  CheckCircle2,
+  Briefcase,
+};
+
+function resolveNavIcon(name: NavIconName): React.ComponentType<{ className?: string }> {
+  return NAV_ICON_REGISTRY[name] ?? Search;
+}
+
+// ─── Types ──────────────────────────────────────────────────────────────
 
 type Command = {
   id: string;
   label: string;
-  group: CmdGroup;
+  /** Display group heading (sidebar group name, or "Actions" / "Constitutional queries"). */
+  group: string;
   icon: React.ComponentType<{ className?: string }>;
   href: string;
   hint?: string;
+  /** Additional searchable tokens appended to the cmdk value. */
   keywords?: string;
 };
 
-const COMMANDS: Command[] = [
-  // ── Navigation ──
-  { id: "nav-overview", label: "Go to Overview", group: "Navigation", icon: LayoutDashboard, href: "/dashboard", keywords: "home dashboard main" },
-  { id: "nav-portfolio", label: "Go to Portfolio", group: "Navigation", icon: Wallet, href: "/dashboard/portfolio", keywords: "holdings equity ownership value" },
-  { id: "nav-opportunities", label: "Go to Opportunities", group: "Navigation", icon: Compass, href: "/dashboard/opportunities", keywords: "invest capital formation reserve" },
-  { id: "nav-market", label: "Go to Secondary Market", group: "Navigation", icon: LineChart, href: "/dashboard/market", keywords: "trade buy sell orders" },
-  { id: "nav-governance", label: "Go to Governance", group: "Navigation", icon: Scale, href: "/dashboard/governance", keywords: "vote proposals consensus" },
-  { id: "nav-manager", label: "Go to Manager Console", group: "Navigation", icon: Settings2, href: "/dashboard/manager", keywords: "manage enterprise expenses payroll" },
-  { id: "nav-founder", label: "Go to Founder Studio", group: "Navigation", icon: Rocket, href: "/dashboard/founder", keywords: "found enterprise enterprise" },
-  { id: "nav-compliance", label: "Go to Compliance", group: "Navigation", icon: ShieldCheck, href: "/dashboard/compliance", keywords: "fra kyc regulatory" },
-  { id: "nav-graduation", label: "Go to Graduation", group: "Navigation", icon: GraduationCap, href: "/dashboard/graduation", keywords: "sovereign exit independence" },
-  { id: "nav-alumni", label: "Go to Alumni Hall", group: "Navigation", icon: Award, href: "/dashboard/alumni", keywords: "graduated enterprises" },
-  { id: "nav-copilot", label: "Go to AI Copilot", group: "Navigation", icon: Bot, href: "/dashboard/copilot", keywords: "ai assistant chat" },
-  { id: "nav-calendar", label: "Go to Constitutional Calendar", group: "Navigation", icon: CalendarDays, href: "/dashboard/calendar", keywords: "schedule timeline dates milestones votes" },
-  { id: "nav-notifications", label: "Go to Notifications", group: "Navigation", icon: Bell, href: "/dashboard/notifications", keywords: "inbox triage alerts" },
-  { id: "nav-priority-windows", label: "Go to Priority Windows", group: "Navigation", icon: Hourglass, href: "/dashboard/priority-windows", keywords: "pro-rata sell entitlement window" },
+// ─── Static (non-nav) commands ──────────────────────────────────────────
+//
+// These are functional shortcuts that don't map 1:1 to a sidebar route — they
+// exist alongside the dynamically-generated nav commands so users still get
+// verb-style actions ("Vote on open proposals") and AI queries.
 
-  // ── Actions ──
+const ACTION_COMMANDS: Command[] = [
   { id: "act-vote", label: "Vote on open proposals", group: "Actions", icon: Vote, href: "/dashboard/governance", keywords: "cast governance" },
   { id: "act-reserve", label: "Reserve Equity Units", group: "Actions", icon: HandCoins, href: "/dashboard/opportunities", keywords: "invest commit" },
   { id: "act-trade", label: "Place a trade", group: "Actions", icon: CandlestickChart, href: "/dashboard/market", keywords: "buy sell order" },
@@ -70,8 +226,9 @@ const COMMANDS: Command[] = [
   { id: "act-calendar", label: "View constitutional calendar", group: "Actions", icon: CalendarDays, href: "/dashboard/calendar", keywords: "schedule today" },
   { id: "act-triage", label: "Triage notifications with AI", group: "Actions", icon: Bell, href: "/dashboard/notifications", keywords: "priority inbox" },
   { id: "act-windows", label: "View priority windows", group: "Actions", icon: Hourglass, href: "/dashboard/priority-windows", keywords: "pro-rata entitlement" },
+];
 
-  // ── Constitutional queries ──
+const QUERY_COMMANDS: Command[] = [
   { id: "q-portfolio", label: "Explain my portfolio", group: "Constitutional queries", icon: Wallet, href: "/dashboard/copilot", keywords: "holdings allocation" },
   { id: "q-cre", label: "Show recent CRE decisions", group: "Constitutional queries", icon: ScrollText, href: "/dashboard/compliance", keywords: "ledger runtime engine" },
   { id: "q-sts", label: "What is my sovereign trust score?", group: "Constitutional queries", icon: HelpCircle, href: "/dashboard/copilot", keywords: "sts reputation" },
@@ -80,16 +237,76 @@ const COMMANDS: Command[] = [
   { id: "q-valuation", label: "Explain my enterprise valuation", group: "Constitutional queries", icon: TrendingUp, href: "/dashboard/copilot", keywords: "fundamental price eps pe" },
 ];
 
-const GROUP_ORDER: CmdGroup[] = ["Navigation", "Actions", "Constitutional queries"];
+// ─── Component ───────────────────────────────────────────────────────────
 
+/**
+ * FIX-P2-NAV-CENTRALIZE: The command palette now derives its Navigation
+ * commands directly from the centralized NAV config in
+ * `@/lib/aurienta/nav-config`. This means every sidebar route is searchable
+ * via Cmd+K — coverage went from 28/83 routes to 83/83 (100%).
+ *
+ * Role-based filtering uses `visibleGroupsForRoles(roles)` so unauthorized
+ * routes never appear in the palette (same rules as the sidebar).
+ *
+ * The two non-nav groups ("Actions" and "Constitutional queries") are kept
+ * as static arrays — they are functional verb-style shortcuts that don't
+ * correspond 1:1 to a sidebar route (e.g. "Vote on open proposals" routes
+ * to /dashboard/governance, but the label is action-oriented, not nav).
+ */
 export function CommandPalette({
   open,
   onOpenChange,
+  roles,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  /**
+   * Optional set of role strings (e.g. `new Set(["capital_partner", "manager"])`).
+   * When provided, only NAV items whose sidebar group is visible for these
+   * roles are surfaced — matching the sidebar exactly. When omitted (e.g.
+   * if the palette is ever used outside the dashboard), all NAV items are
+   * shown as a safe default.
+   */
+  roles?: Set<string>;
 }) {
   const router = useRouter();
+
+  // Build the command list from the centralized NAV config — always in sync
+  // with the sidebar. Filter by role using visibleGroupsForRoles so
+  // unauthorized routes don't appear.
+  const commands = React.useMemo<Command[]>(() => {
+    const visibleGroups = roles ? visibleGroupsForRoles(roles) : new Set(NAV_GROUPS);
+    const navItems = navItemsForGroups(visibleGroups);
+
+    const navCommands: Command[] = navItems.map((item) => {
+      const Icon = resolveNavIcon(item.icon);
+      // Make the URL slug searchable too (e.g. "career-ledger" → "career ledger")
+      // so users can find routes by typing the path.
+      const slug = item.href.split("/").pop() ?? "";
+      const slugReadable = slug.split("-").join(" ");
+      return {
+        id: item.href,
+        label: item.label,
+        href: item.href,
+        group: item.group,
+        icon: Icon,
+        keywords: slugReadable,
+      };
+    });
+
+    return [...navCommands, ...ACTION_COMMANDS, ...QUERY_COMMANDS];
+  }, [roles]);
+
+  // Group order: sidebar groups first (in canonical NAV_GROUPS order, only
+  // those that actually have commands), then Actions, then Constitutional
+  // queries.
+  const groupOrder = React.useMemo<string[]>(() => {
+    const present = new Set(commands.map((c) => c.group));
+    const ordered = NAV_GROUPS.filter((g) => present.has(g));
+    if (present.has("Actions")) ordered.push("Actions");
+    if (present.has("Constitutional queries")) ordered.push("Constitutional queries");
+    return ordered;
+  }, [commands]);
 
   // Close on Escape — cmdk handles its own arrow-key navigation, but
   // we need to wire Escape since we're not using a Radix Dialog wrapper.
@@ -172,8 +389,8 @@ export function CommandPalette({
                   No commands match. Try “vote”, “portfolio”, or “calendar”.
                 </CommandPrimitive.Empty>
 
-                {GROUP_ORDER.map((group) => {
-                  const items = COMMANDS.filter((c) => c.group === group);
+                {groupOrder.map((group) => {
+                  const items = commands.filter((c) => c.group === group);
                   if (!items.length) return null;
                   return (
                     <CommandPrimitive.Group
