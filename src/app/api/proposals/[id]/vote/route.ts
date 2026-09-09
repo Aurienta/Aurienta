@@ -163,8 +163,15 @@ export async function POST(
       // ── CRE: Police Clearance enforcement for manager_appointment (Add-on 27) ──
       // When a manager_appointment proposal passes, verify the target user
       // has valid police clearance before the role can be bound. If the
-      // clearance is invalid/expired, the proposal is NOT executed — it's
-      // placed in "evidence_submitted" status pending clearance renewal.
+      // clearance is invalid/expired, the proposal is NOT executed — it
+      // reverts to "voting_open" so that voting can continue once the target
+      // renews their clearance.
+      //
+      // DE-21: the prior implementation fell back to "evidence_submitted",
+      // which is NOT a valid Proposal status (the schema only allows:
+      // draft, published, voting_open, quorum_reached, executed, rejected,
+      // expired). Use "voting_open" instead so the row remains queryable by
+      // the standard UI and the Constitution's voting surface.
       let policeClearanceBlock = false;
       let policeClearanceReason: string | undefined;
       if (pPassed && proposal.type === "manager_appointment") {
@@ -178,11 +185,14 @@ export async function POST(
         if (!pcVerdict.allowed) {
           policeClearanceBlock = true;
           policeClearanceReason = pcVerdict.reason;
-          // Don't execute — revert to "evidence_submitted" for clearance renewal
+          // Don't execute — revert to "voting_open" for clearance renewal.
+          // The proposal remains alive (not executed) so that partners can
+          // re-cast or extend voting once the target's police clearance is
+          // renewed.
           await tx.proposal.update({
             where: { id },
             data: {
-              status: "evidence_submitted",
+              status: "voting_open",
               executedAt: null,
             },
           });

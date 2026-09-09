@@ -191,18 +191,64 @@ export const POST = withErrorHandler(
     },
   });
 
-  const updated = await db.skillEquityClaim.update({
-    where: { id },
-    data: {
-      status: decision === "approve" ? "approved" : "rejected",
-      equityGrantPct: grantPct,
-      reviewedById: user.id,
-      reviewedAt: new Date(),
-      aiAssessment,
-    },
-  });
+  const updated = await db.$transaction(async (tx) => {
+    const u = await tx.skillEquityClaim.update({
+      where: { id },
+      data: {
+        status: decision === "approve" ? "approved" : "rejected",
+        equityGrantPct: grantPct,
+        reviewedById: user.id,
+        reviewedAt: new Date(),
+        aiAssessment,
+      },
+    });
 
-  await db.$transaction(async (tx) => {
+    // DE-22: On approval with a non-zero grant, write the computed Equity Units
+    // to the Ownership Ledger (OwnershipRecord). The CRE's `enforceSalaryToEquity`
+    // returns `equityUnitsToIssue` but the units were never persisted — the cap
+    // table never reflected the workforce partner's earned stake.
+    if (decision === "approve" && salaryEquityVerdict && salaryEquityVerdict.equityUnitsToIssue > 0) {
+      const existingRecord = await tx.ownershipRecord.findUnique({
+        where: {
+          enterpriseId_userId: {
+            enterpriseId: claim.enterpriseId,
+            userId: claim.userId,
+          },
+        },
+      });
+
+      if (existingRecord) {
+        // Merge into the existing record: weighted-average price + sum of units.
+        const totalUnits = existingRecord.equityUnits + salaryEquityVerdict.equityUnitsToIssue;
+        const oldCost = existingRecord.equityUnits * existingRecord.avgPriceEgp;
+        const newCost = salaryEquityVerdict.equityUnitsToIssue * salaryEquityVerdict.discountedPriceEgp;
+        const weightedAvg = totalUnits > 0 ? (oldCost + newCost) / totalUnits : existingRecord.avgPriceEgp;
+        // Apply the 12-month lock-up if the existing record has none yet.
+        const restrictedUntil =
+          existingRecord.restrictedUntil ??
+          new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000);
+        await tx.ownershipRecord.update({
+          where: { id: existingRecord.id },
+          data: {
+            equityUnits: totalUnits,
+            avgPriceEgp: weightedAvg,
+            restrictedUntil,
+          },
+        });
+      } else {
+        // First-time issuance for this workforce partner.
+        await tx.ownershipRecord.create({
+          data: {
+            enterpriseId: claim.enterpriseId,
+            userId: claim.userId,
+            equityUnits: salaryEquityVerdict.equityUnitsToIssue,
+            avgPriceEgp: salaryEquityVerdict.discountedPriceEgp,
+            restrictedUntil: new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000),
+          },
+        });
+      }
+    }
+
     await appendLedgerEvent(tx, {
       enterpriseId: claim.enterpriseId,
       eventType: "cre_decision",
@@ -227,6 +273,30 @@ export const POST = withErrorHandler(
       },
       actorId: user.id,
     });
+
+    return u;
+  });
+
+  // DE-18: Audit the review decision (approve/reject). The AI call above was
+  // already audited as `ai.skill-equity-review`; this is the actual governance
+  // action audit (was missing).
+  await audit({
+    actorId: user.id,
+    action: "skill_equity.reviewed",
+    target: `claim:${claim.id}`,
+    result: "allowed",
+    metadata: {
+      claimId: claim.id,
+      enterpriseId: claim.enterpriseId,
+      claimantId: claim.userId,
+      decision,
+      equityGrantPct: grantPct,
+      equityUnitsIssued:
+        decision === "approve" && salaryEquityVerdict
+          ? salaryEquityVerdict.equityUnitsToIssue
+          : 0,
+      reviewerRole: reviewerMembership.role,
+    },
   });
 
   return NextResponse.json({

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { milestoneEvidenceSchema, parseBody } from "@/lib/aurienta/validation";
+import { audit } from "@/lib/aurienta/audit";
 
 // POST /api/enterprises/[id]/milestones
 // Body: { milestoneId, evidenceNote }
@@ -125,6 +126,23 @@ export async function POST(
         },
         actorId: user.id,
       });
+    });
+
+    // DE-20: Audit milestone evidence submission (was missing).
+    await audit({
+      actorId: user.id,
+      action: "milestone.evidence_submitted",
+      target: `milestone:${milestoneId}`,
+      result: "allowed",
+      metadata: {
+        enterpriseId,
+        milestoneId,
+        title: milestone.title,
+        amountEgp: milestone.amountEgp,
+        eveConfidence,
+        previousStatus: milestone.status,
+        newStatus: "evidence_submitted",
+      },
     });
 
     return NextResponse.json({

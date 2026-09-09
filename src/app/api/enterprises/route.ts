@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { TIER_META } from "@/lib/aurienta/constants";
 import { appendLedgerEvent, enforceFounderEquityCap } from "@/lib/aurienta/cre";
+import { audit } from "@/lib/aurienta/audit";
 
 // Tier → maximum raise cap (EGP). "Unlimited" = no cap.
 const TIER_MAX_RAISE: Record<string, number | null> = {
@@ -255,6 +256,24 @@ export async function POST(req: NextRequest) {
         },
         actorId: user.id,
       });
+    });
+
+    // DE-19: Audit enterprise creation (was missing).
+    await audit({
+      actorId: user.id,
+      action: "enterprise.created",
+      target: `enterprise:${enterprise.id}`,
+      result: "allowed",
+      metadata: {
+        enterpriseId: enterprise.id,
+        slug: enterprise.slug,
+        name: enterprise.name,
+        tier,
+        sector,
+        totalEquityUnits,
+        equityUnitPriceEgp: Math.floor(price),
+        founderEquityPct,
+      },
     });
 
     return NextResponse.json(

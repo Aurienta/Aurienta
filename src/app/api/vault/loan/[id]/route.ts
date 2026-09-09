@@ -47,7 +47,7 @@ const REPAY_ROLES = [
 ];
 
 const patchSchema = z.object({
-  action: z.enum(["approve", "reject", "repay"]),
+  action: z.enum(["approve", "reject", "repay", "forgive"]),
   amountEgp: z.number().min(0.01).max(50_000_000_000).optional(),
   note: z.string().max(2000).optional(),
 });
@@ -126,10 +126,16 @@ export const PATCH = withErrorHandler(async (req: NextRequest, ctx: Params) => {
   );
   const userRoles = memberships.map((m) => m.role);
   const isAurientaRep = userRoles.includes("aurienta_rep");
+  const isManager = userRoles.includes("manager");
   const canRepay = userRoles.some((r) => REPAY_ROLES.includes(r));
 
-  // Approve and reject are AURIENTA-Rep-only.
-  if ((action === "approve" || action === "reject") && !isAurientaRep) {
+  // Approve, reject, and forgive are AURIENTA-Rep-only (Blueprint §5.4.3 —
+  // only the platform steward may extinguish a loan). Repay is open to the
+  // broader managerial set.
+  if (
+    (action === "approve" || action === "reject" || action === "forgive") &&
+    !isAurientaRep
+  ) {
     await audit({
       actorId: user.id,
       action: `vault.loan.${action}`,
@@ -141,14 +147,14 @@ export const PATCH = withErrorHandler(async (req: NextRequest, ctx: Params) => {
     return NextResponse.json(
       {
         error:
-          "Only an AURIENTA Representative may approve or reject Vault loans.",
+          "Only an AURIENTA Representative may approve, reject, or forgive Vault loans.",
         code: "forbidden",
       },
       { status: 403 }
     );
   }
 
-  if (action === "repay" && !canRepay) {
+  if (action === "repay" && !canRepay && !isManager) {
     await audit({
       actorId: user.id,
       action: "vault.loan.repay",
@@ -299,6 +305,84 @@ export const PATCH = withErrorHandler(async (req: NextRequest, ctx: Params) => {
       target: `vault_loan:${id}`,
       result: "allowed",
       metadata: { amountEgp: loan.amountEgp },
+    });
+
+    return NextResponse.json({ ok: true, loan: result });
+  }
+
+  // ── FORGIVE ──
+  // Blueprint §5.4.3: Vault loans are NON-RECOURSE — if the enterprise cannot
+  // repay (insolvency, graduation failure, force-majeure), an AURIENTA Rep
+  // may forgive the outstanding balance. The remaining principal is removed
+  // from the enterprise's books (no capital returns to the vault — the
+  // reserve absorbs the loss).
+  if (action === "forgive") {
+    if (loan.status !== "approved") {
+      return NextResponse.json(
+        {
+          error: `Cannot forgive a loan that is ${loan.status}. Only outstanding (approved) loans may be forgiven.`,
+          code: "conflict",
+        },
+        { status: 409 }
+      );
+    }
+
+    const forgivenAmount = loan.amountEgp - loan.repaidEgp;
+    if (forgivenAmount <= 0) {
+      return NextResponse.json(
+        {
+          error: "Loan is already fully repaid — nothing to forgive.",
+          code: "conflict",
+        },
+        { status: 409 }
+      );
+    }
+
+    const result = await db.$transaction(async (tx) => {
+      const updated = await tx.vaultLoan.update({
+        where: { id },
+        data: { status: "forgiven" },
+      });
+
+      // Capital does NOT return to the vault — the reserve absorbs the loss.
+      // Decrement totalLoanedEgp by the forgiven principal so the outstanding-
+      // loan tally reflects reality (currentBalanceEgp unchanged).
+      await tx.insuranceVault.update({
+        where: { enterpriseId: loan.enterpriseId },
+        data: {
+          totalLoanedEgp: { decrement: forgivenAmount },
+        },
+      });
+
+      await appendLedgerEvent(tx, {
+        enterpriseId: loan.enterpriseId,
+        eventType: "vault_loan_forgiven",
+        payload: {
+          action: "anti_fragility_loan_forgiven",
+          loanId: id,
+          originalAmountEgp: loan.amountEgp,
+          repaidEgp: loan.repaidEgp,
+          forgivenAmountEgp: forgivenAmount,
+          reason: loan.reason,
+          note: note ?? null,
+          actorId: user.id,
+        },
+        actorId: user.id,
+      });
+
+      return updated;
+    });
+
+    await audit({
+      actorId: user.id,
+      action: "vault.loan.forgive",
+      target: `vault_loan:${id}`,
+      result: "allowed",
+      metadata: {
+        originalAmountEgp: loan.amountEgp,
+        repaidEgp: loan.repaidEgp,
+        forgivenAmountEgp: forgivenAmount,
+      },
     });
 
     return NextResponse.json({ ok: true, loan: result });

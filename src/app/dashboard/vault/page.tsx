@@ -54,6 +54,14 @@ export default async function VaultPage() {
             tier: e.tier,
             raisedEgp: e.raisedEgp,
           }))}
+          // DE-23: pass the user's per-enterprise roles so the client can
+          // gate Repay/Forgive buttons per loan (only aurienta_rep may forgive;
+          // manager / board_member / company_owner / founding_operator /
+          // accounting_firm_rep may record repayments).
+          userMemberships={user.memberships.map((m) => ({
+            enterpriseId: m.enterpriseId,
+            role: m.role,
+          }))}
           initialLoans={loans.map((l) => ({
             id: l.id,
             enterpriseId: l.enterpriseId,

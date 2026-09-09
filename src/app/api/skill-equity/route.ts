@@ -5,6 +5,7 @@ import { mockCid, mockHash } from "@/lib/aurienta/ai";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { parseBody, skillEquitySchema } from "@/lib/aurienta/validation";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
+import { audit } from "@/lib/aurienta/audit";
 
 // Constants for the 2-year tenure rule
 const TENURE_REQUIRED_MONTHS = 24;
@@ -185,6 +186,23 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       },
       actorId: user.id,
     });
+  });
+
+  // DE-18: Audit skill-equity claim creation (was missing).
+  await audit({
+    actorId: user.id,
+    action: "skill_equity.claimed",
+    target: `enterprise:${employee.enterpriseId}`,
+    result: "allowed",
+    metadata: {
+      claimId: claim.id,
+      enterpriseId: employee.enterpriseId,
+      employeeId: employee.id,
+      credentialType,
+      credentialName: claim.credentialName,
+      issuer: claim.issuer,
+      tenureMonths,
+    },
   });
 
   return NextResponse.json({ claim }, { status: 201 });

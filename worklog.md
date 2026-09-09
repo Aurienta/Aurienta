@@ -13292,3 +13292,90 @@ Stage Summary:
 - P2: 3 issues (nav centralization, command palette 100%, breadcrumbs)
 - P3: 5 issues (stale comments, quick actions for all roles, redirect fallback, diverse icons)
 - Total: 39 issues resolved across ~55 files
+
+---
+Task ID: FIX-P1-WORKFLOW-REMAINING
+Agent: Workflow Dead-End Remediation Agent
+Task: Fix DE-09 through DE-23 — the remaining P1/P2 workflow dead-ends (DE-01 to DE-08 were closed by the prior FIX-P1-WORKFLOW agent).
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail for prior context — confirmed DE-01..DE-08 closed (founder list-for-capital-formation, reservation confirm ownership record, execute graduation button, proposal/milestone/reservation notifications, manager skill-equity review queue).
+- Read each target file FIRST before modifying (whistleblower route, escrow page, expense approve route, skill-equity POST + review routes, enterprises POST route, milestones POST route, proposals vote route, vault page + client, vault loan PATCH route).
+- Confirmed exact Prisma field names by reading schema.prisma for WhistleblowerReport, Expense, SkillEquityClaim, OwnershipRecord, Proposal, Notification, VaultLoan, AuditLog, Enterprise, EnterpriseMember.
+
+Stage Summary:
+
+DE-09 (P1, NEW) — Whistleblower resolve endpoint:
+- Created `src/app/api/whistleblower/[id]/resolve/route.ts` (POST). Accepts `{ resolution: "resolved" | "dismissed", bountyEgp?: number }`.
+- RBAC: only `aurienta_rep` (verified via user.memberships.some(m => m.role === "aurienta_rep")).
+- Updates WhistleblowerReport.status + resolvedAt + optional bountyPaidEgp.
+- Appends `whistleblower_resolved` LedgerEvent inside the same transaction.
+- Calls `audit({ action: "whistleblower.resolve", result: "allowed" })`.
+- Creates a Notification for the filer — filer is looked up from the prior `whistleblower.file` AuditLog row (WhistleblowerReport has no filerId column, intentional anonymity) via `metadata: { contains: '"reportId":"<id>"' }`. Notification failures are caught + logged (never block the resolution).
+- Idempotent: 409 if status is already resolved or dismissed.
+- Returns `{ ok: true, report: <updated> }`.
+
+DE-14 (P1, MODIFIED) — Escrow ledger feed wrong filter:
+- `src/app/dashboard/escrow/page.tsx` — replaced `reservation_created` (never written) with `funds_received` (always written by POST /api/reservations). Also added `capital_formation_closed` (written by POST /api/enterprises/[id]/close-capital-formation). Added inline comment explaining the rationale.
+
+DE-15 (P1, NEW) — Expense reject endpoint:
+- Created `src/app/api/expenses/[id]/reject/route.ts` (POST). Body: `{ reason: string }` (3–2000 chars).
+- RBAC: manager / board_member / accounting_firm_rep / founding_operator of the enterprise (membership-based, mirrors approve).
+- CRE: `enforceNotFrozen` blocks reject on frozen enterprises.
+- Submitter cannot self-reject (separation of duties).
+- Status transitions: pending | dual_signature_pending → rejected (409 on already-approved/already-rejected).
+- Reuses `receiptNote` column to store `[REJECTED] <reason>` (no dedicated rejectionReason column in schema).
+- Inside ONE transaction: updates expense, appends `cre_decision` LedgerEvent with `action:"expense_rejected"`, creates a `treasury` category Notification for the submitter (aiPriority=high).
+- Calls `audit({ action: "expense.reject", result: "allowed" })` after the transaction.
+
+DE-18 (P1, MODIFIED 2 FILES) — Missing audit() on skill-equity:
+- `src/app/api/skill-equity/route.ts` POST: added `audit({ action: "skill_equity.claimed", actorId: user.id, result: "allowed", ... })` after the ledger event append. Metadata: claimId, enterpriseId, employeeId, credentialType, credentialName, issuer, tenureMonths.
+- `src/app/api/skill-equity/[id]/review/route.ts` POST: added `audit({ action: "skill_equity.reviewed", actorId: user.id, result: "allowed", ... })` after the transaction commits. Metadata: claimId, enterpriseId, claimantId, decision, equityGrantPct, equityUnitsIssued, reviewerRole. Pre-existing `ai.skill-equity-review` audit (AI call) is left intact.
+
+DE-19 (P2, MODIFIED) — Missing audit() on enterprise creation:
+- `src/app/api/enterprises/route.ts` POST: added `audit({ action: "enterprise.created", actorId: user.id, result: "allowed", ... })` after the `share_issued` ledger event append. Metadata: enterpriseId, slug, name, tier, sector, totalEquityUnits, equityUnitPriceEgp, founderEquityPct.
+
+DE-20 (P2, MODIFIED) — Missing audit() on milestone evidence submit:
+- `src/app/api/enterprises/[id]/milestones/route.ts` POST: added `audit({ action: "milestone.evidence_submitted", actorId: user.id, result: "allowed", ... })` after the ledger event append. Metadata: enterpriseId, milestoneId, title, amountEgp, eveConfidence, previousStatus, newStatus.
+
+DE-21 (P1, MODIFIED) — Undocumented proposal state:
+- `src/app/api/proposals/[id]/vote/route.ts` — the manager_appointment police-clearance block reverted passing proposals to `status: "evidence_submitted"`, which is NOT a valid Proposal status (schema only allows draft, published, voting_open, quorum_reached, executed, rejected, expired). Replaced with `status: "voting_open"` so the proposal remains queryable by the standard voting surface. Updated the inline comment to reference DE-21.
+
+DE-22 (P1, MODIFIED) — Skill-equity approval doesn't create OwnershipRecord:
+- `src/app/api/skill-equity/[id]/review/route.ts` — moved the skillEquityClaim.update + appendLedgerEvent into a single `db.$transaction` and added an inline OwnershipRecord upsert:
+  - If a record exists for (enterpriseId, userId) → merge: equityUnits = old + new, avgPriceEgp = weighted-average, restrictedUntil = existing ?? now + 12 months.
+  - If none exists → create with the discounted price + 12-month lock-up.
+  - The DE-18 audit metadata records equityUnitsIssued.
+
+DE-23 (P2, 3 FILES — 1 NEW + 2 MODIFIED + 1 NEW client component) — Vault loan repay/forgive UI button:
+- Extended PATCH endpoint: `src/app/api/vault/loan/[id]/route.ts` — patchSchema enum now includes `forgive`; RBAC gate extended (approve/reject/forgive all require `aurienta_rep`); new `forgive` branch sets `status="forgiven"`, decrements `totalLoanedEgp` by forgiven principal (non-recourse loss — capital does NOT return to the vault), appends `vault_loan_forgiven` LedgerEvent, calls `audit({ action: "vault.loan.forgive" })`.
+- Created `src/components/dashboard/transparency/vault-loan-actions.tsx` (client component) — renders Repay + Forgive buttons per loan, gated by per-enterprise roles. Repay opens a Dialog with amount input (validated against remaining balance). Forgive is one-click. Both use `csrfFetch` for the PATCH. On success: `onUpdated?.()` (parent refreshes vault balance) + `router.refresh()` (server re-renders, passes new initialLoans). Errors surfaced via sonner toasts.
+- Modified `src/components/dashboard/transparency/vault-client.tsx` — added `userMemberships` prop; added a useEffect to re-sync `loans` state when `initialLoans` changes (after router.refresh); added `refreshVaultBalance()` + `refreshAfterAction()` helpers; added an "Actions" column to the loan table.
+- Modified `src/app/dashboard/vault/page.tsx` — passes `userMemberships={user.memberships.map((m) => ({ enterpriseId: m.enterpriseId, role: m.role }))}` to `<VaultClient>`.
+
+Verification:
+- `bun run lint` → 0 errors, 348 warnings (same baseline as the prior agent — no new warnings introduced). Verified by grepping the lint output for each touched file path; the only hits are pre-existing unused-import warnings (`GoldStar`, `shortHash` in escrow/page.tsx; `Badge` in vault-client.tsx) that existed BEFORE these changes.
+- Did NOT run `bun run build` per task rules (orchestrator verifies).
+- Dev server log confirms GET /dashboard/vault 200 OK, GET /dashboard/escrow 200 OK, no compile errors after every change.
+- POST /api/whistleblower/<id>/resolve returns 403 (CSRF check) — confirms the route compiled and middleware ran.
+- POST /api/expenses/<id>/reject returns 403 (CSRF check) — confirms the route compiled.
+
+Files Created (3):
+- src/app/api/whistleblower/[id]/resolve/route.ts (DE-09)
+- src/app/api/expenses/[id]/reject/route.ts (DE-15)
+- src/components/dashboard/transparency/vault-loan-actions.tsx (DE-23)
+
+Files Modified (8):
+- src/app/dashboard/escrow/page.tsx (DE-14)
+- src/app/api/skill-equity/route.ts (DE-18)
+- src/app/api/skill-equity/[id]/review/route.ts (DE-18 + DE-22)
+- src/app/api/enterprises/route.ts (DE-19)
+- src/app/api/enterprises/[id]/milestones/route.ts (DE-20)
+- src/app/api/proposals/[id]/vote/route.ts (DE-21)
+- src/app/api/vault/loan/[id]/route.ts (DE-23 — added `forgive` action + RBAC)
+- src/components/dashboard/transparency/vault-client.tsx (DE-23 — Actions column + userMemberships prop + refresh callback)
+- src/app/dashboard/vault/page.tsx (DE-23 — passes userMemberships)
+
+Agent work record: /home/z/my-project/agent-ctx/FIX-P1-WORKFLOW-REMAINING-workflow-agent.md
+
+**ALL 9 REMAINING P1/P2 WORKFLOW DEAD-ENDS (DE-09 THROUGH DE-23) CLOSED.** Whistleblower reports can now be resolved with bounty awards + filer notifications; expenses have a proper reject path with submitter notifications; the escrow ledger feed now shows actual money-flow events; skill-equity claims emit audit() on claim + review and persist their computed Equity Units to the Ownership Ledger; enterprise creation + milestone evidence submit are audited; manager_appointment proposals no longer fall into an undocumented state; vault loans have working Repay + Forgive UI buttons (role-gated) wired to the extended PATCH endpoint. Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.

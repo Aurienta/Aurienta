@@ -46,6 +46,7 @@ import { useToast } from "@/hooks/use-toast";
 import { egp, pct, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { VaultLoanActions } from "@/components/dashboard/transparency/vault-loan-actions";
 
 type Enterprise = {
   id: string;
@@ -69,6 +70,11 @@ type VaultLoan = {
   approvedAt: string | null;
   repaymentDueAt: string | null;
 };
+
+// DE-23: per-enterprise role memberships passed from the server so the client
+// can gate Repay / Forgive buttons per loan (RBAC enforced server-side as
+// well; this is purely for UI visibility).
+type Membership = { enterpriseId: string; role: string };
 
 type VaultSummary = {
   id: string | null;
@@ -124,9 +130,11 @@ const REPAYMENT_MONTHS = 24;
 export function VaultClient({
   enterprises,
   initialLoans,
+  userMemberships = [],
 }: {
   enterprises: Enterprise[];
   initialLoans: VaultLoan[];
+  userMemberships?: Membership[];
 }) {
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -151,6 +159,12 @@ export function VaultClient({
   const capEgp = selectedEnterprise
     ? Math.round((selectedEnterprise.raisedEgp * LOAN_CAP_PCT) / 100)
     : 0;
+
+  // DE-23: re-sync the loans cache when the server-passed initialLoans prop
+  // changes (after a router.refresh() following a repay/forgive action).
+  React.useEffect(() => {
+    setLoans(initialLoans);
+  }, [initialLoans]);
 
   // Fetch vault balance whenever the selected enterprise changes.
   React.useEffect(() => {
@@ -178,6 +192,26 @@ export function VaultClient({
       cancelled = true;
     };
   }, [selectedId]);
+
+  // DE-23: after a Repay / Forgive action, re-fetch the vault balance for the
+  // currently selected enterprise so the totals (currentBalance / totalLoaned /
+  // totalRepaid) reflect the new state immediately. The loans list is refreshed
+  // by the parent server component via `router.refresh()` (passed through
+  // onUpdated), and re-synced to the local `loans` state via the useEffect
+  // above keyed on `initialLoans`.
+  function refreshVaultBalance() {
+    if (!selectedId) return;
+    fetch(`/api/vault?enterpriseId=${encodeURIComponent(selectedId)}`)
+      .then(async (r) => (r.ok ? (r.json() as Promise<{ vault: VaultSummary }>) : null))
+      .then((data) => {
+        if (data) setVault(data.vault);
+      })
+      .catch(() => {});
+  }
+
+  function refreshAfterAction() {
+    refreshVaultBalance();
+  }
 
   async function submitLoan() {
     if (!selectedEnterprise) {
@@ -454,6 +488,10 @@ export function VaultClient({
                     <TableHead className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground text-right">
                       Filed
                     </TableHead>
+                    {/* DE-23: action column — Repay / Forgive buttons per loan. */}
+                    <TableHead className="font-sans text-[11px] uppercase tracking-wide text-muted-foreground text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -494,6 +532,22 @@ export function VaultClient({
                         </TableCell>
                         <TableCell className="text-right font-sans text-xs text-muted-foreground/80">
                           {timeAgo(new Date(l.requestedAt))}
+                        </TableCell>
+                        {/* DE-23: Repay / Forgive action buttons (role-gated). */}
+                        <TableCell className="text-right">
+                          <VaultLoanActions
+                            loan={{
+                              id: l.id,
+                              enterpriseId: l.enterpriseId,
+                              enterpriseName: l.enterpriseName,
+                              amountEgp: l.amountEgp,
+                              reason: l.reason,
+                              status: l.status,
+                              repaidEgp: l.repaidEgp,
+                            }}
+                            userMemberships={userMemberships}
+                            onUpdated={() => refreshAfterAction()}
+                          />
                         </TableCell>
                       </TableRow>
                     );

@@ -48,7 +48,24 @@ export default async function EscrowPage() {
       lawFirm: { select: { name: true, frLicenseNumber: true, insuranceEgp: true, status: true } },
       accountingFirm: { select: { name: true, esaaLicense: true } },
       ledgerEvents: {
-        where: { eventType: { in: ["share_transferred", "expense_approved", "milestone_released", "reservation_created"] } },
+        // DE-14: previously filtered on ["share_transferred", "expense_approved",
+        // "milestone_released", "reservation_created"]. But `reservation_created`
+        // is NEVER written anywhere (reservations emit `funds_received`), so the
+        // feed dropped the most common inbound event. `funds_received` IS always
+        // written by POST /api/reservations. `capital_formation_closed` is
+        // written by the close-capital-formation endpoint — include it so the
+        // feed reflects the actual Constitutionally-relevant money flow.
+        where: {
+          eventType: {
+            in: [
+              "share_transferred",
+              "expense_approved",
+              "milestone_released",
+              "funds_received",
+              "capital_formation_closed",
+            ],
+          },
+        },
         orderBy: { timestamp: "desc" },
         take: 4,
         select: { id: true, eventType: true, timestamp: true, payloadHash: true },
