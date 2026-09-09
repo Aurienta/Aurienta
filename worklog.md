@@ -13270,3 +13270,25 @@ Files Touched (5):
 
 Stage Summary:
 **ALL 5 P3 COSMETIC ISSUES RESOLVED.** (1) Stale "27 routes / all 51" comment in dashboard-shell.tsx replaced with descriptive text + reference to nav-config.ts as single source of truth. (2) Onboarding copy already dynamic (verified). (3) 14 new role-specific quick actions added for the 5 institutional-rep roles + universal AI Copilot action extended to all 5 roles — FAB is never empty for any signed-in partner. (4) Stale /dashboard/portfolio fallback in dashboard/layout.tsx replaced with /dashboard (Overview). (5) 5 duplicate icons (Building2, ShieldCheck, Calculator, TrendingUp, Scale) diversified to 1 use each via 12 new icon imports registered across 3 consumer files (nav-config.ts, dashboard-shell.tsx, command-palette.tsx). Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.
+
+---
+Task ID: P2-P3-IMPLEMENTED
+Agent: Orchestrator
+Task: Implement all remaining P2/P3 audit findings (nav centralization, command palette, breadcrumbs, cosmetics).
+
+Work Log:
+- Dispatched 2 parallel subagents:
+  - FIX-P2-NAV-CENTRALIZE: Created src/lib/aurienta/nav-config.ts (single source of truth for 84 nav items), updated command palette to 100% coverage (was 34%), fixed breadcrumbs to use nav labels, dynamic onboarding copy.
+  - FIX-P3-COSMETIC: Fixed stale comments, added 14 role-specific quick actions for 5 institutional-rep roles, diversified 12 duplicate icons, fixed redirect fallback.
+- Build initially failed (lucide-react doesn't export 'Office' icon) — replaced with 'Landmark'. Second failure: duplicate Landmark key in NAV_ICON_REGISTRY object — removed duplicates.
+- Final build: EXIT=0 (39s), lint: 0 errors (348 warnings).
+- Vercel deploy sha 864b852: READY.
+- Verified: 20/20 dashboard tabs pass, session persists 8s+, command palette works, health ok.
+
+Stage Summary:
+**All P0 + P1 + P2 + P3 audit findings now implemented.**
+- P0: 5 issues (signout prefetch, 4 security RBAC/IDOR)
+- P1: 26 issues (8 null-assertion, 4 API IDOR, 13 AccessRestricted, university_rep nav, Profile sidebar, 5 workflow dead-ends)
+- P2: 3 issues (nav centralization, command palette 100%, breadcrumbs)
+- P3: 5 issues (stale comments, quick actions for all roles, redirect fallback, diverse icons)
+- Total: 39 issues resolved across ~55 files
