@@ -75,7 +75,6 @@ import {
   // P3-005: Diversified icons — must be imported here too so the registry
   // below can resolve them when the new NAV items reference them by name.
   Building,
-  Landmark,
   Castle,
   FileCheck,
   Factory,
