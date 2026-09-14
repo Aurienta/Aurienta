@@ -12,7 +12,6 @@
 //   the lax same-site cookie + Origin check are CSRF-protected by middleware.
 
 import { NextRequest, NextResponse } from "next/server";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { env } from "@/lib/aurienta/env";
 import { logger } from "@/lib/aurienta/logger";
@@ -71,7 +70,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // Helper: on auth failure, redirect form submissions back to signin,
   // or return JSON for API calls.
   function authFail(status: number, error: string) {
-    if (isFormSubmission) redirect("/signin?error=invalid_credentials");
+    if (isFormSubmission) {
+      return NextResponse.redirect(new URL("/signin?error=invalid_credentials", req.url), { status: 303 });
+    }
     return NextResponse.json({ error }, { status });
   }
 
@@ -195,7 +196,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // redirect to the dashboard directly — no JavaScript needed.
   const accept = req.headers.get("accept") ?? "";
   if (isFormSubmission || !accept.includes("application/json")) {
-    redirect("/dashboard/portfolio");
+    return NextResponse.redirect(new URL("/dashboard/portfolio", req.url), { status: 303 });
   }
 
   return NextResponse.json({
