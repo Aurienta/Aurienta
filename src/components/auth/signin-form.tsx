@@ -175,8 +175,16 @@ export function SigninForm({ onReady }: SigninFormProps) {
         role="region"
         aria-label="Sign-in"
       >
-        {/* Form */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+        {/* Form — has BOTH action (native HTML fallback) and onSubmit (JS).
+            If the JS fails (stale cache, error), the browser falls back to
+            native form submission which always works. */}
+        <form
+          action="/api/auth"
+          method="POST"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           {/* Email */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email" className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
