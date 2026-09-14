@@ -33,19 +33,22 @@ const DEV_FALLBACK_SECRET = "dev-cron-secret";
 export const GET = withErrorHandler(
   async (req: NextRequest) => {
     // ── Token auth (NOT session auth) ──
+    // Vercel Cron automatically sends the CRON_SECRET env var as an
+    // Authorization: Bearer header. We also accept ?token= for manual
+    // testing or external schedulers.
     const url = new URL(req.url);
-    const token = url.searchParams.get("token") ?? "";
+    const queryToken = url.searchParams.get("token") ?? "";
+    const authHeader = req.headers.get("authorization") ?? "";
+    const bearerToken = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : "";
+    const token = queryToken || bearerToken;
     const expected =
       process.env.CRON_SECRET && process.env.CRON_SECRET.length > 0
         ? process.env.CRON_SECRET
         : DEV_FALLBACK_SECRET;
 
     if (!token || token !== expected) {
-      await audit({
-        action: "cron.reservation_expiry",
-        result: "denied",
-        reason: "invalid_token",
-      });
       return NextResponse.json(
         { error: "Unauthorized — invalid or missing cron token" },
         { status: 401 }
