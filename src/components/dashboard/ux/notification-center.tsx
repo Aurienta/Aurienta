@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
   RefreshCw,
   Inbox,
   AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,6 +47,9 @@ export type NotifForUi = {
   aiSummary: string | null;
   createdAt: string; // ISO
   enterpriseName?: string | null;
+  // DE-12: optional deep-link to the related workflow page. When present the
+  // notification row's title is rendered as a Next.js <Link> to this path.
+  href?: string | null;
 };
 
 const CATEGORY_META: Record<
@@ -418,14 +423,28 @@ function NotificationRow({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <p
-                className={cn(
-                  "truncate font-sans text-sm font-semibold",
-                  n.read ? "text-muted-foreground" : "text-foreground"
-                )}
-              >
-                {n.title}
-              </p>
+              {n.href ? (
+                <Link
+                  href={n.href}
+                  className={cn(
+                    "truncate font-sans text-sm font-semibold underline-offset-2 transition-colors hover:text-gold hover:underline",
+                    n.read ? "text-muted-foreground" : "text-foreground"
+                  )}
+                  title={n.title}
+                >
+                  {n.title}
+                  <ExternalLink className="ml-1 inline h-3 w-3 text-gold/70" />
+                </Link>
+              ) : (
+                <p
+                  className={cn(
+                    "truncate font-sans text-sm font-semibold",
+                    n.read ? "text-muted-foreground" : "text-foreground"
+                  )}
+                >
+                  {n.title}
+                </p>
+              )}
               {!n.read && (
                 <span className="rounded-full bg-gold/15 px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wider text-gold">
                   new

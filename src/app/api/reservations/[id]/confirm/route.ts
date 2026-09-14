@@ -265,6 +265,7 @@ export const POST = withErrorHandler(
       category: "treasury",
       title: "Reservation Confirmed",
       body: `Your reservation has been confirmed. ${reservation.equityUnits.toLocaleString()} Equity Units added to your portfolio.`,
+      href: "/dashboard/portfolio",
     },
   });
 

@@ -192,6 +192,7 @@ export const POST = withErrorHandler(
             title,
             body: bodyText,
             aiPriority: resolution === "resolved" ? "high" : "medium",
+            href: "/dashboard/whistleblower",
           },
         });
       }

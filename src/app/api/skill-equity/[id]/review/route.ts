@@ -203,6 +203,27 @@ export const POST = withErrorHandler(
       },
     });
 
+    // ── DE-12: notify the claimant of the board's decision so their inbox ──
+    // reflects the outcome. Best-effort, inside the same transaction so the
+    // notification + claim update are atomic.
+    await tx.notification.create({
+      data: {
+        userId: claim.userId,
+        enterpriseId: claim.enterpriseId,
+        category: "governance",
+        title:
+          decision === "approve"
+            ? "Skill-equity claim approved"
+            : "Skill-equity claim rejected",
+        body:
+          decision === "approve"
+            ? `Your skill-equity claim "${claim.credentialName}" (${claim.credentialType}) was approved with a ${grantPct}% equity grant from the discretionary pool.`
+            : `Your skill-equity claim "${claim.credentialName}" (${claim.credentialType}) was rejected by the board.`,
+        href: "/dashboard/skill-equity",
+        aiPriority: decision === "approve" ? "medium" : "high",
+      },
+    });
+
     // DE-22: On approval with a non-zero grant, write the computed Equity Units
     // to the Ownership Ledger (OwnershipRecord). The CRE's `enforceSalaryToEquity`
     // returns `equityUnitsToIssue` but the units were never persisted — the cap

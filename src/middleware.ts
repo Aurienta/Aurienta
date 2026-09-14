@@ -106,9 +106,12 @@ export const config = {
   // Run on all routes except:
   // - static assets (_next/static, images, fonts, etc.)
   // - /api/auth/* — auth endpoints exempt from CSRF (no session yet)
+  // - /api/cron/* — cron endpoints use token auth via ?token= query (DE-16/17),
+  //   not a session cookie; they must not be blocked by the CSRF middleware
+  //   when invoked by Vercel Cron (cross-origin, no CSRF cookie).
   // - /dashboard/* — dashboard pages exempt from middleware to prevent
   //   any interference with the session cookie. The dashboard layout's
   //   getCurrentUser() provides auth; CSRF protection on dashboard POSTs
   //   is handled by the csrfFetch client helper.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|dashboard|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|api/cron|dashboard|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
 };

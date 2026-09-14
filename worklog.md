@@ -13379,3 +13379,87 @@ Files Modified (8):
 Agent work record: /home/z/my-project/agent-ctx/FIX-P1-WORKFLOW-REMAINING-workflow-agent.md
 
 **ALL 9 REMAINING P1/P2 WORKFLOW DEAD-ENDS (DE-09 THROUGH DE-23) CLOSED.** Whistleblower reports can now be resolved with bounty awards + filer notifications; expenses have a proper reject path with submitter notifications; the escrow ledger feed now shows actual money-flow events; skill-equity claims emit audit() on claim + review and persist their computed Equity Units to the Ownership Ledger; enterprise creation + milestone evidence submit are audited; manager_appointment proposals no longer fall into an undocumented state; vault loans have working Repay + Forgive UI buttons (role-gated) wired to the extended PATCH endpoint. Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.
+
+---
+Task ID: FIX-FINAL-GAPS
+Agent: Final-Gaps Remediation Agent
+Task: Close the last four outstanding platform gaps — DE-16 (proposal expiry scheduler), DE-17 (reservation expiry scheduler), DE-12 (notification deep-link hrefs), DE-13 (audit drill-down links).
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail for prior context — confirmed FIX-P1-WORKFLOW-REMAINING closed DE-09 through DE-23; the 4 gaps here are the remaining tail.
+- Read every target file FIRST before modifying: prisma/schema.prisma (Notification, Proposal, Reservation, Enterprise models), src/lib/aurienta/audit.ts (audit() helper signature), src/lib/aurienta/api-handler.ts (withErrorHandler), src/middleware.ts (CSRF matcher), the 6 notification-creating routes (reservations/[id]/confirm, proposals, milestones/[id]/accountant-release, whistleblower/[id]/resolve, expenses/[id]/reject, skill-equity/[id]/review), src/components/dashboard/ux/notification-center.tsx (NotifForUi type + NotificationRow component), src/app/dashboard/notifications/page.tsx (forUi mapping), src/app/dashboard/admin/audit/page.tsx (target cell rendering), src/app/api/reservations/route.ts (confirmed reservation POST increments raisedEgp — so the expiry-time decrement is the matching release).
+
+Stage Summary:
+
+DE-16 (NEW) — Proposal expiry cron endpoint:
+- Created `src/app/api/cron/proposal-expiry/route.ts` (GET). Accepts `?token=` query param, compared against `process.env.CRON_SECRET` (dev fallback `dev-cron-secret` when env var unset). Returns 401 on missing/invalid token; best-effort audit row records the denied attempt.
+- Finds all proposals with `status = "voting_open"` AND `votingEndsAt < now()`, capped at 500/sweep for safety.
+- Per proposal: runs a single db.$transaction that:
+  - transitions `status → "expired"` via `updateMany` with `where: { id, status: "voting_open" }` (race-safe — no-ops if another writer changed status mid-sweep),
+  - creates a Notification for the proposal creator (`category: "governance"`, `href: "/dashboard/governance"`, `aiPriority: "medium"`) summarising the expiry.
+- Calls `audit({ action: "proposal.expire", target: "proposal:<id>", result: "allowed", metadata: {...} })` after each transaction.
+- Per-proposal failures are caught + logged (never abort the rest of the sweep).
+- Returns `{ expired: count }`.
+
+DE-17 (NEW) — Reservation expiry cron endpoint:
+- Created `src/app/api/cron/reservation-expiry/route.ts` (GET). Same token-auth pattern as DE-16. Returns 401 on missing/invalid token.
+- Finds all reservations with `status = "reserved"` AND `expiresAt < now()`, capped at 500/sweep.
+- Per reservation: single db.$transaction that:
+  - transitions `status → "expired"` via race-safe `updateMany`,
+  - decrements `enterprise.raisedEgp` by `reservation.amountEgp` — the matching release for the increment applied at reservation-create time. This frees up the capital headroom so other partners can reserve against the released capacity.
+- Calls `audit({ action: "reservation.expire", target: "reservation:<id>", result: "allowed", metadata: {...} })` after each transaction.
+- Per-reservation failures caught + logged.
+- Returns `{ expired: count }`.
+
+DE-12 (PRISMA + 6 ROUTES + 1 CLIENT COMPONENT + 1 PAGE) — Notification deep-link hrefs:
+- `prisma/schema.prisma`: added `href String?` (nullable, optional) to the `Notification` model. Nullable so existing rows are unaffected — the migration is non-destructive.
+- `src/app/api/reservations/[id]/confirm/route.ts`: added `href: "/dashboard/portfolio"` to the reservation-confirmed notification.
+- `src/app/api/proposals/route.ts`: added `href: "/dashboard/governance"` to the new-proposal fan-out notifications (createMany).
+- `src/app/api/milestones/[id]/accountant-release/route.ts`: added `href: "/dashboard/escrow"` to the milestone-released notification.
+- `src/app/api/whistleblower/[id]/resolve/route.ts`: added `href: "/dashboard/whistleblower"` to the filer-resolution notification.
+- `src/app/api/expenses/[id]/reject/route.ts`: added `href: "/dashboard/manager"` to the submitter-rejected notification.
+- `src/app/api/skill-equity/[id]/review/route.ts`: ADDED a new claimant notification (the route previously emitted none on review) with `href: "/dashboard/skill-equity"`, `category: "governance"`, aiPriority high on reject / medium on approve. Inserted inside the existing db.$transaction so the notification + claim update are atomic.
+- `src/components/dashboard/ux/notification-center.tsx`: added `href?: string | null` to the `NotifForUi` type; imported `Link` from `next/link` and the `ExternalLink` lucide icon; made the NotificationRow title render as a `<Link href={n.href}>` with a gold hover underline + inline ExternalLink icon when `href` is present, falling back to the original `<p>` when not. The Mark-read / Snooze action buttons remain independent — no nested-link issues.
+- `src/app/dashboard/notifications/page.tsx`: added `href: n.href ?? null` to the forUi mapping so the client component receives the deep-link from the DB.
+
+DE-13 (MODIFIED) — Audit drill-down links:
+- `src/app/dashboard/admin/audit/page.tsx`: added an `auditTargetToHref(target: string | null)` helper that parses the `entity_type:entity_id` format and returns:
+  - `expense:*`        → `/dashboard/manager`
+  - `enterprise:abc`   → `/dashboard/enterprise-profile?id=abc` (entityId is URL-encoded for safety)
+  - `proposal:*`       → `/dashboard/governance`
+  - anything else / null → `null`
+- Replaced the static Target TableCell render with a conditional: when `auditTargetToHref` returns a non-null href, the target string is wrapped in a Next.js `<Link>` styled with the gold accent (`text-gold hover:text-gold-light hover:underline`); otherwise the original plain-text span is rendered.
+
+DE-16/17 — Middleware exclusion:
+- `src/middleware.ts`: added `api/cron` to the `config.matcher` exclusion regex (alongside the existing `api/auth` and `dashboard` exclusions). The cron endpoints use token auth via `?token=`, not a session cookie — they must not be blocked by the CSRF middleware when invoked cross-origin by Vercel Cron. Added an inline comment explaining the rationale.
+
+Verification:
+- `bun run lint` → 0 errors, 348 warnings (identical to the prior agent's baseline). Verified the two file-level warnings referencing my touched files (audit/page.tsx line 165 `deniedCount` unused; notification-center.tsx line 186 unused `id` arg) are PRE-EXISTING and not introduced by these changes.
+- `bunx prisma generate` → Prisma Client v7.10.0 regenerated with the new `Notification.href` field; TypeScript types include the field on both create input and read output.
+- `bunx prisma db push --url "file:/home/z/my-project/db/custom.db"` → schema synced to the local dev db. Verified via `prisma db pull --print` that the `href String?` column is present on the `Notification` table.
+- Live smoke test of the new endpoints:
+  - `GET /api/cron/proposal-expiry` (no token) → **401 Unauthorized** ✓ (route compiled + token-auth gate fires before any DB call).
+  - `GET /api/cron/reservation-expiry` (no token) → **401 Unauthorized** ✓
+  - `GET /api/cron/proposal-expiry?token=dev-cron-secret` → 500 (PRE-EXISTING dev env DB connection issue — `PrismaClient requires a driver adapter` because the local `DATABASE_URL=file:...` does not start with `libsql://`. Affects ALL DB-touching routes — `/api/health` returns 503 with the same error. NOT a regression from these changes; production Turso DB has `DATABASE_URL=libsql://...` and the adapter is properly created in db.ts.)
+- Did NOT run `bun run build` per task rules (orchestrator verifies).
+
+Files Created (2):
+- src/app/api/cron/proposal-expiry/route.ts (DE-16)
+- src/app/api/cron/reservation-expiry/route.ts (DE-17)
+
+Files Modified (10):
+- prisma/schema.prisma (DE-12 — added `href String?` to Notification model)
+- src/middleware.ts (DE-16/17 — added api/cron to matcher exclusion)
+- src/app/api/reservations/[id]/confirm/route.ts (DE-12 — href: /dashboard/portfolio)
+- src/app/api/proposals/route.ts (DE-12 — href: /dashboard/governance)
+- src/app/api/milestones/[id]/accountant-release/route.ts (DE-12 — href: /dashboard/escrow)
+- src/app/api/whistleblower/[id]/resolve/route.ts (DE-12 — href: /dashboard/whistleblower)
+- src/app/api/expenses/[id]/reject/route.ts (DE-12 — href: /dashboard/manager)
+- src/app/api/skill-equity/[id]/review/route.ts (DE-12 — NEW claimant notification + href: /dashboard/skill-equity)
+- src/components/dashboard/ux/notification-center.tsx (DE-12 — NotifForUi.href + Link title rendering)
+- src/app/dashboard/notifications/page.tsx (DE-12 — forUi mapping includes href)
+- src/app/dashboard/admin/audit/page.tsx (DE-13 — auditTargetToHref helper + conditional Link render)
+
+Agent work record: /home/z/my-project/agent-ctx/FIX-FINAL-GAPS-final-gaps-agent.md
+
+**ALL 4 FINAL GAPS (DE-12, DE-13, DE-16, DE-17) NOW CLOSED.** Proposal + reservation expiry are scheduled-sweep-ready with token auth, audit, and creator/submitter notifications. Notifications carry an optional `href` deep-link; the notification-center title is now a clickable Next.js `<Link>` when href is present. Audit-log targets are navigable: expense→/dashboard/manager, enterprise→/dashboard/enterprise-profile?id=…, proposal→/dashboard/governance. Lint passes with 0 errors and 0 new warnings. Production deploy note: set CRON_SECRET in the Vercel project env and run a deploy-time `prisma db push` against the production Turso DB so the new `Notification.href` column is added (non-destructive — nullable). Ready for orchestrator verification.

@@ -282,6 +282,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
           category: "governance",
           title: "New proposal",
           body: `New proposal: ${created.title}. Voting is now open.`,
+          href: "/dashboard/governance",
         })),
       });
     }

@@ -114,6 +114,34 @@ function filterQs(p: SearchParams, extra: Record<string, string | number> = {}):
   return s ? `?${s}` : "";
 }
 
+/**
+ * DE-13: Resolve an audit target string (`entity_type:entity_id`) to a
+ * deep-link into the relevant workflow dashboard. Returns null when the target
+ * is null/empty or the entity type is not navigable.
+ *
+ *   expense:abc         → /dashboard/manager
+ *   enterprise:abc      → /dashboard/enterprise-profile?id=abc
+ *   proposal:abc        → /dashboard/governance
+ *   anything else        → null (rendered as plain text)
+ */
+function auditTargetToHref(target: string | null): string | null {
+  if (!target) return null;
+  const sep = target.indexOf(":");
+  if (sep <= 0 || sep === target.length - 1) return null;
+  const entityType = target.slice(0, sep);
+  const entityId = target.slice(sep + 1);
+  switch (entityType) {
+    case "expense":
+      return "/dashboard/manager";
+    case "enterprise":
+      return `/dashboard/enterprise-profile?id=${encodeURIComponent(entityId)}`;
+    case "proposal":
+      return "/dashboard/governance";
+    default:
+      return null;
+  }
+}
+
 export default async function AuditLogViewerPage({
   searchParams,
 }: {
@@ -450,9 +478,28 @@ export default async function AuditLogViewerPage({
                           </code>
                         </TableCell>
                         <TableCell className="max-w-[18rem]">
-                          <span className="block truncate font-sans text-[12px] text-foreground/80" title={r.target ?? undefined}>
-                            {r.target ?? "—"}
-                          </span>
+                          {(() => {
+                            const href = auditTargetToHref(r.target);
+                            if (href) {
+                              return (
+                                <Link
+                                  href={href}
+                                  className="block truncate font-sans text-[12px] text-gold underline-offset-2 transition-colors hover:text-gold-light hover:underline"
+                                  title={r.target ?? undefined}
+                                >
+                                  {r.target}
+                                </Link>
+                              );
+                            }
+                            return (
+                              <span
+                                className="block truncate font-sans text-[12px] text-foreground/80"
+                                title={r.target ?? undefined}
+                              >
+                                {r.target ?? "—"}
+                              </span>
+                            );
+                          })()}
                         </TableCell>
                         <TableCell>
                           <span

@@ -201,6 +201,7 @@ export const POST = withErrorHandler(
             `Your expense "${expense.vendor}" (${expense.amountEgp.toLocaleString()} EGP) ` +
             `for ${expense.enterprise.name} was rejected. Reason: ${reason.slice(0, 280)}`,
           aiPriority: "high",
+          href: "/dashboard/manager",
         },
       });
 

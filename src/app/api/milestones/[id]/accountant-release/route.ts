@@ -177,6 +177,7 @@ export const POST = withErrorHandler(async (req: NextRequest, ctx: { params: Pro
           category: "milestone",
           title: "Milestone funds released",
           body: `Milestone "${milestone.title}" funds released from Law Firm Client Account. Net ${netReleasedEgp.toLocaleString()} EGP credited to enterprise operations.`,
+          href: "/dashboard/escrow",
         },
       });
     }

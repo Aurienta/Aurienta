@@ -537,6 +537,7 @@ model Notification {
   title         String
   body          String
   category      String   // governance, treasury, compliance, milestone, dividend, system
+  href          String?  // DE-12: deep-link to the related workflow page (nullable so existing rows are unaffected)
   read          Boolean  @default(false)
   aiPriority    String?  // urgent, high, medium, low (AI triage)
   aiSummary     String?  // one-line AI summary

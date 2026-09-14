@@ -34,6 +34,7 @@ export default async function NotificationsPage() {
     aiSummary: n.aiSummary,
     createdAt: n.createdAt.toISOString(),
     enterpriseName: n.enterprise?.name ?? null,
+    href: n.href ?? null,
   }));
 
   return (
