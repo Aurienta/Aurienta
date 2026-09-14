@@ -13463,3 +13463,24 @@ Files Modified (10):
 Agent work record: /home/z/my-project/agent-ctx/FIX-FINAL-GAPS-final-gaps-agent.md
 
 **ALL 4 FINAL GAPS (DE-12, DE-13, DE-16, DE-17) NOW CLOSED.** Proposal + reservation expiry are scheduled-sweep-ready with token auth, audit, and creator/submitter notifications. Notifications carry an optional `href` deep-link; the notification-center title is now a clickable Next.js `<Link>` when href is present. Audit-log targets are navigable: expense→/dashboard/manager, enterprise→/dashboard/enterprise-profile?id=…, proposal→/dashboard/governance. Lint passes with 0 errors and 0 new warnings. Production deploy note: set CRON_SECRET in the Vercel project env and run a deploy-time `prisma db push` against the production Turso DB so the new `Notification.href` column is added (non-destructive — nullable). Ready for orchestrator verification.
+
+---
+Task ID: FINAL-GAPS-IMPLEMENTED
+Agent: Orchestrator
+Task: Implement the last remaining gaps from the audit (DE-12, DE-13, DE-16, DE-17) + push schema + set CRON_SECRET.
+
+Work Log:
+- DE-16: Created /api/cron/proposal-expiry — token-auth cron endpoint that transitions voting_open → expired. Creates notifications + audit events.
+- DE-17: Created /api/cron/reservation-expiry — token-auth cron endpoint that transitions reserved → expired + decrements enterprise.raisedEgp.
+- DE-12: Added href field to Notification model (schema + Turso DB). All 6 notification-creating endpoints now include href deep-links. Notification center renders clickable Link.
+- DE-13: Audit log drill-down — target field parsed and rendered as clickable Link.
+- Schema: Notification.href TEXT column pushed to live Turso DB (non-destructive, nullable).
+- CRON_SECRET: generated + set on Vercel (production + preview + development).
+- Middleware: api/cron excluded from CSRF.
+- Verified: cron endpoints return 401 without token, 200 with token. 14/14 tabs pass. DB connected. href column exists in live DB.
+- Deploy sha 7ca2e48: READY.
+
+Stage Summary:
+**ALL 23 workflow dead-ends (DE-01 through DE-23) are now fixed.**
+**ALL 48 audit findings (5 P0 + 35 P1 + 5 P2 + 3 P3) are now resolved.**
+**No remaining gaps. Platform is fully wired end-to-end.**
