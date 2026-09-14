@@ -192,10 +192,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   });
   logger.info("auth success", { userId: user.id, ip });
 
-  // If this is a native HTML form submission (not a fetch/API call),
+  // If this is a native HTML form submission (content-type: form-encoded),
   // redirect to the dashboard directly — no JavaScript needed.
-  const accept = req.headers.get("accept") ?? "";
-  if (isFormSubmission || !accept.includes("application/json")) {
+  if (isFormSubmission) {
     return NextResponse.redirect(new URL("/dashboard/portfolio", req.url), { status: 303 });
   }
 
