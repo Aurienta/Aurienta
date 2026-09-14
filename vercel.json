@@ -3,11 +3,11 @@
   "crons": [
     {
       "path": "/api/cron/proposal-expiry",
-      "schedule": "0 * * * *"
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/cron/reservation-expiry",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }
