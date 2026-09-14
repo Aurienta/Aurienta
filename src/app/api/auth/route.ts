@@ -194,8 +194,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // If this is a native HTML form submission (not a fetch/API call),
   // redirect to the dashboard directly — no JavaScript needed.
   const accept = req.headers.get("accept") ?? "";
-  const contentType = req.headers.get("content-type") ?? "";
-  if (contentType.includes("application/x-www-form-urlencoded") || !accept.includes("application/json")) {
+  if (isFormSubmission || !accept.includes("application/json")) {
     redirect("/dashboard/portfolio");
   }
 
