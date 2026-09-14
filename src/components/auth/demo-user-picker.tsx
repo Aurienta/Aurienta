@@ -14,37 +14,15 @@ const DEMO = [
   { email: "khalil@holding.eg", name: "Khalil Mansour", role: "Company Owner · Board", icon: Building2, note: "Nile Brew owner → graduation" },
 ];
 
-type QuickSignInFn = (email: string, password?: string) => void;
+// NOTE: This component now uses NATIVE HTML FORMS for each demo user.
+// This bypasses ALL JavaScript — the browser's native form submission
+// sends a POST to /api/auth with form-encoded data, the server creates
+// a session, and redirects to /dashboard/portfolio. No cached JS, no
+// csrfFetch, no form.setValue, no setTimeout — just pure HTML.
+// This is the most bulletproof approach that works in ALL browsers
+// regardless of cache state.
 
-interface DemoUserPickerProps {
-  /** Provided by the parent (SigninClient). When present, clicking a demo user
-   *  fills the sign-in form (email + `aurienta2026`) and submits — works in
-   *  any environment because the password is a real scrypt-verified credential.
-   *  When null (form not yet mounted), the picker is disabled. */
-  quickSignIn?: QuickSignInFn | null;
-}
-
-export function DemoUserPicker({ quickSignIn }: DemoUserPickerProps) {
-  const [busy, setBusy] = React.useState<string | null>(null);
-
-  function pick(email: string) {
-    if (!quickSignIn) return;
-    setBusy(email);
-    // The form's quickSignIn fills the email + password fields and submits.
-    // We display a toast for visual feedback; the form's onSubmit shows its
-    // own success/error toast.
-    try {
-      quickSignIn(email, DEMO_PASSWORD);
-      // Brief delay before un-busying so the user sees the spinner.
-      window.setTimeout(() => setBusy(null), 800);
-      // Intentionally do not redirect here — the form's onSubmit handler does it.
-    } catch {
-      setBusy(null);
-    }
-  }
-
-  const disabled = !quickSignIn;
-
+export function DemoUserPicker() {
   return (
     <div className="mx-auto mt-8 w-full max-w-md">
       <div className="mb-3 flex items-center gap-2.5">
@@ -55,8 +33,7 @@ export function DemoUserPicker({ quickSignIn }: DemoUserPickerProps) {
         <span className="h-px flex-1 bg-gold/15" />
       </div>
 
-      {/* Demo-mode note — works regardless of ALLOW_DEMO_SIGNIN because the
-          seeded users have real scrypt hashes for the password `aurienta2026`. */}
+      {/* Demo-mode note */}
       <div className="mb-3 flex items-start gap-2 rounded-lg border border-gold/15 bg-gold/[0.04] p-2.5">
         <KeyRound className="mt-0.5 h-3 w-3 shrink-0 text-gold/80" aria-hidden="true" />
         <p className="font-sans text-[11px] leading-relaxed text-muted-foreground">
@@ -64,31 +41,35 @@ export function DemoUserPicker({ quickSignIn }: DemoUserPickerProps) {
           <code className="rounded bg-background/60 px-1 py-0.5 font-mono text-xs text-gold-light">
             {DEMO_PASSWORD}
           </code>
-          . Clicking a partner below fills the form and submits automatically.
+          . Clicking a partner below signs in instantly via native form submission.
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         {DEMO.map((u) => (
-          <button
+          <form
             key={u.email}
-            onClick={() => pick(u.email)}
-            disabled={disabled || busy !== null}
-            className="group flex items-center gap-3 rounded-xl border border-gold/12 bg-background/40 p-3 text-left transition-all hover:border-gold/30 hover:bg-gold/[0.04] disabled:opacity-50"
+            action="/api/auth"
+            method="POST"
+            className="contents"
           >
-            <div className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold/15 bg-gold/5">
-              <u.icon className="h-4 w-4 text-gold" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-sans text-sm font-medium text-foreground">{u.name}</p>
-              <p className="truncate font-sans text-[11px] text-muted-foreground">{u.role} · {u.note}</p>
-            </div>
-            {busy === u.email ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
-            ) : (
+            {/* Hidden form fields — the browser submits these natively */}
+            <input type="hidden" name="email" value={u.email} />
+            <input type="hidden" name="password" value={DEMO_PASSWORD} />
+            <button
+              type="submit"
+              className="group flex w-full items-center gap-3 rounded-xl border border-gold/12 bg-background/40 p-3 text-left transition-all hover:border-gold/30 hover:bg-gold/[0.04]"
+            >
+              <div className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold/15 bg-gold/5">
+                <u.icon className="h-4 w-4 text-gold" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-sans text-sm font-medium text-foreground">{u.name}</p>
+                <p className="truncate font-sans text-[11px] text-muted-foreground">{u.role} · {u.note}</p>
+              </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-gold" />
-            )}
-          </button>
+            </button>
+          </form>
         ))}
       </div>
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center font-sans text-xs text-muted-foreground/80">

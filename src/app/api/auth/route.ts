@@ -12,6 +12,7 @@
 //   the lax same-site cookie + Origin check are CSRF-protected by middleware.
 
 import { NextRequest, NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { env } from "@/lib/aurienta/env";
 import { logger } from "@/lib/aurienta/logger";
@@ -45,17 +46,40 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // ── Parse body ──
-  const body = await parseBody(req, authSchema);
-  if (body instanceof NextResponse) return body;
+  // Support both JSON (fetch API) and form-encoded (native HTML form) submissions.
+  const contentType = req.headers.get("content-type") ?? "";
+  const isFormSubmission = contentType.includes("application/x-www-form-urlencoded");
+  let email: string;
+  let password: string;
+  let action: string | undefined;
+
+  if (isFormSubmission) {
+    // Native HTML form submission — parse form data directly.
+    const formData = await req.formData();
+    email = (formData.get("email") as string)?.trim().toLowerCase() ?? "";
+    password = (formData.get("password") as string) ?? "";
+    action = (formData.get("action") as string) ?? undefined;
+  } else {
+    // JSON API call — use zod-validated parseBody.
+    const body = await parseBody(req, authSchema);
+    if (body instanceof NextResponse) return body;
+    email = body.email.trim().toLowerCase();
+    password = body.password ?? "";
+    action = body.action;
+  }
+
+  // Helper: on auth failure, redirect form submissions back to signin,
+  // or return JSON for API calls.
+  function authFail(status: number, error: string) {
+    if (isFormSubmission) redirect("/signin?error=invalid_credentials");
+    return NextResponse.json({ error }, { status });
+  }
 
   // ── Sign-out branch (kept for backwards compatibility) ──
-  if (body.action === "signout") {
+  if (action === "signout") {
     await signOut();
     return NextResponse.json({ ok: true });
   }
-
-  const email = body.email.trim().toLowerCase();
-  const password = body.password ?? "";
 
   // ── Demo sign-in: only when ALLOW_DEMO_SIGNIN=true AND no password supplied ──
   // Sandbox convenience: lets the demo-user-picker work without a password.
@@ -70,7 +94,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
         ip,
         userAgent,
       });
-      return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
+      return authFail(401, "invalid_credentials");
     }
     await audit({
       action: "auth.signin",
@@ -98,7 +122,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       userAgent,
     });
     logger.info("auth failed: unknown email", { email, ip });
-    return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
+    return authFail(401, "invalid_credentials");
   }
 
   // Legacy / mocked hash handling. In production a plaintext hash means the
@@ -138,7 +162,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       ip,
       userAgent,
     });
-    return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
+    return authFail(401, "invalid_credentials");
   }
 
   // ── Verify password ──
@@ -153,7 +177,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       userAgent,
     });
     logger.info("auth failed: bad password", { email, ip });
-    return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
+    return authFail(401, "invalid_credentials");
   }
 
   // ── Success — create a server-side Session ──
@@ -166,6 +190,15 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     userAgent,
   });
   logger.info("auth success", { userId: user.id, ip });
+
+  // If this is a native HTML form submission (not a fetch/API call),
+  // redirect to the dashboard directly — no JavaScript needed.
+  const accept = req.headers.get("accept") ?? "";
+  const contentType = req.headers.get("content-type") ?? "";
+  if (contentType.includes("application/x-www-form-urlencoded") || !accept.includes("application/json")) {
+    redirect("/dashboard/portfolio");
+  }
+
   return NextResponse.json({
     user: { id: user.id, email: user.email, legalName: user.legalName },
   });
