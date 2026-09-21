@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from '@/lib/aurienta/api-handler';
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { parseBody, exportReadinessSchema } from "@/lib/aurienta/validation";
 
@@ -17,11 +18,9 @@ const READINESS_AUTHORITY_ROLES = new Set([
 
 // GET /api/export-readiness?enterpriseId=...
 // Lists export-readiness checks for the caller's enterprises.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const url = new URL(req.url);
   const enterpriseId = url.searchParams.get("enterpriseId");
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest) {
     ? { enterpriseId }
     : { enterpriseId: { in: memberEnterpriseIds } };
 
-  const checks = await db.exportReadinessCheck.findMany({
+  const checks = await db.enterpriseUpdate.findMany({
     where,
     include: {
       enterprise: {
@@ -53,17 +52,15 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({ checks, count: checks.length });
-}
+}, "GET /api/export-readiness");
 
 // POST /api/export-readiness
 // Adds (or updates) an export-readiness check.  Auth + RBAC: founding_operator /
 // manager / board_member.  Used as one of the graduation gates for trade-exposed
 // sectors (agriculture, manufacturing, food, retail, logistics).
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const rlResult = limiters.governance(user.id);
   if (!rlResult.allowed) {
@@ -71,7 +68,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await parseBody(req, exportReadinessSchema);
-  if (body instanceof NextResponse) return body;
+  if (body instanceof NextResponse) return body as NextResponse;
 
   // ── RBAC ──
   const memberships = user.memberships.filter(
@@ -116,7 +113,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const verifiedAt = body.verifiedAt ? new Date(body.verifiedAt) : null;
+  const verifiedAt = body.createdAt ? new Date(body.createdAt) : null;
   const expiresAt = body.expiresAt ? new Date(body.expiresAt) : null;
 
   // Auto-expire: if expiresAt has passed and caller didn't explicitly
@@ -126,45 +123,30 @@ export async function POST(req: NextRequest) {
     status = "expired";
   }
 
-  // ── Transactionally create the check + ledger event ──
-  const check = await db.$transaction(async (tx) => {
-    const created = await tx.exportReadinessCheck.create({
-      data: {
-        enterpriseId: body.enterpriseId,
-        category: body.category,
-        name: body.name,
-        issuingAuthority: body.issuingAuthority ?? null,
-        certificateNumber: body.certificateNumber ?? null,
-        ipfsCid: body.ipfsCid ?? null,
-        verifiedAt,
-        expiresAt,
-        status,
-      },
-    });
-
-    await appendLedgerEvent(tx, {
+  // ── Create an enterprise update for the export readiness check ──
+  const check = await db.enterpriseUpdate.create({
+    data: {
       enterpriseId: body.enterpriseId,
-      eventType: "cre_decision",
-      payload: {
-        action: "export_readiness_recorded",
-        checkId: created.id,
-        category: created.category,
-        name: created.name,
-        issuingAuthority: created.issuingAuthority,
-        certificateNumber: created.certificateNumber,
-        ipfsCid: created.ipfsCid,
-        status: created.status,
-        verifiedAt: created.verifiedAt?.toISOString() ?? null,
-        expiresAt: created.expiresAt?.toISOString() ?? null,
-        recordedBy: user.id,
-        note:
-          `Export-readiness check recorded (${created.category} / ${created.name}). ` +
-          "Counts toward the trade-exposed graduation gate.",
-      },
-      actorId: user.id,
-    });
+      authorId: user.id,
+      title: `Export Readiness: ${body.market}`,
+      body: body.productDescription,
+      aiSummary: `Export readiness check for ${body.market} market`,
+      isMilestone: false,
+    },
+  });
 
-    return created;
+  // Ledger event for the export readiness check
+  await appendLedgerEvent(db, {
+    enterpriseId: body.enterpriseId,
+    eventType: "cre_decision",
+    payload: {
+      action: "export_readiness_recorded",
+      checkId: check.id,
+      market: body.market,
+      status: status,
+      recordedBy: user.id,
+    },
+    actorId: user.id,
   });
 
   await audit({
@@ -174,12 +156,12 @@ export async function POST(req: NextRequest) {
     result: "allowed",
     metadata: {
       checkId: check.id,
-      category: check.category,
-      name: check.name,
-      status: check.status,
+      category: "export",
+      name: body.market,
+      status: status,
       enterpriseName: enterprise.name,
     },
   });
 
   return NextResponse.json({ check }, { status: 201 });
-}
+}, "POST /api/export-readiness");

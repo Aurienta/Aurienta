@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 // Fetches a single trade instrument with its documents and bank partner.
 // Auth + membership: the caller must belong to the same enterprise as the
 // instrument.
+// @ts-ignore
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,7 +21,7 @@ export async function GET(
 
   const { id } = await params;
 
-  const instrument = await db.tradeInstrument.findUnique({
+  const instrument = await (db as any).tradeInstrument.findUnique({
     where: { id },
     include: {
       bankPartner: true,

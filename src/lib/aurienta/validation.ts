@@ -284,3 +284,67 @@ export async function parseBody<T>(
   }
   return result.data;
 }
+
+// ── Trade instrument schema (for /api/trade-instruments) ──
+export const tradeInstrumentSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise ID is required"),
+  symbol: z.string().min(1).max(20),
+  name: z.string().min(1).max(200),
+  tier: z.string().min(1),
+  bankPartnerId: z.string().optional(),
+  type: z.string().optional(),
+  currency: z.string().optional(),
+  instrumentNumber: z.string().optional(),
+  expiryDate: z.string().optional(),
+  status: z.string().optional(),
+  underlyingRule: z.string().optional(),
+  amount: z.number().optional(),
+  counterparty: z.string().optional(),
+  counterpartyCountry: z.string().optional(),
+  portOfLoading: z.string().optional(),
+  portOfDischarge: z.string().optional(),
+  incoterms: z.string().optional(),
+  hsCode: z.string().optional(),
+});
+
+// ── Export readiness schema (for /api/export-readiness) ──
+export const exportReadinessSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise ID is required"),
+  market: z.string().min(1).max(100),
+  productDescription: z.string().min(1).max(2000),
+  hsCode: z.string().optional(),
+  status: z.string().optional(),
+  createdAt: z.string().optional(),
+  expiresAt: z.string().optional(),
+});
+
+// ── Trade document schema (for /api/trade-documents) ──
+export const tradeDocumentSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise ID is required"),
+  documentType: z.enum(["commercial_invoice", "packing_list", "certificate_of_origin", "bill_of_lading", "other"]),
+  documentNumber: z.string().min(1).max(100),
+  tradeInstrumentId: z.string().optional(),
+  issueDate: z.string().optional(),
+  ipfsCid: z.string().optional(),
+  type: z.string().optional(),
+  nafezaAciNumber: z.string().optional(),
+  issuingAuthority: z.string().optional(),
+  contentHash: z.string().optional(),
+  verified: z.boolean().optional(),
+  currency: z.string().optional(),
+  amount: z.number().optional(),
+});
+
+// ── Screening schema (for /api/screening) ──
+export const screeningSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise ID is required"),
+  screeningType: z.enum(["aml", "sanctions", "pep", "adverse_media"]),
+  searchTerm: z.string().min(1).max(500),
+  counterpartyName: z.string().optional(),
+  counterpartyCountry: z.string().optional(),
+  provider: z.string().optional(),
+  listsChecked: z.array(z.string()).optional(),
+  hits: z.number().optional(),
+  hitDetails: z.string().optional(),
+  resolution: z.string().optional(),
+});

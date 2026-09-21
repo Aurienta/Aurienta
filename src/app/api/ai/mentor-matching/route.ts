@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     return {
       mentorId: mentor.user.id,
       mentorName: mentor.user.legalName,
-      sts: mentor.user.sovereignScore,
+      sts: mentor.user.sovereignTrustScore,
       role: mentor.role,
       enterprise: mentor.enterprise.name,
       sector: mentor.enterprise.sector,
