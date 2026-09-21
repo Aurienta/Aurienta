@@ -1,11 +1,12 @@
 // AURIENTA Brain AI — Multi-Model Consensus Orchestrator
 //
-// The Brain orchestrates 5 AI providers in a CONSENSUS model:
+// The Brain orchestrates 6 AI providers in a CONSENSUS model:
 //   1. Google Gemini  — complex reasoning, feasibility, analysis
 //   2. OpenAI GPT-4   — conversational copilot, explanations
 //   3. Groq Llama 3.2 — low-latency: fraud, anomaly, triage
 //   4. HuggingFace    — Mixtral 8x7B: sanity check, consistency review
 //   5. OpenRouter     — multi-model gateway fallback
+//   6. NVIDIA NIM     — Llama 3.1 Nemotron 70B: enterprise-grade reasoning
 //
 // CONSENSUS MODE: For critical tasks, the Brain queries multiple providers
 // in PARALLEL and synthesizes their responses into a single consensus answer.
@@ -21,7 +22,7 @@ let GoogleGenerativeAI: any = null;
 let OpenAI: any = null;
 let Groq: any = null;
 
-export type AiProvider = "gemini" | "openai" | "groq" | "huggingface" | "openrouter";
+export type AiProvider = "gemini" | "openai" | "groq" | "huggingface" | "openrouter" | "nvidia";
 export type AiTaskKind =
   | "feasibility" | "pitch_deck" | "copilot" | "explain" | "anomaly" | "drift"
   | "fraud" | "sanity_check" | "triage" | "general" | "multilingual" | "advisory"
@@ -99,6 +100,7 @@ function getGroq() {
 }
 function getHfKey() { return process.env.HUGGINGFACE_API_KEY ?? null; }
 function getOrKey() { return process.env.OPENROUTER_API_KEY ?? null; }
+function getNvidiaKey() { return process.env.NVIDIA_API_KEY ?? null; }
 
 async function callGemini(system: string, user: string): Promise<MultiModelResult> {
   const client = getGemini(); if (!client) throw new Error("Gemini API key not configured");
@@ -137,8 +139,27 @@ async function callOpenRouter(system: string, user: string): Promise<MultiModelR
   return { content: data.choices?.[0]?.message?.content ?? "", provider: "openrouter", model: "llama-3.3-70b-instruct", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: data.usage?.prompt_tokens ?? null, tokensOut: data.usage?.completion_tokens ?? null };
 }
 
+async function callNvidia(system: string, user: string): Promise<MultiModelResult> {
+  const key = getNvidiaKey(); if (!key) throw new Error("NVIDIA API key not configured");
+  const start = Date.now();
+  // NVIDIA NIM API is OpenAI-compatible at https://integrate.api.nvidia.com/v1
+  const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      model: "nvidia/llama-3.1-nemotron-70b-instruct",
+      messages: [{ role: "system", content: system }, { role: "user", content: user }],
+      max_tokens: 2048,
+      temperature: 0.7,
+    }),
+  });
+  if (!response.ok) throw new Error(`NVIDIA API error: ${response.status}`);
+  const data = await response.json();
+  return { content: data.choices?.[0]?.message?.content ?? "", provider: "nvidia", model: "llama-3.1-nemotron-70b-instruct", latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: data.usage?.prompt_tokens ?? null, tokensOut: data.usage?.completion_tokens ?? null };
+}
+
 const PROVIDERS: Record<AiProvider, (system: string, user: string) => Promise<MultiModelResult>> = {
-  gemini: callGemini, openai: callOpenAI, groq: callGroq, huggingface: callHuggingFace, openrouter: callOpenRouter,
+  gemini: callGemini, openai: callOpenAI, groq: callGroq, huggingface: callHuggingFace, openrouter: callOpenRouter, nvidia: callNvidia,
 };
 
 async function retrieveRelevantMemory(userMessage: string, kind?: string): Promise<{ context: string; artifactCount: number; topSimilarity: number }> {
@@ -185,18 +206,19 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
     for (let i = 0; i < results.length; i++) { const r = results[i]; if (r.status === "fulfilled") { responses.push(r.value); } else { errors.push(`${providersToQuery[i]}: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`); } }
     if (config.synthesize && responses.length >= 2) { const synthesized = await synthesizeConsensus(responses, opts.systemPrompt, opts.userMessage); if (memory.artifactCount > 0) { synthesized.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return synthesized; }
     if (responses.length > 0) { const best = responses[0]; if (memory.artifactCount > 0) { best.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return best; }
-    const remaining = ["openrouter"].filter(p => !providersToQuery.includes(p as AiProvider)) as AiProvider[];
+    const remaining = (["openrouter", "nvidia"] as AiProvider[]).filter(p => !providersToQuery.includes(p));
     for (const p of remaining) { try { const result = await PROVIDERS[p](opts.systemPrompt, enhancedUserMessage); result.fellBack = true; if (memory.artifactCount > 0) { result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return result; } catch (e) { errors.push(`${p}: ${e instanceof Error ? e.message : String(e)}`); } }
   }
   if (config.mode === "standard") { for (const provider of config.providers) { try { const result = await PROVIDERS[provider](opts.systemPrompt, enhancedUserMessage); if (memory.artifactCount > 0) { result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return result; } catch (e) { errors.push(`${provider}: ${e instanceof Error ? e.message : String(e)}`); } } }
   if (config.mode === "fast") { for (const provider of config.providers) { try { const result = await PROVIDERS[provider](opts.systemPrompt, enhancedUserMessage); if (memory.artifactCount > 0) { result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return result; } catch (e) { errors.push(`${provider}: ${e instanceof Error ? e.message : String(e)}`); } } }
   if (!config.providers.includes("openrouter")) { try { const result = await callOpenRouter(opts.systemPrompt, enhancedUserMessage); result.fellBack = true; if (memory.artifactCount > 0) { result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return result; } catch (e) { errors.push(`openrouter: ${e instanceof Error ? e.message : String(e)}`); } }
+  if (!config.providers.includes("nvidia") && getNvidiaKey()) { try { const result = await callNvidia(opts.systemPrompt, enhancedUserMessage); result.fellBack = true; if (memory.artifactCount > 0) { result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity }; } return result; } catch (e) { errors.push(`nvidia: ${e instanceof Error ? e.message : String(e)}`); } }
   return { content: `[AI_FALLBACK] All AI providers unavailable. Errors: ${errors.join("; ")}. The constitutional rules remain enforced by the CRE regardless.`, provider: "gemini", model: "fallback", latencyMs: 0, fellBack: true, error: errors.join("; "), tokensIn: null, tokensOut: null };
 }
 
 export async function checkAiProviders(): Promise<Record<AiProvider, { connected: boolean; model: string; latencyMs: number }>> {
   const results: Record<string, { connected: boolean; model: string; latencyMs: number }> = {};
-  const providers: AiProvider[] = ["gemini", "openai", "groq", "huggingface", "openrouter"];
+  const providers: AiProvider[] = ["gemini", "openai", "groq", "huggingface", "openrouter", "nvidia"];
   await Promise.all(providers.map(async (p) => { try { const result = await PROVIDERS[p]("Reply with OK", "ping"); results[p] = { connected: !result.fellBack && result.content.length > 0, model: result.model, latencyMs: result.latencyMs }; } catch { results[p] = { connected: false, model: "—", latencyMs: 0 }; } }));
   return results as Record<AiProvider, { connected: boolean; model: string; latencyMs: number }>;
 }
