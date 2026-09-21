@@ -69,3 +69,5 @@ agent-ctx/
 
 # Modified blueprint source chunks (if any)
 blueprint-src/
+backups/
+cloudflare-config.md

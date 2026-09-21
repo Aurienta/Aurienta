@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { AdminPanelClient } from "@/components/dashboard/admin/admin-panel-client";
@@ -21,7 +22,7 @@ export default async function AdminPanelPage() {
   const isAurientaRep =
     user.primaryIntent === "aurienta_rep" ||
     user.memberships.some((m) => m.role === "aurienta_rep");
-  if (!isAurientaRep) redirect("/dashboard");
+  if (!isAurientaRep) return <AccessRestricted requiredRole="AURIENTA Representative" />;
 
   const [
     totalUsers,

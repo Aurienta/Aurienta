@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { TIER_META, STAGE_META, SECTORS, CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
@@ -94,7 +95,7 @@ export default async function EnterpriseProfilePage({
   // authenticated user could read any enterprise's full profile by guessing
   // or enumerating IDs in the `?id=` search param.
   const hasMembership = user.memberships.some((m) => m.enterpriseId === id);
-  if (!hasMembership) redirect("/dashboard");
+  if (!hasMembership) return <AccessRestricted requiredRole="Enterprise Member" />;
 
   // Fetch the full enterprise profile
   const enterprise = await db.enterprise.findUnique({
