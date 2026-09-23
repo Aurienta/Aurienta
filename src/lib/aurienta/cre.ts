@@ -1096,3 +1096,64 @@ export function enforceStatusTransition(params: {
     decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: ok }),
   };
 }
+
+// ── Art. 118 Manager Removal Protocol ──
+// Per Blueprint §8.5 (Art. 118 of the Constitutional Charter):
+//   1. A shareholder vote is REQUIRED — a manager cannot be removed by the
+//      board alone. The CRE denies any removal request that lacks a
+//      shareholder vote (ART118_NO_VOTE).
+//   2. The shareholder vote must pass by simple majority (≥50% + 1 of votes
+//      cast, quorum 51% of total voting power). A failed vote is denied with
+//      ART118_VOTE_FAILED.
+//   3. On success, the removal is approved (ART118_APPROVED) — the executor
+//      then unbinds the manager role from the target user and notifies all
+//      enterprise members + the law firm.
+//
+// The cooling-off (48h) and voting (72h) windows are defined in
+// PROPOSAL_TYPES.manager_removal in constants.ts. This CRE function is the
+// EXECUTION-TIME guard — it runs AFTER the voting window closes, when the
+// proposal executor attempts to actually unbind the manager role.
+
+export type ManagerRemovalVerdict = CreVerdict & { code: string };
+
+export function enforceManagerRemoval(params: {
+  managerId: string;
+  enterpriseId: string;
+  reason: string;
+  hasShareholderVote: boolean;
+  votePassed: boolean;
+}): ManagerRemovalVerdict {
+  const policy = "art118_manager_removal.rego";
+  const payloadHash = hashPayload({
+    mgr: params.managerId,
+    ent: params.enterpriseId,
+    vote: params.hasShareholderVote,
+    pass: params.votePassed,
+  });
+
+  if (!params.hasShareholderVote) {
+    return {
+      allowed: false,
+      reason: "Art. 118 requires shareholder vote for manager removal",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+      code: "ART118_NO_VOTE",
+    };
+  }
+  if (!params.votePassed) {
+    return {
+      allowed: false,
+      reason: "Shareholder vote did not pass (requires simple majority)",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+      code: "ART118_VOTE_FAILED",
+    };
+  }
+  return {
+    allowed: true,
+    reason: "Manager removal approved per Art. 118",
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+    code: "ART118_APPROVED",
+  };
+}

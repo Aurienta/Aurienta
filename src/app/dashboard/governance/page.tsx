@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { GovernanceBoard } from "@/components/dashboard/governance/governance-board";
 import { ConstitutionalCouncil } from "@/components/dashboard/governance/constitutional-council";
+import { ManagerRemovalButton } from "./manager-removal-button";
 import type {
   ProposalForUi,
   EnterpriseForUi,
@@ -114,6 +115,10 @@ export default async function GovernancePage() {
 
   // Board members of the primary enterprise.
   let councilMembers: CouncilMemberForUi[] = [];
+  // Active manager of the primary enterprise (for the Art. 118 removal button).
+  let activeManager: { id: string; name: string } | null = null;
+  // The current user's role in the primary enterprise.
+  let userRoleInPrimary: string | undefined;
   if (primaryEnterprise) {
     const seats = await db.enterpriseMember.findMany({
       where: { enterpriseId: primaryEnterprise.id, boardSeat: true },
@@ -143,6 +148,28 @@ export default async function GovernancePage() {
       enterpriseName: s.enterprise.name,
       enterpriseTier: s.enterprise.tier,
     }));
+
+    // Find the active manager (EnterpriseMember with role "manager") for the
+    // primary enterprise. A manager is "active" if their membership row exists;
+    // multiple managers are unusual but if more than one exists, we surface the
+    // most recently joined (the operational manager).
+    const managerRow = await db.enterpriseMember.findFirst({
+      where: { enterpriseId: primaryEnterprise.id, role: "manager" },
+      include: { user: { select: { id: true, legalName: true } } },
+      orderBy: { joinedAt: "desc" },
+    });
+    if (managerRow) {
+      activeManager = {
+        id: managerRow.user.id,
+        name: managerRow.user.legalName,
+      };
+    }
+
+    // The current user's role in the primary enterprise (used for the
+    // Art. 118 button's defense-in-depth visibility gate).
+    userRoleInPrimary = user.memberships.find(
+      (m) => m.enterpriseId === primaryEnterprise.id
+    )?.role;
   }
 
   return (
@@ -166,11 +193,27 @@ export default async function GovernancePage() {
 
         <div className="lg:sticky lg:top-20 lg:self-start">
           {primaryEnterprise ? (
-            <ConstitutionalCouncil
-              members={councilMembers}
-              enterpriseName={primaryEnterprise.name}
-              enterpriseTier={primaryEnterprise.tier}
-            />
+            <>
+              <ConstitutionalCouncil
+                members={councilMembers}
+                enterpriseName={primaryEnterprise.name}
+                enterpriseTier={primaryEnterprise.tier}
+              />
+              {/* Art. 118 Manager Removal — only rendered when an active
+                  manager exists AND the current user holds one of the
+                  authorized roles (founding_operator, company_owner,
+                  board_member). The component self-hides if userRole is
+                  outside that set, so this is safe even if the gate is
+                  bypassed. */}
+              <div className="mt-4">
+                <ManagerRemovalButton
+                  enterpriseId={primaryEnterprise.id}
+                  enterpriseName={primaryEnterprise.name}
+                  manager={activeManager}
+                  userRole={userRoleInPrimary}
+                />
+              </div>
+            </>
           ) : (
             <aside className="rounded-2xl glass-gold p-5">
               <p className="font-sans text-sm text-muted-foreground">

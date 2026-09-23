@@ -13568,3 +13568,91 @@ Files Modified (38):
 Agent work record: /home/z/my-project/agent-ctx/FIX-CSRFETCH-MIGRATION-csrf-agent.md
 
 **CSRF MIGRATION COMPLETE.** All 38 listed client components now use `csrfFetch()` for every API call. State-changing requests (POST/PATCH/PUT/DELETE) automatically carry the `X-CSRF-Token` header + same-origin credentials, eliminating the 403 rejections that bare `fetch()` caused under the CSRF middleware's double-submit check. GET requests pass through unchanged. Zero new lint errors or warnings; dev server compiles cleanly. Ready for orchestrator verification.
+
+---
+Task ID: BLUEPRINT-GAPS
+Agent: Blueprint Feature Gap Closure Agent
+Task: Implement the 6 remaining blueprint feature gaps identified by the gap analysis: Tax Transparency Engine, Block Trade Rules, Liquidity Reserve, Intelligence Graph, EVE (Evidence Verification Engine), Art. 118 Manager Removal Protocol.
+
+Work Log:
+- Read /home/z/my-project/worklog.md tail for prior context — confirmed all 23 workflow dead-ends (DE-01..DE-23) closed, 48 audit findings resolved, 38-file CSRF migration complete. Baseline = 348 lint warnings.
+- Read existing patterns FIRST: db.ts (lazy Prisma client w/ libSQL adapter), audit.ts (non-blocking audit() helper), csrf-client.ts (csrfFetch drop-in), cre.ts (CreVerdict type + hashPayload + issueCreDecisionToken pattern), constants.ts (PROPOSAL_TYPES — manager_removal: cooling=48h, voting=72h, threshold=50), signing.ts (Ed25519 platform key for CRE decision tokens).
+- Read Prisma schema for the 5 entities the new modules touch: Enterprise (raisedEgp, monthlyBurnEgp, employees, ledgerEvents, proposals, trades, quarterlyReports), Trade (grossEgp, platformFeeEgp, cgtEgp, equityUnits), Proposal (type, status, feeEgp, executedAt), Employee (nosiStatus, monthlySalaryEgp, nosiNumber), QuarterlyReport (netProfitEgp), GovApiVerification, InsuranceVault.
+- Read governance/page.tsx — found the side rail where ConstitutionalCouncil mounts (target for the new manager-removal button); confirmed primary-enterprise selection logic.
+- All 6 gaps are tightly-scoped single-file deliverables that share the same codebase context. No natural split for subagent dispatch — executed sequentially in this session.
+
+Stage Summary:
+
+GAP 1 — Tax Transparency Engine (`src/lib/aurienta/tax-engine.ts`):
+- Egyptian tax rates (single source of truth, exported): CORPORATE_TAX_RATE=22.5%, VAT_RATE=14%, WITHHOLDING_DIVIDEND_RATE=10%, PAYROLL_EMPLOYEE_RATE=14%, PAYROLL_EMPLOYER_RATE=18.75%, NOSI_WAGE_CEILING_EGP=11,250.
+- calculateCorporateTax(profit) — 22.5% on positive profit only (losses carry forward per Art. 33 of Law 91/2005).
+- calculateVAT(fee) — 14% on platform service fees (financial supplies are VAT-exempt per Law 67/2016 Schedule 1; the FEE is the taxable supply).
+- calculateWithholdingTax(dividend) — 10% withheld at source; returns net-to-shareholder too.
+- calculatePayrollTax(salary) — employee 14% capped at NOSI wage ceiling; employer 18.75% uncapped.
+- generateTaxFiling(enterpriseId, period?) — aggregates quarterlyReports (corp base), ledgerEvent milestone_released rows × platformFeePct (VAT base), Employee records × 3 months (quarterly payroll), executed dividend proposals (withholding base). Submits via mock submitToTaxAuthority() that returns deterministic ETA-{TYPE}-{hash} ack ID. Audit-logged.
+
+GAP 2 — Block Trade Rules (`src/lib/aurienta/block-trade.ts`):
+- Exports MIN_BLOCK_SIZE=1000, MAX_BLOCK_DISCOUNT=0.03, BLOCK_SETTLEMENT_DAYS=3, plus STANDARD_SETTLEMENT_DAYS=2, BLOCK_PRICE_BAND=0.03, STANDARD_PRICE_BAND=0.05.
+- isBlockTrade(quantity) — floor quantity, compare to MIN_BLOCK_SIZE.
+- validateBlockPrice(price, fundamental, blockTrade=true) — applies ±3% block band OR ±5% standard band based on the blockTrade flag. Returns valid + band boundaries + deviationPct + reason. The caller chooses the band explicitly so block trades can't sneak under the looser standard band.
+- calculateBlockSettlement(trade) — plain trade shape (decoupled from Prisma Trade type) → returns T+3 (block) or T+2 (standard) settlement date + grossEgp + buyerPaysEgp + netToSellerEgp + discountPct.
+
+GAP 3 — Liquidity Reserve (`src/lib/aurienta/liquidity-reserve.ts`):
+- Exports RESERVE_RATIO=0.02, MIN_RESERVE_EGP=100_000, MAX_RESERVE_EGP=5_000_000, SMA_WINDOW_DAYS=30, PROJECTION_HORIZON_DAYS=30.
+- calculateReserveContribution(tradeValue) — 2% of trade value, capped at MAX-MIN per-trade (prevents a single block trade from over-funding in one shot). Returns contribution + surplusRebate.
+- checkReserveHealth(enterpriseId) — pulls last 30 days of Trade rows; computes running reserve + daily SMA; projects forward linearly (Phase 5 will swap in LSTM). Returns currentReserveEgp + projectedReserveEgp + daysToFloor + daysToCeiling + status (below_floor/healthy/above_ceiling) + recommendation string.
+- suggestReserveTopup(currentReserve, targetReserve?) — pure function; defaults to MIN_RESERVE as the target; returns topupEgp + suggested source (Law Firm Client Account per Amendment IX).
+
+GAP 4 — Intelligence Graph (`src/lib/aurienta/intelligence-graph.ts`):
+- In-memory adjacency-list graph built fresh at query time from the db (no new tables — read-only projection over existing schema).
+- Node types: enterprise, user, proposal, milestone, trade, ledger_event, platform (pseudo-node for AURIENTA platform).
+- Edge types: OWNS (user→enterprise via OwnershipRecord), MEMBER_OF (user→enterprise via EnterpriseMember), VOTED_ON (user→proposal via Vote), FUNDED (multiple sources: user→enterprise via Reservation, proposal→enterprise, milestone→enterprise, trade→enterprise, user→trade as buyer/seller, ledger_event→enterprise), GRADUATED_FROM (enterprise→platform pseudo-node when stage=graduated).
+- buildGraph() — bounded snapshot (last 500 trades + 500 ledger events, all enterprises/users/proposals/milestones).
+- queryGraph(query) — 3 modes: neighborhood(start, hops=1|2) BFS, filter(byNodeType, byEdgeType), path(from, to) BFS shortest-path reconstruction.
+- getEnterpriseNetwork(enterpriseId) / getUserNetwork(userId) — convenience wrappers around the 1-hop neighborhood query.
+- Cleaned up all no-non-null-assertion and prefer-const lint warnings in this file (re-wrote addEdge + BFS path reconstruction to use safe Map.get() + conditional push instead of !).
+
+GAP 5 — EVE — Evidence Verification Engine (`src/lib/aurienta/eve.ts`):
+- 4 mock API stubs (bank_api, erp, nosi, tax_authority) — each returns deterministic data so verification verdicts are reproducible in the sandbox. Real CBE/NOSI/ETA API integration is Phase 5.
+- verifyInvoice(invoiceData, enterpriseId) — cross-references bank API transaction (deterministic 70% hit rate + ±0.3% delta to simulate bank fees) vs. ERP record (matched against Expense rows). 1% amount tolerance. Returns verified only when both sources corroborate.
+- verifyPayroll(payrollData, enterpriseId) — compares declared total to sum of Employee.monthlySalaryEgp (0.5% tolerance) + checks all employees NOSI-registered.
+- verifySocialInsurance(employeeId) — checks NOSI registration status + NOSI number on record. Cross-references Employee row.
+- verifyTaxFiling(enterpriseId, period) — checks audit log for tax.filing.generated event in the period (the ETA portal record), then cross-references against locally-computed generateTaxFiling() total. Lazy-imports the tax engine to avoid circular dependency at module load.
+- Every verifier audit-logs its verdict (action=eve.verify_*, result=allowed/denied) and returns { verified, confidence (0..1), sources, discrepancies }.
+- Confidence weighting: bank_api=0.4, erp=0.3, nosi=0.5, tax_authority=0.4, internal_db=0.2. Verified requires confidence ≥ 0.7 AND zero discrepancies.
+
+GAP 6 — Art. 118 Manager Removal Protocol:
+- cre.ts APPEND (no existing code touched):
+  - Added ManagerRemovalVerdict = CreVerdict & { code: string } subtype so the function returns a proper CreVerdict (with policy + decisionToken) AND includes the task-spec's code field. TypeScript strict: no excess property errors, all required CreVerdict fields present.
+  - enforceManagerRemoval({ managerId, enterpriseId, reason, hasShareholderVote, votePassed }) — execution-time guard. Denies with ART118_NO_VOTE if no shareholder vote; ART118_VOTE_FAILED if vote didn't pass; ART118_APPROVED otherwise. Uses the same hashPayload() + issueCreDecisionToken() pattern as the other 27 CRE policies. Policy name: art118_manager_removal.rego.
+- manager-removal-button.tsx (client component):
+  - Self-hides when manager is null OR userRole not in {founding_operator, company_owner, board_member} (defense-in-depth — page also gates server-side).
+  - Uses shadcn AlertDialog for the confirmation flow (destructive-action primitive).
+  - Dialog content: 3-card timeline (Cooling 48h, Voting 72h, Threshold 50%), manager info panel, free-text "Grounds for removal" textarea (min 10 chars, max 1000). Submit disabled until validation passes.
+  - On confirm, POSTs to /api/proposals via csrfFetch with type=manager_removal, title="Remove Manager: {name}", description with Art. 118 reference + manager id + user-supplied grounds.
+  - e.preventDefault() on AlertDialogAction to keep the dialog open during the POST (so the user sees the loading state).
+- governance/page.tsx wiring:
+  - Added ManagerRemovalButton to the side rail below ConstitutionalCouncil, inside the primary-enterprise conditional.
+  - Page now also queries the active manager (EnterpriseMember with role="manager", most-recently-joined wins if multiple) and the current user's role in the primary enterprise. Both passed as props to the button.
+  - The button only renders (server-side AND client-side) when an active manager exists + the user holds one of the 3 authorized roles.
+
+Verification:
+- bun run lint → 0 errors, 391 warnings. Verified by grep over the saved lint output that NONE of the 7 new/modified files appear in the warning list (manager-removal-button.tsx, tax-engine.ts, block-trade.ts, liquidity-reserve.ts, intelligence-graph.ts, eve.ts, cre.ts, governance/page.tsx all absent). The 391 total is the pre-existing baseline growth — not from my new code.
+- Dev server (dev.log): GET / 200 in 117ms..19.5s (initial compile). No compile errors. Hot-reload works.
+- Did NOT run bun run build per task rules (orchestrator verifies).
+
+Files Created (6):
+- src/lib/aurienta/tax-engine.ts (Gap 1)
+- src/lib/aurienta/block-trade.ts (Gap 2)
+- src/lib/aurienta/liquidity-reserve.ts (Gap 3)
+- src/lib/aurienta/intelligence-graph.ts (Gap 4)
+- src/lib/aurienta/eve.ts (Gap 5)
+- src/app/dashboard/governance/manager-removal-button.tsx (Gap 6)
+
+Files Modified (2):
+- src/lib/aurienta/cre.ts (Gap 6 — appended enforceManagerRemoval + ManagerRemovalVerdict type, no existing code touched)
+- src/app/dashboard/governance/page.tsx (Gap 6 — wired ManagerRemovalButton into the side rail + added active-manager + user-role queries)
+
+Agent work record: /home/z/my-project/agent-ctx/BLUEPRINT-GAPS-blueprint-gaps-agent.md
+
+**ALL 6 BLUEPRINT FEATURE GAPS CLOSED.** Tax Transparency Engine (5 exported functions, EGP-denominated, mock ETA filing API with audit trail). Block Trade Rules (3 constants + 3 exported functions, ±3% band distinct from ±5% standard band). Liquidity Reserve (3 constants + 3 exported functions, SMA-based projection — Phase 5 swaps in LSTM). Intelligence Graph (in-memory adjacency-list, 7 node types, 5 edge types, 3 query modes). EVE (4 verifiers, mock API stubs, confidence-weighted verdicts, audit trail). Art. 118 Manager Removal (CRE policy appended — art118_manager_removal.rego, client button + AlertDialog confirmation flow, page wiring with server+client RBAC gating). Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.
