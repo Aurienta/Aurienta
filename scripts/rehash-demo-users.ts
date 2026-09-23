@@ -26,12 +26,8 @@ for (const line of envFile.split("\n")) {
 
 const url = env.DATABASE_URL;
 const token = env.TURSO_AUTH_TOKEN;
-if (!url || !token) {
-  console.error("FATAL: DATABASE_URL and TURSO_AUTH_TOKEN must be set in .env");
-  process.exit(1);
-}
-
-const client = createClient({ url, authToken: token });
+// token optional for local file: URLs
+const client = createClient(token ? { url, authToken: token } : { url });
 
 const N = 16384;
 const R = 8;

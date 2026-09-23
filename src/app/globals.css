@@ -167,8 +167,34 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: rgba(212, 175, 55, 0.28);
+    background: rgba(212, 175, 55, 0.32);
     color: #fff;
+  }
+  /* ── Premium focus-visible ring (gold) ── */
+  /* Applied to all interactive elements keyboard-focusable. */
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--gold);
+    border-radius: inherit;
+    transition: box-shadow 120ms ease-out;
+  }
+  /* Inputs: subtler inner ring */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    box-shadow:
+      0 0 0 1px var(--gold),
+      0 0 0 4px rgba(212, 175, 55, 0.18);
+  }
+  /* Links: gold underline on focus */
+  a:focus-visible {
+    box-shadow: none;
+    text-decoration: underline;
+    text-decoration-color: var(--gold);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
   }
 }
 
@@ -309,6 +335,33 @@
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }
+/* ── Skeleton shimmer (loading placeholders) ── */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.04) 0%,
+    rgba(212, 175, 55, 0.12) 50%,
+    rgba(212, 175, 55, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+/* ── Gold shimmer sweep across buttons (luxury hover) ── */
+@keyframes button-sheen {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  100% { transform: translateX(220%) skewX(-20deg); }
+}
+/* ── Soft pulse for live/active indicators ── */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
 
 .animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
 .animate-pulse-gold { animation: pulse-gold 4.5s ease-in-out infinite; }
@@ -325,6 +378,92 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===== Premium button sheen overlay =====
+   Apply `.btn-sheen` to any gold-gradient button. On hover, a light sweep
+   crosses the surface — a luxury micro-interaction. */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%) skewX(-20deg);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.btn-sheen:hover::after,
+.btn-sheen:focus-visible::after {
+  opacity: 1;
+  animation: button-sheen 0.9s ease-out;
+}
+
+/* ===== Card hover lift =====
+   Apply `.card-lift` to cards/interactive surfaces for a subtle 3D lift. */
+.card-lift {
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 280ms ease;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.22),
+    0 22px 50px -22px rgba(212, 175, 55, 0.35),
+    0 12px 30px -18px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Magnetic glow ring (for primary CTAs) =====
+   Apply `.magnetic-glow` — a soft gold halo that intensifies on hover. */
+.magnetic-glow {
+  position: relative;
+  isolation: isolate;
+  transition: box-shadow 260ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.magnetic-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(212, 175, 55, 0.55), transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.magnetic-glow:hover::before {
+  opacity: 1;
+}
+.magnetic-glow:hover {
+  transform: translateY(-1px);
+}
+
+/* ===== Smooth input focus glow ===== */
+.input-glow {
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+.input-glow:focus-visible,
+.input-glow:focus-within {
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.35),
+    0 0 24px -6px rgba(212, 175, 55, 0.45);
 }
 
 /* ===== Utility: tracking for wordmark ===== */

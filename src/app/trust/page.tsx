@@ -216,7 +216,7 @@ export default async function TrustPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background">
       {/* Background ornaments */}
       <div aria-hidden className="pointer-events-none fixed inset-0 aurienta-radial opacity-70" />
       <div aria-hidden className="pointer-events-none fixed inset-0 aurienta-grid opacity-30" />

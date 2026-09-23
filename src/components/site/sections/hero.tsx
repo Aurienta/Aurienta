@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, Lock, Cpu, ChevronRight, ArrowDown } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { MagneticButton } from "@/components/ux/magnetic-button";
 
 const TRUST_KEYS = [
   { icon: Lock, key: "hero.badge.zeroCustody" },
@@ -148,13 +149,15 @@ export function Hero() {
           transition={{ delay: 0.74, duration: 0.7 }}
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <Link
+          <MagneticButton
+            as={Link}
             href="/register"
-            className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)] active:scale-[0.98]"
+            strength={0.25}
+            className="btn-sheen group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-shadow duration-300 hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)]"
           >
             {t("hero.cta.primary")}
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          </MagneticButton>
           <Link
             href="#constitution"
             className="group inline-flex items-center gap-2 rounded-full border border-gold/25 bg-background/40 px-8 py-4 font-sans text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gold/50 hover:bg-gold/5 active:scale-[0.98]"

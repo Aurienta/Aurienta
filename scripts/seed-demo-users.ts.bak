@@ -21,7 +21,7 @@ if (!TURSO_URL) {
   console.error("FATAL: DATABASE_URL is not set. Set it in .env or export it before running.");
   process.exit(1);
 }
-if (false && TURSO_TOKEN) {
+if (!TURSO_TOKEN) {
   console.error("FATAL: TURSO_AUTH_TOKEN is not set. Set it in .env or export it before running.");
   process.exit(1);
 }
@@ -97,7 +97,7 @@ const DEMO_USERS = [
 ];
 
 async function main() {
-  const client = createClient({ url: TURSO_URL });
+  const client = createClient({ url: TURSO_URL, authToken: TURSO_TOKEN });
 
   for (const user of DEMO_USERS) {
     // Check if user already exists

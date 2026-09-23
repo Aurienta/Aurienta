@@ -108,7 +108,7 @@ export function Tiers() {
             <motion.div
               key={tier.tier}
               variants={staggerItem}
-              className="group relative overflow-hidden rounded-2xl glass p-6 transition-all duration-500 hover:-translate-y-1 hover:border-gold/30"
+              className="card-lift group relative overflow-hidden rounded-2xl glass p-6 hover:border-gold/30"
             >
               <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${tier.accent} to-transparent blur-2xl`} />
               <div className="relative flex items-start justify-between">

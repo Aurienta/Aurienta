@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
 import { RegisterSW } from "@/components/pwa/register-sw";
+import { BackToTop } from "@/components/ux/back-to-top";
 
 // Prevent static prerendering during build — all pages are dynamic
 // (they query the database at request time, not build time).
@@ -153,6 +154,7 @@ export default function RootLayout({
           <LanguageProvider>
             {children}
             <Toaster />
+            <BackToTop />
             <RegisterSW />
           </LanguageProvider>
         </ThemeProvider>
