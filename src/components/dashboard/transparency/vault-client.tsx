@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
@@ -174,7 +175,7 @@ export function VaultClient({
     }
     let cancelled = false;
     setLoadingVault(true);
-    fetch(`/api/vault?enterpriseId=${encodeURIComponent(selectedId)}`)
+    csrfFetch(`/api/vault?enterpriseId=${encodeURIComponent(selectedId)}`)
       .then(async (r) => {
         if (!r.ok) throw new Error("Failed to load vault");
         return r.json() as Promise<{ vault: VaultSummary; enterprise: unknown }>;
@@ -201,7 +202,7 @@ export function VaultClient({
   // above keyed on `initialLoans`.
   function refreshVaultBalance() {
     if (!selectedId) return;
-    fetch(`/api/vault?enterpriseId=${encodeURIComponent(selectedId)}`)
+    csrfFetch(`/api/vault?enterpriseId=${encodeURIComponent(selectedId)}`)
       .then(async (r) => (r.ok ? (r.json() as Promise<{ vault: VaultSummary }>) : null))
       .then((data) => {
         if (data) setVault(data.vault);
@@ -231,7 +232,7 @@ export function VaultClient({
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/vault/loan", {
+      const res = await csrfFetch("/api/vault/loan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

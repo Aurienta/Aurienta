@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { Sparkles, Loader2, AlertCircle, Brain } from "lucide-react";
 
@@ -50,7 +51,7 @@ export function BrainAiFinancialNarrative({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/ai/explain", {
+        const res = await csrfFetch("/api/ai/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

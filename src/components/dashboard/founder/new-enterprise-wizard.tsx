@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -132,7 +133,7 @@ export function NewEnterpriseWizard({
             ? Number(state.investorCap)
             : undefined,
       };
-      const res = await fetch("/api/enterprises", {
+      const res = await csrfFetch("/api/enterprises", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

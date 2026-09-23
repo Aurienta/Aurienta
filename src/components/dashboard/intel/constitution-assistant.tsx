@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -124,7 +125,7 @@ export function ConstitutionAssistant() {
       setExplanation(null);
       setActiveKey(key);
       try {
-        const res = await fetch("/api/ai/multilingual", {
+        const res = await csrfFetch("/api/ai/multilingual", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ concept: concept.title, language: lang }),

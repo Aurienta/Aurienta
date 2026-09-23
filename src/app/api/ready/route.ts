@@ -41,12 +41,12 @@ export async function GET() {
 
   // 3. AI providers — non-critical (degraded mode if down)
   const aiStart = Date.now();
-  const aiKeys = ["GEMINI_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"].filter(k => !!process.env[k]);
+  const aiKeys = ["GEMINI_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY", "HUGGINGFACE_API_KEY", "OPENROUTER_API_KEY", "NVIDIA_API_KEY"].filter(k => !!process.env[k]);
   checks.push({
     name: "ai_providers",
     status: aiKeys.length >= 1 ? "ok" : "degraded",
     latencyMs: Date.now() - aiStart,
-    detail: `${aiKeys.length}/3 primary providers configured`,
+    detail: `${aiKeys.length}/6 providers configured`,
   });
 
   // 4. Ledger integrity — critical

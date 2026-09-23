@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -101,7 +102,7 @@ export function RiskDisclosureClient({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/risk-disclosure", {
+      const res = await csrfFetch("/api/risk-disclosure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -127,7 +128,7 @@ export function RiskDisclosureClient({
   async function acknowledge(id: string) {
     setAcknowledging(id);
     try {
-      const res = await fetch("/api/risk-disclosure", {
+      const res = await csrfFetch("/api/risk-disclosure", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, acknowledge: true }),

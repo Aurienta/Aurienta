@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { ShieldCheck, Loader2, AlertCircle } from "lucide-react";
 
@@ -39,7 +40,7 @@ export function TransparencyScoreBadge({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/public/enterprise/${slug}/transparency`, {
+        const res = await csrfFetch(`/api/public/enterprise/${slug}/transparency`, {
           cache: "no-store",
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

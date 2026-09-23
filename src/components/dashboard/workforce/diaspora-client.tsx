@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -82,7 +83,7 @@ export function DiasporaClient({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/diaspora", {
+      const res = await csrfFetch("/api/diaspora", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -76,7 +77,7 @@ export function DripCard({
     setSubmitting(true);
     try {
       const action = active ? "enroll" : "unenroll";
-      const res = await fetch("/api/drip", {
+      const res = await csrfFetch("/api/drip", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -118,7 +119,7 @@ export function DripCard({
     if (!active) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/drip", {
+      const res = await csrfFetch("/api/drip", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

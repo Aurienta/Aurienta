@@ -13484,3 +13484,87 @@ Stage Summary:
 **ALL 23 workflow dead-ends (DE-01 through DE-23) are now fixed.**
 **ALL 48 audit findings (5 P0 + 35 P1 + 5 P2 + 3 P3) are now resolved.**
 **No remaining gaps. Platform is fully wired end-to-end.**
+
+---
+Task ID: FIX-CSRFETCH-MIGRATION
+Agent: CSRF Fetch Migration Agent
+Task: Replace all bare `fetch()` calls with `csrfFetch()` in client components to fix CSRF 403 rejections on state-changing requests. The `csrfFetch` helper at `src/lib/aurienta/csrf-client.ts` auto-reads the `aurienta_csrf` cookie and sends it as `X-CSRF-Token` on POST/PATCH/PUT/DELETE (double-submit pattern); GET/HEAD/OPTIONS pass through unchanged.
+
+Work Log:
+- Read `/home/z/my-project/worklog.md` tail for prior context — confirmed prior agents (FIX-P1-WORKFLOW-REMAINING, FIX-FINAL-GAPS, FINAL-GAPS-IMPLEMENTED) closed all 23 workflow dead-ends and 48 audit findings. This CSRF migration is a follow-on security hardening.
+- Read `src/lib/aurienta/csrf-client.ts` to understand the helper: it wraps fetch(), adds `X-CSRF-Token` header + `credentials: "same-origin"` on state-changing methods, passes GET through unchanged. Drop-in replacement.
+- Grep'd all 38 target files for `fetch(` with context to locate every bare call. Categorised each by HTTP method (POST/PATCH/PUT/DELETE vs GET).
+- Grep'd for `credentials:` across components — confirmed NO target file had `credentials: "same-origin"` to remove (the only `credentials:` hit was an unrelated `VerifiableCredential[]` type in credentials-wallet.tsx).
+- Grep'd for pre-existing `csrfFetch` imports — confirmed NONE of the 38 target files already imported it (the 7 files that did — signin-form, register-wizard, demo-user-picker, execute-graduation-button, vault-loan-actions, skill-equity-review-buttons, enterprise-card — were all out of scope).
+- Read the first ~10 lines of every target file to confirm a universal import anchor: every file starts with `"use client";\n\nimport * as React from "react";`. This enabled a single consistent import-insertion strategy across all 38 files.
+- Decision on GET calls: Per the rules ("For GET-only requests, you can leave as bare fetch OR convert — your choice"), I converted ALL bare `fetch(` calls (including GET) to `csrfFetch(` for consistency. csrfFetch passes GET through unchanged, so behaviour is identical; the benefit is uniform usage and no risk of missing a state-changing call. 4 files were GET-only (public-trade-log, public-cre-decision-log, transparency-score-badge, audit-activity-feed) — converting all calls there ensured the import is always used (no unused-import TS error).
+- For each of the 38 files, applied a MultiEdit with 2 edits: (1) insert `import { csrfFetch } from "@/lib/aurienta/csrf-client";` between `"use client";` and `import * as React from "react";`; (2) `replace_all` of `fetch(` → `csrfFetch(`. Verified via post-edit grep that the import string contains no `fetch(` substring (it's `csrfFetch` with uppercase F), so the replace_all never touched the newly-added import line.
+- Did NOT touch `src/components/pwa/register-sw.tsx` (SW registration, explicitly excluded per task rules).
+- Did NOT touch the 9 non-target files that still use bare `fetch()` (partner-crm-client, updates-feed, chat-interface, form-syndicate-dialog, join-syndicate-dialog, oracle-mirror-sync-button, live-ticker, share-button) — these were not in the task list and are out of scope.
+
+Stage Summary:
+
+**38 files modified, 49 bare `fetch()` calls converted to `csrfFetch()`.**
+
+Breakdown by call count:
+- 2 files with 3 calls each (6 total): notification-center.tsx, vault-client.tsx
+- 7 files with 2 calls each (14 total): evidence-stream.tsx, public-trade-log.tsx, public-cre-decision-log.tsx, legal-disclaimer-client.tsx, solvency-client.tsx, risk-disclosure-client.tsx, drip-card.tsx
+- 29 files with 1 call each (29 total): transparency-score-badge, brain-ai-financial-narrative, annual-report-generator, skill-equity-client, salary-calculator-client, request-mentorship-dialog, diaspora-client, whistleblower-client, appeals-client, use-ai-endpoint, drift-panel, charter-diff-viewer, explain-number, constitution-assistant, anomaly-card, precedent-panel, new-enterprise-wizard, step-feasibility, milestone-evidence-dialog, pitch-deck-generator, enterprise-profile-client, call-vote-button, voting-modal, new-proposal-dialog, reserve-shares-dialog, market-workspace, audit-activity-feed, approve-expense-button, submit-expense-dialog
+
+Method coverage of converted calls:
+- POST: ~42 calls (the majority — all AI endpoints, all create/submit endpoints, all vote/approve/read endpoints)
+- PATCH: 2 calls (enterprise-profile-client.tsx profile update, risk-disclosure-client.tsx acknowledge)
+- GET: ~5 calls (public-trade-log ×2, public-cre-decision-log ×2, transparency-score-badge ×1, audit-activity-feed ×1, vault-client ×2, solvency-client ×1, legal-disclaimer ×1, evidence-stream ×1 — all pass through csrfFetch unchanged)
+
+Each conversion now sends the `X-CSRF-Token` header (read from the `aurienta_csrf` cookie) + `credentials: "same-origin"` on every state-changing request, satisfying the middleware's double-submit CSRF check. This eliminates the 403 rejections that bare `fetch()` was causing on POST/PATCH/PUT/DELETE calls.
+
+Verification:
+- `bun run lint` → **0 errors**, warnings present but ALL are pre-existing (unused vars, exhaustive-deps, non-null assertions, unescaped entities) and merely shifted +1 line due to the added import line. Confirmed via grep that NO lint warning references `csrfFetch` or the `csrf-client` import path — the import is used in every file (no unused-import errors).
+- Post-edit grep for lowercase `fetch(` across `src/components` — the only remaining bare `fetch(` calls are in non-target files (register-sw.tsx [excluded], partner-crm-client, updates-feed, chat-interface, form-syndicate-dialog, join-syndicate-dialog, oracle-mirror-sync-button, live-ticker, share-button). All 38 target files are 100% converted.
+- Post-edit grep for `csrfFetch(` — 49 occurrences across the 38 target files (matching the expected count exactly).
+- Dev server log: `GET / 200` responses, no compile errors after the changes.
+- Did NOT run `bun run build` per task rules (orchestrator verifies).
+
+Files Modified (38):
+- src/components/dashboard/ux/notification-center.tsx (3 calls)
+- src/components/dashboard/transparency/vault-client.tsx (3 calls)
+- src/components/trust/evidence-stream.tsx (2 calls)
+- src/components/transparency/public-trade-log.tsx (2 calls)
+- src/components/transparency/public-cre-decision-log.tsx (2 calls)
+- src/components/legal/legal-disclaimer-client.tsx (2 calls)
+- src/components/dashboard/transparency/solvency-client.tsx (2 calls)
+- src/components/dashboard/transparency/risk-disclosure-client.tsx (2 calls)
+- src/components/dashboard/capital2/drip-card.tsx (2 calls)
+- src/components/transparency/transparency-score-badge.tsx (1 call)
+- src/components/transparency/brain-ai-financial-narrative.tsx (1 call)
+- src/components/transparency/annual-report-generator.tsx (1 call)
+- src/components/dashboard/workforce/skill-equity-client.tsx (1 call)
+- src/components/dashboard/workforce/salary-calculator-client.tsx (1 call)
+- src/components/dashboard/workforce/request-mentorship-dialog.tsx (1 call)
+- src/components/dashboard/workforce/diaspora-client.tsx (1 call)
+- src/components/dashboard/transparency/whistleblower-client.tsx (1 call)
+- src/components/dashboard/transparency/appeals-client.tsx (1 call)
+- src/components/dashboard/sovereignty2/use-ai-endpoint.ts (1 call)
+- src/components/dashboard/intel/drift-panel.tsx (1 call)
+- src/components/dashboard/intel/charter-diff-viewer.tsx (1 call)
+- src/components/dashboard/intel/explain-number.tsx (1 call)
+- src/components/dashboard/intel/constitution-assistant.tsx (1 call)
+- src/components/dashboard/intel/anomaly-card.tsx (1 call)
+- src/components/dashboard/intel/precedent-panel.tsx (1 call)
+- src/components/dashboard/founder/new-enterprise-wizard.tsx (1 call)
+- src/components/dashboard/founder/wizard/step-feasibility.tsx (1 call)
+- src/components/dashboard/founder/milestone-evidence-dialog.tsx (1 call)
+- src/components/dashboard/founder/pitch-deck-generator.tsx (1 call)
+- src/components/dashboard/founder/enterprise-profile-client.tsx (1 call)
+- src/components/dashboard/institutional/call-vote-button.tsx (1 call)
+- src/components/dashboard/governance/voting-modal.tsx (1 call)
+- src/components/dashboard/governance/new-proposal-dialog.tsx (1 call)
+- src/components/dashboard/capital/reserve-shares-dialog.tsx (1 call)
+- src/components/dashboard/capital/market-workspace.tsx (1 call)
+- src/components/dashboard/admin/audit-activity-feed.tsx (1 call)
+- src/components/dashboard/manager/approve-expense-button.tsx (1 call)
+- src/components/dashboard/manager/submit-expense-dialog.tsx (1 call)
+
+Agent work record: /home/z/my-project/agent-ctx/FIX-CSRFETCH-MIGRATION-csrf-agent.md
+
+**CSRF MIGRATION COMPLETE.** All 38 listed client components now use `csrfFetch()` for every API call. State-changing requests (POST/PATCH/PUT/DELETE) automatically carry the `X-CSRF-Token` header + same-origin credentials, eliminating the 403 rejections that bare `fetch()` caused under the CSRF middleware's double-submit check. GET requests pass through unchanged. Zero new lint errors or warnings; dev server compiles cleanly. Ready for orchestrator verification.

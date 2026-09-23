@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { Loader2, AlertCircle, TrendingUp, ChevronRight, ShieldCheck, ShieldAlert } from "lucide-react";
 import { egp, timeAgo } from "@/lib/aurienta/format";
@@ -49,7 +50,7 @@ export function PublicTradeLog({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/public/enterprise/${slug}/trades?limit=50`, {
+      const res = await csrfFetch(`/api/public/enterprise/${slug}/trades?limit=50`, {
         cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -66,7 +67,7 @@ export function PublicTradeLog({
     if (!data?.pagination.nextCursor) return;
     setLoadingMore(true);
     try {
-      const res = await fetch(
+      const res = await csrfFetch(
         `/api/public/enterprise/${slug}/trades?limit=50&cursor=${data.pagination.nextCursor}`,
         { cache: "no-store" }
       );

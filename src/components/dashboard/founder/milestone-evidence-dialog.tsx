@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { toast } from "sonner";
 import { Loader2, FileText, Sparkles } from "lucide-react";
@@ -47,7 +48,7 @@ export function MilestoneEvidenceDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/enterprises/${enterpriseId}/milestones`, {
+      const res = await csrfFetch(`/api/enterprises/${enterpriseId}/milestones`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ milestoneId: milestone.id, evidenceNote: note.trim() }),

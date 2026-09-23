@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Rocket } from "lucide-react";
@@ -36,7 +37,7 @@ export function CallVoteButton({
     if (!eligible || pending) return;
     setPending(true);
     try {
-      const res = await fetch("/api/proposals", {
+      const res = await csrfFetch("/api/proposals", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -112,7 +113,7 @@ export function NotificationCenter({ initial }: { initial: NotifForUi[] }) {
           setTriaging(false);
           return;
         }
-        const res = await fetch("/api/ai/triage", {
+        const res = await csrfFetch("/api/ai/triage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(forceIds ? { ids: forceIds } : {}),
@@ -154,7 +155,7 @@ export function NotificationCenter({ initial }: { initial: NotifForUi[] }) {
     // Optimistic update
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
     try {
-      const res = await fetch(`/api/notifications/${id}/read`, { method: "POST" });
+      const res = await csrfFetch(`/api/notifications/${id}/read`, { method: "POST" });
       if (!res.ok) throw new Error("mark-read failed");
       // No toast for read — too noisy. Just refresh the unread count via router.refresh.
       router.refresh();
@@ -173,7 +174,7 @@ export function NotificationCenter({ initial }: { initial: NotifForUi[] }) {
     try {
       await Promise.all(
         unread.map((n) =>
-          fetch(`/api/notifications/${n.id}/read`, { method: "POST" })
+          csrfFetch(`/api/notifications/${n.id}/read`, { method: "POST" })
         )
       );
       toast.success(`Marked ${unread.length} notification${unread.length === 1 ? "" : "s"} as read.`);

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 
 /**
@@ -16,7 +17,7 @@ export function useAiEndpoint<TReq, TRes>(url: string) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(url, {
+        const res = await csrfFetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),

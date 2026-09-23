@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { Sparkles, Loader2, BookOpen, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,7 +52,7 @@ export function ExplainNumber({
     setError(null);
     setExplanation(null);
     try {
-      const res = await fetch("/api/ai/explain", {
+      const res = await csrfFetch("/api/ai/explain", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ label, value, enterpriseId }),

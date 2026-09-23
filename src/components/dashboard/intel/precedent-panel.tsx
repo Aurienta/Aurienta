@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -99,7 +100,7 @@ export function PrecedentPanel({
     setError(null);
     setResult(null);
     try {
-      const res = await fetch("/api/ai/precedent", {
+      const res = await csrfFetch("/api/ai/precedent", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ query: trimmed }),

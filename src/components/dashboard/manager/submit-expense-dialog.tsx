@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -141,7 +142,7 @@ export function SubmitExpenseDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/expenses", {
+      const res = await csrfFetch("/api/expenses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -349,7 +350,7 @@ function OrderFormCard({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/orders", {
+      const res = await csrfFetch("/api/orders", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

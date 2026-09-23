@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -85,7 +86,7 @@ export function EvidenceStream({
       const url = new URL("/api/evidence", window.location.origin);
       url.searchParams.set("enterpriseId", enterpriseId);
       url.searchParams.set("limit", "20");
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await csrfFetch(url.toString(), { cache: "no-store" });
       if (!res.ok) throw new Error("fetch failed");
       const json = (await res.json()) as { items: EvidenceItem[] };
       // Filter by milestone client-side when milestoneId is provided
@@ -120,7 +121,7 @@ export function EvidenceStream({
       }, 160);
 
       try {
-        const res = await fetch("/api/evidence", {
+        const res = await csrfFetch("/api/evidence", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

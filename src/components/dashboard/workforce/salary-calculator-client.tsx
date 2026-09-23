@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
@@ -130,7 +131,7 @@ export function SalaryCalculatorClient({
         payload.customBaseEgp = Math.round(parsedBase);
       }
 
-      const res = await fetch("/api/ai/salary", {
+      const res = await csrfFetch("/api/ai/salary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

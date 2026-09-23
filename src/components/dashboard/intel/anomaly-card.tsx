@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -67,7 +68,7 @@ export function AnomalyCard({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/ai/anomaly", {
+      const res = await csrfFetch("/api/ai/anomaly", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

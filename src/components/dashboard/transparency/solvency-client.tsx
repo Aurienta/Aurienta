@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
@@ -146,7 +147,7 @@ export function SolvencyClient({
     }
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/solvency?enterpriseId=${encodeURIComponent(selectedId)}`)
+    csrfFetch(`/api/solvency?enterpriseId=${encodeURIComponent(selectedId)}`)
       .then(async (r) => {
         if (!r.ok) throw new Error("Failed to load solvency assertion");
         return r.json() as Promise<{
@@ -187,7 +188,7 @@ export function SolvencyClient({
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/solvency", {
+      const res = await csrfFetch("/api/solvency", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { Sparkles, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 
@@ -35,7 +36,7 @@ export function AnnualReportGenerator({
     setSuccess(null);
     setNeedsAuth(false);
     try {
-      const res = await fetch("/api/ai/annual-report", {
+      const res = await csrfFetch("/api/ai/annual-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enterpriseId, year: defaultYear }),

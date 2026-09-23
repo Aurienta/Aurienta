@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { toast } from "sonner";
 import {
@@ -84,7 +85,7 @@ export function ReserveSharesDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/reservations", {
+      const res = await csrfFetch("/api/reservations", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

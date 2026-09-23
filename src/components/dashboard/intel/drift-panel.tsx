@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -123,7 +124,7 @@ export function DriftPanel({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/ai/drift", {
+      const res = await csrfFetch("/api/ai/drift", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ enterpriseId: enterprise.id }),

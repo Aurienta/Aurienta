@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -137,7 +138,7 @@ export function CharterDiffViewer({
     setError(null);
     setImplications(null);
     try {
-      const res = await fetch("/api/ai/charter-diff", {
+      const res = await csrfFetch("/api/ai/charter-diff", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

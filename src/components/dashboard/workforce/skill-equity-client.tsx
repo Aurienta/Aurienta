@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -103,7 +104,7 @@ export function SkillEquityClient({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/skill-equity", {
+      const res = await csrfFetch("/api/skill-equity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { ScrollText, Check, X, Clock, Radio, RefreshCw } from "lucide-react";
 import { timeAgo } from "@/lib/aurienta/format";
@@ -51,7 +52,7 @@ export function AuditActivityFeed({ initial }: { initial: AuditFeedEntry[] }) {
 
     async function pull() {
       try {
-        const res = await fetch("/api/admin/audit?pageSize=50", {
+        const res = await csrfFetch("/api/admin/audit?pageSize=50", {
           cache: "no-store",
           headers: { Accept: "application/json" },
         });

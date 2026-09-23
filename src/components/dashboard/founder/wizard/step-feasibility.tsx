@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -66,7 +67,7 @@ export function StepFeasibility({
         founderBackground: state.description,
       };
 
-      const res = await fetch("/api/ai/feasibility", {
+      const res = await csrfFetch("/api/ai/feasibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

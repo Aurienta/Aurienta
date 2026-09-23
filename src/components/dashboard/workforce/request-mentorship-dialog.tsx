@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -60,7 +61,7 @@ export function RequestMentorshipDialog({
         mode === "offer"
           ? { mentorId: "self", menteeEnterpriseId: targetMentee.id, focusAreas }
           : { menteeEnterpriseId: targetMentee.id, focusAreas };
-      const res = await fetch("/api/mentorship", {
+      const res = await csrfFetch("/api/mentorship", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),

@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -58,7 +59,7 @@ export function ApproveExpenseButton({
   async function onApprove() {
     setBusy(true);
     try {
-      const res = await fetch(`/api/expenses/${expenseId}/approve`, {
+      const res = await csrfFetch(`/api/expenses/${expenseId}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

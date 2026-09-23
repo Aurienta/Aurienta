@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -79,7 +80,7 @@ export function LegalDisclaimerClient({
 
   // Check if the user has already accepted
   React.useEffect(() => {
-    fetch("/api/terms/acceptance")
+    csrfFetch("/api/terms/acceptance")
       .then((r) => r.json())
       .then((data) => {
         if (data.accepted) {
@@ -107,7 +108,7 @@ export function LegalDisclaimerClient({
     if (!accepted) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/terms/acceptance", {
+      const res = await csrfFetch("/api/terms/acceptance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

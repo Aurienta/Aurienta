@@ -1,5 +1,6 @@
 "use client";
 
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import * as React from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -124,7 +125,7 @@ export function EnterpriseProfileClient({
   const save = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`/api/enterprises/${enterprise.id}/profile`, {
+      const res = await csrfFetch(`/api/enterprises/${enterprise.id}/profile`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
