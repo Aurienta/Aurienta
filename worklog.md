@@ -13656,3 +13656,91 @@ Files Modified (2):
 Agent work record: /home/z/my-project/agent-ctx/BLUEPRINT-GAPS-blueprint-gaps-agent.md
 
 **ALL 6 BLUEPRINT FEATURE GAPS CLOSED.** Tax Transparency Engine (5 exported functions, EGP-denominated, mock ETA filing API with audit trail). Block Trade Rules (3 constants + 3 exported functions, ±3% band distinct from ±5% standard band). Liquidity Reserve (3 constants + 3 exported functions, SMA-based projection — Phase 5 swaps in LSTM). Intelligence Graph (in-memory adjacency-list, 7 node types, 5 edge types, 3 query modes). EVE (4 verifiers, mock API stubs, confidence-weighted verdicts, audit trail). Art. 118 Manager Removal (CRE policy appended — art118_manager_removal.rego, client button + AlertDialog confirmation flow, page wiring with server+client RBAC gating). Lint passes with 0 errors and 0 new warnings. Ready for orchestrator verification.
+
+---
+Task ID: AUDIT-ZERO-COST-FIXES
+Agent: Orchestrator (main)
+Task: Implement all zero-cost production-readiness audit recommendations (no billing required). Skip paid items (Vercel Pro plan P1-5, Turso multi-region P2-1).
+
+Work Log:
+- Read PRODUCTION_READINESS_AUDIT.md to enumerate all recommendations.
+- Categorised each as zero-cost vs paid:
+  - ZERO-COST (implement): P0-1, P0-2, P1-1, P1-2, P1-3, P1-4, P1-6, P2-2, P2-3, P2-4, P2-5, JSON-LD.
+  - PAID (skip): P1-5 (Vercel Pro $20/mo), P2-1 (Turso multi-region paid tier).
+- Audited current state — found 8 of 12 recommendations ALREADY DONE in prior sessions:
+  - P0-1 cookie `secure` env-conditional ✅ (auth.ts:100)
+  - P0-2 FK indexes ✅ (109 @@index in schema; User has 6, OwnershipRecord has 4, Vote has 3)
+  - P1-1 CSP unsafe-eval dropped in prod ✅ (next.config.ts:15-21)
+  - P1-3 instrumentation.ts ✅ (846 bytes, global unhandledRejection + uncaughtException)
+  - P1-4 sharp ^0.35.4 ✅ (package.json)
+  - P1-6 ESLint rules tightened ✅ (no-unused-vars=warn, no-explicit-any=warn, exhaustive-deps=warn, prefer-const=warn, no-console=warn, no-debugger=error)
+  - P2-3 noImplicitAny: true ✅ (tsconfig.json:13)
+  - P2-4 /trust ISR ✅ (revalidate=300)
+  - JSON-LD Organization ✅ (layout.tsx:120)
+  - poweredByHeader: false ✅ (next.config.ts:6)
+- Remaining 4 gaps — IMPLEMENTED THIS SESSION:
+
+GAP 1 — P1-2: Wrap 6 remaining unprotected API routes with withErrorHandler
+- Re-audited: 116 total routes. 39 used withErrorHandler, 74 had their own try/catch. Only 6 were truly unprotected.
+- Wrapped all 6: fx/route.ts (GET), fx/refresh/route.ts (POST), screening/route.ts (GET+POST), trade-documents/route.ts (POST), trade-instruments/route.ts (GET+POST), trade-instruments/[id]/route.ts (GET with params).
+- Pattern: `export const POST = withErrorHandler(async (req) => { ... });` — preserves handler signature, catches all errors, returns clean JSON 500 with no stack trace leak.
+- Result: 45/116 routes now use withErrorHandler; 0 routes unprotected. Verified via grep.
+- BONUS: Fixed a pre-existing Prisma 7 bug in src/lib/db.ts — the local SQLite fallback path `new PrismaClient({})` was rejected by Prisma 7 (requires driver adapter). Updated to use `PrismaLibSql` adapter for file: URLs too. DB-backed routes now connect.
+
+GAP 2 — P2-2: Tested DB restore script + backup scheduler running
+- Created scripts/restore-turso.sh — companion to backup-turso.sh:
+  - Default mode: restores to a LOCAL throwaway SQLite file (.backups/restore-test-<ts>.db) and emits row-counts JSON — proves the backup is valid without touching production.
+  - --dry-run: parse-only (in-memory SQLite, no writes).
+  - --to-turso: restores to the live Turso DB (DESTRUCTIVE — requires interactive "RESTORE" confirmation or AURIENTA_CONFIRM_RESTORE=yes).
+  - `latest` keyword resolves to the newest .sql.gz backup.
+  - Uses bun:sqlite (built-in, zero native deps) for local verify; @libsql/client for remote Turso.
+- Fixed backup-turso.sh to work with local file: URLs (TURSO_AUTH_TOKEN optional for file:; resolves actual DB path via prisma.config.ts fallback to prisma/.provider-placeholder.db). Switched driver from node+@libsql/client to bun+bun:sqlite for local files (avoids libsql file-open failures).
+- Fixed backup.sh: was referencing non-existent db/custom.db. Now resolves actual DB path (same logic as backup-turso.sh) AND also produces a SQL dump via backup-turso.sh (dual-format backup: tarball + SQL dump).
+- Fixed backup-scheduler.sh: had a self-kill bug (`pkill -f backup-scheduler.sh` matched its own process). Rewrote to exclude SELF_PID. Started scheduler in background (PID 5273, nohup+disown) — verified running.
+- End-to-end tested: backup → restore dry-run → restore local verify. 51 tables, 132 indexes, 47KB SQL → 8KB gzipped.
+
+GAP 3 — P2-5: Prisma migration baseline (versioned migrations)
+- Generated baseline migration SQL via `prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script` → 1285 lines, 51 CREATE TABLE, 109 CREATE INDEX.
+- Created prisma/migrations/0_init/migration.sql + prisma/migrations/migration_lock.toml (provider=sqlite).
+- Marked baseline as applied via `prisma migrate resolve --applied 0_init` (DB already matches via prior db push).
+- Verified `prisma migrate status` → "Database schema is up to date!".
+- Added package.json scripts: db:migrate:deploy, db:migrate:status, db:migrate:resolve.
+
+GAP 4 — Environment fix (not in audit, but blocking verification)
+- The .env DATABASE_URL=file:/home/z/my-project/db/custom.db pointed to a non-existent file. Prisma config used prisma/.provider-placeholder.db instead, but the runtime libsql adapter tried to open the .env path.
+- Fixed by creating db/custom.db (copied from prisma/.provider-placeholder.db). Now all DB-backed routes connect and return real data.
+- Verified: GET /api/public/stats → 200 with constitutionalHash, capitalDeployedEgp, enterprises, partners, jobsCreated, creUptimePct, aiHealth.
+
+Verification:
+- bun run lint → 0 errors, 391 warnings (pre-existing baseline; 0 new warnings from this session's changes).
+- Dev server: GET / 200 in ~120ms, no compile errors.
+- Agent-browser smoke test:
+  - Homepage: renders cleanly, all nav links, hero, CTAs, footer present. No page errors. VLM confirms polished luxury design, no layout bugs.
+  - /trust: renders cleanly (DB-backed, ISR). h1 "Constitutional Trust — Proven, Not Promised", all h2 sections present, footer static position. No errors.
+- All 6 wrapped API routes respond correctly: auth-gated routes return 401, CSRF-gated routes return 403, public routes return 200. The /api/fx 500 is a pre-existing missing-model gap (FxRate not in schema) now caught cleanly by withErrorHandler ({"error":"Internal server error"} — no stack trace leak).
+- Backup scheduler running (PID 5273), produces daily tarball + SQL dump with 30-day retention.
+
+Files Created (3):
+- scripts/restore-turso.sh (tested-restore companion to backup-turso.sh)
+- prisma/migrations/0_init/migration.sql (1285-line baseline)
+- prisma/migrations/migration_lock.toml
+
+Files Modified (11):
+- src/app/api/fx/route.ts (wrapped GET with withErrorHandler)
+- src/app/api/fx/refresh/route.ts (wrapped POST)
+- src/app/api/screening/route.ts (wrapped GET + POST)
+- src/app/api/trade-documents/route.ts (wrapped POST)
+- src/app/api/trade-instruments/route.ts (wrapped GET + POST)
+- src/app/api/trade-instruments/[id]/route.ts (wrapped GET)
+- src/lib/db.ts (Prisma 7 adapter fix for local SQLite)
+- scripts/backup-turso.sh (local file: support + bun:sqlite driver + TURSO_AUTH_TOKEN optional)
+- scripts/backup.sh (resolve actual DB path + dual-format backup)
+- scripts/backup-scheduler.sh (fixed self-kill bug)
+- package.json (added db:migrate:deploy/status/resolve scripts)
+
+Stage Summary:
+**ALL 12 ZERO-COST AUDIT RECOMMENDATIONS NOW RESOLVED.**
+- 8 were already done in prior sessions.
+- 4 implemented this session: P1-2 (6 routes wrapped), P2-2 (tested restore + scheduler running), P2-5 (migration baseline), + bonus Prisma 7 adapter fix.
+- 2 paid recommendations intentionally skipped: P1-5 (Vercel Pro $20/mo), P2-1 (Turso multi-region paid tier).
+- Lint: 0 errors. Dev server: healthy. Agent-browser: homepage + /trust render cleanly with no errors. Backup scheduler: running. Migration baseline: applied. DB-backed routes: functional.

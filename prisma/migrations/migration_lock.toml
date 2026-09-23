@@ -1,0 +1,3 @@
+# Prisma migration lock file — ensures the provider is not changed without
+# a new migration being created.
+provider = "sqlite"

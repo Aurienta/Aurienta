@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 // populates both CBE and ECB rows for the USD→EGP pair so callers can see
 // which source is being read.
 // @ts-ignore
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const url = new URL(req.url);
   const from = (url.searchParams.get("from") ?? "").toUpperCase().trim();
   const to = (url.searchParams.get("to") ?? "EGP").toUpperCase().trim();
@@ -56,4 +57,4 @@ export async function GET(req: NextRequest) {
     sourceRef: rate.sourceRef,
     fetchedAt: rate.fetchedAt.toISOString(),
   });
-}
+});

@@ -42,6 +42,22 @@ if [ "${1:-}" = "--prune" ]; then
   exit 0
 fi
 
+# ── Resolve the actual on-disk SQLite file ──
+# Prisma's runtime may use a different file than DATABASE_URL (see
+# prisma.config.ts → datasource.url). Prefer the file in DATABASE_URL,
+# fall back to the prisma.config.ts placeholder.
+if [ -f .env ]; then set -a; . ./.env; set +a; fi
+DB_FILE_FROM_ENV="${DATABASE_URL#file:}"
+if [ -f "$DB_FILE_FROM_ENV" ]; then
+  DB_FILE="$DB_FILE_FROM_ENV"
+elif [ -f "prisma/.provider-placeholder.db" ]; then
+  DB_FILE="prisma/.provider-placeholder.db"
+else
+  echo "[$(date -Iseconds)] ERROR: SQLite file not found at $DB_FILE_FROM_ENV or prisma/.provider-placeholder.db"
+  exit 1
+fi
+echo "[$(date -Iseconds)] DB file resolved: $DB_FILE"
+
 # ── Create new backup ──
 BACKUP_FILE="$BACKUP_DIR/aurienta-backup-$TIMESTAMP.tar.gz"
 echo "[$(date -Iseconds)] Creating backup: $BACKUP_FILE"
@@ -55,7 +71,7 @@ cd "$PROJECT_DIR"
 # - The critical lib files (business logic)
 # - package.json + bun.lock (dependency lock)
 tar -czf "$BACKUP_FILE" \
-  db/custom.db \
+  "$DB_FILE" \
   prisma/schema.prisma \
   prisma/seed.ts \
   src/lib/aurienta/ \
@@ -69,7 +85,15 @@ tar -czf "$BACKUP_FILE" \
   }
 
 BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
-echo "[$(date -Iseconds)] Backup created: $BACKUP_FILE ($BACKUP_SIZE)"
+echo "[$(date -Iseconds)] Tarball backup created: $BACKUP_FILE ($BACKUP_SIZE)"
+
+# ── Also produce a SQL dump (tested-restore format) ──
+# The tarball is for full disaster recovery (file copy); the SQL dump is
+# for portable, restorable exports. See scripts/restore-turso.sh.
+echo "[$(date -Iseconds)] Producing SQL dump ..."
+bash "$PROJECT_DIR/scripts/backup-turso.sh" >> "$BACKUP_DIR/backup.log" 2>&1 || {
+  echo "[$(date -Iseconds)] WARNING: SQL dump failed (tarball backup still OK)"
+}
 
 # ── Prune old backups ──
 prune_old_backups

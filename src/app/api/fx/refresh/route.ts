@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export const dynamic = "force-dynamic";
 //   simulated.  This keeps the audit trail honest: every FxRate row
 //   is real-world data we previously cached, not Math.random() noise.
 // @ts-ignore
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -101,4 +102,4 @@ export async function POST(req: NextRequest) {
       "Sandbox simulation: re-persisted the latest cached rate for each pair with a new fetchedAt. " +
       "Production wires this to the real CBE daily rate API + ECB + Refinitiv cross-source verification.",
   });
-}
+});

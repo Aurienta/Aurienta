@@ -5,6 +5,7 @@ import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { parseBody, screeningSchema } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ const SCREENING_AUTHORITY_ROLES = new Set([
 // Lists screening events for the caller's enterprises (sanctions / PEP /
 // adverse-media).  If `enterpriseId` is provided the caller must be a member.
 // @ts-ignore
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({ events, count: events.length });
-}
+});
 
 // POST /api/screening
 // Records a screening event.
@@ -78,7 +79,7 @@ export async function GET(req: NextRequest) {
 //   metadata so reviewers don't mistake self-reported results for
 //   real provider verdicts.
 // @ts-ignore
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -209,4 +210,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ event }, { status: 201 });
-}
+});

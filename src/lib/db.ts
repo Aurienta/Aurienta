@@ -8,11 +8,15 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL ?? ''
 
-  // If the URL starts with libsql:// or http(s)://, use the libSQL adapter.
-  // Otherwise fall back to the standard PrismaClient (for local SQLite dev).
+  // Prisma 7 requires a driver adapter for ALL databases (including local
+  // SQLite). The @prisma/adapter-libsql adapter works with both:
+  //   - libsql://...  (remote Turso — authToken required)
+  //   - https://...   (remote Turso over HTTPS — authToken required)
+  //   - file:...      (local SQLite — no authToken needed)
+  // We always use the adapter now; for local file: URLs the authToken is
+  // omitted.
   if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
     const authToken = process.env.TURSO_AUTH_TOKEN ?? ''
-    // PrismaLibSql accepts a Config object directly (url + authToken)
     const adapter = new PrismaLibSql({ url: databaseUrl, authToken })
     return new PrismaClient({
       adapter,
@@ -20,8 +24,11 @@ function createPrismaClient(): PrismaClient {
     })
   }
 
-  // Local SQLite fallback (file:./prisma/dev.db etc.)
+  // Local SQLite (file: URL). Prisma 7 requires a driver adapter even for
+  // local files — use PrismaLibSql without an authToken.
+  const adapter = new PrismaLibSql({ url: databaseUrl })
   return new PrismaClient({
+    adapter,
     log: ['error', 'warn'],
   })
 }

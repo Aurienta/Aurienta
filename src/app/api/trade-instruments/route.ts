@@ -5,6 +5,7 @@ import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { parseBody, tradeInstrumentSchema } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ const TRADE_AUTHORITY_ROLES = new Set([
 // bankPartner and documents relations.
 // @ts-ignore
 // @ts-ignore
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
     instruments,
     count: instruments.length,
   });
-}
+});
 
 // POST /api/trade-instruments
 // Creates a new trade-finance instrument (L/C, guarantee, collection, APG,
@@ -73,7 +74,7 @@ export async function GET(req: NextRequest) {
 // ledger event.
 // @ts-ignore
 // @ts-ignore
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -241,4 +242,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ instrument }, { status: 201 });
-}
+});

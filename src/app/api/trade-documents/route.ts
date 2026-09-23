@@ -5,6 +5,7 @@ import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { parseBody, tradeDocumentSchema } from "@/lib/aurienta/validation";
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,7 +23,7 @@ const TRADE_AUTHORITY_ROLES = new Set([
 // manager / board_member of the enterprise.  Wrapped in db.$transaction
 // with a hash-chained `trade_document_release` ledger event.
 // @ts-ignore
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -172,4 +173,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ document }, { status: 201 });
-}
+});
