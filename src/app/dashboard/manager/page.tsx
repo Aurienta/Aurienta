@@ -22,29 +22,56 @@ export default async function ManagerPage({
   if (!user) redirect("/signin?next=/dashboard/manager");
   const sp = await searchParams;
 
-  // Find enterprises where the user is manager or founding_operator
+  // Find enterprises where the user is manager, founding_operator, or company_owner
   const managerMemberships = user.memberships.filter(
-    (m) => m.role === "manager" || m.role === "founding_operator"
+    (m) => m.role === "manager" || m.role === "founding_operator" || m.role === "company_owner"
   );
   const enterpriseIds = managerMemberships.map((m) => m.enterpriseId);
 
   if (enterpriseIds.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/20 bg-gold/5">
-          <HardHat className="h-7 w-7 text-gold" />
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 p-8 text-center">
+        <div className="relative">
+          <div className="absolute inset-0 -m-4 animate-spin-slow rounded-full" style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(212,175,55,0.0) 60%, rgba(212,175,55,0.3) 85%, transparent 100%)", filter: "blur(8px)" }} aria-hidden />
+          <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-3xl border border-gold/25 bg-gold/8">
+            <HardHat className="h-9 w-9 text-gold" />
+          </div>
         </div>
-        <h1 className="font-serif text-2xl font-semibold">No manager seats</h1>
-        <p className="mt-2 max-w-md font-sans text-sm text-muted-foreground">
-          You are not currently appointed as a manager or founding operator of any enterprise.
-          Found a new enterprise to gain a manager seat (subject to police clearance).
-        </p>
-        <Link
-          href="/dashboard/founder"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black"
-        >
-          Open Founder Studio
-        </Link>
+        <div className="space-y-2">
+          <h1 className="font-serif text-3xl font-semibold">Manager Console</h1>
+          <p className="max-w-md font-sans text-sm text-muted-foreground">
+            You don&apos;t have a manager seat yet. Found a new enterprise to become a manager,
+            or get appointed by an existing enterprise (subject to police clearance per Add-on 27).
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/dashboard/founder"
+            className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-3 font-sans text-sm font-semibold text-black transition-transform hover:scale-105"
+          >
+            <HardHat className="h-4 w-4" /> Open Founder Studio
+          </Link>
+          <Link
+            href="/dashboard/opportunities"
+            className="inline-flex items-center gap-2 rounded-full border border-gold/20 bg-background/40 px-6 py-3 font-sans text-sm font-medium text-gold-light transition-colors hover:bg-gold/[0.04]"
+          >
+            Browse Enterprises
+          </Link>
+        </div>
+        {/* Feature preview cards */}
+        <div className="mt-4 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
+          {[
+            { icon: TrendingUp, title: "Milestones", desc: "Track evidence → board review → release" },
+            { icon: Wallet, title: "Expenses", desc: "Submit, approve, or reject with AI triage" },
+            { icon: Users, title: "Employees", desc: "NOSI-enforced workforce management" },
+          ].map((f) => (
+            <div key={f.title} className="rounded-xl border border-gold/10 bg-background/40 p-4 text-left">
+              <f.icon className="mb-2 h-5 w-5 text-gold" />
+              <p className="font-sans text-sm font-medium text-foreground">{f.title}</p>
+              <p className="font-sans text-xs text-muted-foreground">{f.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
