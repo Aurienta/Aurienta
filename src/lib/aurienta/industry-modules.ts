@@ -194,3 +194,130 @@ export function getModuleForSector(sector: string): IndustryModule | undefined {
 export function getActivatedModules(): IndustryModule[] {
   return INDUSTRY_MODULES.filter((m) => m.activated);
 }
+
+// ── Configurable KPI Overrides (Gap 18) ──
+// Allows each enterprise to override the default KPI thresholds for their
+// industry module. This makes the KPIs configurable instead of hardcoded.
+
+import { db } from "@/lib/db";
+import { audit } from "./audit";
+
+export type KpiOverride = {
+  enterpriseId: string;
+  moduleId: string;
+  vitalSignKey: string;
+  healthyThreshold: number;
+  alertThreshold: number;
+  unit: string;
+  updatedAt: Date;
+};
+
+/**
+ * Get the effective KPI thresholds for an enterprise's industry module.
+ * Merges the module defaults with any enterprise-specific overrides.
+ */
+export async function getEffectiveKpis(
+  enterpriseId: string,
+  moduleId: string
+): Promise<{
+  module: IndustryModule | undefined;
+  overrides: KpiOverride[];
+  effectiveVitalSigns: {
+    key: string;
+    label: string;
+    unit: string;
+    healthy: number;
+    alert: number;
+    inverted?: boolean;
+    overridden: boolean;
+  }[];
+}> {
+  const industryModule = INDUSTRY_MODULES.find((m) => m.id === moduleId);
+  if (!industryModule) {
+    return { module: undefined, overrides: [], effectiveVitalSigns: [] };
+  }
+
+  // Query for enterprise-specific overrides (stored in AuditLog metadata)
+  // In production, this would be a dedicated IndustryKpiOverride model.
+  const overrideEvents = await db.auditLog.findMany({
+    where: {
+      action: "industry_kpi.override",
+      target: `enterprise:${enterpriseId}:module:${moduleId}`,
+    },
+    orderBy: { timestamp: "desc" },
+    take: 50,
+  });
+
+  const overrides: Record<string, KpiOverride> = {};
+  for (const event of overrideEvents) {
+    const meta = event.metadata as any;
+    if (meta && meta.vitalSignKey && !overrides[meta.vitalSignKey]) {
+      overrides[meta.vitalSignKey] = {
+        enterpriseId,
+        moduleId,
+        vitalSignKey: meta.vitalSignKey,
+        healthyThreshold: meta.healthyThreshold,
+        alertThreshold: meta.alertThreshold,
+        unit: meta.unit,
+        updatedAt: event.timestamp,
+      };
+    }
+  }
+
+  const overrideList = Object.values(overrides);
+  const effectiveVitalSigns = industryModule.vitalSigns.map((vs) => {
+    const override = overrides[vs.key];
+    if (override) {
+      return {
+        ...vs,
+        healthy: override.healthyThreshold,
+        alert: override.alertThreshold,
+        overridden: true,
+      };
+    }
+    return { ...vs, overridden: false };
+  });
+
+  return {
+    module: industryModule,
+    overrides: overrideList,
+    effectiveVitalSigns,
+  };
+}
+
+/**
+ * Set a KPI override for an enterprise's industry module.
+ */
+export async function setKpiOverride(
+  enterpriseId: string,
+  moduleId: string,
+  vitalSignKey: string,
+  healthyThreshold: number,
+  alertThreshold: number,
+  actorId: string
+): Promise<void> {
+  const industryModule = INDUSTRY_MODULES.find((m) => m.id === moduleId);
+  if (!industryModule) {
+    throw new Error(`Industry module not found: ${moduleId}`);
+  }
+
+  const vitalSign = industryModule.vitalSigns.find((vs) => vs.key === vitalSignKey);
+  if (!vitalSign) {
+    throw new Error(`Vital sign not found: ${vitalSignKey}`);
+  }
+
+  await audit({
+    actorId,
+    action: "industry_kpi.override",
+    target: `enterprise:${enterpriseId}:module:${moduleId}`,
+    result: "allowed",
+    metadata: {
+      vitalSignKey,
+      healthyThreshold,
+      alertThreshold,
+      unit: vitalSign.unit,
+      previousHealthy: vitalSign.healthy,
+      previousAlert: vitalSign.alert,
+    },
+  });
+}

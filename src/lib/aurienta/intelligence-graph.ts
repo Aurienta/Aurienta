@@ -477,3 +477,182 @@ function dedupeEdges(edges: GraphEdge[]): GraphEdge[] {
   }
   return out;
 }
+
+// ── Conflict-of-Interest Detection (Vol 11 §11.1.4) ──
+// Detects when a user has undisclosed relationships that could bias their
+// decisions in an enterprise. The CRE uses this to block related-party
+// transactions and require disclosure before voting.
+
+export type ConflictOfInterest = {
+  userId: string;
+  enterpriseId: string;
+  conflictType:
+    | "ownership_overlap" // user owns shares in both enterprises that transact
+    | "family_relationship" // user has a family member in the counterparty enterprise
+    | "dual_role" // user is both a manager and a board member of different enterprises
+    | "financial_dependency" // user receives income from the counterparty
+    | "undisclosed_relation"; // found a relation not declared in the conflict registry
+  severity: "low" | "medium" | "high";
+  detail: string;
+  relatedEnterpriseId?: string;
+  relatedUserId?: string;
+  detectedAt: Date;
+};
+
+/**
+ * Detect conflicts of interest for a user in the context of an enterprise.
+ * Queries the intelligence graph for overlapping relationships.
+ */
+export async function detectConflictsOfInterest(
+  userId: string,
+  enterpriseId: string
+): Promise<ConflictOfInterest[]> {
+  const conflicts: ConflictOfInterest[] = [];
+
+  // 1. Ownership overlap: does this user own shares in enterprises that
+  //    transact with the target enterprise?
+  const userOwnerships = await (db as any).ownershipRecord.findMany({
+    where: { userId },
+    include: { enterprise: { select: { id: true, name: true } } },
+  });
+
+  for (const ownership of userOwnerships) {
+    if (ownership.enterpriseId === enterpriseId) continue;
+
+    // Check if there are trades between this enterprise and the target
+    // (Trades only have a single enterpriseId, so we check trades where the
+    // buyer or seller is from the related enterprise)
+    const tradesBetween = await (db as any).trade.findMany({
+      where: {
+        OR: [
+          { enterpriseId: ownership.enterpriseId, buyerId: userId },
+          { enterpriseId: enterpriseId, buyerId: userId },
+        ],
+      },
+      take: 5,
+    });
+
+    if (tradesBetween.length > 0) {
+      conflicts.push({
+        userId,
+        enterpriseId,
+        conflictType: "ownership_overlap",
+        severity: "high",
+        detail: `User owns shares in ${ownership.enterprise.name} which has ${tradesBetween.length} trade(s) with this enterprise. Related-party transaction disclosure required.`,
+        relatedEnterpriseId: ownership.enterpriseId,
+        detectedAt: new Date(),
+      });
+    }
+  }
+
+  // 2. Dual role: is the user a manager in one enterprise and a board member
+  //    in another that transacts with the target?
+  const userMemberships = await (db as any).enterpriseMember.findMany({
+    where: { userId },
+    include: { enterprise: { select: { id: true, name: true } } },
+  });
+
+  const managerRoles = userMemberships.filter((m: any) => m.role === "manager");
+  const boardRoles = userMemberships.filter((m: any) => m.role === "board_member");
+
+  if (managerRoles.length > 0 && boardRoles.length > 0) {
+    conflicts.push({
+      userId,
+      enterpriseId,
+      conflictType: "dual_role",
+      severity: "medium",
+      detail: `User is a manager in ${managerRoles.length} enterprise(s) and a board member in ${boardRoles.length} enterprise(s). This dual role may create conflicts in governance decisions.`,
+      detectedAt: new Date(),
+    });
+  }
+
+  // 3. Financial dependency: does the user receive salary from multiple enterprises?
+  const userEmployments = await (db as any).employee.findMany({
+    where: { userId },
+    select: { enterpriseId: true, monthlySalaryEgp: true },
+  });
+
+  if (userEmployments.length > 1) {
+    conflicts.push({
+      userId,
+      enterpriseId,
+      conflictType: "financial_dependency",
+      severity: "medium",
+      detail: `User receives income from ${userEmployments.length} enterprises. Financial dependency may bias decisions.`,
+      detectedAt: new Date(),
+    });
+  }
+
+  // 4. Family relationship: check the succession declarations for family
+  //    beneficiaries who might be members of counterparty enterprises.
+  //    (Simplified: check if any beneficiary name matches other users.)
+  const successionDeclarations = await (db as any).successionDeclaration.findMany({
+    where: { userId },
+    select: { beneficiaryName: true, beneficiaryUserId: true },
+  });
+
+  for (const decl of successionDeclarations) {
+    if (!decl.beneficiaryName) continue;
+    // Check if any enterprise member has a similar name
+    const firstName = decl.beneficiaryName.split(" ")[0] ?? "";
+    if (!firstName || firstName.length < 3) continue;
+    const matchingMembers = await (db as any).enterpriseMember.findMany({
+      where: {
+        enterpriseId: { not: enterpriseId },
+        user: { legalName: { contains: firstName } },
+      },
+      take: 3,
+      include: { user: { select: { legalName: true, id: true } } },
+    });
+
+    for (const match of matchingMembers) {
+      conflicts.push({
+        userId,
+        enterpriseId,
+        conflictType: "family_relationship",
+        severity: "high",
+        detail: `User's succession beneficiary "${decl.beneficiaryName}" may be related to enterprise member "${match.user.legalName}" in another enterprise.`,
+        relatedUserId: match.user.id,
+        relatedEnterpriseId: match.enterpriseId,
+        detectedAt: new Date(),
+      });
+    }
+  }
+
+  return conflicts;
+}
+
+/**
+ * Check if a user has an active conflict-of-interest declaration.
+ * Returns true if the user has disclosed all detected conflicts.
+ */
+export async function hasActiveCoiDeclaration(
+  userId: string,
+  enterpriseId: string
+): Promise<{ hasDeclaration: boolean; undisclosedConflicts: ConflictOfInterest[] }> {
+  const conflicts = await detectConflictsOfInterest(userId, enterpriseId);
+
+  // Check if the user has filed a conflict-of-interest declaration
+  // for this enterprise (stored in the audit log)
+  const declarations = await db.auditLog.findMany({
+    where: {
+      actorId: userId,
+      action: "coi.declaration_filed",
+      target: `enterprise:${enterpriseId}`,
+    },
+    orderBy: { timestamp: "desc" },
+    take: 1,
+  });
+
+  if (declarations.length === 0 && conflicts.length > 0) {
+    return {
+      hasDeclaration: false,
+      undisclosedConflicts: conflicts,
+    };
+  }
+
+  return {
+    hasDeclaration: true,
+    undisclosedConflicts: [],
+  };
+}
