@@ -446,6 +446,63 @@ For {{enterpriseName}}:
 RECOMMENDATION: {{recommendation}}`,
     variables: ["enterpriseName", "readinessScore", "complianceScore", "financialScore", "governanceScore", "autonomyScore", "dependencyIndex", "platformDependency", "lawFirmDependency", "consultingDependency", "votePct", "stage1Date", "stage2Date", "stage3Date", "stage4Date", "exportHash", "recommendation"],
   },
+  {
+    id: "tpl-constitutional-amendment",
+    appendix: "DD",
+    title: "Constitutional Amendment Form",
+    jurisdiction: "Egypt (Non-Amendable Rules I-1.1 to I-1.10)",
+    category: "constitutional",
+    content: `CONSTITUTIONAL AMENDMENT FORM — {{enterpriseName}}
+
+PROPOSED AMENDMENT:
+- Title: {{amendmentTitle}}
+- Description: {{amendmentDescription}}
+- Affected Section: {{affectedSection}}
+- Proposed By: {{proposerName}}
+- Date: {{date}}
+
+REVIEW CRITERIA:
+1. Non-Amendable Rules (I-1.1 to I-1.10) CANNOT be amended — any proposal affecting these is automatically rejected by the CRE.
+2. Amendable rules require 75% shareholder vote (Vol 7 §7.4).
+3. Amendments must not weaken constitutional guarantees (zero custody, AI enforcement, transparency, fairness, legal compliance, continuity).
+4. Amendments are recorded on the immutable ledger with a 30-day waiting period before enforcement.
+
+CRE REVIEW:
+The CRE validates that this amendment does not violate any Non-Amendable Rule. If it passes, the amendment is put to a shareholder vote.
+
+This form is cryptographically signed by the proposer and recorded on the immutable ledger.`,
+    variables: ["enterpriseName", "amendmentTitle", "amendmentDescription", "affectedSection", "proposerName", "date"],
+  },
+  {
+    id: "tpl-alumni-hall-declaration",
+    appendix: "EE",
+    title: "Alumni Hall Declaration",
+    jurisdiction: "Egypt (Vol 15 §15.5)",
+    category: "constitutional",
+    content: `ALUMNI HALL DECLARATION — {{enterpriseName}}
+
+This enterprise has graduated from the AURIENTA Constitutional Launchpad and hereby declares its alumni status.
+
+ALUMNI ENTERPRISE DETAILS:
+- Name: {{enterpriseName}}
+- Graduation Date: {{graduationDate}}
+- Final Tier: {{finalTier}}
+- Graduation Score: {{graduationScore}}/100
+- Founder: {{founderName}}
+
+ALUMNI RIGHTS AND OBLIGATIONS:
+1. SOVEREIGN OPERATION: The enterprise operates independently. AURIENTA's CRE no longer enforces governance.
+2. ORACLE MIRROR: The enterprise retains access to the Oracle Mirror for offline survival (Vol 12 §12.6).
+3. ALUMNI HALL: The enterprise is listed in the Alumni Hall for reference by prospective partners.
+4. SELF-HOSTED CRE: The enterprise may self-host a CRE instance for continued constitutional governance (recommended but not mandatory).
+5. NO BACKWARD GOVERNANCE: The enterprise cannot re-enter the AURIENTA launchpad. Graduation is irreversible.
+
+This declaration is permanent and recorded on the immutable ledger. The enterprise's data export package is preserved indefinitely for audit purposes.
+
+Graduation Export Hash: {{exportHash}}
+Declaration Date: {{declarationDate}}`,
+    variables: ["enterpriseName", "graduationDate", "finalTier", "graduationScore", "founderName", "exportHash", "declarationDate"],
+  },
 ];
 
 /**

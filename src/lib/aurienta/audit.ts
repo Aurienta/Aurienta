@@ -18,9 +18,14 @@ export type AuditEntry = {
 
 export async function audit(entry: AuditEntry): Promise<void> {
   try {
+    // "system" is not a real User ID — convert to null to avoid FK violation.
+    // System-generated events (cron jobs, webhooks, CRE engine) have no actor.
+    const actorId =
+      entry.actorId && entry.actorId !== "system" ? entry.actorId : null;
+
     await db.auditLog.create({
       data: {
-        actorId: entry.actorId,
+        actorId,
         action: entry.action,
         target: entry.target,
         result: entry.result,

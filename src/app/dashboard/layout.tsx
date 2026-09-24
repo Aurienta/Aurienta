@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ConstitutionalFooter } from "@/components/dashboard/constitutional-footer";
+import { PageTransition } from "@/components/ux/page-transition";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -23,9 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // pushed down naturally when content exceeds one screen height.
   // The shell itself uses `flex-1` (not min-h-screen) so it grows to fill the
   // available space, leaving the footer pinned at the bottom.
+  // PageTransition wraps children for smooth fade+rise on route change.
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <DashboardShell user={user}>{children}</DashboardShell>
+      <DashboardShell user={user}>
+        <PageTransition>{children}</PageTransition>
+      </DashboardShell>
       <ConstitutionalFooter />
     </div>
   );
