@@ -4,7 +4,11 @@ import { createHash } from "crypto";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { TIER_META } from "@/lib/aurienta/constants";
-import { appendLedgerEvent, enforceFounderEquityCap } from "@/lib/aurienta/cre";
+import {
+  appendLedgerEvent,
+  enforceFounderEquityCap,
+  enforceVerificationGate,
+} from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 
 // Tier → maximum raise cap (EGP). "Unlimited" = no cap.
@@ -170,6 +174,46 @@ export async function POST(req: NextRequest) {
         { error: equityCheck.reason ?? "Founder equity cap violation", code: "CRE_FOUNDER_EQUITY_CAP" },
         { status: 400 }
       );
+    }
+
+    // ── CRE: Verification gate (DE-NEW-3) ──
+    // Founding an enterprise is a capital-deployment action. Tier F requires
+    // L4 institutional verification; Tiers A–D require L3 enhanced KYC.
+    // Tier E (University) is exempt — universities operate on a separate track.
+    if (tier !== "E") {
+      const vCheck = enforceVerificationGate({
+        verificationLevel: user.verificationLevel,
+        verificationStatus: user.verificationStatus,
+        action: "enterprise_founding",
+        tier,
+      });
+      if (!vCheck.allowed) {
+        await audit({
+          actorId: user.id,
+          action: "enterprise.create",
+          target: "verification:gate",
+          result: "denied",
+          reason: vCheck.reason,
+          metadata: {
+            policy: vCheck.policy,
+            decisionToken: vCheck.decisionToken,
+            gateCode: vCheck.code,
+            tier,
+            verificationLevel: user.verificationLevel,
+            verificationStatus: user.verificationStatus,
+          },
+        });
+        return NextResponse.json(
+          {
+            error: vCheck.reason ?? "Verification gate denied the founding",
+            code: "cre_denied",
+            policy: vCheck.policy,
+            decisionToken: vCheck.decisionToken,
+            gateCode: vCheck.code,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // ── Pick service providers (first available active) ──

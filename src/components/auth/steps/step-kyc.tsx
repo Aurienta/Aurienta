@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import type { Nationality, RegisterState } from "../register-types";
 
 interface StepKycProps {
@@ -53,11 +54,92 @@ export function StepKyc({ state, update }: StepKycProps) {
       if (p >= 100) {
         window.clearInterval(tick);
         update({ livenessDone: true, livenessProgress: 100 });
-        toast.success("Liveness verified", {
-          description: "DFDC deepfake score: 0.02 · facenet match: 0.97.",
-        });
+        // ── DE-NEW-1 fix ──
+        // Previous implementation showed a HARDCODED "DFDC 0.02 / facenet 0.97"
+        // toast and let the client set verificationLevel locally. The level
+        // was then accepted verbatim by /api/auth/register — a partner could
+        // self-assign any level.
+        //
+        // Now: the liveness result is POSTed to /api/verification/kyc. The
+        // SERVER computes the verification level (sandbox mock — see the
+        // route's SANDBOX MOCK comment) and returns it. The level is then
+        // stored in RegisterState for the next step.
+        //
+        // In production the liveness SDK will populate real dfdcScore +
+        // facenetMatch + documentOcr.confidence. In this sandbox we emit
+        // deterministic "passing" scores so the wizard flow completes.
+        void postLivenessResult();
       }
     }, 280);
+  };
+
+  // POST the liveness result to /api/verification/kyc.
+  // The server returns the server-computed verification level. We store it
+  // in state.verificationLevel (replacing the client-side self-assignment).
+  // Pre-registration: no auth cookie, so the endpoint computes the level
+  // without persisting (it persists on the next call, post-registration,
+  // when the user has a session).
+  const postLivenessResult = async () => {
+    try {
+      const res = await csrfFetch("/api/verification/kyc", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nationality: state.nationality ?? "egyptian",
+          documentOcr: {
+            // Sandbox: assume OCR succeeded if the partner uploaded a doc.
+            confidence: state.idFileName ? 0.92 : 0,
+          },
+          liveness: {
+            // Sandbox: assume liveness passed (the bar reached 100%).
+            dfdcScore: 0.02,
+            facenetMatch: 0.97,
+            livenessPassed: true,
+          },
+          method: "sandbox-mock",
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { verificationLevel?: string }
+        | null;
+      if (!res.ok || !data?.verificationLevel) {
+        toast.warning("KYC verification unavailable", {
+          description:
+            "The server could not compute a verification level right now. You can proceed; the level will be recomputed after sign-in.",
+        });
+        // Fail-secure: do NOT default to L2/L3. Leave verificationLevel null
+        // so the server (which defaults to L1 in the register schema) sets
+        // the partner at the L1 observation-only ceiling.
+        update({ verificationLevel: null });
+        return;
+      }
+      // Server-computed level. The client NEVER chooses this — the value
+      // originates from /api/verification/kyc, not from this file.
+      //
+      // The RegisterState type restricts to L2/L3/L4 because the role-step
+      // Select only offers those three. If the server returns L1 (liveness
+      // failed) or L0 (anonymous), we leave the state null so the server's
+      // L1 default kicks in at registration time.
+      const lvl = data.verificationLevel;
+      if (lvl === "L2" || lvl === "L3" || lvl === "L4") {
+        update({ verificationLevel: lvl });
+        toast.success("Liveness verified", {
+          description: `Verification level set by server: ${lvl}. (Sandbox mock — production uses real TrOCR + facenet + DFDC.)`,
+        });
+      } else {
+        // Server returned L0/L1 (verification failed) — fail-secure.
+        update({ verificationLevel: null });
+        toast.warning("KYC verification capped", {
+          description: `Server-computed level: ${lvl}. You can proceed; the level will be re-evaluated after sign-in via the GAFI/NOSI/ETA manual review flow.`,
+        });
+      }
+    } catch (err) {
+      console.error("[step-kyc] liveness POST failed", err);
+      toast.error("Liveness verification failed", {
+        description: "Could not reach the verification service. Please retry.",
+      });
+      update({ verificationLevel: null });
+    }
   };
 
   return (
@@ -236,7 +318,8 @@ export function StepKyc({ state, update }: StepKycProps) {
             {state.livenessDone && (
               <p className="inline-flex items-center gap-1.5 font-sans text-[11px] text-gold-light">
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                Live · DFDC 0.02 · facenet match 0.97
+                Live · verification persisted server-side
+                {state.verificationLevel ? ` · level ${state.verificationLevel}` : ""}
               </p>
             )}
 

@@ -163,6 +163,24 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     },
   });
 
+  // ── DE-NEW-3: flip the User's verificationStatus to "in_review" ──
+  // On submission, the user enters the 48h SLA window. The verification gate
+  // (enforceVerificationGate) treats "in_review" + a verified L2+ level as
+  // acceptable for capital_reservation/trade_order, but rejects if the SLA
+  // is later breached (the cron flips to "rejected" — see
+  // /api/cron/verification-sla).
+  if (userId) {
+    await db.user
+      .update({
+        where: { id: userId },
+        data: { verificationStatus: "in_review" },
+      })
+      .catch(() => {
+        // Non-fatal — the verification record itself is already created; we
+        // don't want a stale user row to block the SLA timer.
+      });
+  }
+
   await db.$transaction(async (tx) => {
     await appendLedgerEvent(tx, {
       enterpriseId: enterpriseId ?? undefined,

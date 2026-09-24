@@ -42,9 +42,22 @@ model User {
   policeClearanceExpiresAt DateTime?
   pledgeSignedAt        DateTime?
   pledgeSignature       String?
+  // ── Verification SLA (DE-NEW-3) ──
+  // Independent of `verificationLevel` (which is the trust tier the partner
+  // has reached: L0/L1/L2/L3/L4). `verificationStatus` tracks the lifecycle
+  // of the manual-review queue for GAFI/NOSI/ETA uploads:
+  //   pending    → no verification started yet
+  //   in_review  → documents submitted, awaiting human review (48h SLA)
+  //   verified   → human review cleared
+  //   rejected   → SLA exceeded OR documents rejected
+  verificationStatus   String   @default("pending") // pending, in_review, verified, rejected
+  verificationRejectedReason String? // e.g. "sla_exceeded", "document_invalid"
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   sessions              Session[]
+
+  // Cryptographic succession declarations filed by this user (Vol 16 §16.1).
+  successionDeclarations SuccessionDeclaration[] @relation("SuccessionDeclarant")
 
   ownershipRecords      OwnershipRecord[] @relation("UserOwnership")
   proposals             Proposal[]
@@ -118,9 +131,17 @@ model LawFirm {
   insuranceEgp    Int      @default(100000000)
   expertiseScore  Int      @default(80)
   status          String   @default("active") // active, probation, suspended
+  // ── Law Firm Webhook API (Vol 5 §5.2) ──
+  // Ed25519 public key (base64) used to verify webhook signatures from this
+  // law firm's escrow system. Stored as TEXT (base64) so it can be swapped /
+  // rotated by the law firm via a separate key-rotation ceremony without a
+  // schema migration. Null = webhook signature verification disabled for
+  // this firm (sandbox / pre-onboarding only).
+  publicKey       String?
   createdAt       DateTime @default(now())
 
   enterprises     Enterprise[]
+  webhookEvents   LawFirmWebhookEvent[]
 }
 
 model AccountingFirm {
@@ -150,6 +171,7 @@ model Enterprise {
   legalForm           String   @default("LLC") // LLC, SPV, JSC
   healthRating        String?  // AAA, AA, A, BBB, BB, B, CCC, CC, C
   healthScore         Int      @default(75)
+  healthScoreUpdatedAt DateTime?
   // fundraising
   fundraisingGoalEgp  Int
   raisedEgp           Int      @default(0)
@@ -241,6 +263,7 @@ model Enterprise {
   vaultLoans          VaultLoan[]
   solvencyAssertions  SolvencyAssertion[]
   votingProxies       VotingProxy[]
+  circuitBreakerHalts CircuitBreakerHalt[]
   @@index([founderId])
   @@index([lawFirmId])
   @@index([accountingFirmId])
@@ -1257,4 +1280,137 @@ model VotingProxy {
   @@index([enterpriseId])
   @@index([delegatorId])
   @@index([delegateeId])
+}
+
+// ───────────────────────────────────────────────────────────
+// CRYPTOGRAPHIC SUCCESSION (Blueprint Vol 16 §16.1)
+// ───────────────────────────────────────────────────────────
+/// A Constitutional Partner's cryptographic succession declaration. The
+/// declarant (typically a Founding Operator, Manager, Board Member, or
+/// >10% Capital Partner — mandatory per Vol 16 §16.1) files this to:
+///
+///   1. Designate a successor (internal or external) who will receive their
+///      voting rights + economic interest on verified death / incapacitation.
+///   2. List economic beneficiaries with explicit percentage splits.
+///   3. Set conditions (onDeath, onIncapacitation, thresholdDays for the
+///      90-day voting-proxy activation window).
+///   4. Optionally appoint an emergency manager (must hold police clearance)
+///      to bridge the transition.
+///
+/// Lifecycle: draft → filed → activated → executed.
+///   - draft     — declarant is composing (no constitutional effect)
+///   - filed     — declarant has signed; declaration is in force
+///   - activated — voting proxy has been activated (90-day threshold met
+///                 or death/incapacity verified)
+///   - executed  — succession complete; ownership + voting rights transferred
+model SuccessionDeclaration {
+  id                     String   @id @default(cuid())
+  userId                 String
+  // The designated successor — if a platform user, their userId; otherwise null
+  // and beneficiaryName / beneficiaryNationalId describe an external successor.
+  beneficiaryUserId      String?
+  beneficiaryName        String?
+  beneficiaryNationalId  String?  // AES-GCM encrypted (see lib/aurienta/encryption)
+  // JSON-encoded conditions: { onDeath: true, onIncapacitation: false, thresholdDays: 90 }
+  conditions             String
+  votingProxyActive      Boolean  @default(false)
+  votingProxyActivatedAt DateTime?
+  // Temporary manager appointed during transition (must hold valid police clearance)
+  emergencyManagerId     String?
+  status                 String   @default("draft") // draft, filed, activated, executed
+  declaredAt             DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  user                   User     @relation("SuccessionDeclarant", fields: [userId], references: [id], onDelete: Cascade)
+  economicBeneficiaries  EconomicBeneficiary[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ───────────────────────────────────────────────────────────
+// ECONOMIC BENEFICIARIES (Blueprint Vol 16 §16.1)
+// ───────────────────────────────────────────────────────────
+/// Each succession declaration may list one or more economic beneficiaries
+/// who inherit the declarant's economic interest (Equity Units, dividend
+/// rights) on execution. Percentages must sum to 100 across the declaration
+/// (validated by the CRE on file).
+model EconomicBeneficiary {
+  id                       String   @id @default(cuid())
+  successionDeclarationId  String
+  name                     String
+  relationship             String   // spouse, child, sibling, parent, other
+  percentage               Float    // 0-100; must sum to 100 across the declaration
+  nationalIdLast4          String?  // AES-GCM encrypted (see lib/aurienta/encryption)
+
+  successionDeclaration    SuccessionDeclaration @relation(fields: [successionDeclarationId], references: [id], onDelete: Cascade)
+
+  @@index([successionDeclarationId])
+}
+
+// ───────────────────────────────────────────────────────────
+// LAW FIRM WEBHOOK EVENTS (Blueprint Vol 5 §5.2)
+// ───────────────────────────────────────────────────────────
+/// Append-only log of every webhook event received from a law firm's escrow
+/// system. Each row records: which firm sent it, the enterprise (if any) it
+/// concerns, the event type, the raw payload, and whether the Ed25519
+/// signature verified. Used for:
+///   - Reconciliation (audit trail of every balance assertion + escrow event)
+///   - Forensic reconstruction (re-derive raisedEgp / law-firm-account balance
+///     from the raw event stream)
+///   - Replay protection (the law firm can send a duplicate event ID; we
+///     detect it via reference + receivedAt uniqueness checks at the API layer)
+model LawFirmWebhookEvent {
+  id              String   @id @default(cuid())
+  lawFirmId       String
+  enterpriseId    String?
+  eventType       String   // escrow_received, escrow_released, escrow_refunded, balance_assertion
+  amountEgp       Float?
+  reference       String?
+  rawPayload      String   // JSON
+  signatureValid  Boolean
+  receivedAt      DateTime @default(now())
+
+  lawFirm         LawFirm  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+
+  @@index([lawFirmId])
+  @@index([enterpriseId])
+  @@index([eventType])
+}
+
+// ───────────────────────────────────────────────────────────
+// CIRCUIT BREAKER (Vol 9 §9.7) — Secondary market price halt
+// ───────────────────────────────────────────────────────────
+model CircuitBreakerHalt {
+  id                String   @id @default(cuid())
+  enterpriseId      String
+  level             Int      // 1 = ±8% (15min), 2 = ±12% (30min), 3 = ±20% (24h)
+  triggeredByPrice  Float?
+  referencePrice    Float?
+  deviationPct      Float?
+  reason            String
+  triggeredAt       DateTime @default(now())
+  resumeAt          DateTime
+  isActive          Boolean  @default(true)
+
+  enterprise        Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+
+  @@index([enterpriseId])
+  @@index([isActive])
+}
+
+// ───────────────────────────────────────────────────────────
+// FX RATE ORACLE (Vol 13) — 4-source median consensus
+// ───────────────────────────────────────────────────────────
+model FxRate {
+  id           String   @id @default(cuid())
+  fromCurrency String   // e.g. "USD"
+  toCurrency   String   // e.g. "EGP"
+  rate         Float
+  source       String   // "cbe" | "ecb" | "chainlink" | "binance" | "consensus_median"
+  sourceRef    String?
+  fetchedAt    DateTime @default(now())
+
+  @@index([fromCurrency, toCurrency, fetchedAt])
+  @@index([source])
 }

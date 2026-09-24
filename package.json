@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=2048' next dev --webpack -p 3000 2>&1 | tee dev.log",
+    "dev": "DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db NODE_OPTIONS='--max-old-space-size=2048' next dev --webpack -p 3000 2>&1 | tee dev.log",
     "build": "next build",
     "build:standalone": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",

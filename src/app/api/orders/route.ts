@@ -7,6 +7,7 @@ import {
   enforceKycGate,
   enforceNotFrozen,
   enforcePriceBand,
+  enforceVerificationGate,
 } from "@/lib/aurienta/cre";
 import { orderSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -97,6 +98,44 @@ export async function POST(req: NextRequest) {
         code: "cre_denied",
         policy: kyc.policy,
         decisionToken: kyc.decisionToken,
+      },
+      { status: 400 }
+    );
+  }
+
+  // ── CRE: Verification SLA gate (DE-NEW-3) ──
+  // Trade orders are capital-deployment actions — partners with rejected
+  // verification status cannot trade, and L0/L1 partners cannot trade at all
+  // (the enforceKycGate above covers the level, this gate covers the
+  // status field that tracks the 48h manual-review SLA).
+  const vCheck = enforceVerificationGate({
+    verificationLevel: user.verificationLevel,
+    verificationStatus: user.verificationStatus,
+    action: "trade_order",
+    amountEgp,
+  });
+  if (!vCheck.allowed) {
+    await audit({
+      actorId: user.id,
+      action: "order.create",
+      target: `enterprise:${enterpriseId}`,
+      result: "denied",
+      reason: vCheck.reason,
+      metadata: {
+        policy: vCheck.policy,
+        decisionToken: vCheck.decisionToken,
+        gateCode: vCheck.code,
+        verificationLevel: user.verificationLevel,
+        verificationStatus: user.verificationStatus,
+      },
+    });
+    return NextResponse.json(
+      {
+        error: vCheck.reason ?? "Verification gate denied the order",
+        code: "cre_denied",
+        policy: vCheck.policy,
+        decisionToken: vCheck.decisionToken,
+        gateCode: vCheck.code,
       },
       { status: 400 }
     );

@@ -5,7 +5,7 @@
 # is always available (the .next cache makes subsequent compiles faster).
 
 PROJECT_DIR="/home/z/my-project"
-MAX_RESTARTS=20
+MAX_RESTARTS=100
 RESTART_DELAY=3
 restarts=0
 
@@ -21,8 +21,9 @@ echo "[$(date -Iseconds)] Auto-restart wrapper started"
 while [ $restarts -lt $MAX_RESTARTS ]; do
   echo "[$(date -Iseconds)] Starting dev server (attempt $((restarts + 1))/$MAX_RESTARTS)..."
 
-  # Start dev server in foreground (wrapper blocks until it dies)
-  NODE_OPTIONS="--max-old-space-size=512" bunx next dev --webpack -p 3000 >> dev.log 2>&1
+  # Start dev server in foreground (wrapper blocks until it dies).
+  # `bun run dev` now includes DATABASE_URL explicitly in the script.
+  bun run dev >> dev.log 2>&1
   EXIT_CODE=$?
 
   echo "[$(date -Iseconds)] Dev server exited (code $EXIT_CODE). Restarting in ${RESTART_DELAY}s..."

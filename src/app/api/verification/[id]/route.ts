@@ -308,6 +308,40 @@ export const PATCH = withErrorHandler(
       .catch(() => {});
   }
 
+  // ── DE-NEW-3: mirror the verification outcome onto User.verificationStatus ──
+  // The verification gate (enforceVerificationGate) reads User.verificationStatus
+  // to decide if capital deployment is allowed. On verify → "verified", on
+  // reject → "rejected" with the SLA/document reason. The cron endpoint
+  // /api/cron/verification-sla also flips "in_review" → "rejected" when the
+  // 48h SLA is breached.
+  if (updated.userId) {
+    if (status === "verified") {
+      await db.user
+        .update({
+          where: { id: updated.userId },
+          data: {
+            verificationStatus: "verified",
+            verificationRejectedReason: null,
+            // L3 is the enhanced-KYC level — only attainable via this manual
+            // review path (the sandbox liveness endpoint caps at L2).
+            verificationLevel:
+              user.verificationLevel === "L4" ? "L4" : "L3",
+          },
+        })
+        .catch(() => {});
+    } else if (status === "rejected") {
+      await db.user
+        .update({
+          where: { id: updated.userId },
+          data: {
+            verificationStatus: "rejected",
+            verificationRejectedReason: reviewNote.trim().slice(0, 200) || "document_rejected",
+          },
+        })
+        .catch(() => {});
+    }
+  }
+
   const slaDeadline = new Date(
     updated.submittedAt.getTime() + 48 * 60 * 60 * 1000
   );

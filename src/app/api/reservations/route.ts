@@ -8,6 +8,7 @@ import {
   enforceKycGate,
   enforceNotFrozen,
   enforcePriceBand,
+  enforceVerificationGate,
 } from "@/lib/aurienta/cre";
 import { reservationSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -120,6 +121,43 @@ export async function POST(req: NextRequest) {
         code: "cre_denied",
         policy: kyc.policy,
         decisionToken: kyc.decisionToken,
+      },
+      { status: 400 }
+    );
+  }
+
+  // ── CRE: Verification SLA gate (DE-NEW-3) ──
+  // Reserving Equity Units is a capital-deployment action. Partners whose
+  // verificationStatus is "rejected" (48h SLA breached or document invalid)
+  // cannot reserve; L0/L1 partners cannot reserve either.
+  const vCheck = enforceVerificationGate({
+    verificationLevel: user.verificationLevel,
+    verificationStatus: user.verificationStatus,
+    action: "capital_reservation",
+    amountEgp,
+  });
+  if (!vCheck.allowed) {
+    await audit({
+      actorId: user.id,
+      action: "reservation.create",
+      target: `enterprise:${enterpriseId}`,
+      result: "denied",
+      reason: vCheck.reason,
+      metadata: {
+        policy: vCheck.policy,
+        decisionToken: vCheck.decisionToken,
+        gateCode: vCheck.code,
+        verificationLevel: user.verificationLevel,
+        verificationStatus: user.verificationStatus,
+      },
+    });
+    return NextResponse.json(
+      {
+        error: vCheck.reason ?? "Verification gate denied the reservation",
+        code: "cre_denied",
+        policy: vCheck.policy,
+        decisionToken: vCheck.decisionToken,
+        gateCode: vCheck.code,
       },
       { status: 400 }
     );

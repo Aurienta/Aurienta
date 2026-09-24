@@ -1157,3 +1157,386 @@ export function enforceManagerRemoval(params: {
     code: "ART118_APPROVED",
   };
 }
+
+// ── Verification SLA gate (DE-NEW-3, Blueprint §3 + §12) ──
+//
+// GAFI/NOSI/ETA manual uploads operate on a 48-hour human-review SLA. The
+// previous implementation had NO enforcement: a partner with
+// verificationStatus="pending" or "in_review" could still place orders,
+// reserve Equity Units, and even found enterprises. This CRE policy closes
+// the dead-end.
+//
+// Required levels by action (Blueprint §3.3 Sovereign Identity & Trust):
+//   - capital_reservation : L2 minimum (basic KYC) — partner has done at least
+//     the sandbox liveness + OCR + nationality check. L1 partners cannot
+//     reserve Equity Units until they complete KYC.
+//   - trade_order         : L2 minimum (any secondary-market participation
+//     requires verified identity).
+//   - enterprise_founding : L3 minimum for Tiers A–D; L4 for Tier F.
+//     L2 is rejected — founding a constitutional enterprise requires the
+//     enhanced-KYC manual review (GAFI/NOSI/ETA documents).
+//
+// verificationStatus is also checked. If status is "rejected" the partner
+// is BLOCKED from capital deployment until the underlying issue is resolved.
+// "pending" + "in_review" are tolerated for L2+ observation-only actions but
+// are NOT sufficient for founding / large transactions.
+export type VerificationAction =
+  | "capital_reservation"
+  | "trade_order"
+  | "enterprise_founding";
+
+export function enforceVerificationGate(params: {
+  verificationLevel: string;
+  verificationStatus: string;
+  action: VerificationAction;
+  tier?: string; // for enterprise_founding — A/B/C/D vs F
+  amountEgp?: number; // for transaction-size sanity (informational only)
+}): CreVerdict & { code: string } {
+  const policy = "verification_gate.rego";
+  const payloadHash = hashPayload({
+    lvl: params.verificationLevel,
+    st: params.verificationStatus,
+    act: params.action,
+    tier: params.tier ?? null,
+    amt: params.amountEgp ?? null,
+  });
+
+  // Hard block on rejected verifications — no capital deployment until
+  // the underlying SLA breach or document issue is resolved.
+  if (params.verificationStatus === "rejected") {
+    return {
+      allowed: false,
+      reason:
+        "Verification gate: partner's verification status is 'rejected' — capital deployment blocked until the GAFI/NOSI/ETA manual review issue is resolved (DE-NEW-3).",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+      code: "VERIFICATION_REJECTED",
+    };
+  }
+
+  const order = ["L0", "L1", "L2", "L3", "L4"];
+  const lvlIdx = order.indexOf(params.verificationLevel);
+  const safeLvlIdx = lvlIdx < 0 ? 0 : lvlIdx;
+
+  // Tier-F founding requires L4 institutional verification (Blueprint §3.3).
+  if (params.action === "enterprise_founding" && params.tier === "F") {
+    if (safeLvlIdx < order.indexOf("L4")) {
+      return {
+        allowed: false,
+        reason:
+          "Verification gate: Tier F (Joint Stock) founding requires L4 institutional verification (Blueprint §3.3).",
+        policy,
+        decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+        code: "VERIFICATION_REQUIRED_L4",
+      };
+    }
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+      code: "VERIFICATION_OK",
+    };
+  }
+
+  // Enterprise founding (Tiers A–D) requires L3 enhanced KYC.
+  if (params.action === "enterprise_founding") {
+    if (safeLvlIdx < order.indexOf("L3")) {
+      return {
+        allowed: false,
+        reason:
+          "Verification gate: enterprise founding requires L3 enhanced KYC (GAFI/NOSI/ETA manual review). Complete enhanced verification via /api/verification before founding.",
+        policy,
+        decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+        code: "VERIFICATION_REQUIRED_L3",
+      };
+    }
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+      code: "VERIFICATION_OK",
+    };
+  }
+
+  // Trade orders + capital reservations require L2 minimum.
+  if (params.action === "capital_reservation" || params.action === "trade_order") {
+    if (safeLvlIdx < order.indexOf("L2")) {
+      return {
+        allowed: false,
+        reason:
+          "Verification gate: capital deployment requires L2 basic KYC (liveness + OCR). L0/L1 partners are limited to observation only.",
+        policy,
+        decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+        code: "VERIFICATION_REQUIRED_L2",
+      };
+    }
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+      code: "VERIFICATION_OK",
+    };
+  }
+
+  // Unknown action — fail-secure.
+  return {
+    allowed: false,
+    reason: `Verification gate: unknown action '${params.action}'`,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    code: "VERIFICATION_UNKNOWN_ACTION",
+  };
+}
+
+// ── Cryptographic Succession gate (Blueprint Vol 16 §16.1) ──
+//
+// Mandatory for Founding Operators, Managers, Board Members, and Capital
+// Partners holding >10% of any enterprise. The declarant files a
+// SuccessionDeclaration designating:
+//   - a successor (internal userId OR external beneficiary name + national ID)
+//   - economic beneficiaries with percentage splits summing to 100
+//   - conditions (onDeath, onIncapacitation, thresholdDays — default 90)
+//   - an optional emergency manager (must hold police clearance)
+//
+// The CRE gate `enforceSuccessionGate` is the policy used to:
+//   1. CHECK that a partner who is REQUIRED to have a declaration has one
+//      filed (status = "filed" or "activated"). Blocklist actions until they
+//      file one.
+//   2. CHECK that a partner who has been DECLARED DECEASED / INCAPACITATED
+//      cannot perform any normal operations — the declaration's voting-proxy
+//      activation takes over.
+//
+// Note: in this sandbox, the "deceased / incapacitated" status is NOT set by
+// any automated process — it requires a verified law-firm death certificate
+// (the same manual upload flow as GAFI/NOSI/ETA). The CRE gate is the
+// policy; the trigger is external.
+export type SuccessionGateAction =
+  | "check_filed" // is the user's declaration filed (and not expired)?
+  | "check_active"; // has the user's voting proxy been activated (death/incapacity)?
+
+export function enforceSuccessionGate(params: {
+  userId: string;
+  action: SuccessionGateAction;
+  declaration?: {
+    status: string; // draft, filed, activated, executed
+    votingProxyActive: boolean;
+    votingProxyActivatedAt: Date | null;
+    conditions: { onDeath: boolean; onIncapacitation: boolean; thresholdDays: number };
+  } | null;
+  // For check_active: has the user been declared deceased / incapacitated?
+  // In production this is set by a verified law-firm death certificate
+  // uploaded via /api/verification (verificationType: "death_certificate"
+  // — TODO in a future task). In this sandbox, this is always false unless
+  // an admin manually toggles it.
+  declaredDeceasedOrIncapacitated?: boolean;
+  // Whether the user is REQUIRED to have a succession declaration (Founding
+  // Operator, Manager, Board Member, >10% Capital Partner). If false, the
+  // gate is advisory (warns but allows).
+  required?: boolean;
+}): CreVerdict & { code: string } {
+  const policy = "succession_gate.rego";
+  const payloadHash = hashPayload({
+    uid: params.userId,
+    act: params.action,
+    decl: params.declaration
+      ? {
+          st: params.declaration.status,
+          vpa: params.declaration.votingProxyActive,
+          vpat: params.declaration.votingProxyActivatedAt?.toISOString() ?? null,
+          cond: params.declaration.conditions,
+        }
+      : null,
+    dec: params.declaredDeceasedOrIncapacitated ?? false,
+    req: params.required ?? false,
+  });
+
+  // ── Action: check_active ──
+  // If the user has been declared deceased/incapacitated, BLOCK all normal
+  // operations — the voting proxy + succession executor take over.
+  if (params.action === "check_active") {
+    if (params.declaredDeceasedOrIncapacitated) {
+      // If there's no activated declaration, fail-secure — the partner's
+      // capital is locked until the succession is executed.
+      const hasActivated =
+        params.declaration?.status === "activated" ||
+        params.declaration?.status === "executed";
+      if (!hasActivated) {
+        return {
+          allowed: false,
+          reason:
+            "Succession gate: partner has been declared deceased/incapacitated but no activated succession declaration exists. Capital is locked pending succession execution (Vol 16 §16.1).",
+          policy,
+          decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+          code: "SUCCESSION_NOT_ACTIVATED",
+        };
+      }
+      // Even with an activated declaration, the partner themselves cannot
+      // act — the successor / emergency manager must act on their behalf.
+      return {
+        allowed: false,
+        reason:
+          "Succession gate: partner's voting proxy has been activated. The designated successor / emergency manager must act on the partner's behalf (Vol 16 §16.1).",
+        policy,
+        decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+        code: "SUCCESSION_PROXY_ACTIVE",
+      };
+    }
+    // Not declared deceased/incapacitated → normal operations allowed.
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+      code: "SUCCESSION_OK",
+    };
+  }
+
+  // ── Action: check_filed ──
+  // If the user is REQUIRED to have a declaration (Founding Operator,
+  // Manager, Board Member, >10% Capital Partner), block capital-deployment
+  // actions until one is filed.
+  if (params.action === "check_filed") {
+    const filed =
+      params.declaration &&
+      (params.declaration.status === "filed" ||
+        params.declaration.status === "activated" ||
+        params.declaration.status === "executed");
+
+    if (params.required && !filed) {
+      return {
+        allowed: false,
+        reason:
+          "Succession gate: this partner (Founding Operator / Manager / Board Member / >10% Capital Partner) is constitutionally required to file a Succession Declaration before performing capital-deployment actions (Vol 16 §16.1). File one at /dashboard/succession-declaration.",
+        policy,
+        decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+        code: "SUCCESSION_REQUIRED_NOT_FILED",
+      };
+    }
+    return {
+      allowed: true,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+      code: filed ? "SUCCESSION_FILED" : "SUCCESSION_NOT_REQUIRED",
+    };
+  }
+
+  // Unknown action — fail-secure.
+  return {
+    allowed: false,
+    reason: `Succession gate: unknown action '${params.action}'`,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    code: "SUCCESSION_UNKNOWN_ACTION",
+  };
+}
+
+// ── Priority Windows Enforcement (Vol 9 §9.3) ──
+// Phase 1 (48h pro-rata): founding_operator + board_member only
+// Phase 2 (24h employees): employees/managers
+// Phase 3 (general): everyone
+// The caller CANNOT self-select a phase — the server determines it from the
+// user's role. This prevents priority window bypass.
+export function enforcePriorityWindow(params: {
+  userRole: string;
+  requestedPhase: number;
+}): CreVerdict & { assignedPhase: number } {
+  const policy = "priority_windows.rego";
+  const payloadHash = hashPayload({ role: params.userRole, req: params.requestedPhase });
+
+  // Determine the user's eligible phase based on role
+  let assignedPhase: number;
+  if (params.userRole === "founding_operator" || params.userRole === "board_member") {
+    assignedPhase = 1; // Pro-rata window (highest priority)
+  } else if (
+    params.userRole === "manager" ||
+    params.userRole === "employee" ||
+    params.userRole === "company_owner"
+  ) {
+    assignedPhase = 2; // Employee window
+  } else {
+    assignedPhase = 3; // General public
+  }
+
+  // If the user requested a phase EARLIER than their assigned phase, deny
+  if (params.requestedPhase < assignedPhase) {
+    return {
+      allowed: false,
+      reason: `Priority window violation: user role '${params.userRole}' is assigned to phase ${assignedPhase}, cannot access phase ${params.requestedPhase}`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+      assignedPhase,
+    };
+  }
+
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+    assignedPhase,
+  };
+}
+
+// ── AML Screening Gate (DE-NEW-2) ──
+// When an AML screening result is 'blocked', downstream fund flow must be
+// halted by the CRE. This function checks for active AML blocks.
+export async function enforceScreeningGate(params: {
+  userId: string;
+  enterpriseId?: string;
+  action: string;
+}): Promise<CreVerdict> {
+  const policy = "aml_screening_gate.rego";
+  const payloadHash = hashPayload({ user: params.userId, ent: params.enterpriseId, act: params.action });
+
+  // Check for any blocked screening events for this user
+  const blockedScreenings = await (db as any).screeningEvent.findMany({
+    where: {
+      userId: params.userId,
+      resolution: "blocked",
+    },
+    select: { id: true, screeningType: true, hits: true, createdAt: true },
+  });
+
+  if (blockedScreenings.length > 0) {
+    return {
+      allowed: false,
+      reason: `AML screening block active: ${blockedScreenings.length} blocked screening event(s) on record. Action '${params.action}' is denied until screening is cleared.`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── Circuit Breaker Enforcement (Vol 9 §9.7) ──
+// Wraps the circuit-breaker module as a CRE policy check.
+export async function enforceCircuitBreaker(params: {
+  enterpriseId: string;
+  proposedPrice: number;
+}): Promise<CreVerdict & { haltLevel?: number; resumeAt?: Date }> {
+  const policy = "circuit_breaker.rego";
+  const payloadHash = hashPayload({ ent: params.enterpriseId, price: params.proposedPrice });
+
+  const { checkCircuitBreaker } = await import("./circuit-breaker");
+  const status = await checkCircuitBreaker(params.enterpriseId, params.proposedPrice);
+
+  if (status.halted) {
+    return {
+      allowed: false,
+      reason: status.reason ?? "Circuit breaker active — trading halted",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+      haltLevel: status.level,
+      resumeAt: status.resumeAt,
+    };
+  }
+
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
