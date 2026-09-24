@@ -304,3 +304,53 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   return NextResponse.json({ proposal }, { status: 201 });
 }, "POST /api/proposals");
+
+// GET /api/proposals — list proposals for the current user's enterprises.
+// Optional query: ?enterpriseId=...&status=...&type=...
+export const GET = withErrorHandler(async (req: NextRequest) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const enterpriseId = url.searchParams.get("enterpriseId");
+  const status = url.searchParams.get("status");
+  const type = url.searchParams.get("type");
+  const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "50", 10), 100);
+
+  // Get the user's enterprise IDs
+  const memberEnterpriseIds = user.memberships.map((m) => m.enterpriseId);
+  if (memberEnterpriseIds.length === 0) {
+    return NextResponse.json({ proposals: [], count: 0 });
+  }
+
+  // Build the where clause
+  const where: Record<string, unknown> = {
+    enterpriseId: enterpriseId
+      ? memberEnterpriseIds.includes(enterpriseId)
+        ? enterpriseId
+        : { in: memberEnterpriseIds }
+      : { in: memberEnterpriseIds },
+  };
+  if (status) where.status = status;
+  if (type) where.type = type;
+
+  const proposals = await db.proposal.findMany({
+    where,
+    include: {
+      enterprise: { select: { id: true, name: true, slug: true, tier: true } },
+      votes: {
+        select: { userId: true, choice: true, votingPower: true, createdAt: true },
+      },
+      _count: { select: { votes: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return NextResponse.json({
+    proposals,
+    count: proposals.length,
+  });
+}, "GET /api/proposals");

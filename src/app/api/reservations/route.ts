@@ -360,3 +360,38 @@ export async function POST(req: NextRequest) {
   }
   return NextResponse.json(responseBody, { status });
 }
+
+// GET /api/reservations — list the current user's reservations.
+// Optional query: ?enterpriseId=...&status=...
+import { withErrorHandler } from "@/lib/aurienta/api-handler";
+
+export const GET = withErrorHandler(async (req: NextRequest) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const enterpriseId = url.searchParams.get("enterpriseId");
+  const status = url.searchParams.get("status");
+
+  const where: Record<string, unknown> = { userId: user.id };
+  if (enterpriseId) where.enterpriseId = enterpriseId;
+  if (status) where.status = status;
+
+  const reservations = await (db as any).reservation.findMany({
+    where,
+    include: {
+      enterprise: {
+        select: { id: true, name: true, slug: true, tier: true, equityUnitPriceEgp: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  });
+
+  return NextResponse.json({
+    reservations,
+    count: reservations.length,
+  });
+}, "GET /api/reservations");
