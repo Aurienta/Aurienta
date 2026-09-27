@@ -35,7 +35,7 @@ export function SiteHeader() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled
-          ? "border-b border-gold/10 bg-background/70 backdrop-blur-xl"
+          ? "glass-v2 border-b border-gold/16"
           : "border-b border-transparent bg-transparent"
       )}
     >
@@ -117,7 +117,7 @@ export function SiteHeader() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-xl lg:hidden"
+            className="glass-v2 overflow-hidden border-t border-gold/16 lg:hidden"
           >
             <div className="flex flex-col gap-1 px-5 py-5">
               {NAV.map((item) =>
