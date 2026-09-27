@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Hero } from "@/components/site/sections/hero";
+import { WideStatsBar, BentoFeatures } from "@/components/site/sections/wide-stats-bento";
 import { Constitution } from "@/components/site/sections/constitution";
 import { Pillars } from "@/components/site/sections/pillars";
 import { ProductPreview } from "@/components/site/sections/product-preview";
@@ -26,6 +27,9 @@ export default function Home() {
       <SiteHeader />
       <main id="main-content" className="flex-1">
         <Hero />
+        {/* Premium wide stats bar + bento features grid — new UI upscale */}
+        <WideStatsBar />
+        <BentoFeatures />
         <Constitution />
         <Pillars />
         <ProductPreview />

@@ -118,7 +118,7 @@ export default async function OverviewPage() {
           <span className="ml-auto font-mono text-xs text-muted-foreground/70">{MODULES.length} modules</span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           {MODULES.map((mod) => (
             <ModuleCard key={mod.href} {...mod} />
           ))}
@@ -240,13 +240,15 @@ function ModuleCard({
   return (
     <Link
       href={href}
-      className={`group relative overflow-hidden rounded-2xl border border-gold/12 bg-gradient-to-br ${color} p-5 transition-all duration-300 hover:border-gold/40 hover:shadow-lg hover:shadow-gold/5 sm:p-6`}
+      className={`card-lift group relative overflow-hidden rounded-2xl border border-gold/12 bg-gradient-to-br ${color} p-5 transition-all duration-300 hover:border-gold/40 sm:p-6`}
     >
-      {/* Glow on hover */}
+      {/* Premium glow ring on hover */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gold/[0.03] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      {/* Sheen sweep on hover */}
+      <div className="btn-sheen pointer-events-none absolute inset-0 -z-10" />
 
       <div className="flex items-start justify-between gap-3">
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/20 bg-gold/8 transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/20 bg-gold/8 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 sm:h-12 sm:w-12">
           <Icon className="h-5 w-5 text-gold sm:h-6 sm:w-6" />
         </span>
         <Badge variant="outline" className="shrink-0 border-gold/25 bg-gold/5 text-[11px] uppercase tracking-wider text-gold-light">
@@ -271,7 +273,7 @@ function ModuleCard({
   );
 }
 
-// ── Summary stat card ──
+// ── Summary stat card (premium wide-card style) ──
 function SummaryStat({
   icon: Icon,
   label,
@@ -290,24 +292,22 @@ function SummaryStat({
   const valueColor =
     tone === "positive" ? "text-emerald-400"
     : tone === "negative" ? "text-red-400"
-    : accent ? "text-gold-light"
+    : accent ? "text-gold-gradient"
     : "text-foreground";
   return (
-    <Card className={accent ? "border-gold/25 bg-gold/[0.05] py-4" : "border-gold/12 bg-background/40 py-4"}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md border ${accent ? "border-gold/30 bg-gold/8" : "border-gold/15 bg-gold/5"}`}>
-            <Icon className="h-3.5 w-3.5 text-gold" />
-          </span>
-          <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className={`font-serif text-xl font-semibold sm:text-2xl ${valueColor}`}>{value}</p>
-        {sub && (
-          <p className={`mt-0.5 font-mono text-xs ${tone === "positive" ? "text-emerald-400/80" : tone === "negative" ? "text-red-400/80" : "text-muted-foreground/85"}`}>{sub}</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className={`card-lift group relative overflow-hidden rounded-2xl border p-5 ${accent ? "border-gold/25 bg-gold/[0.05] gold-glow-sm" : "border-gold/12 bg-background/40 glass"}`}>
+      {/* Sheen sweep on hover */}
+      <div className="btn-sheen pointer-events-none absolute inset-0" />
+      <div className="relative z-10 flex items-center gap-2">
+        <span className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-transform duration-300 group-hover:scale-110 ${accent ? "border-gold/30 bg-gold/8" : "border-gold/15 bg-gold/5"}`}>
+          <Icon className="h-4 w-4 text-gold" />
+        </span>
+        <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+      </div>
+      <p className={`relative z-10 mt-3 font-serif text-xl font-semibold sm:text-2xl ${valueColor}`}>{value}</p>
+      {sub && (
+        <p className={`relative z-10 mt-0.5 font-mono text-xs ${tone === "positive" ? "text-emerald-400/80" : tone === "negative" ? "text-red-400/80" : "text-muted-foreground/85"}`}>{sub}</p>
+      )}
+    </div>
   );
 }

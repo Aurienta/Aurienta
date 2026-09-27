@@ -14774,3 +14774,95 @@ Stage Summary:
 Files Modified (2):
 - src/app/api/proposals/route.ts (+GET handler with auth, filters, includes)
 - src/app/api/reservations/route.ts (+GET handler with auth, userId filter, enterprise includes)
+
+---
+Task ID: UI-WIDE-CARD-UPSCALE
+Agent: Orchestrator (COO/CTO/CFO/PM + Creative UI Expert)
+Task: Upscale and upgrade the UI to top-of-line design with wide cards for quick easy use.
+
+Work Log:
+
+PHASE 1 — Assessment
+- Took before screenshots + VLM analysis
+- Current homepage: 9/10 premium feel, 9/10 visual impact — strong foundation
+- Gap: No wide cards, no bento grid layout, no premium quick-action cards
+- Dashboard module cards already good but lacked premium hover effects (card-lift, sheen, glow)
+
+PHASE 2 — Premium Card Component System (NEW: src/components/ui/premium-card.tsx, 368 lines)
+Created 7 reusable premium card components:
+1. WideCard — foundational wide card with gradient border, 3D lift, glass-morphism, 4 variants (default, gold, glass, dark)
+2. BentoCard — bento-grid card with configurable span (1-4 cols) + featured state
+3. StatCard — wide metric card with animated counter + trend indicator + icon
+4. QuickActionCard — wide action card with icon + title + description + arrow + badge + accent colors
+5. BentoGrid — responsive bento grid container (2/3/4 cols)
+6. WideStatBar — horizontal bar of wide stat cards (2x2 mobile, 4-col desktop)
+7. FeatureCard — wide feature card with number + title + description + icon
+8. GlassPanel — frosted glass container with gold accent border (left/top)
+Plus staggerContainer + staggerItem variants for animations.
+
+All components:
+- Use framer-motion for entrance animations (whileInView)
+- Honor prefers-reduced-motion
+- Include card-lift hover effect (3D translateY + gold glow shadow)
+- Include btn-sheen hover effect (luxury light sweep)
+- Support glow prop for gold-glow decorative orb
+- Use the existing design token system (gold, glass, glass-gold, gold-glow)
+
+PHASE 3 — Homepage Upscale (NEW: src/components/site/sections/wide-stats-bento.tsx, 329 lines)
+Created 2 new homepage sections:
+
+1. WideStatsBar — premium horizontal stats bar that sits right below the hero (-mt-16 overlap):
+   - 4 wide stat cards in a single row (2x2 on mobile, 4-col on desktop)
+   - Animated CountUp numbers (capital deployed 280.5M EGP, 5 partners, 4 enterprises, 99.95% CRE uptime)
+   - Each stat has: icon, label, animated value, sub-text, trend badge (emerald with trend icon)
+   - Glass-morphism dark card with gold glow shadow
+   - Divider lines between stats (desktop only)
+
+2. BentoFeatures — bento grid showing 6 constitutional features:
+   - Featured wide card (spans 2 cols): "Zero Custody. Absolute Trust." with Lock icon + 3 mini-stat cards (Escrow 16.78M EGP, 2 Law Firms, 220M Insurance)
+   - Side card: "AI-Enforced Governance" with Cpu icon + live "18 CRE policies active" indicator
+   - Bottom row 3 cards: FRA No-Action (Landmark), Immutable Ledger (ShieldCheck), Fair Pricing (TrendingUp)
+   - Each card has: icon, title, description, hover effects (card-lift + gold glow + sheen)
+
+Wired into homepage: page.tsx now renders <WideStatsBar /> + <BentoFeatures /> immediately after <Hero />.
+
+PHASE 4 — Dashboard Overview Upscale (MODIFIED: src/app/dashboard/page.tsx)
+1. ModuleCard upgraded:
+   - Added `card-lift` class (3D hover lift + gold border + glow shadow)
+   - Added `btn-sheen` overlay (luxury light sweep on hover)
+   - Icon now rotates 3deg on hover (group-hover:rotate-3)
+   - Grid changed from 4 cols to 3 cols on xl (wider cards)
+   
+2. SummaryStat upgraded:
+   - Replaced Card/CardHeader/CardContent with custom premium div
+   - Added `card-lift` + `btn-sheen` + `glass` classes
+   - Accent variant now uses `gold-glow-sm` for premium glow
+   - Icon scales on hover (group-hover:scale-110)
+   - Relative z-10 layering for sheen overlay
+
+Verification:
+- bun run lint → 0 errors, 449 warnings (pre-existing baseline; 0 new warnings)
+- Dev server: HTTP 200, homepage compiles in 10.5s
+- VLM analysis (after upscale):
+  - Homepage hero: 9/10 visual impact, 9/10 premium feel, 8/10 wide-card design
+  - Wide stats bar + bento grid: 9/10 wide-card usability + premium feel
+  - VLM confirms: "Wide format allows for immediate data scanning, while the bento grid breaks down dense information into digestible, scannable chunks"
+
+Files Created (2):
+- src/components/ui/premium-card.tsx (368 lines — 8 premium card components)
+- src/components/site/sections/wide-stats-bento.tsx (329 lines — WideStatsBar + BentoFeatures)
+
+Files Modified (2):
+- src/app/page.tsx (wired WideStatsBar + BentoFeatures after Hero)
+- src/app/dashboard/page.tsx (upgraded ModuleCard + SummaryStat with premium card-lift + sheen + glow; grid 4→3 cols)
+
+Stage Summary:
+**UI UPSCALED TO TOP-OF-LINE WITH WIDE CARDS.**
+- New premium card component system (8 reusable components: WideCard, BentoCard, StatCard, QuickActionCard, BentoGrid, WideStatBar, FeatureCard, GlassPanel)
+- Homepage now has a premium wide stats bar (4 animated metrics) + bento grid (6 feature cards) immediately below the hero
+- Dashboard module cards upgraded with card-lift (3D hover), btn-sheen (luxury sweep), icon rotation, gold glow
+- Dashboard summary stats upgraded with glass-morphism + sheen + glow
+- Grid changed from 4→3 cols for wider, easier-to-use cards
+- VLM: 9/10 visual impact + 9/10 premium feel + 9/10 wide-card usability
+
+The UI is now "top of line" — premium wide cards that are easy to scan, easy to click, and feel luxurious. The bento grid breaks complex information into digestible chunks, and every card has a delightful hover micro-interaction (3D lift + light sweep + gold glow).
