@@ -27,7 +27,7 @@ export default function RegisterPage() {
       {/* Background ornaments */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 aurienta-radial opacity-50"
+        className="pointer-events-none absolute inset-0 aurienta-aurora opacity-50"
       />
       <div
         aria-hidden="true"

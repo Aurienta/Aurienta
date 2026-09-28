@@ -18,7 +18,7 @@ export function FinalCta() {
 
   return (
     <section className="relative overflow-hidden py-28 sm:py-36">
-      <div className="absolute inset-0 -z-10 aurienta-radial" />
+      <div className="absolute inset-0 -z-10 aurienta-aurora" />
       <div className="absolute inset-0 -z-10 aurienta-grid opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
       <div className="mx-auto max-w-4xl px-5 sm:px-8">
         <Reveal>

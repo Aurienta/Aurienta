@@ -26,7 +26,7 @@ export default function Error({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-16 text-center">
-      <div className="pointer-events-none absolute inset-0 aurienta-radial opacity-60" />
+      <div className="pointer-events-none absolute inset-0 aurienta-aurora opacity-60" />
       <div className="relative flex flex-col items-center">
         <AurientaMark className="h-16 w-16" withGlow />
 

@@ -31,14 +31,14 @@ export default function SigninPage() {
 
         {/* Right form panel */}
         <section className="relative flex w-full flex-col items-center justify-center px-5 py-12 sm:px-8 sm:py-16 lg:w-1/2 lg:px-12">
-          {/* Subtle background ornaments */}
+          {/* 2026 backgrounds: aurora + mesh */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 aurienta-radial opacity-60"
+            className="pointer-events-none absolute inset-0 aurienta-aurora opacity-60"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 aurienta-grid opacity-30"
+            className="pointer-events-none absolute inset-0 mesh-gradient opacity-40"
           />
 
           <div className="relative z-10 w-full">

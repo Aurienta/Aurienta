@@ -36,9 +36,10 @@ export function AuthBrandPanel() {
       aria-hidden="true"
       className="relative hidden w-1/2 overflow-hidden bg-[#08080a] lg:flex lg:flex-col"
     >
-      {/* Ornaments */}
-      <div className="absolute inset-0 aurienta-radial" />
-      <div className="absolute inset-0 aurienta-grid opacity-50" />
+      {/* 2026 ornaments: aurora + mesh + grid */}
+      <div className="absolute inset-0 aurienta-aurora" />
+      <div className="absolute inset-0 mesh-gradient opacity-70" />
+      <div className="absolute inset-0 aurienta-grid opacity-40" />
       <div className="aurienta-noise absolute inset-0 opacity-[0.06] mix-blend-soft-light" />
 
       {/* Floating gold orbs */}
