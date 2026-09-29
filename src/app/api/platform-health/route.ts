@@ -78,7 +78,7 @@ export const GET = withErrorHandler(async () => {
 
   // AI model failover status
   try {
-    const aiProviders = ["GEMINI_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY", "HUGGINGFACE_API_KEY", "OPENROUTER_API_KEY", "NVIDIA_API_KEY"];
+    const aiProviders = ["GEMINI_API_KEY", "GROQ_API_KEY", "HUGGINGFACE_API_KEY", "OPENROUTER_API_KEY", "NVIDIA_API_KEY"];
     const configured = aiProviders.filter((k) => process.env[k]).length;
     platforms.aiFailover = {
       status: configured > 0 ? "connected" : "not-configured",
