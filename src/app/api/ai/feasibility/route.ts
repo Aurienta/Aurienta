@@ -435,7 +435,7 @@ async function finalizeReport(report: FeasibilityReport, userId: string) {
         evaluationId: report.evaluationId,
         systemPrompt: "AURIENTA Constitutional Project Evaluation Engine §4.1.1",
         userMessage: "7-stage feasibility pipeline",
-        modelVersion: "zai-constitutional-ai",
+        modelVersion: "gemini-2.5-flash",
         feasibilityScore: report.feasibilityScore,
         passed: report.passed,
       }),

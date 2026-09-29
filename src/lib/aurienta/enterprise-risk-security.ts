@@ -294,7 +294,7 @@ export const ADR_TEMPLATE = {
     "ADR-0002: Prisma + SQLite as database (temporary) | Accepted | Constitutional impact: None | Superseded by ADR-0003 (pending)",
     "ADR-0003: Migration to PostgreSQL (pending) | Proposed | Constitutional impact: None",
     "ADR-0004: Ed25519 via tweetnacl for cryptographic signing | Accepted | Constitutional impact: Implements constitutional Ed25519 requirement",
-    "ADR-0005: 5-provider consensus Brain AI (no ZAI) | Accepted | Constitutional impact: Implements multi-model AI requirement",
+    "ADR-0005: 5-provider consensus Brain AI (no z.ai SDK — 5 native providers) | Accepted | Constitutional impact: Implements multi-model AI requirement",
     "ADR-0006: Amendment IX — direct law firm transfer model | Accepted | Constitutional impact: Amends charter to eliminate escrow",
     "ADR-0007: PDPL-compliant transparency (anonymized public data) | Accepted | Constitutional impact: Implements transparency requirement",
     "ADR-0008: Constitutional terminology standard | Accepted | Constitutional impact: Establishes language governance",

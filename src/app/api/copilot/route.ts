@@ -197,7 +197,7 @@ export async function POST(req: NextRequest) {
         role: "assistant",
         content: reply,
         context: JSON.stringify({
-          model: "z-ai",
+          model: "groq-llama-3.3-70b",
           anchor: CONSTITUTIONAL_HASH.slice(0, 12),
           fellBack: result.fellBack,
         }),

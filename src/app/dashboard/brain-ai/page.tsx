@@ -159,15 +159,15 @@ export default async function BrainAiPage() {
               </thead>
               <tbody>
                 {[
-                  ["Feasibility Engine", "zai → gemini → openai"],
-                  ["Pitch Deck Generator", "zai → gemini → openai"],
-                  ["Copilot (conversational)", "zai → openai → gemini"],
-                  ["Anomaly Narration", "zai → groq → openai"],
-                  ["Fraud Detection", "zai → groq"],
-                  ["Sanity Check", "zai → huggingface → groq"],
-                  ["Notification Triage", "zai → groq → openai"],
-                  ["Multilingual", "zai → openai → gemini"],
-                  ["Advisory (tax/IR)", "zai → gemini → openai"],
+                  ["Feasibility Engine", "gemini → groq → openrouter"],
+                  ["Pitch Deck Generator", "gemini → groq → openrouter"],
+                  ["Copilot (conversational)", "groq → gemini → openrouter"],
+                  ["Anomaly Narration", "groq → gemini"],
+                  ["Fraud Detection", "groq → gemini"],
+                  ["Sanity Check", "huggingface → groq → nvidia"],
+                  ["Notification Triage", "groq → gemini"],
+                  ["Multilingual", "groq → gemini → openrouter"],
+                  ["Advisory (tax/IR)", "gemini → groq → openrouter"],
                 ].map(([task, chain]) => (
                   <tr key={task} className="border-b border-gold/5">
                     <td className="py-2 pr-4 font-sans text-xs text-foreground">{task}</td>
@@ -178,7 +178,7 @@ export default async function BrainAiPage() {
             </table>
           </div>
           <p className="mt-3 font-sans text-[11px] text-muted-foreground">
-            In production (supported regions), the external providers take priority for better quality. In sandbox, z-ai is primary because external APIs are geo-restricted. The router automatically falls back to the next provider on failure.
+            In production (supported regions), the external providers take priority for better quality. In production, all 5 providers are configured with real API keys (Groq, Gemini, OpenRouter, NVIDIA, HuggingFace). The router automatically falls back to the next provider on failure.
           </p>
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-// AURIENTA env validation — ZAI completely removed.
+// AURIENTA env validation — z.ai SDK removed — 5 native providers (Gemini, Groq, HuggingFace, OpenRouter, NVIDIA).
 
 type EnvShape = {
   databaseUrl: string;

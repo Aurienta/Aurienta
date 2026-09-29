@@ -119,7 +119,7 @@ Each slide must be substantive and specific to this enterprise. Reference AURIEN
       payload: JSON.stringify({
         systemPrompt: "AURIENTA AI Pitch Deck Generator",
         userMessage: enterpriseContext.slice(0, 500),
-        modelVersion: "zai-constitutional-ai",
+        modelVersion: "gemini-2.5-flash",
         slideCount: slides.length,
         fellBack: ai.fellBack,
       }),
