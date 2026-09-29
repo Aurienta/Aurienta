@@ -9,6 +9,12 @@ import { Award, GraduationCap } from "lucide-react";
 
 export const metadata = { title: "Alumni Hall · AURIENTA" };
 
+/**
+ * P0 #15 (audit review): This page is INTENTIONALLY PUBLIC — it is a
+ * read-only directory of graduated sovereign enterprises. No PII is exposed.
+ * Only enterprise name, tier, graduation date, and sector are shown.
+ * This is by design (Vol 15 §15.5 — Alumni Hall is public).
+ */
 export default async function AlumniPage() {
   // Public, read-only directory of graduated sovereign enterprises.
   const records = await db.graduationRecord.findMany({

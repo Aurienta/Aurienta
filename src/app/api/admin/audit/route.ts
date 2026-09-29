@@ -164,7 +164,12 @@ export async function GET(req: NextRequest) {
       pageSize,
       total,
       totalPages: Math.max(1, Math.ceil(total / pageSize)),
-      entries: rows,
+      // P0 #14: Redact actor email from audit-log entries (PDPL compliance).
+      // aurienta_rep can see actor legalName + actorId, but NOT email.
+      entries: rows.map((r: any) => ({
+        ...r,
+        actor: r.actor ? { id: r.actor.id, legalName: r.actor.legalName } : null,
+      })),
       summary: {
         totalEntries: total,
         byResult,

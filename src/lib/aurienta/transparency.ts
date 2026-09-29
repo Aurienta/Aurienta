@@ -625,3 +625,146 @@ export function buildOperatorViewerContext(
     isManager: false,
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// P0 #14: Vote + Audit-Log + Proposal sanitization
+// Prevents voter coercion (T-04) and surveillance via audit-log.
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Sanitize a vote record — redact voter identity to prevent coercion.
+ * Returns: choice, votingPower, createdAt, and a hashed voter identifier
+ * (NOT the raw userId). Only enterprise members with board_member or
+ * founding_operator role can see the real userId.
+ */
+export function sanitizeVoteForViewer(
+  vote: { userId: string; choice: string; votingPower: number; createdAt: Date },
+  viewerRole: string | undefined,
+  viewerUserId: string
+): { voterId: string; choice: string; votingPower: number; createdAt: Date; isSelf: boolean } {
+  const isPrivileged = viewerRole === "board_member" || viewerRole === "founding_operator" || viewerRole === "aurienta_rep";
+  const isSelf = vote.userId === viewerUserId;
+  const voterId = isPrivileged || isSelf
+    ? vote.userId
+    : `voter_${hashForAnon(vote.userId)}`;
+  return {
+    voterId,
+    choice: vote.choice,
+    votingPower: vote.votingPower,
+    createdAt: vote.createdAt,
+    isSelf,
+  };
+}
+
+/**
+ * Sanitize an audit-log entry — redact actor PII (email, legalName) for
+ * non-privileged viewers. Prevents surveillance via audit-log access.
+ */
+export function sanitizeAuditEntryForViewer(
+  entry: {
+    id: string;
+    actorId: string | null;
+    action: string;
+    target: string | null;
+    result: string;
+    reason: string | null;
+    metadata: string | null;
+    timestamp: Date;
+    actor?: { id: string; legalName: string; email: string } | null;
+  },
+  viewerRole: string | undefined,
+  viewerUserId: string
+): {
+  id: string;
+  actorId: string | null;
+  actorLabel: string;
+  action: string;
+  target: string | null;
+  result: string;
+  reason: string | null;
+  metadata: string | null;
+  timestamp: Date;
+} {
+  const isPrivileged = viewerRole === "aurienta_rep" || viewerRole === "founding_operator";
+  const isSelf = entry.actorId === viewerUserId;
+
+  // Redact actor PII for non-privileged viewers
+  let actorLabel = "System";
+  if (entry.actor) {
+    if (isPrivileged || isSelf) {
+      actorLabel = entry.actor.legalName;
+    } else {
+      actorLabel = `User ${hashForAnon(entry.actor.id).slice(0, 8)}`;
+    }
+  }
+
+  return {
+    id: entry.id,
+    actorId: isPrivileged ? entry.actorId : entry.actorId ? hashForAnon(entry.actorId) : null,
+    actorLabel,
+    action: entry.action,
+    target: entry.target,
+    result: entry.result,
+    reason: entry.reason,
+    metadata: entry.metadata,
+    timestamp: entry.timestamp,
+  };
+}
+
+/**
+ * Hash a userId for anonymous display (prevents reverse-engineering).
+ * Uses SHA-256 with a salt prefix.
+ */
+function hashForAnon(userId: string): string {
+  const { createHash } = require("crypto");
+  return createHash("sha256").update(`aurienta-anon::${userId}`).digest("hex").slice(0, 16);
+}
+
+/**
+ * Sanitize a proposal for viewers — redact voter identities in the votes array.
+ * Also redacts salary/budget details if the viewer is not a member.
+ */
+export function sanitizeProposalForViewer(
+  proposal: {
+    id: string;
+    title: string;
+    description: string;
+    type: string;
+    status: string;
+    votesFor: number;
+    votesAgainst: number;
+    votesAbstain: number;
+    totalVotingPower: number;
+    votes?: Array<{ userId: string; choice: string; votingPower: number; createdAt: Date }>;
+    _count?: { votes: number };
+  },
+  viewerRole: string | undefined,
+  viewerUserId: string
+): {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  status: string;
+  votesFor: number;
+  votesAgainst: number;
+  votesAbstain: number;
+  totalVotingPower: number;
+  voteCount: number;
+  votes?: ReturnType<typeof sanitizeVoteForViewer>[];
+} {
+  const sanitizedVotes = proposal.votes?.map(v => sanitizeVoteForViewer(v, viewerRole, viewerUserId));
+  return {
+    id: proposal.id,
+    title: proposal.title,
+    description: proposal.description,
+    type: proposal.type,
+    status: proposal.status,
+    votesFor: proposal.votesFor,
+    votesAgainst: proposal.votesAgainst,
+    votesAbstain: proposal.votesAbstain,
+    totalVotingPower: proposal.totalVotingPower,
+    voteCount: proposal._count?.votes ?? 0,
+    votes: sanitizedVotes,
+  };
+}

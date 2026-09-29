@@ -349,8 +349,20 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
     take: limit,
   });
 
+  // P0 #14: Sanitize voter identities to prevent coercion (T-04).
+  // The viewer's role + userId determines what they can see.
+  const viewerMembership = user.memberships.find((m: any) =>
+    enterpriseId ? m.enterpriseId === enterpriseId : true
+  );
+  const viewerRole = viewerMembership?.role;
+
+  const { sanitizeProposalForViewer } = await import("@/lib/aurienta/transparency");
+  const sanitizedProposals = proposals.map((p: any) =>
+    sanitizeProposalForViewer(p, viewerRole, user.id)
+  );
+
   return NextResponse.json({
-    proposals,
-    count: proposals.length,
+    proposals: sanitizedProposals,
+    count: sanitizedProposals.length,
   });
 }, "GET /api/proposals");
