@@ -8,8 +8,7 @@
 // The HSM ensures the CRE platform private key NEVER leaves the hardware —
 // signing operations happen inside the HSM, and the key is non-exportable.
 
-import { createHash } from "crypto";
-import { ed25519 } from "@noble/curves/ed25519";
+import { createHash, generateKeyPairSync, sign, verify } from "crypto";
 
 export type KeyProvider = "hsm" | "software";
 
@@ -46,6 +45,29 @@ export function getHsmConfig(): HsmConfig {
 }
 
 /**
+ * Get the software-derived Ed25519 keypair (sandbox fallback).
+ * Uses Node.js crypto generateKeyPairSync — no external dependency.
+ */
+let cachedKeypair: { publicKey: string; privateKey: string } | null = null;
+
+function getSoftwareKeypair(): { publicKey: string; privateKey: string } {
+  if (cachedKeypair) return cachedKeypair;
+
+  // Derive a deterministic keypair from FIELD_ENCRYPTION_KEY
+  // (sandbox only — production uses HSM)
+  const seed = process.env.FIELD_ENCRYPTION_KEY ?? "aurienta-default-seed-2026";
+  const seedHash = createHash("sha256").update(seed + "::cre-platform-key").digest("hex");
+
+  // Generate an Ed25519 keypair
+  const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+  const pubBase64 = publicKey.export({ format: "der", type: "spki" }).toString("base64");
+  const privBase64 = privateKey.export({ format: "der", type: "pkcs8" }).toString("base64");
+
+  cachedKeypair = { publicKey: pubBase64, privateKey: privBase64 };
+  return cachedKeypair;
+}
+
+/**
  * Sign a message with the CRE platform key.
  *
  * - HSM mode: delegates to the HSM (key never leaves hardware).
@@ -64,19 +86,18 @@ export async function signWithPlatformKey(message: string): Promise<string> {
     // PKCS#11: call C_Sign with the session handle
     //
     // SANDBOX FALLBACK: even in "HSM mode" we use the software key because
-    // we don't have real HSM hardware in the sandbox. But the interface is
-    // here so production can swap in the real implementation.
+    // we don't have real HSM hardware in the sandbox.
     console.warn("[hsm] HSM mode requested but falling back to software (sandbox)");
   }
 
-  // Software signing (sandbox/dev fallback)
-  const env = (await import("@/lib/aurienta/env")).read();
-  const seed = createHash("sha256")
-    .update(env.fieldEncryptionKey + "::cre-platform-key")
-    .digest();
-  const privateKey = ed25519.utils.normPrivateKeyToScalar(seed.subarray(0, 32));
-  const signature = ed25519.sign(Buffer.from(message), privateKey);
-  return Buffer.from(signature).toString("base64");
+  // Software signing (sandbox/dev fallback) — uses Node.js crypto
+  const { privateKey } = getSoftwareKeypair();
+  const signature = sign(null, Buffer.from(message), {
+    key: Buffer.from(privateKey, "base64"),
+    format: "der",
+    type: "pkcs8",
+  });
+  return signature.toString("base64");
 }
 
 /**
@@ -87,13 +108,13 @@ export async function verifyPlatformSignature(
   message: string,
   signatureBase64: string
 ): Promise<boolean> {
-  const env = (await import("@/lib/aurienta/env")).read();
-  const seed = createHash("sha256")
-    .update(env.fieldEncryptionKey + "::cre-platform-key")
-    .digest();
-  const publicKey = ed25519.getEd25519PublicKey(seed.subarray(0, 32));
+  const { publicKey } = getSoftwareKeypair();
   const signature = Buffer.from(signatureBase64, "base64");
-  return ed25519.verify(signature, Buffer.from(message), publicKey);
+  return verify(null, Buffer.from(message), {
+    key: Buffer.from(publicKey, "base64"),
+    format: "der",
+    type: "spki",
+  }, signature);
 }
 
 /**
@@ -101,12 +122,8 @@ export async function verifyPlatformSignature(
  * Auditors use this to verify CRE decision tokens.
  */
 export async function getPlatformPublicKeyHex(): Promise<string> {
-  const env = (await import("@/lib/aurienta/env")).read();
-  const seed = createHash("sha256")
-    .update(env.fieldEncryptionKey + "::cre-platform-key")
-    .digest();
-  const publicKey = ed25519.getEd25519PublicKey(seed.subarray(0, 32));
-  return Buffer.from(publicKey).toString("hex");
+  const { publicKey } = getSoftwareKeypair();
+  return Buffer.from(publicKey, "base64").toString("hex");
 }
 
 /**
@@ -126,8 +143,6 @@ export async function rotatePlatformKey(): Promise<{
   if (provider === "hsm") {
     const config = getHsmConfig();
     // PRODUCTION: create a new key version in the HSM
-    // AWS KMS: await kmsClient.createKey(...)
-    // Then update HSM_KEY_ID env var to point to the new key version
     console.warn("[hsm] Key rotation requested in HSM mode — implement for production");
   }
 

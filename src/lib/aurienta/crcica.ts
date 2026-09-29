@@ -129,9 +129,9 @@ export async function advanceCrcicaCase(caseId: string): Promise<CrcicaCase> {
   const caseEvents = await db.auditLog.findMany({
     where: {
       action: "crcica.arbitration_filed",
-      metadata: { path: ["caseId"], string_equals: caseId },
+      metadata: { contains: caseId } as any,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { timestamp: "desc" },
     take: 1,
   });
 
@@ -162,7 +162,7 @@ export async function advanceCrcicaCase(caseId: string): Promise<CrcicaCase> {
     claimAmountEgp: 0,
     subjectMatter: "",
     status: nextStatus,
-    filedAt: caseEvents[0]!.createdAt,
+    filedAt: caseEvents[0]!.timestamp,
   };
 }
 

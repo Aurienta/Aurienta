@@ -1,7 +1,7 @@
 // AURIENTA — Law Firm Webhook Signature Verification (Vol 5 §5.2)
 // Verifies Ed25519 signatures on incoming law firm escrow webhooks.
 
-import { createPublicKey, createVerify, generateKeyPairSync } from "crypto";
+import { createPublicKey, createVerify, generateKeyPairSync, verify as cryptoVerify, type KeyObject } from "crypto";
 
 /**
  * Verify an Ed25519 signature on a webhook payload.
@@ -24,15 +24,8 @@ export function verifyWebhookSignature(
       return false;
     }
 
-    // Create a KeyObject from the raw public key bytes
-    const publicKey = createPublicKey({
-      key: keyBytes,
-      format: "der",
-      type: "spki",
-    }).export({ format: "der", type: "spki" });
-
-    // Re-create the public key object properly for Ed25519
-    const pubKeyObj = createPublicKey({
+    // Create a KeyObject from the raw public key bytes (Ed25519 SPKI format)
+    const pubKeyObj: KeyObject = createPublicKey({
       key: Buffer.concat([
         // SPKI header for Ed25519 public key (OID 1.3.101.112)
         Buffer.from("302a300506032b6570032100", "hex"),
@@ -42,10 +35,11 @@ export function verifyWebhookSignature(
       type: "spki",
     });
 
+    const payloadBuffer = typeof payload === "string" ? Buffer.from(payload) : payload;
     const sigBytes = Buffer.from(signature, "base64");
-    const verifier = createVerify(null);
-    verifier.update(typeof payload === "string" ? Buffer.from(payload) : payload);
-    return verifier.verify(pubKeyObj, sigBytes, null);
+
+    // Use the one-shot crypto.verify for Ed25519 (algorithm = null means use key's default)
+    return cryptoVerify(null, payloadBuffer, pubKeyObj, sigBytes);
   } catch (e) {
     console.error("[law-firm-webhook] Signature verification failed:", e);
     return false;

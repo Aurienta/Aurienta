@@ -178,7 +178,7 @@ export const POST = withErrorHandler(
             // We do this ONCE per enterprise (not per EconomicBeneficiary)
             // to avoid creating duplicate rows.
             const alreadyCreated = beneficiaries.some(
-              (b) => b.name === declaration.beneficiaryName ?? ""
+              (b) => b.name === (declaration?.beneficiaryName ?? "")
             );
             if (alreadyCreated) continue;
 

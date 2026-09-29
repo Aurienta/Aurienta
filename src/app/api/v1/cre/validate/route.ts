@@ -109,13 +109,17 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       break;
 
     case "verification_gate":
-      if (!params.userId || !params.action) {
+      if (!params.verificationLevel || !params.verificationStatus) {
         return NextResponse.json(
-          { error: "Missing params: userId, action" },
+          { error: "Missing params: verificationLevel, verificationStatus" },
           { status: 400 }
         );
       }
-      verdict = await cre.enforceVerificationGate({ userId: params.userId, action: params.action });
+      verdict = cre.enforceVerificationGate({
+        verificationLevel: params.verificationLevel,
+        verificationStatus: params.verificationStatus,
+        action: params.action,
+      });
       break;
 
     case "manager_removal":

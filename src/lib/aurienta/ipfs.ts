@@ -110,7 +110,7 @@ export async function verifyPin(cid: string): Promise<{
   cid: string;
   pinned: boolean;
   retrievable: boolean;
-  gateway: string;
+  gateway: string | null;
 }> {
   const isValidCid = cid.startsWith("bafyrei") && cid.length >= 50;
   return {

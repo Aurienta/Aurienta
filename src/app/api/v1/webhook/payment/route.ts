@@ -81,7 +81,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       eventType,
       amountEgp: amountEgp ?? null,
       reference: reference ?? null,
-      rawPayload,
+      rawPayload: rawBody,
       signatureValid: true,
     },
   });

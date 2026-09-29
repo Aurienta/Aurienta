@@ -31,8 +31,9 @@ export async function getInngest() {
   if (!key) return null;
 
   try {
-    // Dynamic import to avoid hard dependency in sandbox
-    const inngestModule = await import("inngest");
+    // Dynamic require via eval to avoid TypeScript module resolution
+    // (inngest SDK may not be installed in sandbox)
+    const inngestModule: any = (0, eval)("require")("inngest");
     const Inngest = inngestModule.Inngest;
     inngestClient = new Inngest({
       id: "aurienta-constitutional",

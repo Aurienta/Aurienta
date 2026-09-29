@@ -28,7 +28,7 @@ export default async function SuccessionDeclarationPage() {
   const initial: SuccessionDeclarationClientProps["declaration"] = declaration
     ? {
         id: declaration.id,
-        status: declaration.status,
+        status: declaration.status as "executed" | "draft" | "activated" | "filed",
         beneficiaryUserId: declaration.beneficiaryUserId,
         beneficiaryName: declaration.beneficiaryName,
         hasBeneficiaryNationalId: !!declaration.beneficiaryNationalId,

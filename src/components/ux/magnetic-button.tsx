@@ -30,6 +30,8 @@ export function MagneticButton({
   className?: string;
   strength?: number; // 0 = none, 1 = follow cursor 1:1
   as?: React.ElementType;
+  href?: string;
+  [key: string]: unknown;
 } & React.HTMLAttributes<HTMLElement>) {
   const ref = React.useRef<HTMLElement>(null);
   const [offset, setOffset] = React.useState({ x: 0, y: 0 });

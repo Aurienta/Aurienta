@@ -23,13 +23,13 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     window.addEventListener("popstate", onUpdate);
     const origPush = history.pushState;
     const origReplace = history.replaceState;
-    history.pushState = function patchedPush(...args) {
-      const r = origPush.apply(this, args);
+    history.pushState = function patchedPush(this: any, data: any, unused: string, url?: string | URL | null) {
+      const r = origPush.call(this, data, unused, url);
       onUpdate();
       return r;
     } as typeof history.pushState;
-    history.replaceState = function patchedReplace(...args) {
-      const r = origReplace.apply(this, args);
+    history.replaceState = function patchedReplace(this: any, data: any, unused: string, url?: string | URL | null) {
+      const r = origReplace.call(this, data, unused, url);
       onUpdate();
       return r;
     } as typeof history.replaceState;

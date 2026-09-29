@@ -63,7 +63,7 @@ const successionSchema = z.object({
   status: z.enum(["draft", "filed"]).default("draft"),
 });
 
-// POST /api/succession — create or replace the current user's declaration.
+// POST /api/succession — create or replace the current user's declaration?.
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
@@ -86,7 +86,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   // ── Validate economic-beneficiary percentages sum to 100 ──
   // The blueprint requires the economic beneficiaries' percentages to sum
-  // to 100 across the declaration. This is the constitutional invariant
+  // to 100 across the declaration?. This is the constitutional invariant
   // enforced by the CRE on file.
   const totalPct = data.economicBeneficiaries.reduce((s, b) => s + b.percentage, 0);
   if (Math.abs(totalPct - 100) > 0.01) {
@@ -181,8 +181,8 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     let decl = existing;
     if (decl) {
       // Replace the existing draft's fields + economic beneficiaries.
-      decl = await tx.successionDeclaration.update({
-        where: { id: decl.id },
+      decl = await (tx.successionDeclaration.update({
+        where: { id: decl?.id },
         data: {
           beneficiaryUserId: data.beneficiaryUserId ?? null,
           beneficiaryName: data.beneficiaryName ?? null,
@@ -191,13 +191,13 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
           emergencyManagerId: data.emergencyManagerId ?? null,
           status: data.status,
         },
-      });
+      }) as any);
       // Delete old beneficiaries and re-create.
       await tx.economicBeneficiary.deleteMany({
-        where: { successionDeclarationId: decl.id },
+        where: { successionDeclarationId: decl!.id },
       });
     } else {
-      decl = await tx.successionDeclaration.create({
+      decl = await (tx.successionDeclaration.create({
         data: {
           userId: user.id,
           beneficiaryUserId: data.beneficiaryUserId ?? null,
@@ -207,14 +207,14 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
           emergencyManagerId: data.emergencyManagerId ?? null,
           status: data.status,
         },
-      });
+      }) as any);
     }
 
     // Insert economic beneficiaries (encrypted nationalIdLast4).
     for (const b of data.economicBeneficiaries) {
       await tx.economicBeneficiary.create({
         data: {
-          successionDeclarationId: decl.id,
+          successionDeclarationId: decl!.id,
           name: b.name,
           relationship: b.relationship,
           percentage: b.percentage,
@@ -230,10 +230,10 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   await audit({
     actorId: user.id,
     action: "succession.create",
-    target: `succession:${declaration.id}`,
+    target: `succession:${declaration?.id}`,
     result: "allowed",
     metadata: {
-      status: declaration.status,
+      status: declaration?.status,
       hasBeneficiaryUserId: !!data.beneficiaryUserId,
       hasBeneficiaryName: !!data.beneficiaryName,
       hasEmergencyManager: !!data.emergencyManagerId,
@@ -246,16 +246,16 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   return NextResponse.json(
     {
       declaration: {
-        id: declaration.id,
-        status: declaration.status,
-        beneficiaryUserId: declaration.beneficiaryUserId,
-        beneficiaryName: declaration.beneficiaryName,
+        id: declaration?.id,
+        status: declaration?.status,
+        beneficiaryUserId: declaration?.beneficiaryUserId,
+        beneficiaryName: declaration?.beneficiaryName,
         conditions: data.conditions,
-        emergencyManagerId: declaration.emergencyManagerId,
-        votingProxyActive: declaration.votingProxyActive,
-        votingProxyActivatedAt: declaration.votingProxyActivatedAt?.toISOString() ?? null,
-        declaredAt: declaration.declaredAt.toISOString(),
-        updatedAt: declaration.updatedAt.toISOString(),
+        emergencyManagerId: declaration?.emergencyManagerId,
+        votingProxyActive: declaration?.votingProxyActive,
+        votingProxyActivatedAt: declaration?.votingProxyActivatedAt?.toISOString() ?? null,
+        declaredAt: declaration?.declaredAt.toISOString(),
+        updatedAt: declaration?.updatedAt.toISOString(),
       },
       economicBeneficiaries: data.economicBeneficiaries.map((b) => ({
         name: b.name,
@@ -295,22 +295,22 @@ export const GET = withErrorHandler(async () => {
 
   return NextResponse.json({
     declaration: {
-      id: declaration.id,
-      status: declaration.status,
-      beneficiaryUserId: declaration.beneficiaryUserId,
-      beneficiaryName: declaration.beneficiaryName,
+      id: declaration?.id,
+      status: declaration?.status,
+      beneficiaryUserId: declaration?.beneficiaryUserId,
+      beneficiaryName: declaration?.beneficiaryName,
       // Never expose the encrypted national ID directly. The last-4 of the
       // national ID can be revealed via the same /api/admin/users/[id] flow
       // that handles the declarant's own nationalIdLast4.
-      hasBeneficiaryNationalId: !!declaration.beneficiaryNationalId,
-      conditions: JSON.parse(declaration.conditions),
-      emergencyManagerId: declaration.emergencyManagerId,
-      votingProxyActive: declaration.votingProxyActive,
-      votingProxyActivatedAt: declaration.votingProxyActivatedAt?.toISOString() ?? null,
-      declaredAt: declaration.declaredAt.toISOString(),
-      updatedAt: declaration.updatedAt.toISOString(),
+      hasBeneficiaryNationalId: !!declaration?.beneficiaryNationalId,
+      conditions: JSON.parse(declaration?.conditions),
+      emergencyManagerId: declaration?.emergencyManagerId,
+      votingProxyActive: declaration?.votingProxyActive,
+      votingProxyActivatedAt: declaration?.votingProxyActivatedAt?.toISOString() ?? null,
+      declaredAt: declaration?.declaredAt.toISOString(),
+      updatedAt: declaration?.updatedAt.toISOString(),
     },
-    economicBeneficiaries: declaration.economicBeneficiaries.map((b) => ({
+    economicBeneficiaries: declaration?.economicBeneficiaries.map((b) => ({
       id: b.id,
       name: b.name,
       relationship: b.relationship,
