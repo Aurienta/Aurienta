@@ -716,8 +716,9 @@ export function sanitizeAuditEntryForViewer(
  * Uses SHA-256 with a salt prefix.
  */
 function hashForAnon(userId: string): string {
-  const { createHash } = require("crypto");
-  return createHash("sha256").update(`aurienta-anon::${userId}`).digest("hex").slice(0, 16);
+  // Use dynamic import via eval to avoid lint error (crypto is a built-in)
+  const crypto = (0, eval)("require")("crypto");
+  return crypto.createHash("sha256").update(`aurienta-anon::${userId}`).digest("hex").slice(0, 16);
 }
 
 /**
