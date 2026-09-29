@@ -1,26 +1,19 @@
 import path from "node:path";
 import { defineConfig } from "@prisma/config";
 
-// Prisma 7 config — connection URLs live here (not in schema.prisma).
+// Prisma 7 config — the datasource URL is used by the CLI for `prisma db push`.
+// The runtime PrismaClient in src/lib/db.ts uses @prisma/adapter-libsql.
 //
-// NOTE: In Prisma 7, the driver adapter is passed to the PrismaClient constructor
-// at RUNTIME (see src/lib/db.ts), NOT in this config file. The Prisma 7 CLI
-// (db push / migrate) does not accept an adapter field in this config — only
-// `path`, `initShadowDb`, and `seed` are valid under `migrations`.
+// In development: uses the local SQLite file for fast iteration.
+// In production (Vercel): uses the Turso libsql:// URL from DATABASE_URL env var.
 //
-// For schema changes against Turso, use the libSQL client directly (see the
-// apply-schema script pattern), or run `prisma migrate diff --script` to
-// generate SQL and execute it via @libsql/client.
-//
-// `datasource.url` is required by the CLI for provider detection. A file: URL
-// satisfies the SQLite provider check. The runtime PrismaClient in db.ts uses
-// the @prisma/adapter-libsql to connect to Turso (libsql://) directly.
+// To push schema to Turso: set DATABASE_URL=libsql://... && bun run db:push
 export default defineConfig({
   schema: path.join("prisma", "schema.prisma"),
   migrations: {
     path: path.join("prisma", "migrations"),
   },
   datasource: {
-    url: "file:./prisma/.provider-placeholder.db",
+    url: process.env.DATABASE_URL ?? "file:./prisma/.provider-placeholder.db",
   },
 });
