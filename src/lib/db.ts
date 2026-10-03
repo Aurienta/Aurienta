@@ -3,34 +3,47 @@ import { PrismaLibSql } from '@prisma/adapter-libsql'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
+  prismaFallback: boolean | undefined
 }
 
 function createPrismaClient(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL ?? ''
 
-  // Prisma 7 requires a driver adapter for ALL databases (including local
-  // SQLite). The @prisma/adapter-libsql adapter works with both:
-  //   - libsql://...  (remote Turso — authToken required)
-  //   - https://...   (remote Turso over HTTPS — authToken required)
-  //   - file:...      (local SQLite — no authToken needed)
-  // We always use the adapter now; for local file: URLs the authToken is
-  // omitted.
+  // ── Remote Turso (libsql:// or https://) ──
   if (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http')) {
     const authToken = process.env.TURSO_AUTH_TOKEN ?? ''
-    const adapter = new PrismaLibSql({ url: databaseUrl, authToken })
+    try {
+      const adapter = new PrismaLibSql({ url: databaseUrl, authToken })
+      return new PrismaClient({
+        adapter,
+        log: ['error', 'warn'],
+      })
+    } catch (e) {
+      console.error('[db] Turso adapter creation failed, falling back to local:', e)
+      // Fall through to local file
+    }
+  }
+
+  // ── Local SQLite (file: URL) ──
+  // Prisma 7 requires a driver adapter even for local files.
+  // For Vercel production (where no local file exists), this will fail
+  // gracefully — the app renders but DB queries return errors.
+  const localUrl = databaseUrl.startsWith('file:')
+    ? databaseUrl
+    : 'file:./prisma/.provider-placeholder.db'
+
+  try {
+    const adapter = new PrismaLibSql({ url: localUrl })
     return new PrismaClient({
       adapter,
       log: ['error', 'warn'],
     })
+  } catch (e) {
+    console.error('[db] Local adapter creation failed:', e)
+    // Last resort: create a client without adapter (may not work in Prisma 7
+    // but at least doesn't crash the module load)
+    return new PrismaClient({ log: ['error', 'warn'] }) as PrismaClient
   }
-
-  // Local SQLite (file: URL). Prisma 7 requires a driver adapter even for
-  // local files — use PrismaLibSql without an authToken.
-  const adapter = new PrismaLibSql({ url: databaseUrl })
-  return new PrismaClient({
-    adapter,
-    log: ['error', 'warn'],
-  })
 }
 
 // Lazy Prisma client — only created on first access, not at module load.
