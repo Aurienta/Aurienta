@@ -146,7 +146,7 @@ export async function checkAllPlatforms(): Promise<{
   // 4. Vercel (host)
   platforms.push({
     platform: "vercel",
-    status: process.env.NEXT_PUBLIC_VERCEL_URL ? "connected" : "local-dev",
+    status: process.env.NEXT_PUBLIC_VERCEL_URL ? "connected" : "degraded",
     latencyMs: 0,
     detail: process.env.NEXT_PUBLIC_VERCEL_URL ?? "localhost",
   });
@@ -160,7 +160,7 @@ export async function checkAllPlatforms(): Promise<{
   });
 
   const anyDown = platforms.some((p) => p.status === "down");
-  const anyDegraded = platforms.some((p) => p.status === "degraded" || p.status === "local-dev");
+  const anyDegraded = platforms.some((p) => p.status === "degraded");
 
   return {
     overall: anyDown ? "degraded" : anyDegraded ? "operational" : "operational",
