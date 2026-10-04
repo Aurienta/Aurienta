@@ -44,6 +44,7 @@ import {
 } from "@/lib/aurienta/nav-config";
 import { CommandPalette } from "@/components/dashboard/ux/command-palette";
 import { Breadcrumbs, EnterpriseSwitcher, OnboardingTour, HelpButton, QuickActions } from "@/components/dashboard/ux/enhancements";
+import { FirstTimeUserExperience } from "@/components/dashboard/ux/first-time-user-experience";
 import { RoleContextBar } from "@/components/dashboard/role-context-bar";
 import { RoleSwitcher } from "@/components/dashboard/role-switcher";
 import {
@@ -517,6 +518,9 @@ export function DashboardShell({
 
       {/* I4: Onboarding Tour */}
       {showOnboarding && <OnboardingTour onClose={handleOnboardingClose} />}
+
+      {/* FTUE: First-Time User Experience (new users) */}
+      <FirstTimeUserExperience />
 
       {/* I4: Help Button */}
       <HelpButton onOpenTour={() => setShowOnboarding(true)} />

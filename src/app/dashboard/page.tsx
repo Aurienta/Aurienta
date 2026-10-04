@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { OverviewHero } from "@/components/dashboard/overview-hero";
 import { TaskList } from "@/components/dashboard/task-list";
+import { QuickStartCards, StarterBanner } from "@/components/dashboard/ux/empty-states";
 import { LiveLedgerTicker } from "@/components/dashboard/live-ticker";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -95,6 +96,19 @@ export default async function OverviewPage() {
     <div className="flex flex-col gap-6 sm:gap-8">
       {/* Welcome hero */}
       <OverviewHero user={user} portfolioValue={portfolioValue} />
+
+      {/* Starter banner for new users (STS < 70) */}
+      <StarterBanner stsScore={user.sovereignTrustScore} />
+
+      {/* Quick start cards — easy for first-time users */}
+      <section aria-label="Quick start">
+        <div className="mb-3 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-gold" />
+          <h2 className="font-serif text-base font-semibold">Quick Start</h2>
+          <span className="font-sans text-xs text-muted-foreground/70">New here? Start with these</span>
+        </div>
+        <QuickStartCards />
+      </section>
 
       {/* Summary stats */}
       <section aria-label="Portfolio summary" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
