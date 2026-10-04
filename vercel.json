@@ -8,6 +8,35 @@
     {
       "path": "/api/cron/reservation-expiry",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/stage-transition",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/health-rating",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/verification-sla",
+      "schedule": "15 4 * * *"
+    },
+    {
+      "path": "/api/cron/crcica-arbitration",
+      "schedule": "0 5 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/ai/**/*.ts": {
+      "maxDuration": 120,
+      "memory": 1024
+    }
+  },
+  "regions": ["iad1"],
+  "github": {
+    "silent": false
+  }
 }
