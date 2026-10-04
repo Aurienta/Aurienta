@@ -21,6 +21,9 @@ echo "[$(date -Iseconds)] Auto-restart wrapper started"
 while [ $restarts -lt $MAX_RESTARTS ]; do
   echo "[$(date -Iseconds)] Starting dev server (attempt $((restarts + 1))/$MAX_RESTARTS)..."
 
+  # Run env-guardian to ensure .env is correct + DB has users before starting.
+  bash "$PROJECT_DIR/scripts/env-guardian.sh" 2>&1 || true
+
   # Start dev server in foreground (wrapper blocks until it dies).
   # `bun run dev` now includes DATABASE_URL explicitly in the script.
   bun run dev >> dev.log 2>&1
