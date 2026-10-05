@@ -4,24 +4,24 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { UserPlus, FileText, Wallet, Hammer, TrendingUp, Crown, type LucideIcon } from "lucide-react";
 
-const STEPS: { icon: LucideIcon; title: string; desc: string; color: string }[] = [
-  { icon: UserPlus, title: "Register", desc: "Create your constitutional identity with Ed25519 anchor", color: "bg-indigo-500" },
-  { icon: FileText, title: "Structure", desc: "Constitute your enterprise with CRE-validated rules", color: "bg-violet-500" },
-  { icon: Wallet, title: "Fund", desc: "Raise capital via law firm escrow — zero custody", color: "bg-purple-500" },
-  { icon: Hammer, title: "Build", desc: "Execute milestones with AI-enforced governance", color: "bg-blue-500" },
-  { icon: TrendingUp, title: "Grow", desc: "Scale operations with constitutional protection", color: "bg-cyan-500" },
-  { icon: Crown, title: "Own", desc: "Graduate into sovereign independence", color: "bg-teal-500" },
+const STEPS: { icon: LucideIcon; title: string; desc: string; bg: string }[] = [
+  { icon: UserPlus, title: "Register", desc: "Create your constitutional identity with Ed25519 anchor", bg: "bg-[#4F46E5]" },
+  { icon: FileText, title: "Structure", desc: "Constitute your enterprise with CRE-validated rules", bg: "bg-[#7C3AED]" },
+  { icon: Wallet, title: "Fund", desc: "Raise capital via law firm escrow — zero custody", bg: "bg-[#9333EA]" },
+  { icon: Hammer, title: "Build", desc: "Execute milestones with AI-enforced governance", bg: "bg-[#2563EB]" },
+  { icon: TrendingUp, title: "Grow", desc: "Scale operations with constitutional protection", bg: "bg-[#0891B2]" },
+  { icon: Crown, title: "Own", desc: "Graduate into sovereign independence", bg: "bg-[#0D9488]" },
 ];
 
 export function ProcessLifecycle() {
   return (
-    <section className="bg-gradient-to-b from-white to-slate-50 py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section className="bg-gradient-to-b from-white to-[#F8FAFC] py-[100px] sm:py-[120px]">
+      <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
         <div className="mb-12 text-center">
-          <p className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-indigo-500">
+          <p className="font-sans text-[12px] font-bold uppercase tracking-[0.2em] text-[#4F46E5]">
             The AURIENTA Process
           </p>
-          <h2 className="mt-2 font-sans text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h2 className="mt-2 font-sans text-[32px] font-bold text-[#1E293B] sm:text-[40px]">
             From Capital to Ownership — In Six Steps
           </h2>
         </div>
@@ -34,21 +34,21 @@ export function ProcessLifecycle() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.12, duration: 0.5 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="flex w-[15%] flex-col items-center text-center"
               >
-                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${step.color} shadow-lg`}>
-                  <step.icon className="h-7 w-7 text-white" />
+                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${step.bg} shadow-lg shadow-slate-200/50`}>
+                  <step.icon className="h-6 w-6 text-white" />
                 </div>
-                <p className="mt-1 font-sans text-xs font-bold text-slate-400">0{i + 1}</p>
-                <h3 className="mt-1 font-sans text-sm font-bold text-slate-900">{step.title}</h3>
-                <p className="mt-1 font-sans text-xs text-slate-500">{step.desc}</p>
+                <p className="mt-2 font-sans text-[11px] font-bold text-[#94A3B8]">0{i + 1}</p>
+                <h3 className="mt-0.5 font-sans text-[14px] font-bold text-[#1E293B]">{step.title}</h3>
+                <p className="mt-1 font-sans text-[11px] leading-tight text-[#64748B]">{step.desc}</p>
               </motion.div>
               {i < STEPS.length - 1 && (
-                <div className="mt-8 flex flex-1 items-center px-2">
-                  <div className="h-px w-full bg-gradient-to-r from-slate-200 to-slate-200" />
-                  <svg className="h-4 w-4 -ml-2 text-slate-300" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M7 5l6 5-6 5V5z" />
+                <div className="mt-7 flex flex-1 items-center px-2">
+                  <div className="h-[2px] w-full bg-[#E2E8F0]" />
+                  <svg className="h-3 w-3 -ml-1.5 text-[#CBD5E1]" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M4 2l4 4-4 4V2z" />
                   </svg>
                 </div>
               )}
@@ -56,7 +56,7 @@ export function ProcessLifecycle() {
           ))}
         </div>
 
-        {/* Mobile: vertical flow */}
+        {/* Mobile: vertical */}
         <div className="flex flex-col gap-6 lg:hidden">
           {STEPS.map((step, i) => (
             <motion.div
@@ -64,18 +64,18 @@ export function ProcessLifecycle() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              transition={{ delay: i * 0.08, duration: 0.5 }}
               className="flex items-start gap-4"
             >
-              <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${step.color} shadow-lg`}>
-                <step.icon className="h-6 w-6 text-white" />
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.bg} shadow-lg`}>
+                <step.icon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-sans text-xs font-bold text-slate-400">0{i + 1}</span>
-                  <h3 className="font-sans text-sm font-bold text-slate-900">{step.title}</h3>
+                  <span className="font-sans text-[11px] font-bold text-[#94A3B8]">0{i + 1}</span>
+                  <h3 className="font-sans text-[14px] font-bold text-[#1E293B]">{step.title}</h3>
                 </div>
-                <p className="mt-1 font-sans text-xs text-slate-500">{step.desc}</p>
+                <p className="mt-1 font-sans text-[12px] text-[#64748B]">{step.desc}</p>
               </div>
             </motion.div>
           ))}

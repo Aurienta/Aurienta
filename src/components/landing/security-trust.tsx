@@ -17,21 +17,21 @@ const SECURITY_ITEMS: { icon: LucideIcon; title: string; desc: string }[] = [
 
 export function SecurityTrust() {
   return (
-    <section id="security" className="bg-slate-50 py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="security" className="bg-[#F8FAFC] py-[100px] sm:py-[120px]">
+      <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
         <div className="mb-12">
-          <p className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-indigo-500">
+          <p className="font-sans text-[12px] font-bold uppercase tracking-[0.2em] text-[#4F46E5]">
             Trusted &amp; Secure
           </p>
-          <h2 className="mt-2 font-sans text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h2 className="mt-2 font-sans text-[32px] font-bold text-[#1E293B] sm:text-[40px]">
             Enterprise-Grade Security<br />and Constitutional Governance
           </h2>
-          <p className="mt-4 max-w-2xl font-sans text-sm text-slate-500">
+          <p className="mt-4 max-w-[640px] font-sans text-[15px] text-[#64748B]">
             AURIENTA&apos;s structural trust is not a marketing claim — it&apos;s
             cryptographically enforced. Every fund flow, every governance decision,
             and every ownership transfer is protected by institutional-grade security.
           </p>
-          <a href="#" className="mt-4 inline-flex items-center gap-1 font-sans text-sm font-medium text-indigo-600 hover:text-indigo-700">
+          <a href="#" className="mt-4 inline-flex items-center gap-1 font-sans text-[14px] font-medium text-[#4F46E5] hover:text-[#4338CA]">
             Learn About Security
             <ArrowRight className="h-4 w-4" />
           </a>
@@ -41,17 +41,17 @@ export function SecurityTrust() {
           {SECURITY_ITEMS.map((item, i) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-              className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-all hover:shadow-md"
+              transition={{ delay: i * 0.07, duration: 0.5 }}
+              className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.07)]"
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo-50 to-violet-50">
-                <item.icon className="h-6 w-6 text-indigo-600" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF2FF]">
+                <item.icon className="h-6 w-6 text-[#4F46E5]" />
               </div>
-              <h3 className="font-sans text-sm font-bold text-slate-900">{item.title}</h3>
-              <p className="mt-1 font-sans text-xs leading-relaxed text-slate-500">{item.desc}</p>
+              <h3 className="font-sans text-[14px] font-bold text-[#1E293B]">{item.title}</h3>
+              <p className="mt-1.5 font-sans text-[12px] leading-relaxed text-[#64748B]">{item.desc}</p>
             </motion.div>
           ))}
         </div>
