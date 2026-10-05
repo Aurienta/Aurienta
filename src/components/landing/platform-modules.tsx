@@ -3,62 +3,44 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
-  Scale, FileCheck, Shield, Cpu, Building2, TrendingUp,
+  Scale, FileCheck, ShieldCheck, Cpu, Building2, TrendingUp,
   ArrowRight, type LucideIcon
 } from "lucide-react";
 
-const MODULES: { icon: LucideIcon; title: string; desc: string; bg: string; text: string }[] = [
-  { icon: Scale, title: "Governance", desc: "Constitutional voting, proposals & council", bg: "bg-[#EEF2FF]", text: "text-[#4F46E5]" },
-  { icon: FileCheck, title: "Ownership Ledger", desc: "Immutable hash-chained equity records", bg: "bg-[#F3E8FF]", text: "text-[#7C3AED]" },
-  { icon: Shield, title: "Compliance", desc: "FRA-aligned, GAFI-verified, audit-ready", bg: "bg-[#EFF6FF]", text: "text-[#2563EB]" },
-  { icon: Cpu, title: "AI Intelligence", desc: "Brain AI for feasibility, triage & insights", bg: "bg-[#ECFEFF]", text: "text-[#0891B2]" },
-  { icon: Building2, title: "Business Operations", desc: "Milestones, expenses, payroll & NOSI", bg: "bg-[#ECFDF5]", text: "text-[#0D9488]" },
-  { icon: TrendingUp, title: "Growth & Expansion", desc: "Secondary market, graduation & alumni", bg: "bg-[#FDF4FF]", text: "text-[#C026D3]" },
+const MODULES: { icon: LucideIcon; title: string; desc: string; bg: string; iconColor: string }[] = [
+  { icon: Scale, title: "Governance", desc: "Constitutional rules, AI enforcement, full transparency.", bg: "bg-[#F5F3FF]", iconColor: "text-[#6366F1]" },
+  { icon: FileCheck, title: "Ownership Ledger", desc: "Immutable records, real ownership, full traceability.", bg: "bg-[#EEF2FF]", iconColor: "text-[#4F46E5]" },
+  { icon: ShieldCheck, title: "Compliance", desc: "Automated checks, regulatory alignment, risk monitoring.", bg: "bg-[#ECFDF5]", iconColor: "text-[#10B981]" },
+  { icon: Cpu, title: "AI Intelligence", desc: "Decision support, pattern analysis, predictive insights.", bg: "bg-[#F3E8FF]", iconColor: "text-[#7C3AED]" },
+  { icon: Building2, title: "Business Operations", desc: "Workflows, resources, team management, performance.", bg: "bg-[#ECFEFF]", iconColor: "text-[#0891B2]" },
+  { icon: TrendingUp, title: "Growth & Expansion", desc: "Scaling tools, market access, investor coordination.", bg: "bg-[#FDF4FF]", iconColor: "text-[#C026D3]" },
 ];
 
 export function PlatformModules() {
   return (
-    <section id="platform-modules" className="bg-white py-[100px] sm:py-[120px]">
+    <section id="platform-modules" className="bg-white py-[100px]">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-12 flex items-end justify-between">
           <div>
-            <p className="font-sans text-[12px] font-bold uppercase tracking-[0.2em] text-[#4F46E5]">
-              Platform Modules
-            </p>
-            <h2 className="mt-2 font-sans text-[32px] font-bold text-[#1E293B] sm:text-[40px]">
-              Everything You Need in One Platform
-            </h2>
-            <p className="mt-3 max-w-[480px] font-sans text-[15px] text-[#64748B]">
-              Six constitutional modules covering the entire enterprise lifecycle —
-              from formation to graduation into sovereign independence.
-            </p>
+            <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.1em] text-[#4F46E5]">PLATFORM MODULES</p>
+            <h2 className="mt-2 font-sans text-[32px] font-bold text-[#0F172A]">Everything You Need in One Platform</h2>
+            <p className="mt-3 max-w-[480px] font-sans text-[15px] leading-[1.6] text-[#64748B]">Integrated modules work together to give you complete control, automated compliance, and intelligent insights — from company formation to expansion.</p>
           </div>
           <a href="#platform-modules" className="hidden items-center gap-1 font-sans text-[14px] font-medium text-[#4F46E5] hover:text-[#4338CA] sm:flex">
-            View All Modules
-            <ArrowRight className="h-4 w-4" />
+            View All Modules <ArrowRight className="h-4 w-4" />
           </a>
         </div>
-
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {MODULES.map((mod, i) => (
-            <motion.div
-              key={mod.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: i * 0.07, duration: 0.5 }}
-              className="group rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
-            >
-              <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${mod.bg}`}>
-                <mod.icon className={`h-6 w-6 ${mod.text}`} />
+            <motion.div key={mod.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ delay: i * 0.07, duration: 0.5 }}
+              className="group rounded-2xl border border-[#F1F5F9] bg-white p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all hover:border-[#E0E7FF] hover:shadow-[0_10px_30px_-10px_rgba(79,70,229,0.1)]">
+              <div className={`mb-5 flex h-12 w-12 items-center justify-center rounded-full ${mod.bg}`}>
+                <mod.icon className={`h-6 w-6 ${mod.iconColor}`} />
               </div>
-              <h3 className="font-sans text-[14px] font-bold text-[#1E293B]">{mod.title}</h3>
-              <p className="mt-1.5 font-sans text-[12px] leading-relaxed text-[#64748B]">{mod.desc}</p>
-              <a href="#" className="mt-3 inline-flex items-center gap-1 font-sans text-[12px] font-medium text-[#4F46E5] opacity-0 transition-opacity group-hover:opacity-100">
-                Learn More
-                <ArrowRight className="h-3 w-3" />
+              <h3 className="font-sans text-[18px] font-bold text-[#0F172A]">{mod.title}</h3>
+              <p className="mt-2 font-sans text-[14px] leading-relaxed text-[#64748B]">{mod.desc}</p>
+              <a href="#" className="mt-4 inline-flex items-center gap-1 font-sans text-[14px] font-medium text-[#4F46E5] transition-opacity group-hover:opacity-100">
+                Learn More <ArrowRight className="h-3.5 w-3.5" />
               </a>
             </motion.div>
           ))}
