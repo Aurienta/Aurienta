@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight, Play, Shield, Cpu, TrendingUp, Scale,
-  Building2, FileCheck, BarChart3, Layers, type LucideIcon
+  Building2, FileCheck, type LucideIcon
 } from "lucide-react";
 
 const TRUST_INDICATORS: { icon: LucideIcon; title: string; desc: string; bg: string; text: string }[] = [
@@ -16,11 +16,10 @@ const TRUST_INDICATORS: { icon: LucideIcon; title: string; desc: string; bg: str
 ];
 
 const FLOATING_CARDS = [
-  { label: "Governance & Compliance", icon: Scale, top: "5%", left: "-2%", delay: 0.5 },
-  { label: "Ownership Ledger", icon: FileCheck, top: "25%", right: "-2%", delay: 0.7 },
-  { label: "AI Engine", icon: Cpu, top: "50%", left: "2%", delay: 0.9 },
-  { label: "Business Operations", icon: Building2, top: "72%", right: "2%", delay: 1.1 },
-  { label: "Real Economy Growth", icon: TrendingUp, top: "12%", right: "8%", delay: 1.3 },
+  { label: "Governance & Compliance", icon: Scale, top: "6%", left: "-3%", delay: 0.5 },
+  { label: "Ownership Ledger", icon: FileCheck, top: "28%", right: "-3%", delay: 0.7 },
+  { label: "AI Engine", icon: Cpu, top: "55%", left: "0%", delay: 0.9 },
+  { label: "Real Economy Growth", icon: TrendingUp, top: "78%", right: "0%", delay: 1.1 },
 ];
 
 export function LandingHero() {
@@ -57,7 +56,6 @@ export function LandingHero() {
               that cannot be bent, bypassed, or broken.
             </p>
 
-            {/* CTAs */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 href="/register"
@@ -72,7 +70,6 @@ export function LandingHero() {
               </button>
             </div>
 
-            {/* Trust indicators */}
             <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
               {TRUST_INDICATORS.map((item, i) => (
                 <motion.div
@@ -94,14 +91,14 @@ export function LandingHero() {
             </div>
           </motion.div>
 
-          {/* RIGHT — 3D Architectural Visual */}
+          {/* RIGHT — 3D floating cityscape */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="relative hidden h-[520px] lg:block xl:h-[580px]"
           >
-            <ArchitecturalVisual />
+            <FloatingCityscape />
           </motion.div>
         </div>
       </div>
@@ -109,95 +106,105 @@ export function LandingHero() {
   );
 }
 
-function ArchitecturalVisual() {
+function FloatingCityscape() {
   return (
     <div className="relative h-full w-full">
-      {/* Orbital rings */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-indigo-200/60"
-      />
-      <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-violet-100/60"
-      />
-      {/* Center glow */}
-      <div className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-indigo-100/50 to-cyan-100/40 blur-2xl" />
+      {/* Glowing cyan ring under platform */}
+      <div className="absolute left-1/2 top-1/2 h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute inset-0 rounded-full border-2 border-cyan-300/30" />
+        <div className="absolute inset-2 rounded-full border border-cyan-200/20" />
+        {/* Glow */}
+        <div className="absolute inset-0 rounded-full bg-cyan-100/10 blur-2xl" />
+        {/* Rotating dot on ring */}
+        <motion.div
+          className="absolute inset-0"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_4px_rgba(34,211,238,0.6)]" />
+        </motion.div>
+      </div>
 
-      {/* Central isometric platform */}
+      {/* Isometric city platform */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <svg viewBox="0 0 320 320" className="h-[300px] w-[300px] drop-shadow-2xl" style={{ transform: "perspective(800px) rotateX(18deg) rotateZ(-8deg)" }}>
-          {/* Base platform */}
-          <ellipse cx="160" cy="160" rx="140" ry="42" fill="url(#baseGlow)" opacity="0.2" />
-          <ellipse cx="160" cy="152" rx="130" ry="38" fill="white" stroke="#E2E8F0" strokeWidth="1" />
-          <ellipse cx="160" cy="146" rx="130" ry="38" fill="url(#platGrad)" opacity="0.9" />
+        <svg viewBox="0 0 360 360" className="h-[320px] w-[320px] drop-shadow-2xl" style={{ transform: "perspective(900px) rotateX(20deg) rotateZ(-10deg)" }}>
+          {/* Platform base — circular translucent */}
+          <ellipse cx="180" cy="180" rx="150" ry="45" fill="white" stroke="#E2E8F0" strokeWidth="1" opacity="0.95" />
+          <ellipse cx="180" cy="172" rx="150" ry="45" fill="url(#platformGrad)" opacity="0.9" />
 
-          {/* Buildings — isometric */}
-          {/* Center tall building */}
-          <polygon points="138,146 138,70 160,58 160,146" fill="url(#bldgGrad1)" />
-          <polygon points="160,58 182,70 182,146 160,146" fill="url(#bldgGrad2)" />
-          <polygon points="138,70 160,58 182,70 160,82" fill="url(#bldgTop)" />
+          {/* Buildings — glass-and-steel style */}
+          {/* Center tall building (dark indigo with AURIENTA logo) */}
+          <polygon points="156,172 156,60 180,48 180,172" fill="url(#centerBldg)" />
+          <polygon points="180,48 204,60 204,172 180,172" fill="url(#centerBldgDark)" />
+          <polygon points="156,60 180,48 204,60 180,72" fill="url(#centerBldgTop)" />
 
-          {/* Left building */}
-          <polygon points="92,146 92,98 114,86 114,146" fill="url(#bldgGrad1)" />
-          <polygon points="114,86 136,98 136,146 114,146" fill="url(#bldgGrad2)" />
-          <polygon points="92,98 114,86 136,98 114,110" fill="url(#bldgTop)" />
-
-          {/* Right building */}
-          <polygon points="182,146 182,92 204,80 204,146" fill="url(#bldgGrad1)" />
-          <polygon points="204,80 226,92 226,146 204,146" fill="url(#bldgGrad2)" />
-          <polygon points="182,92 204,80 226,92 204,104" fill="url(#bldgTop)" />
-
-          {/* Far left small */}
-          <polygon points="58,146 58,114 80,102 80,146" fill="url(#bldgGrad1)" opacity="0.7" />
-          <polygon points="80,102 102,114 102,146 80,146" fill="url(#bldgGrad2)" opacity="0.7" />
-          <polygon points="58,114 80,102 102,114 80,126" fill="url(#bldgTop)" opacity="0.7" />
-
-          {/* Far right small */}
-          <polygon points="226,146 226,108 248,96 248,146" fill="url(#bldgGrad1)" opacity="0.7" />
-          <polygon points="248,96 270,108 270,146 248,146" fill="url(#bldgGrad2)" opacity="0.7" />
-          <polygon points="226,108 248,96 270,108 248,120" fill="url(#bldgTop)" opacity="0.7" />
-
-          {/* Windows */}
-          {[0, 1, 2, 3].map((row) => (
+          {/* Windows on center building */}
+          {[0, 1, 2, 3, 4].map((row) => (
             <React.Fragment key={row}>
-              <rect x="143" y={78 + row * 16} width="6" height="9" rx="1" fill="#A5B4FC" opacity="0.7" />
-              <rect x="165" y={74 + row * 16} width="6" height="9" rx="1" fill="#818CF8" opacity="0.5" />
-              <rect x="97" y={104 + row * 14} width="5" height="7" rx="1" fill="#A5B4FC" opacity="0.5" />
-              <rect x="187" y={98 + row * 14} width="5" height="7" rx="1" fill="#818CF8" opacity="0.4" />
+              <rect x="161" y={72 + row * 18} width="5" height="10" rx="1" fill="#A5B4FC" opacity="0.7" />
+              <rect x="185" y={68 + row * 18} width="5" height="10" rx="1" fill="#818CF8" opacity="0.5" />
             </React.Fragment>
           ))}
 
-          {/* Central AURIENTA mark */}
-          <circle cx="160" cy="48" r="14" fill="url(#logoGrad)" />
-          <text x="160" y="54" textAnchor="middle" fontSize="16" fontWeight="bold" fill="white" fontFamily="sans-serif">A</text>
+          {/* Left building (glass blue-white) */}
+          <polygon points="104,172 104,100 128,88 128,172" fill="url(#glassBldg)" />
+          <polygon points="128,88 152,100 152,172 128,172" fill="url(#glassBldgDark)" />
+          <polygon points="104,100 128,88 152,100 128,112" fill="url(#glassBldgTop)" />
+          {[0, 1, 2].map((row) => (
+            <rect key={row} x="110" y={108 + row * 18} width="5" height="9" rx="1" fill="#BFDBFE" opacity="0.6" />
+          ))}
 
-          {/* Connector lines from center to floating cards */}
-          <line x1="160" y1="48" x2="80" y2="30" stroke="#C7D2FE" strokeWidth="1" strokeDasharray="3,3" opacity="0.4" />
-          <line x1="160" y1="48" x2="250" y2="60" stroke="#C7D2FE" strokeWidth="1" strokeDasharray="3,3" opacity="0.4" />
+          {/* Right building (glass blue-white) */}
+          <polygon points="208,172 208,92 232,80 232,172" fill="url(#glassBldg)" />
+          <polygon points="232,80 256,92 256,172 232,172" fill="url(#glassBldgDark)" />
+          <polygon points="208,92 232,80 256,92 232,104" fill="url(#glassBldgTop)" />
+          {[0, 1, 2, 3].map((row) => (
+            <rect key={row} x="214" y={100 + row * 16} width="5" height="9" rx="1" fill="#BFDBFE" opacity="0.5" />
+          ))}
 
+          {/* Far left small building */}
+          <polygon points="60,172 60,124 84,112 84,172" fill="url(#glassBldg)" opacity="0.7" />
+          <polygon points="84,112 108,124 108,172 84,172" fill="url(#glassBldgDark)" opacity="0.7" />
+          <polygon points="60,124 84,112 108,124 84,136" fill="url(#glassBldgTop)" opacity="0.7" />
+
+          {/* Far right small building */}
+          <polygon points="260,172 260,116 284,104 284,172" fill="url(#glassBldg)" opacity="0.7" />
+          <polygon points="284,104 308,116 308,172 284,172" fill="url(#glassBldgDark)" opacity="0.7" />
+          <polygon points="260,116 284,104 308,116 284,128" fill="url(#glassBldgTop)" opacity="0.7" />
+
+          {/* Central AURIENTA logo on building top */}
+          <circle cx="180" cy="40" r="16" fill="url(#logoGrad)" />
+          <text x="180" y="47" textAnchor="middle" fontSize="18" fontWeight="bold" fill="white" fontFamily="sans-serif">A</text>
+
+          {/* Gradients */}
           <defs>
-            <linearGradient id="baseGlow" x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="#4F46E5" />
-              <stop offset="1" stopColor="#06B6D4" />
-            </linearGradient>
-            <linearGradient id="platGrad" x1="0" y1="0" x2="1" y2="1">
+            <linearGradient id="platformGrad" x1="0" y1="0" x2="1" y2="1">
               <stop stopColor="#F8FAFC" />
               <stop offset="1" stopColor="#E2E8F0" />
             </linearGradient>
-            <linearGradient id="bldgGrad1" x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="#A5B4FC" />
-              <stop offset="1" stopColor="#4F46E5" />
-            </linearGradient>
-            <linearGradient id="bldgGrad2" x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="#818CF8" />
+            <linearGradient id="centerBldg" x1="0" y1="0" x2="0" y2="1">
+              <stop stopColor="#6366F1" />
               <stop offset="1" stopColor="#3730A3" />
             </linearGradient>
-            <linearGradient id="bldgTop" x1="0" y1="0" x2="1" y2="0">
-              <stop stopColor="#C7D2FE" />
-              <stop offset="1" stopColor="#A5B4FC" />
+            <linearGradient id="centerBldgDark" x1="0" y1="0" x2="0" y2="1">
+              <stop stopColor="#4F46E5" />
+              <stop offset="1" stopColor="#1E1B4B" />
+            </linearGradient>
+            <linearGradient id="centerBldgTop" x1="0" y1="0" x2="1" y2="0">
+              <stop stopColor="#A5B4FC" />
+              <stop offset="1" stopColor="#818CF8" />
+            </linearGradient>
+            <linearGradient id="glassBldg" x1="0" y1="0" x2="0" y2="1">
+              <stop stopColor="#DBEAFE" />
+              <stop offset="1" stopColor="#93C5FD" />
+            </linearGradient>
+            <linearGradient id="glassBldgDark" x1="0" y1="0" x2="0" y2="1">
+              <stop stopColor="#BFDBFE" />
+              <stop offset="1" stopColor="#60A5FA" />
+            </linearGradient>
+            <linearGradient id="glassBldgTop" x1="0" y1="0" x2="1" y2="0">
+              <stop stopColor="#EFF6FF" />
+              <stop offset="1" stopColor="#DBEAFE" />
             </linearGradient>
             <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
               <stop stopColor="#4F46E5" />
@@ -208,7 +215,7 @@ function ArchitecturalVisual() {
         </svg>
       </div>
 
-      {/* Floating cards */}
+      {/* Floating translucent cards */}
       {FLOATING_CARDS.map((card, i) => (
         <motion.div
           key={card.label}
@@ -219,9 +226,9 @@ function ArchitecturalVisual() {
           style={{ top: card.top, left: card.left, right: card.right }}
         >
           <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
-            className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white/95 px-3.5 py-2.5 shadow-lg shadow-slate-200/40 backdrop-blur-sm"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3.5 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+            className="flex items-center gap-2.5 rounded-xl border border-white/60 bg-white/85 px-4 py-2.5 shadow-lg shadow-slate-300/30 backdrop-blur-md"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#EEF2FF] to-[#F3E8FF]">
               <card.icon className="h-4 w-4 text-[#4F46E5]" />

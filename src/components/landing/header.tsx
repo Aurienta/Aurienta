@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AurientaLogo } from "./landing-logo";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -36,23 +37,9 @@ export function LandingHeader() {
       )}
     >
       <div className="mx-auto flex h-[72px] max-w-[1280px] items-center justify-between px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5" aria-label="AURIENTA home">
-          <svg viewBox="0 0 40 44" className="h-8 w-8" fill="none">
-            <defs>
-              <linearGradient id="hdrLogoGrad" x1="20" y1="2" x2="20" y2="42" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#4F46E5" />
-                <stop offset="0.5" stopColor="#7C3AED" />
-                <stop offset="1" stopColor="#06B6D4" />
-              </linearGradient>
-            </defs>
-            <path d="M20 4 L4 40 L10 40 L20 16 L30 40 L36 40 Z" fill="url(#hdrLogoGrad)" />
-            <path d="M12 28 Q20 34 28 28" stroke="url(#hdrLogoGrad)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-            <circle cx="20" cy="24" r="2.5" fill="url(#hdrLogoGrad)" />
-          </svg>
-          <span className="font-sans text-[18px] font-bold uppercase tracking-tight text-slate-900">
-            AURIENTA
-          </span>
+        {/* Logo — exact match to reference: solid indigo A + uppercase wordmark */}
+        <Link href="/" aria-label="AURIENTA home">
+          <AurientaLogo color="#4338CA" />
         </Link>
 
         {/* Desktop nav */}
@@ -64,7 +51,7 @@ export function LandingHeader() {
               className={cn(
                 "font-sans text-[14px] font-medium transition-colors",
                 item.label === "Home"
-                  ? "text-indigo-600 relative after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:rounded-full"
+                  ? "text-[#4338CA] relative after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-[#4338CA] after:rounded-full"
                   : "text-slate-600 hover:text-slate-900"
               )}
             >
