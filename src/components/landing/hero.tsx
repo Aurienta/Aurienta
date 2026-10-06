@@ -11,6 +11,10 @@ import {
 const EYEBROW = "CONSTITUTIONAL ENTERPRISE INFRASTRUCTURE";
 const SUBTEXT = "AURIENTA provides the constitutional infrastructure for real-economy businesses — turning capital into ownership through AI, rules, and immutable governance.";
 
+// EXACT colors from reference pixel analysis:
+// Line 1: #1E1B4B (deep navy)
+// Line 2: gradient #6D28D9 (purple) → #10B981 (teal/green)
+// Line 3: #6D28D9 (purple)
 const TRUST_ITEMS: { icon: LucideIcon; title: string; desc: string; bg: string; iconColor: string }[] = [
   { icon: Shield, title: "Non-Custodial", desc: "Full ownership remains with you.", bg: "bg-[#EEF2FF]", iconColor: "text-[#6366F1]" },
   { icon: Cpu, title: "AI-Enforced", desc: "Rules & compliance automated.", bg: "bg-[#F3E8FF]", iconColor: "text-[#7C3AED]" },
@@ -29,7 +33,6 @@ const FLOATING_CARDS = [
 export function LandingHero() {
   return (
     <section className="relative overflow-hidden bg-[#F8FAFC] pt-[100px] pb-[100px]">
-      {/* Soft radial background — pale lavender/blue */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-[15%] h-[500px] w-[500px] rounded-full bg-[#EEF2FF]/60 blur-3xl" />
         <div className="absolute top-0 right-[10%] h-[400px] w-[400px] rounded-full bg-[#ECFEFF]/40 blur-3xl" />
@@ -41,28 +44,31 @@ export function LandingHero() {
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
             <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.1em] text-[#64748B] mb-4">{EYEBROW}</p>
 
-            {/* Headline: line 1 dark navy, line 2 gradient indigo, line 3 teal */}
+            {/* Headline with EXACT reference colors */}
             <h1 className="font-sans text-[48px] font-bold leading-[1.1] tracking-tight sm:text-[56px] lg:text-[60px]">
-              <span className="block text-[#0F172A]">Real Ownership.</span>
-              <span className="block bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#3B82F6] bg-clip-text text-transparent">AI-Enforced Governance.</span>
-              <span className="block text-[#0D9488]">Lasting Value.</span>
+              {/* Line 1: deep navy #1E1B4B */}
+              <span className="block text-[#1E1B4B]">Real Ownership.</span>
+              {/* Line 2: gradient purple #6D28D9 → teal #10B981 */}
+              <span className="block bg-gradient-to-r from-[#6D28D9] to-[#10B981] bg-clip-text text-transparent">AI-Enforced Governance.</span>
+              {/* Line 3: purple #6D28D9 */}
+              <span className="block text-[#6D28D9]">Lasting Value.</span>
             </h1>
 
             <p className="mt-6 max-w-[480px] font-sans text-[18px] leading-[1.6] text-[#475569]">{SUBTEXT}</p>
 
-            {/* CTAs */}
+            {/* CTAs — primary #5B50E8, secondary outlined */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/register" className="group inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-7 py-3.5 font-sans text-[14px] font-semibold text-white shadow-lg shadow-indigo-200/50 transition-all hover:bg-[#4338CA] hover:shadow-xl hover:shadow-indigo-300/50">
+              <Link href="/register" className="group inline-flex items-center gap-2 rounded-lg bg-[#5B50E8] px-7 py-3.5 font-sans text-[14px] font-semibold text-white shadow-lg shadow-indigo-200/50 transition-all hover:bg-[#4F46E5] hover:shadow-xl hover:shadow-indigo-300/50">
                 Explore the Platform
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <button className="group inline-flex items-center gap-2 rounded-lg border border-[#CBD5E1] bg-white px-6 py-3.5 font-sans text-[14px] font-semibold text-[#334155] shadow-sm transition-all hover:border-[#94A3B8] hover:bg-slate-50">
-                <Play className="h-4 w-4 text-[#4F46E5]" />
+                <Play className="h-4 w-4 text-[#5B50E8]" />
                 Watch Video
               </button>
             </div>
 
-            {/* Trust strip — 4 indicators with circular icons */}
+            {/* Trust strip — 4 indicators */}
             <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
               {TRUST_ITEMS.map((item, i) => (
                 <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }} className="flex flex-col gap-2">
@@ -70,7 +76,7 @@ export function LandingHero() {
                     <item.icon className={`h-5 w-5 ${item.iconColor}`} />
                   </div>
                   <div>
-                    <p className="font-sans text-[14px] font-bold text-[#0F172A]">{item.title}</p>
+                    <p className="font-sans text-[14px] font-bold text-[#1E1B4B]">{item.title}</p>
                     <p className="font-sans text-[13px] leading-tight text-[#64748B]">{item.desc}</p>
                   </div>
                 </motion.div>
@@ -99,19 +105,18 @@ function FloatingCityscape() {
       <div className="absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2">
         <div className="absolute inset-0 rounded-full border-2 border-[#22D3EE]/20" />
         <div className="absolute inset-4 rounded-full border border-[#A5F3FC]/15" />
-        {/* Rotating glowing dot */}
         <motion.div className="absolute inset-0" animate={{ rotate: 360 }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
           <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rounded-full bg-[#22D3EE] shadow-[0_0_16px_6px_rgba(34,211,238,0.5)]" />
         </motion.div>
       </div>
 
-      {/* Isometric 3D city — ~10 buildings on circular platform */}
+      {/* Isometric 3D city — 10 buildings on circular platform */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <svg viewBox="0 0 400 400" className="h-[340px] w-[340px] drop-shadow-2xl" style={{ transform: "perspective(900px) rotateX(22deg) rotateZ(-12deg)" }}>
           {/* Circular platform */}
           <ellipse cx="200" cy="210" rx="170" ry="50" fill="white" stroke="#E2E8F0" strokeWidth="1" opacity="0.95" />
           <ellipse cx="200" cy="200" rx="170" ry="50" fill="url(#platformGrad)" opacity="0.9" />
-          {/* Green park spaces on platform */}
+          {/* Green park spaces */}
           <ellipse cx="150" cy="205" rx="25" ry="8" fill="#D1FAE5" opacity="0.6" />
           <ellipse cx="250" cy="200" rx="20" ry="6" fill="#D1FAE5" opacity="0.5" />
 
@@ -119,7 +124,6 @@ function FloatingCityscape() {
           <polygon points="172,200 172,70 200,55 200,200" fill="url(#centerBldg)" />
           <polygon points="200,55 228,70 228,200 200,200" fill="url(#centerBldgDark)" />
           <polygon points="172,70 200,55 228,70 200,88" fill="url(#centerBldgTop)" />
-          {/* Windows on center building */}
           {[0,1,2,3,4,5].map(r => (
             <React.Fragment key={r}>
               <rect x="178" y={85+r*18} width="6" height="10" rx="1" fill="#A5B4FC" opacity="0.7" />
@@ -180,7 +184,7 @@ function FloatingCityscape() {
         </svg>
       </div>
 
-      {/* Floating translucent cards — 4 cards */}
+      {/* Floating translucent cards */}
       {FLOATING_CARDS.map((card, i) => (
         <motion.div key={card.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: card.delay, duration: 0.6 }}
           className="absolute" style={{ top: card.top, left: card.left, right: card.right }}>

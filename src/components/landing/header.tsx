@@ -6,17 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Exact logo from reference: solid indigo triangle "A" with crossbar + bold uppercase wordmark
+// EXACT logo from reference: solid indigo #4F46E5 triangle "A" with crossbar
 function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2" aria-label="AURIENTA home">
       <svg viewBox="0 0 40 44" className="h-7 w-7" fill="none">
-        {/* Triangle "A" — two slanted legs meeting at peak, open at bottom */}
         <path d="M20 2 L2 42 L9 42 L20 14 L31 42 L38 42 Z" fill="#4F46E5" />
-        {/* Straight crossbar in upper portion */}
         <rect x="11" y="28" width="18" height="3.5" rx="1.5" fill="#4F46E5" />
       </svg>
-      <span className="font-sans text-[20px] font-bold uppercase tracking-tight text-[#0F172A]">
+      <span className="font-sans text-[20px] font-bold uppercase tracking-tight text-[#1E1B4B]">
         AURIENTA
       </span>
     </Link>
@@ -64,7 +62,7 @@ export function LandingHeader() {
                 "font-sans text-[14px] font-medium transition-colors",
                 item.label === "Home"
                   ? "text-[#4F46E5] relative after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-[#4F46E5] after:rounded-full"
-                  : "text-[#64748B] hover:text-[#0F172A]"
+                  : "text-[#64748B] hover:text-[#1E1B4B]"
               )}
             >
               {item.label}
@@ -73,15 +71,15 @@ export function LandingHeader() {
         </nav>
 
         <div className="hidden items-center gap-4 lg:flex">
-          <button className="rounded-lg p-1.5 text-[#64748B] transition-colors hover:bg-slate-100 hover:text-[#0F172A]" aria-label="Search">
+          <button className="rounded-lg p-1.5 text-[#64748B] transition-colors hover:bg-slate-100 hover:text-[#1E1B4B]" aria-label="Search">
             <Search className="h-5 w-5" />
           </button>
-          <Link href="/signin" className="font-sans text-[14px] font-medium text-[#334155] transition-colors hover:text-[#0F172A]">
+          <Link href="/signin" className="font-sans text-[14px] font-medium text-[#334155] transition-colors hover:text-[#1E1B4B]">
             Sign In
           </Link>
           <Link
             href="/register"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#4F46E5] px-5 py-2 font-sans text-[13px] font-semibold text-white shadow-sm transition-all hover:bg-[#4338CA] hover:shadow-md"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#5B50E8] px-5 py-2 font-sans text-[13px] font-semibold text-white shadow-sm transition-all hover:bg-[#4F46E5] hover:shadow-md"
           >
             Get Started
             <ChevronRight className="h-4 w-4" />
@@ -115,7 +113,7 @@ export function LandingHeader() {
               ))}
               <div className="mt-2 flex gap-3">
                 <Link href="/signin" className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-center font-sans text-sm font-medium text-[#334155]">Sign In</Link>
-                <Link href="/register" className="flex-1 rounded-lg bg-[#4F46E5] px-4 py-2 text-center font-sans text-sm font-semibold text-white">Get Started</Link>
+                <Link href="/register" className="flex-1 rounded-lg bg-[#5B50E8] px-4 py-2 text-center font-sans text-sm font-semibold text-white">Get Started</Link>
               </div>
             </div>
           </motion.div>
