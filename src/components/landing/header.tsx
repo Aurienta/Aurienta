@@ -6,15 +6,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Exact logo from reference: solid indigo triangle "A" + uppercase wordmark
+// Exact logo from reference: solid indigo triangle "A" with crossbar + bold uppercase wordmark
 function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2" aria-label="AURIENTA home">
       <svg viewBox="0 0 40 44" className="h-7 w-7" fill="none">
-        <path d="M20 4 L4 40 L10 40 L20 16 L30 40 L36 40 Z" fill="#4F46E5" />
-        <rect x="12" y="26" width="16" height="3" rx="1" fill="#4F46E5" />
+        {/* Triangle "A" — two slanted legs meeting at peak, open at bottom */}
+        <path d="M20 2 L2 42 L9 42 L20 14 L31 42 L38 42 Z" fill="#4F46E5" />
+        {/* Straight crossbar in upper portion */}
+        <rect x="11" y="28" width="18" height="3.5" rx="1.5" fill="#4F46E5" />
       </svg>
-      <span className="font-sans text-[20px] font-extrabold uppercase tracking-tight text-[#0F172A]">
+      <span className="font-sans text-[20px] font-bold uppercase tracking-tight text-[#0F172A]">
         AURIENTA
       </span>
     </Link>
