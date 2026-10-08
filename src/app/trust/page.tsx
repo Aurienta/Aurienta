@@ -218,9 +218,9 @@ export default async function TrustPage() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background">
       {/* 2026 backgrounds: aurora + mesh + grid */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 aurienta-aurora opacity-80" />
+      <div aria-hidden className="pointer-events-none fixed inset-0 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC]" />
       <div aria-hidden className="pointer-events-none fixed inset-0 mesh-gradient opacity-50" />
-      <div aria-hidden className="pointer-events-none fixed inset-0 aurienta-grid opacity-25" />
+      <div aria-hidden className="pointer-events-none fixed inset-0 bg-gradient-to-b from-[#F8FAFC] to-white" />
 
       <PublicTrustHeader active="trust" />
 

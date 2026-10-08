@@ -111,51 +111,55 @@
 
 /* ===== AURIENTA — Light Luxury ===== */
 .light {
-  --gold: #b8860b;
-  --gold-light: #d4af37;
-  --gold-dark: #8a6d1f;
-  --gold-soft: #c9a03d;
+  /* Brand — indigo/purple to match landing page */
+  --gold: #4F46E5;
+  --gold-light: #818CF8;
+  --gold-dark: #3730A3;
+  --gold-soft: #6366F1;
+  --gold-bright: #A5B4FC;
+  --gold-deep: #1E1B4B;
 
-  --background: #fbf8ef;
-  --foreground: #1a1714;
+  --background: #F8FAFC;
+  --foreground: #1E1B4B;
 
-  --card: #ffffff;
-  --card-foreground: #1a1714;
+  --card: #FFFFFF;
+  --card-foreground: #1E1B4B;
+  --card-elevated: #FFFFFF;
 
-  --popover: #ffffff;
-  --popover-foreground: #1a1714;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E1B4B;
 
-  --primary: #b8860b;
-  --primary-foreground: #fffdf5;
+  --primary: #4F46E5;
+  --primary-foreground: #FFFFFF;
 
-  --secondary: #f1ead6;
-  --secondary-foreground: #1a1714;
+  --secondary: #EEF2FF;
+  --secondary-foreground: #1E1B4B;
 
-  --muted: #f4efe0;
-  --muted-foreground: #6b6253;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
 
-  --accent: #f6efd9;
-  --accent-foreground: #8a6d1f;
+  --accent: #EEF2FF;
+  --accent-foreground: #4F46E5;
 
-  --destructive: #c0392b;
-  --border: rgba(184, 134, 11, 0.22);
-  --input: rgba(184, 134, 11, 0.28);
-  --ring: #b8860b;
+  --destructive: #EF4444;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #4F46E5;
 
-  --chart-1: #b8860b;
-  --chart-2: #c9a03d;
-  --chart-3: #d4af37;
-  --chart-4: #8a6d1f;
-  --chart-5: #6b5314;
+  --chart-1: #4F46E5;
+  --chart-2: #7C3AED;
+  --chart-3: #06B6D4;
+  --chart-4: #10B981;
+  --chart-5: #F59E0B;
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1a1714;
-  --sidebar-primary: #b8860b;
-  --sidebar-primary-foreground: #fffdf5;
-  --sidebar-accent: #f6efd9;
-  --sidebar-accent-foreground: #8a6d1f;
-  --sidebar-border: rgba(184, 134, 11, 0.22);
-  --sidebar-ring: #b8860b;
+  --sidebar: #1E1B4B;
+  --sidebar-foreground: #E0E7FF;
+  --sidebar-primary: #818CF8;
+  --sidebar-primary-foreground: #1E1B4B;
+  --sidebar-accent: #312E81;
+  --sidebar-accent-foreground: #C7D2FE;
+  --sidebar-border: rgba(99, 102, 241, 0.2);
+  --sidebar-ring: #818CF8;
 }
 
 @layer base {

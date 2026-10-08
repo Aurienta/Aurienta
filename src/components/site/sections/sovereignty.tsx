@@ -60,7 +60,7 @@ export function Sovereignty() {
 
   return (
     <section id="sovereignty" className="relative overflow-hidden py-28 sm:py-36">
-      <div className="absolute inset-0 -z-10 aurienta-aurora opacity-40" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC] opacity-40" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
           eyebrow={t("sovereignty.title")}

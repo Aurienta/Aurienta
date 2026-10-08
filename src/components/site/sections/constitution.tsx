@@ -43,7 +43,7 @@ export function Constitution() {
 
   return (
     <section id="constitution" className="relative overflow-hidden py-28 sm:py-36">
-      <div className="absolute inset-0 -z-10 aurienta-aurora opacity-50" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC] opacity-50" />
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <Reveal className="flex flex-col items-center text-center">
           <div className="flex items-center gap-3">

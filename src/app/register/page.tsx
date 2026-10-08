@@ -27,11 +27,11 @@ export default function RegisterPage() {
       {/* Background ornaments */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 aurienta-aurora opacity-50"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 aurienta-grid opacity-25"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#F8FAFC] to-white"
       />
 
       <main className="relative z-10 flex flex-1 flex-col">

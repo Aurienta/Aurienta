@@ -34,7 +34,7 @@ export default function SigninPage() {
           {/* 2026 backgrounds: aurora + mesh */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 aurienta-aurora opacity-60"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC]"
           />
           <div
             aria-hidden="true"

@@ -7,7 +7,7 @@ import { AurientaMark } from "@/components/aurienta-logo";
 export default function Loading() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-16">
-      <div className="pointer-events-none absolute inset-0 aurienta-aurora opacity-50" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#EEF2FF] to-[#F8FAFC] opacity-50" />
 
       <div className="relative flex flex-col items-center">
         <div className="relative">
