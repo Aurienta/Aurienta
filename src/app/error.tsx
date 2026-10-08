@@ -55,7 +55,7 @@ export default function Error({
         )}
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <button
+          <button aria-label="Retry"
             type="button"
             onClick={reset}
             className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-2.5 font-sans text-sm font-medium text-[#0a0a0b] transition-transform hover:scale-[1.02]"

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
-import { mockCid, mockHash } from "@/lib/aurienta/ai";
+import { computeCid } from "@/lib/aurienta/ipfs";
+import { createHash } from "crypto";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { parseBody, skillEquitySchema } from "@/lib/aurienta/validation";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
@@ -141,8 +142,8 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // ── Mock IPFS upload + SHA3-256 hash of the document ──
-  const documentCid = mockCid();
-  const documentHash = mockHash();
+  const documentCid = computeCid(JSON.stringify(body));
+  const documentHash = createHash("sha3-256").update(JSON.stringify(body)).digest("hex");
 
   const claim = await db.skillEquityClaim.create({
     data: {

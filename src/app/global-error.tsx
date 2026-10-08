@@ -126,7 +126,7 @@ export default function GlobalError({
           )}
 
           <div style={{ marginTop: 28, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
+            <button aria-label="Retry"
               type="button"
               onClick={reset}
               style={{

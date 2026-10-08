@@ -258,7 +258,7 @@ export function RegistryContent() {
                   options={STATUS_OPTIONS.map((s) => ({ value: s, label: s ? s.replace(/_/g, " ") : "All statuses" }))}
                 />
                 {hasActiveFilters && (
-                  <button
+                  <button aria-label="View details"
                     onClick={clearFilters}
                     className="inline-flex h-11 items-center gap-1.5 rounded-full border border-gold/15 bg-background/60 px-4 font-sans text-xs text-muted-foreground transition-colors hover:text-foreground"
                   >
@@ -275,7 +275,7 @@ export function RegistryContent() {
               <div className="rounded-2xl border border-red-400/30 bg-red-400/5 p-6 text-center">
                 <AlertCircle className="mx-auto h-6 w-6 text-red-300" />
                 <p className="mt-2 font-sans text-sm text-red-200">Failed to load registry: {error}</p>
-                <button
+                <button aria-label="View details"
                   onClick={() => fetchRegistry()}
                   className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-red-400/30 px-4 py-1.5 font-sans text-xs text-red-200 hover:bg-red-400/10"
                 >
@@ -339,7 +339,7 @@ export function RegistryContent() {
                 {/* Pagination footer */}
                 {data.pagination.hasMore && (
                   <div className="mt-6 flex justify-center">
-                    <button
+                    <button aria-label="View details"
                       onClick={() => data.pagination.nextCursor && fetchRegistry(data.pagination.nextCursor)}
                       className="inline-flex items-center gap-1.5 rounded-full border border-gold/25 px-5 py-2.5 font-sans text-sm text-foreground transition-colors hover:bg-gold/5"
                     >

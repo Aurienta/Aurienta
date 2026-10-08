@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/aurienta/auth";
-import { mockCid } from "@/lib/aurienta/ai";
+import { computeCid } from "@/lib/aurienta/ipfs";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { evidenceSchema, parseBody } from "@/lib/aurienta/validation";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
@@ -77,7 +77,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // Generate mock IPFS CID
-  const cid = mockCid();
+  const cid = computeCid(JSON.stringify(body));
 
   const record = await db.ipfsEvidence.create({
     data: {
