@@ -1414,3 +1414,332 @@ model FxRate {
   @@index([fromCurrency, toCurrency, fetchedAt])
   @@index([source])
 }
+
+// ═════════════════════════════════════════════════════════════
+// MODIFIED IMPLEMENTATION ROADMAP (Legal Compliance Audit §297)
+// 15 compliance-cleared features. See LEGAL_COMPLIANCE_AUDIT.md.
+// All models use plain String FKs (no relation directives) to keep
+// the schema changes isolated and avoid touching the large User /
+// Enterprise models. Queries join manually via indexed lookups.
+// ═════════════════════════════════════════════════════════════
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-01: Enterprise Discovery Engine (Phase 1)
+// Recommendation engine — NOT auto-investment. Partner manually
+// selects each enterprise. AURIENTA provides information only.
+// ───────────────────────────────────────────────────────────
+model DiscoveryProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  riskAppetite         String   @default("balanced") // conservative, balanced, growth, founder_aligned
+  preferredSectors     String   @default("") // comma-separated
+  preferredTiers       String   @default("A,B,C")
+  minHealthRating      String   @default("BBB")
+  minInvestmentEgp     Int      @default(50)
+  maxInvestmentEgp     Int      @default(10000)
+  targetDiversification Int     @default(5)
+  updatedAt            DateTime @updatedAt
+
+  @@index([riskAppetite])
+}
+
+model DiscoveryMatch {
+  id             String   @id @default(cuid())
+  userId         String
+  enterpriseId   String
+  matchScore     Int // 0-100 recommendation score
+  matchReasons   String // JSON array of reason strings
+  dismissed      Boolean  @default(false)
+  invested       Boolean  @default(false) // partner manually invested
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+  @@index([enterpriseId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-02: Profit-Sharing Agreements (Phase 1)
+// Constitutional CONTRACTS — NOT securities. CRE enforces profit
+// distribution from enterprise revenue. No fixed coupon, no
+// secondary market, no trading. Vol 25 §25.7 compliant.
+// ───────────────────────────────────────────────────────────
+model ProfitShareAgreement {
+  id                  String   @id @default(cuid())
+  enterpriseId        String
+  partnerId           String
+  title               String
+  contributionEgp     Int
+  profitSharePct      Float // % of enterprise net profit allocated to partner
+  termMonths          Int
+  startedAt           DateTime @default(now())
+  maturesAt           DateTime
+  status              String   @default("active") // active, fulfilled, terminated
+  totalDistributedEgp Int      @default(0)
+  creDecisionToken    String?
+  createdAt           DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([partnerId])
+  @@index([status])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-03: Governance-as-a-Service (Phase 1)
+// External orgs register governance rules; CRE validates
+// decisions. Pure technology infrastructure — no funds involved.
+// ───────────────────────────────────────────────────────────
+model GaasOrganization {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  type             String // cooperative, ngo, family_office, dao, other
+  contactEmail     String
+  subscriptionPlan String   @default("standard") // free, standard, enterprise
+  monthlyFeeEgp    Int      @default(2500)
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  @@index([slug])
+}
+
+model GaasPolicy {
+  id                String   @id @default(cuid())
+  organizationId    String
+  name              String
+  ruleText          String
+  ruleHash          String // SHA-256 of canonical rule text
+  enforcementLogic  String // JSON: threshold, quorum, required roles
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([organizationId])
+}
+
+model GaasDecision {
+  id              String   @id @default(cuid())
+  organizationId  String
+  policyId        String
+  decisionText    String
+  decisionHash    String
+  verdict         String // allowed, denied, pending
+  reason          String?
+  decisionToken   String? // CRE Ed25519 token
+  actorEmail      String
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([policyId])
+  @@index([verdict])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-04: Standalone Succession Protocol (Phase 2)
+// For non-AURIENTA family businesses. Cryptographic succession
+// (Shamir 2/3) + CRE-enforced execution. No fund management.
+// ───────────────────────────────────────────────────────────
+model StandaloneSuccessionCase {
+  id               String   @id @default(cuid())
+  businessName     String
+  businessType     String // family_business, sme, holding
+  jurisdiction     String   @default("EG")
+  declarantId      String
+  declarationHash   String // SHA-256 of encrypted declaration
+  shamirThreshold  Int      @default(2) // k-of-n
+  shamirShares     Int      @default(3)
+  activationDate   DateTime?
+  status           String   @default("drafted") // drafted, activated, executing, completed
+  feeEgp           Int      @default(5000)
+  createdAt        DateTime @default(now())
+
+  @@index([declarantId])
+  @@index([status])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-05: Diaspora Corridor (Phase 2) — Egypt-only initially
+// Tracks diaspora capital rounds channeled to Egyptian enterprises.
+// ───────────────────────────────────────────────────────────
+model DiasporaCorridorRound {
+  id               String   @id @default(cuid())
+  enterpriseId     String
+  totalPledgedEgp  Int      @default(0)
+  participantCount Int      @default(0)
+  fxRateLocked     Float
+  status           String   @default("open") // open, closed, settled
+  closesAt         DateTime
+  createdAt        DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([status])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-06: AURIENTA Real-Economy Index — AREI (Phase 2)
+// Informational benchmark — NOT investment advice. Weighted by
+// Constitutional Health Score. Published daily.
+// ───────────────────────────────────────────────────────────
+model AreiSnapshot {
+  id              String   @id @default(cuid())
+  date            String   @unique // YYYY-MM-DD
+  indexValue      Float
+  changePct       Float
+  constituentCount Int
+  topMoverId      String?
+  bottomMoverId   String?
+  computedAt     DateTime @default(now())
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-07: Constitutional Endorsement (Phase 3)
+// Reputation-as-collateral — NOT financial staking. Endorsements
+// affect Sovereign Trust Score only. No dividends, no financial value.
+// ───────────────────────────────────────────────────────────
+model ConstitutionalEndorsement {
+  id              String   @id @default(cuid())
+  endorserId     String
+  enterpriseId    String
+  stakeSts        Int // STS points staked (reputation only)
+  active          Boolean  @default(true)
+  outcome         String   @default("pending") // pending, success, failure
+  stsDelta        Int      @default(0) // reputation change on resolution
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@index([endorserId])
+  @@index([enterpriseId])
+  @@index([active])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-08: Predictive Enterprise Genome (Phase 3)
+// ML attributes + graduation prediction. Predictions are NOT
+// guarantees of success. Informational analysis only.
+// ───────────────────────────────────────────────────────────
+model EnterpriseGenome {
+  id                      String   @id @default(cuid())
+  enterpriseId            String   @unique
+  attributesJson          String // 50+ genome attributes (JSON)
+  graduationProbability   Float   @default(0.5) // 0-1
+  riskScore               Float   @default(0.5) // 0-1
+  modelVersion            String   @default("genome-v1")
+  trainedOnCount          Int      @default(0)
+  predictedAt             DateTime @default(now())
+
+  @@index([graduationProbability])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-09: Quadratic Voting (Phase 3)
+// Voice credits proportional to STS; quadratic cost curve.
+// Credits are governance units, NOT currency. No financial value.
+// ───────────────────────────────────────────────────────────
+model QuadraticVoteAllocation {
+  id             String   @id @default(cuid())
+  proposalId     String
+  voterId        String
+  voiceCredits   Int // total credits available
+  creditsSpent   Int      @default(0)
+  voteWeight     Float    @default(0) // sqrt(creditsSpent)
+  createdAt      DateTime @default(now())
+
+  @@unique([proposalId, voterId])
+  @@index([proposalId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-10: Constitutional Zeitgeist (Phase 3)
+// Daily platform sentiment — informational, NOT investment advice.
+// ───────────────────────────────────────────────────────────
+model ZeitgeistSnapshot {
+  id              String   @id @default(cuid())
+  date            String   @unique // YYYY-MM-DD
+  sentimentScore  Float // -1 (bearish) to +1 (bullish)
+  confidencePct   Float // 0-100
+  signalCount     Int
+  topTheme        String?
+  summaryText     String
+  computedAt      DateTime @default(now())
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-11: STS-Weighted Priority Windows (Phase 3)
+// Deterministic allocation — NOT a lottery. Higher STS = earlier
+// access to capital formation rounds. Transparent + constitutional.
+// ───────────────────────────────────────────────────────────
+model PriorityWindowAllocation {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  windowPhase     Int // 1, 2, 3
+  userId          String
+  stsAtAllocation Int
+  allocationRank  Int // deterministic rank (higher STS = lower rank number)
+  allocatedEgp    Int      @default(0)
+  allocatedAt     DateTime?
+  createdAt       DateTime @default(now())
+
+  @@unique([enterpriseId, windowPhase, userId])
+  @@index([enterpriseId, windowPhase])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-12: AI Consensus Oracle Network (Phase 4)
+// External queries to AURIENTA's AI consensus. Technology service
+// — NOT financial advice. Disclaimer on every response.
+// ───────────────────────────────────────────────────────────
+model OracleQuery {
+  id               String   @id @default(cuid())
+  apiKeyHash       String // hashed API key of caller
+  queryText        String
+  queryHash        String
+  consensusVerdict String // JSON consensus result
+  decisionToken    String? // Ed25519 signed token
+  modelsConsulted  String // comma-separated model names
+  responseTimeMs   Int
+  disclaimerShown  Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  @@index([apiKeyHash])
+  @@index([createdAt])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-14: Soulbound Constitutional Credentials (Phase 4)
+// Non-transferable identity NFTs — CANNOT be sold or transferred.
+// isTransferable is ALWAYS false. Revocable by AURIENTA.
+// ───────────────────────────────────────────────────────────
+model SoulboundCredential {
+  id                  String   @id @default(cuid())
+  userId              String   @unique // one credential per user (soulbound)
+  credentialType      String   @default("identity") // identity, kyc_level, governance_badge
+  verificationLevel   String
+  sovereignTrustScore Int
+  anchorPublicKey     String // Ed25519 public key hex
+  tokenUri            String // metadata URI (IPFS)
+  isTransferable      Boolean  @default(false) // ALWAYS false — soulbound
+  isRevoked           Boolean  @default(false)
+  mintedAt            DateTime @default(now())
+  revokedAt           DateTime?
+
+  @@index([credentialType])
+  @@index([isRevoked])
+}
+
+// ───────────────────────────────────────────────────────────
+// ROADMAP-15: Risk Profile API (Phase 4)
+// Data service for insurers — NOT insurance underwriting.
+// AURIENTA provides data only. Insurance companies partner directly.
+// ───────────────────────────────────────────────────────────
+model RiskProfileQuery {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  requesterOrg    String // insurance company name
+  apiKeyHash      String
+  healthScore     Int
+  riskFactors     String // JSON
+  recommendation  String // low_risk, moderate_risk, elevated_risk
+  disclaimerShown Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([requesterOrg])
+}

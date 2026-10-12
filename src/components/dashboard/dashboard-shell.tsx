@@ -18,6 +18,9 @@ import {
   // P3-005: Diversified icons to eliminate duplicates across NAV items.
   Building, Castle, FileCheck, Factory,
   Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase,
+  // Modified Implementation Roadmap — new feature icons.
+  Telescope, HandCoins, Webhook, HeartHandshake, ChartColumn, ThumbsUp,
+  Dna, Vote, Waves, ListOrdered, Satellite, Fingerprint, Umbrella,
 } from "lucide-react";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { cn } from "@/lib/utils";
@@ -144,6 +147,20 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ElementType> = {
   PieChart,
   CheckCircle2,
   Briefcase,
+  // Modified Implementation Roadmap — register new feature icons.
+  Telescope,
+  HandCoins,
+  Webhook,
+  HeartHandshake,
+  ChartColumn,
+  ThumbsUp,
+  Dna,
+  Vote,
+  Waves,
+  ListOrdered,
+  Satellite,
+  Fingerprint,
+  Umbrella,
 };
 
 // Helper: resolve a NavIconName to a React component (with a safe fallback).

@@ -112,7 +112,21 @@ export type NavIconName =
   | "Gauge"
   | "PieChart"
   | "CheckCircle2"
-  | "Briefcase";
+  | "Briefcase"
+  // Modified Implementation Roadmap — new feature icons.
+  | "Telescope"
+  | "HandCoins"
+  | "Webhook"
+  | "HeartHandshake"
+  | "ChartColumn"
+  | "ThumbsUp"
+  | "Dna"
+  | "Vote"
+  | "Waves"
+  | "ListOrdered"
+  | "Satellite"
+  | "Fingerprint"
+  | "Umbrella";
 
 export type NavItem = {
   href: string;
@@ -343,6 +357,23 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/ir", label: "Capital Partner Relations", icon: "MessageSquare", group: "Institutional Services" },
   // P3-005: TrendingUp is reserved for Drift Detector; DRIP uses PieChart (dividend share of holdings).
   { href: "/dashboard/drip", label: "DRIP (Dividend Reinvest)", icon: "PieChart", group: "Institutional Services" },
+
+  // ── Modified Implementation Roadmap (15 compliance-cleared features) ──
+  // See LEGAL_COMPLIANCE_AUDIT.md §297. All features preserve Zero Custody,
+  // real-economy-only, and uniform-fee constitutional rules.
+  { href: "/dashboard/enterprise-discovery", label: "Enterprise Discovery", icon: "Telescope", group: "Workspace" },
+  { href: "/dashboard/profit-sharing", label: "Profit-Sharing Agreements", icon: "HandCoins", group: "Workspace" },
+  { href: "/dashboard/priority-allocation", label: "STS Priority Allocation", icon: "ListOrdered", group: "Workspace" },
+  { href: "/dashboard/soulbound", label: "Soulbound Credential", icon: "Fingerprint", group: "Workspace" },
+  { href: "/dashboard/endorsements", label: "Constitutional Endorsement", icon: "ThumbsUp", group: "Capital & Workforce" },
+  { href: "/dashboard/genome", label: "Enterprise Genome", icon: "Dna", group: "Intelligence" },
+  { href: "/dashboard/arei", label: "Real-Economy Index", icon: "ChartColumn", group: "Intelligence" },
+  { href: "/dashboard/quadratic-voting", label: "Quadratic Voting", icon: "Vote", group: "Intelligence" },
+  { href: "/dashboard/zeitgeist", label: "Constitutional Zeitgeist", icon: "Waves", group: "Intelligence" },
+  { href: "/dashboard/oracle", label: "AI Consensus Oracle", icon: "Satellite", group: "Intelligence" },
+  { href: "/dashboard/gaas", label: "Governance-as-a-Service", icon: "Webhook", group: "Institutional Services" },
+  { href: "/dashboard/standalone-succession", label: "Standalone Succession", icon: "HeartHandshake", group: "Institutional Services" },
+  { href: "/dashboard/risk-profile", label: "Risk Profile API", icon: "Umbrella", group: "Institutional Services" },
 ];
 
 // ─── Groups ─────────────────────────────────────────────────────────────
