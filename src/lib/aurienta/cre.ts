@@ -1540,3 +1540,356 @@ export async function enforceCircuitBreaker(params: {
     decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
   };
 }
+
+// ════════════════════════════════════════════════════════════════
+// MODIFIED IMPLEMENTATION ROADMAP — CRE Policies (Legal Compliance Audit)
+// All policies preserve: Zero Custody (I-1.1), No Speculation (I-1.3),
+// Uniform Fee (I-1.4), Real Economy Only (I-1.8).
+// ════════════════════════════════════════════════════════════════
+
+// ── ROADMAP-02: Profit-Sharing Agreement Gate ──
+// Constitutional CONTRACT (not a security). No fixed coupon, no
+// secondary market, no trading. CRE enforces distribution from
+// enterprise revenue only. Violates if profitSharePct exceeds cap
+// or contribution flows to AURIENTA (Zero Custody).
+export function enforceProfitShareAgreement(params: {
+  contributionEgp: number;
+  profitSharePct: number;
+  termMonths: number;
+  beneficiary: string;
+}): CreVerdict {
+  const policy = "profit_share_agreement.rego";
+  const payloadHash = hashPayload({
+    c: params.contributionEgp,
+    p: params.profitSharePct,
+    t: params.termMonths,
+    b: params.beneficiary,
+  });
+  // Zero Custody: beneficiary must never be AURIENTA.
+  if (AURIENTA_DENY.test(params.beneficiary)) {
+    return {
+      allowed: false,
+      reason: "Zero Custody: profit-share beneficiary cannot be AURIENTA",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Profit share cap: no partner may take >30% of net profit (anti-capture).
+  if (params.profitSharePct > 30) {
+    return {
+      allowed: false,
+      reason: "Profit share exceeds 30% anti-capture cap",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Term must be 1-60 months (no perpetual instruments).
+  if (params.termMonths < 1 || params.termMonths > 60) {
+    return {
+      allowed: false,
+      reason: "Term must be between 1 and 60 months",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Contribution floor: 50 EGP (Tier A accessibility).
+  if (params.contributionEgp < 50) {
+    return {
+      allowed: false,
+      reason: "Minimum contribution is 50 EGP",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-03: GaaS Decision Enforcement ──
+// External org registers a policy; CRE validates the decision against
+// the policy's enforcementLogic (threshold/quorum). Pure technology —
+// no funds, no securities.
+export function enforceGaasDecision(params: {
+  ruleHash: string;
+  decisionHash: string;
+  enforcementLogic: { threshold: number; quorum: number; approverCount: number };
+}): CreVerdict {
+  const policy = "gaas_decision.rego";
+  const payloadHash = hashPayload({
+    rh: params.ruleHash,
+    dh: params.decisionHash,
+    el: params.enforcementLogic,
+  });
+  const { threshold, quorum, approverCount } = params.enforcementLogic;
+  // Quorum check: enough approvers participated.
+  if (approverCount < quorum) {
+    return {
+      allowed: false,
+      reason: `Quorum not met: ${approverCount}/${quorum} approvers`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Threshold check: approval ratio meets the policy threshold.
+  const ratio = approverCount > 0 ? approverCount / Math.max(quorum, approverCount) : 0;
+  if (ratio < threshold / 100) {
+    return {
+      allowed: false,
+      reason: `Threshold not met: ${(ratio * 100).toFixed(1)}% < ${threshold}%`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-07: Constitutional Endorsement Gate ──
+// Reputation-as-collateral — NOT financial staking. The "stake" is
+// STS points (reputation), not money. No dividends, no financial value.
+// Enforces: endorser has enough STS, enterprise is active, cap per endorser.
+export function enforceConstitutionalEndorsement(params: {
+  endorserSts: number;
+  stakeSts: number;
+  enterpriseStatus: string;
+  existingStakesByUser: number;
+}): CreVerdict {
+  const policy = "constitutional_endorsement.rego";
+  const payloadHash = hashPayload({
+    sts: params.endorserSts,
+    stake: params.stakeSts,
+    ent: params.enterpriseStatus,
+    exist: params.existingStakesByUser,
+  });
+  // Enterprise must be active (can't endorse frozen/graduated).
+  if (params.enterpriseStatus !== "active") {
+    return {
+      allowed: false,
+      reason: "Cannot endorse non-active enterprise",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Endorser must have minimum STS (40 = Active Member).
+  if (params.endorserSts < 40) {
+    return {
+      allowed: false,
+      reason: "Endorser STS below 40 (Active Member) threshold",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Cap: max 15 STS per endorsement, max 5 active endorsements per user.
+  if (params.stakeSts > 15) {
+    return {
+      allowed: false,
+      reason: "Endorsement stake exceeds 15 STS cap",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  if (params.existingStakesByUser >= 5) {
+    return {
+      allowed: false,
+      reason: "Maximum 5 active endorsements per user",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-09: Quadratic Voting Enforcement ──
+// Voice credits proportional to STS; cost is quadratic. Credits are
+// governance units, NOT currency. No financial value.
+export function enforceQuadraticVote(params: {
+  voterSts: number;
+  voiceCreditsAvailable: number;
+  creditsSpent: number;
+  alreadySpent: number;
+}): CreVerdict {
+  const policy = "quadratic_voting.rego";
+  const payloadHash = hashPayload({
+    sts: params.voterSts,
+    avail: params.voiceCreditsAvailable,
+    spent: params.creditsSpent,
+    prev: params.alreadySpent,
+  });
+  // Voice credits = floor(STS / 5), capped at 20.
+  const expectedCredits = Math.min(20, Math.floor(params.voterSts / 5));
+  if (params.voiceCreditsAvailable !== expectedCredits) {
+    return {
+      allowed: false,
+      reason: `Voice credits must equal floor(STS/5) = ${expectedCredits}`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  const totalSpent = params.alreadySpent + params.creditsSpent;
+  if (totalSpent > params.voiceCreditsAvailable) {
+    return {
+      allowed: false,
+      reason: "Total credits spent exceeds available budget",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  if (params.creditsSpent < 0) {
+    return {
+      allowed: false,
+      reason: "Credits spent cannot be negative",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-11: STS-Weighted Priority Window Allocation ──
+// DETERMINISTIC — NOT a lottery. Higher STS = earlier (lower-rank)
+// access. No random element. Transparent + constitutional.
+export function enforcePriorityWindowAllocation(params: {
+  userSts: number;
+  windowPhase: number;
+  alreadyAllocatedThisPhase: boolean;
+}): CreVerdict {
+  const policy = "priority_window_allocation.rego";
+  const payloadHash = hashPayload({
+    sts: params.userSts,
+    phase: params.windowPhase,
+    alloc: params.alreadyAllocatedThisPhase,
+  });
+  // Phase 1 requires STS >= 50 (Trusted Contributor+).
+  if (params.windowPhase === 1 && params.userSts < 50) {
+    return {
+      allowed: false,
+      reason: "Phase 1 requires STS >= 50 (Trusted Contributor)",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Phase 2 requires STS >= 35.
+  if (params.windowPhase === 2 && params.userSts < 35) {
+    return {
+      allowed: false,
+      reason: "Phase 2 requires STS >= 35",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // One allocation per phase per user.
+  if (params.alreadyAllocatedThisPhase) {
+    return {
+      allowed: false,
+      reason: "User already allocated in this phase",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-14: Soulbound Credential Gate ──
+// Non-transferable identity NFT. isTransferable is ALWAYS false.
+// Cannot be sold or traded (prevents securities classification).
+export function enforceSoulboundCredential(params: {
+  isTransferable: boolean;
+  userVerified: boolean;
+  existingCredential: boolean;
+}): CreVerdict {
+  const policy = "soulbound_credential.rego";
+  const payloadHash = hashPayload({
+    transfer: params.isTransferable,
+    verified: params.userVerified,
+    exist: params.existingCredential,
+  });
+  // HARD RULE: credential must be non-transferable.
+  if (params.isTransferable) {
+    return {
+      allowed: false,
+      reason: "Constitutional credential must be non-transferable (soulbound)",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // User must be verified (L1+ minimum).
+  if (!params.userVerified) {
+    return {
+      allowed: false,
+      reason: "User must be L1+ verified to mint credential",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // One credential per user.
+  if (params.existingCredential) {
+    return {
+      allowed: false,
+      reason: "User already has a soulbound credential",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── ROADMAP-15: Risk Profile Query Gate ──
+// Data service for insurers — NOT insurance underwriting. AURIENTA
+// provides data only. Must show disclaimer on every response.
+export function enforceRiskProfileQuery(params: {
+  enterpriseId: string;
+  requesterApiKeyHash: string;
+  disclaimerAccepted: boolean;
+}): CreVerdict {
+  const policy = "risk_profile_query.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    req: params.requesterApiKeyHash,
+    disc: params.disclaimerAccepted,
+  });
+  // Disclaimer MUST be accepted before data is served.
+  if (!params.disclaimerAccepted) {
+    return {
+      allowed: false,
+      reason: "Risk profile disclaimer must be accepted before query",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  // Enterprise ID must be present.
+  if (!params.enterpriseId) {
+    return {
+      allowed: false,
+      reason: "Enterprise ID required for risk profile query",
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}

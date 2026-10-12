@@ -109,9 +109,13 @@ export const config = {
   // - /api/cron/* — cron endpoints use token auth via ?token= query (DE-16/17),
   //   not a session cookie; they must not be blocked by the CSRF middleware
   //   when invoked by Vercel Cron (cross-origin, no CSRF cookie).
+  // - /api/oracle/consensus — public POST endpoint authenticated by an API
+  //   key in the request body (not a session cookie). External curl callers
+  //   have no Origin header and no CSRF cookie — exempting the route allows
+  //   them to reach it. Per-query pricing + audit logging still applies.
   // - /dashboard/* — dashboard pages exempt from middleware to prevent
   //   any interference with the session cookie. The dashboard layout's
   //   getCurrentUser() provides auth; CSRF protection on dashboard POSTs
   //   is handled by the csrfFetch client helper.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|api/cron|dashboard|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|api/cron|api/oracle/consensus|dashboard|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2)$).*)"],
 };

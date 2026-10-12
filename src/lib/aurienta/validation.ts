@@ -348,3 +348,46 @@ export const screeningSchema = z.object({
   hitDetails: z.string().optional(),
   resolution: z.string().optional(),
 });
+
+// ── Profit-Sharing Agreement (ROADMAP-02) ──
+// Constitutional CONTRACT (not a security). No fixed coupon, no secondary
+// market, no trading. CRE enforces distribution from enterprise revenue.
+// Compliant with Egyptian Capital Market Law 95/1992 (contractual profit-share,
+// not a tradable instrument).
+export const profitShareCreateSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  title: z.string().min(3, "Title must be at least 3 characters").max(200),
+  contributionEgp: z.number().int().min(50, "Minimum contribution is 50 EGP").max(500_000_000),
+  profitSharePct: z.number().min(1, "Profit share must be at least 1%").max(30, "Profit share cannot exceed 30%"),
+  termMonths: z.number().int().min(1, "Term must be at least 1 month").max(60, "Term cannot exceed 60 months"),
+});
+
+// PATCH body for /api/profit-sharing/[agreementId]
+// action = "terminate" sets the agreement status to "terminated".
+export const profitSharePatchSchema = z.object({
+  action: z.enum(["terminate"]),
+  reason: z.string().max(500).optional(),
+});
+
+// ── STS Priority Window Allocation (ROADMAP-11) ──
+// Deterministic, STS-weighted priority access to capital formation rounds.
+// NOT a lottery — compliant with Egyptian Gambling Law 10/1956.
+// POST body for /api/priority-allocation — register interest in a phase.
+export const priorityAllocationRegisterSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  windowPhase: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+});
+
+// PATCH body for /api/priority-allocation/[allocationId] — execute allocation
+// (manager only). Sets allocatedEgp + allocatedAt=now.
+export const priorityAllocationExecuteSchema = z.object({
+  amountEgp: z.number().int().min(0, "Amount must be a non-negative integer").max(500_000_000),
+});
+
+// GET query params for /api/priority-allocation/rankings
+export const priorityAllocationRankingsQuerySchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  windowPhase: z
+    .union([z.literal("1"), z.literal("2"), z.literal("3")])
+    .transform((v) => Number.parseInt(v, 10) as 1 | 2 | 3),
+});

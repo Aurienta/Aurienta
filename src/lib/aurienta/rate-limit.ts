@@ -68,6 +68,8 @@ export const limiters = {
   appeals: rateLimit({ windowMs: 60_000, max: 5, key: "appeals" }),
   // Diaspora: 10/min
   diaspora: rateLimit({ windowMs: 60_000, max: 10, key: "diaspora" }),
+  // Priority allocation: register/execute — 10/min (money-moving adjacent)
+  priorityAllocation: rateLimit({ windowMs: 60_000, max: 10, key: "priority_allocation" }),
 };
 
 import { NextResponse } from "next/server";
