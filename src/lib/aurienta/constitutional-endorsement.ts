@@ -84,13 +84,13 @@ function mapRow<
     createdAt: Date;
     resolvedAt: Date | null;
   },
->(row: T, enterprise: { name: string; tier: string }): Endorsement {
+>(row: T, enterprise: { name: string; tier: string } | null): Endorsement {
   return {
     id: row.id,
     endorserId: row.endorserId,
     enterpriseId: row.enterpriseId,
-    enterpriseName: enterprise.name,
-    enterpriseTier: enterprise.tier,
+    enterpriseName: enterprise?.name ?? "Unknown",
+    enterpriseTier: enterprise?.tier ?? "?",
     stakeSts: row.stakeSts,
     active: row.active,
     outcome: row.outcome as Endorsement["outcome"],
@@ -262,15 +262,18 @@ export async function createEndorsement(
 // Returns ALL of a user's endorsements (active + resolved) with enterprise
 // names, newest first. Used by the dashboard.
 export async function listEndorsementsByUser(userId: string): Promise<Endorsement[]> {
+  // ConstitutionalEndorsement uses a plain String FK (no Prisma relation),
+  // so we join manually via a batched enterprise lookup.
   const rows = await db.constitutionalEndorsement.findMany({
     where: { endorserId: userId },
-    include: {
-      enterprise: { select: { name: true, tier: true } },
-    },
     orderBy: [{ active: "desc" }, { createdAt: "desc" }],
   });
-
-  return rows.map((r) => mapRow(r, r.enterprise));
+  const entIds = [...new Set(rows.map((r) => r.enterpriseId))];
+  const enterprises = entIds.length
+    ? await db.enterprise.findMany({ where: { id: { in: entIds } }, select: { id: true, name: true, tier: true } })
+    : [];
+  const entMap = new Map(enterprises.map((e) => [e.id, e]));
+  return rows.map((r) => mapRow(r, entMap.get(r.enterpriseId) ?? null));
 }
 
 // ── listEndorsementsForEnterprise ──
@@ -281,13 +284,13 @@ export async function listEndorsementsForEnterprise(
 ): Promise<Endorsement[]> {
   const rows = await db.constitutionalEndorsement.findMany({
     where: { enterpriseId },
-    include: {
-      enterprise: { select: { name: true, tier: true } },
-    },
     orderBy: [{ active: "desc" }, { createdAt: "desc" }],
   });
-
-  return rows.map((r) => mapRow(r, r.enterprise));
+  const enterprise = await db.enterprise.findUnique({
+    where: { id: enterpriseId },
+    select: { name: true, tier: true },
+  });
+  return rows.map((r) => mapRow(r, enterprise));
 }
 
 // ── resolveEndorsement ──
