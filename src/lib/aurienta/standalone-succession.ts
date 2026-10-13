@@ -192,10 +192,9 @@ export async function createCase(
       },
     });
 
-    // Anchor the creation on the immutable ledger (enterpriseId=null — this
+    // Anchor the creation on the immutable ledger (enterpriseId omitted — this
     // case is NOT an AURIENTA enterprise; it is an external family business).
     await appendLedgerEvent(tx, {
-      enterpriseId: null,
       eventType: "standalone_succession_created",
       payload: {
         caseId: row.id,
@@ -284,7 +283,6 @@ export async function activateCase(
     });
 
     await appendLedgerEvent(tx, {
-      enterpriseId: null,
       eventType: "standalone_succession_activated",
       payload: {
         caseId: row.id,

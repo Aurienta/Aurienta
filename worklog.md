@@ -16166,3 +16166,38 @@ Stage Summary:
 - 1 runtime bug fixed (endorsements include → manual join)
 - All 15 roadmap features verified end-to-end: pages render + APIs return data
 - Total deliverables: 73 Prisma models, 39 CRE functions, 101 dashboard pages, 171 API routes, 77 lib modules
+
+---
+Task ID: BUILD-FIX
+Agent: general-purpose
+Task: Fix all TypeScript build errors so Vercel deploy succeeds
+
+Work Log:
+- Read worklog FOUNDATION section to load context: 17 Prisma models with plain String FKs (no relation directives) — so `include: { enterprise }` is invalid against them. Prior task already fixed `listEndorsementsByUser`/`listEndorsementsForEnterprise` in constitutional-endorsement.ts to use a manual batched join.
+- Confirmed the 16 reported TypeScript build errors block `bun run build` and therefore Vercel production deploy.
+- Ran `DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db bun run build` to reproduce the error list, then fixed each error:
+  - Error 11 (command-palette.tsx): Added the 13 missing Modified Implementation Roadmap icons (Telescope, HandCoins, Webhook, HeartHandshake, ChartColumn, ThumbsUp, Dna, Vote, Waves, ListOrdered, Satellite, Fingerprint, Umbrella) to both the `lucide-react` import block AND the local `NAV_ICON_REGISTRY` object. Pattern mirrored dashboard-shell.tsx lines 18-24/150-163. Vote and HandCoins were already imported (used by ACTION_COMMANDS) — only added the other 11 to the imports, then added all 13 to the registry. This unblocks the command palette on every roadmap dashboard page.
+  - Errors 1-7 (endorsements/page.tsx): Root cause was `include: { enterprise: ... }` against `ConstitutionalEndorsement`, which has no Prisma relation (plain String FK). TypeScript narrows the resulting `e.enterprise` to `never` because the include clause is silently invalid → "Property 'tier'/'slug'/'name' does not exist on type 'never'". Replaced BOTH include sites (my-endorsements fetch + managed-enterprises endorsements fetch) with the manual batched-join pattern: fetch rows → collect distinct `enterpriseId`s → `db.enterprise.findMany({ where: { id: { in: [...] } }, select: ... })` → `Map<id, enterprise>` → in-memory join at map time. The `outcome` field is `string` on the Prisma row but `"pending"|"success"|"failure"` on the client type — added `as "pending" | "success" | "failure"` cast on both map sites (lines 141, 165).
+  - Errors 8-9 (endorsements-client.tsx): `timeAgo()` in `src/lib/aurienta/format.ts` expects a `Date`, but the Endorsement client type stores `createdAt`/`resolvedAt` as ISO strings (for JSON serialization across the server/client boundary). Wrapped both call sites at lines 719 and 721 with `new Date(...)` so the conversion happens at the call site rather than weakening the helper's type signature.
+  - Error 10 (enterprise-discovery-client.tsx): The `DiscoveryProfileClient` type was missing `updatedAt` even though the component's `useEffect` dependency array referenced `profile?.updatedAt`. Added `updatedAt?: string` to the type. Also updated `src/app/dashboard/enterprise-discovery/page.tsx` to actually populate `updatedAt: profile.updatedAt.toISOString()` so the new field carries real data (the useEffect dependency will now re-sync when the profile changes server-side).
+  - Error 12 (constitutional-endorsement.ts): Found the SECOND `include: { enterprise }` site that the previous fix task missed — it was in `resolveEndorsement` (line 309). Replaced with the same plain `findUnique` (no include), since `resolveEndorsement` doesn't actually need enterprise display fields — it only needs `existing.enterpriseId`, `existing.stakeSts`, `existing.endorserId`, `existing.active`, `existing.outcome`, all of which are direct columns on the row.
+  - Errors 13-14 (offline-pwa-config.ts): `navigator.standalone` (iOS Safari non-standard PWA property) is not in the TS DOM lib's `Navigator` type. Added a top-of-file ambient declaration: `declare global { interface Navigator { standalone?: boolean; } }`. The existing `typeof navigator.standalone === "boolean"` runtime guard already handles the case where the property is absent, so no logic change needed.
+  - Errors 15-16 (standalone-succession.ts): Two `appendLedgerEvent` calls passed `enterpriseId: null` for standalone succession cases (no AURIENTA enterprise — external family business). The `appendLedgerEvent` signature is `enterpriseId?: string`, which accepts `string | undefined` but NOT `null`. Changed both sites (lines 198, 287) to omit the field entirely — `appendLedgerEvent` already treats an absent `enterpriseId` as "global chain" (line 499 of cre.ts: `where: params.enterpriseId ? { enterpriseId: params.enterpriseId } : { enterpriseId: null }`), so omitting the field produces the same DB behavior with no type conflict.
+- Re-ran build: discovered 1 additional error not in the original list — `src/app/api/diaspora-corridor/route.ts(158,29): Argument of type 'DiasporaCorridorRound' is not assignable to parameter of type 'DiasporaCorridorRoundWithEnterprise'`. Root cause: `createRound` returned `DiasporaCorridorRound` (without enterprise display fields), but the route's `serializeRound` expected `DiasporaCorridorRoundWithEnterprise`. Fixed by widening `createRound`'s return type to `DiasporaCorridorRoundWithEnterprise` and attaching the 4 enterprise display fields (`enterpriseName`, `enterpriseSlug`, `enterpriseTier`, `enterpriseSector`) at the end of the function. The function already loaded the enterprise for validation, so this adds zero DB round-trips.
+- Verified final build: `bun run build` exits 0 (✓ Compiled in 8.7s, ✓ TypeScript in 4.5s, ✓ 21/21 static pages). The two stderr warnings (`skipMiddlewareUrlNormalize` deprecated; middleware→proxy codemod hint) and the `FIELD_ENCRYPTION_KEY is not set` runtime warning are pre-existing environment issues, not type errors.
+- Verified lint: `bun run lint` → 0 errors, 481 pre-existing warnings (unchanged from FOUNDATION baseline).
+
+Stage Summary:
+- Files modified: 7
+  - src/components/dashboard/ux/command-palette.tsx — added 11 new icon imports + 13 entries to NAV_ICON_REGISTRY (Vote + HandCoins already imported for ACTION_COMMANDS)
+  - src/app/dashboard/endorsements/page.tsx — replaced 2 invalid `include: { enterprise }` clauses with manual batched enterprise joins (same pattern as listEndorsementsByUser); added `as "pending" | "success" | "failure"` casts on outcome
+  - src/components/dashboard/roadmap/endorsements-client.tsx — wrapped 2 `timeAgo(...)` call sites with `new Date(...)` to bridge ISO string → Date for the format helper
+  - src/components/dashboard/roadmap/enterprise-discovery-client.tsx — added `updatedAt?: string` to DiscoveryProfileClient type
+  - src/app/dashboard/enterprise-discovery/page.tsx — populate `updatedAt: profile.updatedAt.toISOString()` on the client profile payload
+  - src/lib/aurienta/constitutional-endorsement.ts — removed the second `include: { enterprise }` in resolveEndorsement (no longer needed; direct-column access only)
+  - src/lib/aurienta/offline-pwa-config.ts — added `declare global { interface Navigator { standalone?: boolean; } }` for iOS Safari PWA detection
+  - src/lib/aurienta/standalone-succession.ts — removed 2 invalid `enterpriseId: null` args on appendLedgerEvent (signature is `enterpriseId?: string`, not `string | null`)
+  - src/lib/aurienta/diaspora-corridor.ts — widened `createRound` return type to `DiasporaCorridorRoundWithEnterprise` + attached the 4 enterprise display fields at the end (no new DB queries)
+- Build: PASS (exit 0; ✓ Compiled 8.7s, ✓ TypeScript 4.5s, ✓ 21/21 static pages)
+- Lint: 0 errors (481 pre-existing warnings, unchanged from FOUNDATION baseline)
+- Vercel deploy: now unblocked

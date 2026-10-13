@@ -74,6 +74,7 @@ export default async function EnterpriseDiscoveryPage() {
         minInvestmentEgp: profile.minInvestmentEgp,
         maxInvestmentEgp: profile.maxInvestmentEgp,
         targetDiversification: profile.targetDiversification,
+        updatedAt: profile.updatedAt.toISOString(),
       }
     : null;
 

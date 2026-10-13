@@ -304,11 +304,12 @@ export async function resolveEndorsement(
   outcome: "success" | "failure",
   resolvedBy: string
 ): Promise<void> {
+  // ConstitutionalEndorsement uses a plain String FK (no Prisma relation),
+  // so we cannot `include: { enterprise }`. Fetch the row, then look up the
+  // enterprise separately if needed (we currently only need it for the audit
+  // metadata, which is computed from the row itself).
   const existing = await db.constitutionalEndorsement.findUnique({
     where: { id: endorsementId },
-    include: {
-      enterprise: { select: { id: true, name: true, tier: true } },
-    },
   });
 
   if (!existing) {

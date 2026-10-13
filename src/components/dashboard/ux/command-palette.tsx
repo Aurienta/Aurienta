@@ -92,6 +92,21 @@ import {
   Sparkles,
   HelpCircle,
   Coins,
+  // Modified Implementation Roadmap — new feature icons (must be registered
+  // in NAV_ICON_REGISTRY below so the palette resolves them when NAV items
+  // reference them by name). Vote + HandCoins are also used by ACTION_COMMANDS
+  // above; importing them once here is sufficient.
+  Telescope,
+  Webhook,
+  HeartHandshake,
+  ChartColumn,
+  ThumbsUp,
+  Dna,
+  Waves,
+  ListOrdered,
+  Satellite,
+  Fingerprint,
+  Umbrella,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -189,6 +204,21 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ComponentType<{ className?: s
   PieChart,
   CheckCircle2,
   Briefcase,
+  // Modified Implementation Roadmap — register new feature icons so NAV
+  // items that reference them by name resolve correctly via resolveNavIcon().
+  Telescope,
+  HandCoins,
+  Webhook,
+  HeartHandshake,
+  ChartColumn,
+  ThumbsUp,
+  Dna,
+  Vote,
+  Waves,
+  ListOrdered,
+  Satellite,
+  Fingerprint,
+  Umbrella,
 };
 
 function resolveNavIcon(name: NavIconName): React.ComponentType<{ className?: string }> {

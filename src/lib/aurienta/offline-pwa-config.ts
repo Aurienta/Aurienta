@@ -10,6 +10,15 @@
 // in the UI so users can visually distinguish PWA/queue indicators from
 // constitutional gold accenting.
 
+// iOS Safari exposes a non-standard `navigator.standalone` boolean that
+// indicates whether the page is running as an installed PWA. The TS DOM lib
+// doesn't include it, so we declare it here for type-safety.
+declare global {
+  interface Navigator {
+    standalone?: boolean;
+  }
+}
+
 // ── PWA Manifest (indigo theme) ───────────────────────────────────────────
 //
 // This manifest object is exported for programmatic use (e.g. embedding into

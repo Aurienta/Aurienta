@@ -90,6 +90,9 @@ export type DiscoveryProfileClient = {
   minInvestmentEgp: number;
   maxInvestmentEgp: number;
   targetDiversification: number;
+  // Optional timestamp surfaced by the server so the profile form can re-sync
+  // when the underlying data changes (used as a useEffect dependency).
+  updatedAt?: string;
 };
 
 export type DiscoveryMatchClient = {

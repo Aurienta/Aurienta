@@ -134,7 +134,7 @@ function validateClosesAt(closesAt: Date): void {
  */
 export async function createRound(
   params: CreateRoundParams
-): Promise<DiasporaCorridorRound> {
+): Promise<DiasporaCorridorRoundWithEnterprise> {
   validateFxRate(params.fxRateLocked);
   validateClosesAt(params.closesAt);
 
@@ -194,7 +194,15 @@ export async function createRound(
     },
   });
 
-  return toExternal(created);
+  // createRound already loaded the enterprise above; attach its display
+  // fields so the API route can serialize without a second lookup.
+  return {
+    ...toExternal(created),
+    enterpriseName: enterprise.name,
+    enterpriseSlug: enterprise.slug,
+    enterpriseTier: enterprise.tier,
+    enterpriseSector: enterprise.sector,
+  };
 }
 
 /**

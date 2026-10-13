@@ -716,9 +716,9 @@ function EndorsementCard({
               <HandCoins className="h-3 w-3 text-indigo-500" />
               Stake: <strong className="text-slate-700">{endorsement.stakeSts} STS</strong>
             </span>
-            <span>Created {timeAgo(endorsement.createdAt)}</span>
+            <span>Created {timeAgo(new Date(endorsement.createdAt))}</span>
             {endorsement.resolvedAt && (
-              <span>Resolved {timeAgo(endorsement.resolvedAt)}</span>
+              <span>Resolved {timeAgo(new Date(endorsement.resolvedAt))}</span>
             )}
           </div>
         </div>

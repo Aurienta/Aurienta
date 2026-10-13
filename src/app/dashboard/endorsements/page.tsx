@@ -46,18 +46,30 @@ export default async function EndorsementsPage() {
   if (!user) redirect("/signin?next=/dashboard/endorsements");
 
   // ── 1. The user's existing endorsements ──
-  const myEndorsements = await db.constitutionalEndorsement.findMany({
+  // ConstitutionalEndorsement uses a plain String FK (no Prisma relation),
+  // so we join manually via a batched enterprise lookup (same pattern as
+  // `listEndorsementsByUser` in src/lib/aurienta/constitutional-endorsement.ts).
+  const myEndorsementRows = await db.constitutionalEndorsement.findMany({
     where: { endorserId: user.id },
-    include: {
-      enterprise: { select: { id: true, name: true, tier: true, slug: true } },
-    },
     orderBy: [{ active: "desc" }, { createdAt: "desc" }],
   });
+  const myEndorsementEntIds = [...new Set(myEndorsementRows.map((e) => e.enterpriseId))];
+  const myEndorsementEnterprises = myEndorsementEntIds.length
+    ? await db.enterprise.findMany({
+        where: { id: { in: myEndorsementEntIds } },
+        select: { id: true, name: true, tier: true, slug: true },
+      })
+    : [];
+  const myEndorsementEntMap = new Map(myEndorsementEnterprises.map((e) => [e.id, e]));
+  const myEndorsements = myEndorsementRows.map((r) => ({
+    row: r,
+    enterprise: myEndorsementEntMap.get(r.enterpriseId) ?? null,
+  }));
 
   // IDs the user has already actively endorsed (for filtering the "can
   // endorse" list).
   const alreadyEndorsedIds = new Set(
-    myEndorsements.filter((e) => e.active).map((e) => e.enterpriseId)
+    myEndorsements.filter((e) => e.row.active).map((e) => e.row.enterpriseId)
   );
 
   // ── 2. Enterprises the user manages / founded / owns ──
@@ -74,16 +86,27 @@ export default async function EndorsementsPage() {
 
   // For each managed enterprise, fetch its endorsements + stats in parallel.
   // (These power the "Resolve" UI on the manager's side of the page.)
+  // ConstitutionalEndorsement has no Prisma relation to Enterprise (plain
+  // String FK), so we fetch rows first, then batch-join enterprises.
   const managedEnterpriseIds = managedEnterprises.map((m) => m.enterprise.id);
-  const endorsementsByEnterprise = managedEnterpriseIds.length
+  const managedEndorsementRows = managedEnterpriseIds.length
     ? await db.constitutionalEndorsement.findMany({
         where: { enterpriseId: { in: managedEnterpriseIds } },
-        include: {
-          enterprise: { select: { id: true, name: true, tier: true, slug: true } },
-        },
         orderBy: [{ active: "desc" }, { createdAt: "desc" }],
       })
     : [];
+  const managedEndorsementEntIds = [...new Set(managedEndorsementRows.map((e) => e.enterpriseId))];
+  const managedEndorsementEnterprises = managedEndorsementEntIds.length
+    ? await db.enterprise.findMany({
+        where: { id: { in: managedEndorsementEntIds } },
+        select: { id: true, name: true, tier: true, slug: true },
+      })
+    : [];
+  const managedEndorsementEntMap = new Map(managedEndorsementEnterprises.map((e) => [e.id, e]));
+  const endorsementsByEnterprise = managedEndorsementRows.map((r) => ({
+    row: r,
+    enterprise: managedEndorsementEntMap.get(r.enterpriseId) ?? null,
+  }));
 
   // ── 3. Active enterprises this user CAN endorse ──
   // Status active, not already endorsed (active) by them, not founded by them.
@@ -107,18 +130,18 @@ export default async function EndorsementsPage() {
 
   // ── Map to client-friendly shapes (ISO dates, no Date objects) ──
   const myEndorsementsForClient = myEndorsements.map((e) => ({
-    id: e.id,
-    endorserId: e.endorserId,
-    enterpriseId: e.enterpriseId,
-    enterpriseName: e.enterprise.name,
-    enterpriseTier: e.enterprise.tier,
-    enterpriseSlug: e.enterprise.slug,
-    stakeSts: e.stakeSts,
-    active: e.active,
-    outcome: e.outcome,
-    stsDelta: e.stsDelta,
-    createdAt: e.createdAt.toISOString(),
-    resolvedAt: e.resolvedAt ? e.resolvedAt.toISOString() : null,
+    id: e.row.id,
+    endorserId: e.row.endorserId,
+    enterpriseId: e.row.enterpriseId,
+    enterpriseName: e.enterprise?.name ?? "Unknown",
+    enterpriseTier: e.enterprise?.tier ?? "?",
+    enterpriseSlug: e.enterprise?.slug ?? "",
+    stakeSts: e.row.stakeSts,
+    active: e.row.active,
+    outcome: e.row.outcome as "pending" | "success" | "failure",
+    stsDelta: e.row.stsDelta,
+    createdAt: e.row.createdAt.toISOString(),
+    resolvedAt: e.row.resolvedAt ? e.row.resolvedAt.toISOString() : null,
   }));
 
   const managedForClient = managedEnterprises.map((m) => ({
@@ -131,18 +154,18 @@ export default async function EndorsementsPage() {
   }));
 
   const endorsementsByEnterpriseForClient = endorsementsByEnterprise.map((e) => ({
-    id: e.id,
-    endorserId: e.endorserId,
-    enterpriseId: e.enterpriseId,
-    enterpriseName: e.enterprise.name,
-    enterpriseTier: e.enterprise.tier,
-    enterpriseSlug: e.enterprise.slug,
-    stakeSts: e.stakeSts,
-    active: e.active,
-    outcome: e.outcome,
-    stsDelta: e.stsDelta,
-    createdAt: e.createdAt.toISOString(),
-    resolvedAt: e.resolvedAt ? e.resolvedAt.toISOString() : null,
+    id: e.row.id,
+    endorserId: e.row.endorserId,
+    enterpriseId: e.row.enterpriseId,
+    enterpriseName: e.enterprise?.name ?? "Unknown",
+    enterpriseTier: e.enterprise?.tier ?? "?",
+    enterpriseSlug: e.enterprise?.slug ?? "",
+    stakeSts: e.row.stakeSts,
+    active: e.row.active,
+    outcome: e.row.outcome as "pending" | "success" | "failure",
+    stsDelta: e.row.stsDelta,
+    createdAt: e.row.createdAt.toISOString(),
+    resolvedAt: e.row.resolvedAt ? e.row.resolvedAt.toISOString() : null,
   }));
 
   const activeEnterprisesForClient = activeEnterprises.map((e) => ({
