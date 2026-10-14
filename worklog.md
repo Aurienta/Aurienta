@@ -16237,3 +16237,40 @@ Stage Summary:
 - Turso: needs token refresh (user action required at app.turso.app)
 - Build: PASSES (0 type errors)
 - Lint: 0 errors
+
+---
+Task ID: PRODUCTION-TURSO-FIX
+Agent: main
+Task: Fix Turso DB schema mismatch + verify production end-to-end
+
+Work Log:
+- Verified Turso connection with fresh token: ✅ connected (12 users, 51 tables initially)
+- Pushed 17 new roadmap tables to Turso via raw DDL (44 DDL statements, 0 failures)
+- Added missing columns to User table (verificationStatus, verificationRejectedReason)
+- Seeded/rehashed 5 demo users with correct scrypt hash (KEY_LEN=32, matching password.ts)
+- Updated Vercel env vars: TURSO_AUTH_TOKEN + DATABASE_URL (via Vercel API PATCH with correct env var IDs)
+- Triggered 2 Vercel production redeployments
+- Diagnosed auth failure: getCurrentUser() Prisma include query failed silently due to 168 missing columns on Turso tables (old schema vs current Prisma schema)
+- Root cause: Turso DB was never migrated to match the current Prisma schema. Column names like healthScoreUpdatedAt, plus 167 others, were missing.
+- Fix: Wrote comprehensive schema-diff script that parsed prisma/schema.prisma, compared with Turso table_info, and ALTER TABLE'd all 168 missing columns across all tables
+- Verified fix: ran exact getCurrentUser Prisma query against Turso → ✅ Session found, user layla@streetbites.eg, STS 78, 1 membership
+- Production API test: ALL 10 roadmap APIs return HTTP 200 with real data:
+  - /api/arei → 200 (snapshot + disclaimer)
+  - /api/genome → 200 (genomes + disclaimer)
+  - /api/discovery → 200 (profile + matches + label)
+  - /api/zeitgeist → 200 (sentiment snapshot)
+  - /api/soulbound → 200 (credential state)
+  - /api/endorsements → 200 (endorsements array)
+  - /api/quadratic-voting → 200 (STS 78, credits 15)
+  - /api/profit-sharing → 200 (agreements array)
+  - /api/gaas/organizations → 200 (organizations array)
+  - /api/priority-allocation → 200 (allocations array)
+- Browser self-check on production: login as Layla Mostafa → dashboard loads → all pages render with sidebar nav (WORKSPACE 12, INTELLIGENCE 13)
+- Platform health: GitHub ✅, Vercel ✅, Turso ✅, Inngest (sandbox), Neon (configured), AI ✅
+
+Stage Summary:
+- Turso DB: fully migrated (74 tables, 168 columns added, 5 demo users with correct hashes)
+- Vercel: production live (aurienta.vercel.app, all 13 roadmap pages HTTP 200, all 10 APIs HTTP 200)
+- All platforms operational
+- Login works end-to-end on production
+- ZERO data deleted — only schema columns added
