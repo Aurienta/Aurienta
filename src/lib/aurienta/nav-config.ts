@@ -224,6 +224,7 @@ export const NAV_I18N: Record<string, string> = {
   "VC Wallet": "nav.credentials",
   "University Rep Console": "nav.university",
   "Profile & Identity": "nav.profile",
+  "Passkeys & Security": "nav.passkeys",
 };
 
 /** Group translation map: group name → i18n key. */
@@ -253,6 +254,8 @@ export const NAV: NavItem[] = [
   // P1-002: Profile entry in the sidebar so it is discoverable on mobile
   // (previously only reachable via the avatar dropdown).
   { href: "/dashboard/profile", label: "Profile & Identity", icon: "UserCircle", group: "Workspace" },
+  // AUTH-UPGRADE: Passkeys & Security — passwordless WebAuthn / FIDO2 manager.
+  { href: "/dashboard/passkeys", label: "Passkeys & Security", icon: "KeyRound", group: "Workspace" },
 
   // ── Capital & Workforce ──
   { href: "/dashboard/syndicates", label: "Syndicates", icon: "Users", group: "Capital & Workforce" },

@@ -62,7 +62,7 @@ export function RoleContextBar({
   const tierMeta = TIER_META[activeEnterprise.tier];
   const stageMeta = STAGE_META[activeEnterprise.stage ?? "stage_1"] ?? STAGE_META.stage_1;
   const healthScore = activeEnterprise.healthScore ?? 75;
-  const healthColor = healthScore >= 90 ? "text-emerald-400" : healthScore >= 70 ? "text-amber-400" : "text-red-400";
+  const healthColor = healthScore >= 90 ? "text-emerald-600" : healthScore >= 70 ? "text-amber-600" : "text-red-600";
   const healthLabel = healthScore >= 90 ? "Healthy" : healthScore >= 70 ? "Attention" : "Action Required";
 
   const RoleIcon = ROLE_ICONS[displayRole] ?? Users;

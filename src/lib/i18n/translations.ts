@@ -300,6 +300,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     "nav.credentials": "VC Wallet",
     "nav.university": "University Rep Console",
     "nav.profile": "Profile",
+    "nav.passkeys": "Passkeys & Security",
 
     // Page Titles — metadata + headers
     "pageTitle.overview": "Overview · AURIENTA",
@@ -1013,6 +1014,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     "nav.credentials": "محفظة الاعتمادات",
     "nav.university": "وحدة ممثل الجامعة",
     "nav.profile": "الملف الشخصي",
+    "nav.passkeys": "مفاتيح المرور والأمان",
 
     // Page Titles — metadata + headers
     "pageTitle.overview": "نظرة عامة · أوريينتا",

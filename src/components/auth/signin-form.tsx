@@ -281,13 +281,13 @@ export function SigninForm({ onReady }: SigninFormProps) {
           <Button
             type="submit"
             disabled={submitting}
-            className="group relative mt-2 h-11 w-full overflow-hidden rounded-lg bg-gold-gradient text-[0.95rem] font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.6)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(212,175,55,0.85)] focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="group relative mt-2 h-11 w-full overflow-hidden rounded-lg bg-gold-gradient text-[0.95rem] font-semibold text-white shadow-[0_14px_40px_-14px_rgba(79,70,229,0.6)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(79,70,229,0.85)] focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             <span className="relative inline-flex items-center gap-2">
               {submitting ? (
                 <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
                   Verifying signature…
                 </>
               ) : (

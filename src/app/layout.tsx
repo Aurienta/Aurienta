@@ -102,8 +102,8 @@ export const metadata: Metadata = {
 // themeColor + viewport must live in the separate `viewport` export in Next 14+.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#D4AF37" },
-    { media: "(prefers-color-scheme: dark)", color: "#060608" },
+    { media: "(prefers-color-scheme: light)", color: "#F8FAFC" },
+    { media: "(prefers-color-scheme: dark)", color: "#1E1B4B" },
   ],
 };
 

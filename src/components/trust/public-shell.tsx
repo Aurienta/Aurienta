@@ -78,7 +78,7 @@ export function PublicTrustHeader({ active }: { active?: "trust" | "badge" | "re
 export function PublicTrustFooter() {
   return (
     <footer
-      className="mt-auto border-t border-gold/12 bg-gradient-to-b from-transparent to-[#050506]"
+      className="mt-auto border-t border-gold/12 bg-gradient-to-b from-transparent to-[#EEF2FF]/40"
       role="contentinfo"
     >
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-5 py-6 sm:px-8 sm:py-7">

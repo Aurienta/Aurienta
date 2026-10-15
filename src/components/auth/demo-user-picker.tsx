@@ -91,7 +91,7 @@ export function DemoUserPicker() {
       {/* Error message */}
       {error && (
         <div className="mb-3 rounded-lg border border-red-500/20 bg-red-500/8 p-3">
-          <p className="font-sans text-xs text-red-400">{error}</p>
+          <p className="font-sans text-xs text-destructive">{error}</p>
         </div>
       )}
 

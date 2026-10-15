@@ -536,7 +536,7 @@ export default async function TrustPage() {
                       key={tier}
                       className="flex items-center gap-3 rounded-xl border border-gold/15 bg-background/50 px-4 py-2.5"
                     >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-gradient font-serif text-sm font-bold text-black">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-gradient font-serif text-sm font-bold text-white">
                         {tier}
                       </div>
                       <div>
@@ -755,11 +755,11 @@ export default async function TrustPage() {
                   <Link
                     key={g.id}
                     href={`/badge/${slugByEntId.get(g.enterpriseId) ?? g.enterpriseId}`}
-                    className="group glass-gold flex flex-col gap-3 rounded-2xl p-5 transition-all hover:border-gold/30 hover:shadow-[0_18px_60px_-18px_rgba(212,175,55,0.45)]"
+                    className="group glass-gold flex flex-col gap-3 rounded-2xl p-5 transition-all hover:border-gold/30 hover:shadow-[0_18px_60px_-18px_rgba(79,70,229,0.45)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gold-gradient font-serif text-base font-bold text-black">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gold-gradient font-serif text-base font-bold text-white">
                           {g.tierAtGraduation}
                         </span>
                         <div>
@@ -825,7 +825,7 @@ export default async function TrustPage() {
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <Link
                   href="/registry"
-                  className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black transition-all hover:shadow-[0_10px_30px_-8px_rgba(212,175,55,0.6)]"
+                  className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-white transition-all hover:shadow-[0_10px_30px_-8px_rgba(79,70,229,0.6)]"
                 >
                   Browse the Constitutional Registry <ArrowRight className="h-4 w-4" />
                 </Link>

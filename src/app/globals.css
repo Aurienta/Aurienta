@@ -39,6 +39,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* Brand color tokens — indigo/purple (unified with landing page) */
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
@@ -49,78 +50,28 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ===== AURIENTA — 2026 Dark Luxury (default) ===== */
-:root,
-.dark {
+/* ════════════════════════════════════════════════════════════════
+   AURIENTA — Unified Light Indigo/Purple Theme (DEFAULT)
+   Matches the landing page: #F8FAFC bg, #1E1B4B navy text,
+   #4F46E5 indigo primary, #10B981 emerald accent, #7C3AED purple.
+   All pages, dashboards, portals, and auth screens use this theme.
+   ════════════════════════════════════════════════════════════════ */
+:root {
   --radius: 0.75rem;
 
-  /* Brand gold — enhanced with 2026 luminous palette */
-  --gold: #d4af37;
-  --gold-light: #f4d676;
-  --gold-dark: #b8860b;
-  --gold-soft: #c9a03d;
-  --gold-bright: #ffe066;   /* NEW: brightest highlight for accents */
-  --gold-deep: #6b5314;     /* NEW: deepest shadow for 3D depth */
+  /* Brand indigo — the AURIENTA primary color */
+  --gold: #4F46E5;          /* indigo-600 — primary brand */
+  --gold-light: #818CF8;    /* indigo-400 — hover/light */
+  --gold-dark: #3730A3;    /* indigo-800 — deep */
+  --gold-soft: #6366F1;    /* indigo-500 — soft accent */
+  --gold-bright: #A5B4FC;  /* indigo-300 — brightest highlight */
+  --gold-deep: #1E1B4B;    /* navy-950 — deepest shadow */
 
-  /* Base surfaces — near-black with warm undertone + 2026 depth */
-  --background: #08080a;
-  --foreground: #f3eedd;
-  --background-elevated: #0d0d10;  /* NEW: elevated surface */
-  --background-sunken: #050506;    /* NEW: sunken surface for depth */
-
-  --card: #101014;
-  --card-foreground: #f3eedd;
-  --card-elevated: #16161c;        /* NEW: elevated card */
-
-  --popover: #101014;
-  --popover-foreground: #f3eedd;
-
-  /* Primary = gold */
-  --primary: #d4af37;
-  --primary-foreground: #0a0a0b;
-
-  --secondary: #1a1a1f;
-  --secondary-foreground: #f3eedd;
-
-  --muted: #16161b;
-  --muted-foreground: #a89f86;
-
-  --accent: #1c1a14;
-  --accent-foreground: #f4d676;
-
-  --destructive: #e0584b;
-  --border: rgba(212, 175, 55, 0.14);
-  --input: rgba(212, 175, 55, 0.18);
-  --ring: #d4af37;
-
-  --chart-1: #d4af37;
-  --chart-2: #c9a03d;
-  --chart-3: #f4d676;
-  --chart-4: #b8860b;
-  --chart-5: #8a6d1f;
-
-  --sidebar: #0c0c0f;
-  --sidebar-foreground: #f3eedd;
-  --sidebar-primary: #d4af37;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #1c1a14;
-  --sidebar-accent-foreground: #f4d676;
-  --sidebar-border: rgba(212, 175, 55, 0.14);
-  --sidebar-ring: #d4af37;
-}
-
-/* ===== AURIENTA — Light Luxury ===== */
-.light {
-  /* Brand — indigo/purple to match landing page */
-  --gold: #4F46E5;
-  --gold-light: #818CF8;
-  --gold-dark: #3730A3;
-  --gold-soft: #6366F1;
-  --gold-bright: #A5B4FC;
-  --gold-deep: #1E1B4B;
-
-  --background: #F8FAFC;
-  --foreground: #1E1B4B;
+  /* Base surfaces — light, clean, matching landing page */
+  --background: #F8FAFC;            /* slate-50 */
+  --foreground: #1E1B4B;            /* navy-950 */
+  --background-elevated: #FFFFFF;   /* white cards */
+  --background-sunken: #F1F5F9;    /* slate-100 — sunken */
 
   --card: #FFFFFF;
   --card-foreground: #1E1B4B;
@@ -129,29 +80,122 @@
   --popover: #FFFFFF;
   --popover-foreground: #1E1B4B;
 
-  --primary: #4F46E5;
+  /* Primary = indigo */
+  --primary: #4F46E5;               /* indigo-600 */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #EEF2FF;
+  --secondary: #EEF2FF;             /* indigo-50 */
   --secondary-foreground: #1E1B4B;
 
+  --muted: #F1F5F9;                 /* slate-100 */
+  --muted-foreground: #64748B;     /* slate-500 */
+
+  --accent: #EEF2FF;                /* indigo-50 */
+  --accent-foreground: #4F46E5;    /* indigo-600 */
+
+  --destructive: #EF4444;           /* red-500 */
+  --border: #E2E8F0;                /* slate-200 */
+  --input: #E2E8F0;
+  --ring: #4F46E5;                  /* indigo-600 */
+
+  /* Chart palette — indigo/purple/teal/emerald/amber */
+  --chart-1: #4F46E5;  /* indigo */
+  --chart-2: #7C3AED;  /* purple */
+  --chart-3: #06B6D4;  /* cyan */
+  --chart-4: #10B981;  /* emerald */
+  --chart-5: #F59E0B;  /* amber */
+
+  /* Sidebar — dark indigo navy (premium contrast) */
+  --sidebar: #1E1B4B;               /* navy-950 */
+  --sidebar-foreground: #E0E7FF;    /* indigo-100 */
+  --sidebar-primary: #818CF8;       /* indigo-400 */
+  --sidebar-primary-foreground: #1E1B4B;
+  --sidebar-accent: #312E81;        /* indigo-900 */
+  --sidebar-accent-foreground: #C7D2FE;  /* indigo-200 */
+  --sidebar-border: rgba(99, 102, 241, 0.2);
+  --sidebar-ring: #818CF8;
+}
+
+/* Dark variant — dark indigo (not gold) for users who toggle dark mode */
+.dark {
+  --gold: #818CF8;
+  --gold-light: #A5B4FC;
+  --gold-dark: #4F46E5;
+  --gold-soft: #6366F1;
+  --gold-bright: #C7D2FE;
+  --gold-deep: #1E1B4B;
+
+  --background: #0F0F1A;
+  --foreground: #E0E7FF;
+  --background-elevated: #1E1B4B;
+  --background-sunken: #08080F;
+
+  --card: #1E1B4B;
+  --card-foreground: #E0E7FF;
+  --card-elevated: #312E81;
+
+  --popover: #1E1B4B;
+  --popover-foreground: #E0E7FF;
+
+  --primary: #818CF8;
+  --primary-foreground: #1E1B4B;
+
+  --secondary: #312E81;
+  --secondary-foreground: #E0E7FF;
+
+  --muted: #1E1B4B;
+  --muted-foreground: #A5B4FC;
+
+  --accent: #312E81;
+  --accent-foreground: #C7D2FE;
+
+  --destructive: #F87171;
+  --border: rgba(129, 140, 248, 0.14);
+  --input: rgba(129, 140, 248, 0.18);
+  --ring: #818CF8;
+
+  --chart-1: #818CF8;
+  --chart-2: #A78BFA;
+  --chart-3: #22D3EE;
+  --chart-4: #34D399;
+  --chart-5: #FBBF24;
+
+  --sidebar: #0F0F1A;
+  --sidebar-foreground: #E0E7FF;
+  --sidebar-primary: #818CF8;
+  --sidebar-primary-foreground: #1E1B4B;
+  --sidebar-accent: #1E1B4B;
+  --sidebar-accent-foreground: #C7D2FE;
+  --sidebar-border: rgba(129, 140, 248, 0.14);
+  --sidebar-ring: #818CF8;
+}
+
+/* Legacy `.light` class — now identical to :root (kept for backward compat) */
+.light {
+  --gold: #4F46E5;
+  --gold-light: #818CF8;
+  --gold-dark: #3730A3;
+  --gold-soft: #6366F1;
+  --gold-bright: #A5B4FC;
+  --gold-deep: #1E1B4B;
+  --background: #F8FAFC;
+  --foreground: #1E1B4B;
+  --card: #FFFFFF;
+  --card-foreground: #1E1B4B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E1B4B;
+  --primary: #4F46E5;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF2FF;
+  --secondary-foreground: #1E1B4B;
   --muted: #F1F5F9;
   --muted-foreground: #64748B;
-
   --accent: #EEF2FF;
   --accent-foreground: #4F46E5;
-
   --destructive: #EF4444;
   --border: #E2E8F0;
   --input: #E2E8F0;
   --ring: #4F46E5;
-
-  --chart-1: #4F46E5;
-  --chart-2: #7C3AED;
-  --chart-3: #06B6D4;
-  --chart-4: #10B981;
-  --chart-5: #F59E0B;
-
   --sidebar: #1E1B4B;
   --sidebar-foreground: #E0E7FF;
   --sidebar-primary: #818CF8;
@@ -176,11 +220,10 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: rgba(212, 175, 55, 0.32);
-    color: #fff;
+    background: rgba(79, 70, 229, 0.22);
+    color: #1E1B4B;
   }
-  /* ── Premium focus-visible ring (gold) ── */
-  /* Applied to all interactive elements keyboard-focusable. */
+  /* ── Premium focus-visible ring (indigo) ── */
   :focus-visible {
     outline: none;
     box-shadow:
@@ -195,9 +238,9 @@
   select:focus-visible {
     box-shadow:
       0 0 0 1px var(--gold),
-      0 0 0 4px rgba(212, 175, 55, 0.18);
+      0 0 0 4px rgba(79, 70, 229, 0.18);
   }
-  /* Links: gold underline on focus */
+  /* Links: indigo underline on focus */
   a:focus-visible {
     box-shadow: none;
     text-decoration: underline;
@@ -207,7 +250,7 @@
   }
 }
 
-/* ===== Custom scrollbar ===== */
+/* ===== Custom scrollbar (indigo) ===== */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -216,19 +259,19 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.35), rgba(184, 134, 11, 0.25));
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.35), rgba(55, 48, 163, 0.25));
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.6), rgba(184, 134, 11, 0.45));
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.6), rgba(55, 48, 163, 0.45));
   background-clip: padding-box;
 }
 
-/* ===== Gold text gradient ===== */
+/* ===== Indigo text gradient (replaces gold-gradient) ===== */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #f4d676 0%, #d4af37 38%, #b8860b 72%, #f4d676 100%);
+  background: linear-gradient(135deg, #818CF8 0%, #4F46E5 38%, #3730A3 72%, #818CF8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -238,11 +281,11 @@
 .text-gold-shimmer {
   background: linear-gradient(
     100deg,
-    #b8860b 0%,
-    #d4af37 30%,
-    #f7e9a6 48%,
-    #d4af37 66%,
-    #b8860b 100%
+    #3730A3 0%,
+    #4F46E5 30%,
+    #C7D2FE 48%,
+    #4F46E5 66%,
+    #3730A3 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -252,68 +295,72 @@
   animation: gold-pan 6s linear infinite;
 }
 
-/* ===== Gold fill gradient (buttons, icons) ===== */
+/* ===== Indigo fill gradient (buttons, icons) ===== */
 .bg-gold-gradient {
-  background: linear-gradient(135deg, #f4d676 0%, #d4af37 45%, #b8860b 100%);
+  background: linear-gradient(135deg, #818CF8 0%, #4F46E5 45%, #3730A3 100%);
 }
 
 .bg-gold-gradient-soft {
-  background: linear-gradient(135deg, rgba(244, 214, 118, 0.16), rgba(184, 134, 11, 0.08));
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.16), rgba(55, 48, 163, 0.08));
 }
 
-/* ===== Glass card ===== */
+/* ===== Glass card (indigo tint) ===== */
 .glass {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(79, 70, 229, 0.14);
+}
+.dark .glass {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  border: 1px solid rgba(129, 140, 248, 0.14);
 }
 .light .glass {
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.55));
-  border: 1px solid rgba(184, 134, 11, 0.18);
+  border: 1px solid rgba(79, 70, 229, 0.18);
 }
 
 .glass-gold {
-  background: linear-gradient(160deg, rgba(212, 175, 55, 0.10), rgba(212, 175, 55, 0.02));
+  background: linear-gradient(160deg, rgba(79, 70, 229, 0.10), rgba(79, 70, 229, 0.02));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(212, 175, 55, 0.22);
+  border: 1px solid rgba(79, 70, 229, 0.22);
 }
 
-/* ===== Gold glow ===== */
+/* ===== Indigo glow ===== */
 .gold-glow {
-  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2), 0 18px 60px -18px rgba(212, 175, 55, 0.45);
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2), 0 18px 60px -18px rgba(79, 70, 229, 0.45);
 }
 .gold-glow-sm {
-  box-shadow: 0 0 24px -6px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 24px -6px rgba(79, 70, 229, 0.5);
 }
 
 .text-glow-gold {
-  text-shadow: 0 0 32px rgba(212, 175, 55, 0.35);
+  text-shadow: 0 0 32px rgba(79, 70, 229, 0.35);
 }
 
-/* ===== Hairline gold border ===== */
+/* ===== Hairline indigo border ===== */
 .border-gold-faint {
-  border: 1px solid rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(79, 70, 229, 0.16);
 }
 
-/* ===== Background ornaments ===== */
+/* ===== Background ornaments (indigo) ===== */
 .aurienta-grid {
   background-image:
-    linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
 .aurienta-radial {
   background:
-    radial-gradient(900px 500px at 50% -10%, rgba(212, 175, 55, 0.16), transparent 70%),
-    radial-gradient(700px 400px at 85% 20%, rgba(184, 134, 11, 0.10), transparent 65%),
-    radial-gradient(600px 500px at 10% 80%, rgba(212, 175, 55, 0.07), transparent 70%);
+    radial-gradient(900px 500px at 50% -10%, rgba(79, 70, 229, 0.16), transparent 70%),
+    radial-gradient(700px 400px at 85% 20%, rgba(124, 58, 237, 0.10), transparent 65%),
+    radial-gradient(600px 500px at 10% 80%, rgba(79, 70, 229, 0.07), transparent 70%);
 }
 
 .aurienta-vignette {
-  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 200px 40px rgba(30, 27, 75, 0.15);
 }
 
 /* Noise overlay for texture */
@@ -321,18 +368,19 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════
    2026 STATE-OF-ART DESIGN SYSTEM
    Aurora gradients, Glass Morphism 2.0, 3D depth, cinematic motion
-   ═══════════════════════════════════════════════════════════════════ */
+   — Unified indigo/purple palette
+   ════════════════════════════════════════════════════════════════ */
 
-/* ── Aurora background — animated multi-layer gradient (2026 signature) ── */
+/* ── Aurora background — animated multi-layer indigo gradient ── */
 .aurienta-aurora {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.18), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(184, 134, 11, 0.10), transparent 55%),
-    radial-gradient(ellipse 50% 60% at 20% 80%, rgba(244, 214, 118, 0.08), transparent 60%),
-    radial-gradient(ellipse 90% 40% at 50% 120%, rgba(107, 83, 20, 0.12), transparent 50%);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 70, 229, 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(124, 58, 237, 0.10), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 20% 80%, rgba(129, 140, 248, 0.08), transparent 60%),
+    radial-gradient(ellipse 90% 40% at 50% 120%, rgba(30, 27, 75, 0.12), transparent 50%);
   animation: aurora-shift 18s ease-in-out infinite;
 }
 
@@ -342,17 +390,29 @@
   66% { background-position: -20% 30%, 30% -20%, -10% 20%, 20% -10%; }
 }
 
-/* ── Glass Morphism 2.0 — layered with backdrop blur + gold tint ── */
+/* ── Glass Morphism 2.0 — layered with backdrop blur + indigo tint ── */
 .glass-v2 {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(212, 175, 55, 0.03) 50%,
-    rgba(255, 255, 255, 0.02) 100%
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(79, 70, 229, 0.05) 50%,
+    rgba(255, 255, 255, 0.5) 100%
   );
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(79, 70, 229, 0.16);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 24px 64px -16px rgba(30, 27, 75, 0.12);
+}
+.dark .glass-v2 {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(129, 140, 248, 0.03) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(129, 140, 248, 0.16);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.08) inset,
     0 24px 64px -16px rgba(0, 0, 0, 0.6);
@@ -361,40 +421,40 @@
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.85) 0%,
-    rgba(244, 214, 118, 0.15) 50%,
+    rgba(129, 140, 248, 0.15) 50%,
     rgba(255, 255, 255, 0.6) 100%
   );
-  border: 1px solid rgba(184, 134, 11, 0.18);
+  border: 1px solid rgba(79, 70, 229, 0.18);
 }
 
-/* ── 3D Depth — layered shadows for premium elevation ── */
+/* ── 3D Depth — layered shadows for premium elevation (indigo) ── */
 .depth-sm {
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 2px 8px -2px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(212, 175, 55, 0.08);
+    0 1px 2px rgba(30, 27, 75, 0.06),
+    0 2px 8px -2px rgba(30, 27, 75, 0.08),
+    0 0 0 1px rgba(79, 70, 229, 0.08);
 }
 .depth-md {
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.4),
-    0 8px 24px -4px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(212, 175, 55, 0.10);
+    0 2px 4px rgba(30, 27, 75, 0.06),
+    0 8px 24px -4px rgba(30, 27, 75, 0.10),
+    0 0 0 1px rgba(79, 70, 229, 0.10);
 }
 .depth-lg {
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.4),
-    0 16px 48px -8px rgba(0, 0, 0, 0.5),
-    0 32px 80px -16px rgba(212, 175, 55, 0.12),
-    0 0 0 1px rgba(212, 175, 55, 0.12);
+    0 4px 8px rgba(30, 27, 75, 0.06),
+    0 16px 48px -8px rgba(30, 27, 75, 0.12),
+    0 32px 80px -16px rgba(79, 70, 229, 0.15),
+    0 0 0 1px rgba(79, 70, 229, 0.12);
 }
 .depth-gold {
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.4),
-    0 16px 48px -8px rgba(212, 175, 55, 0.25),
-    0 0 0 1px rgba(212, 175, 55, 0.20);
+    0 4px 12px rgba(30, 27, 75, 0.08),
+    0 16px 48px -8px rgba(79, 70, 229, 0.25),
+    0 0 0 1px rgba(79, 70, 229, 0.20);
 }
 
-/* ── Gold shimmer sweep — 2026 enhanced with brighter highlight ── */
+/* ── Indigo shimmer sweep ── */
 .gold-sweep {
   position: relative;
   overflow: hidden;
@@ -409,9 +469,9 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 224, 102, 0.4),
-    rgba(244, 214, 118, 0.6),
-    rgba(255, 224, 102, 0.4),
+    rgba(165, 180, 252, 0.4),
+    rgba(199, 210, 254, 0.6),
+    rgba(165, 180, 252, 0.4),
     transparent
   );
   transform: skewX(-20deg);
@@ -422,19 +482,19 @@
   50% { left: 150%; }
 }
 
-/* ── Logo 3D shimmer — animated metallic gold gradient ── */
+/* ── Logo 3D shimmer — animated indigo gradient ── */
 .gold-3d {
   background: linear-gradient(
     135deg,
-    #8a6d1f 0%,
-    #b8860b 20%,
-    #d4af37 35%,
-    #f4d676 45%,
-    #ffe066 50%,
-    #f4d676 55%,
-    #d4af37 65%,
-    #b8860b 80%,
-    #8a6d1f 100%
+    #3730A3 0%,
+    #4F46E5 20%,
+    #6366F1 35%,
+    #818CF8 45%,
+    #A5B4FC 50%,
+    #818CF8 55%,
+    #6366F1 65%,
+    #4F46E5 80%,
+    #3730A3 100%
   );
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -449,28 +509,28 @@
   50% { background-position: 100% 100%; }
 }
 
-/* ── Parallax float — subtle 3D parallax for hero elements ── */
+/* ── Parallax float ── */
 @keyframes float-3d {
   0%, 100% { transform: translateY(0) translateZ(0); }
   50% { transform: translateY(-12px) translateZ(20px); }
 }
 .animate-float-3d { animation: float-3d 6s ease-in-out infinite; }
 
-/* ── Glow pulse — breathing gold glow for CTAs + live indicators ── */
+/* ── Glow pulse — breathing indigo glow ── */
 @keyframes glow-breathe {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.3), 0 0 40px rgba(79, 70, 229, 0.1);
   }
   50% {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.5), 0 0 60px rgba(79, 70, 229, 0.2);
   }
 }
 .animate-glow-breathe { animation: glow-breathe 3s ease-in-out infinite; }
 
-/* ── Gradient border — animated gold border for premium cards ── */
+/* ── Gradient border — indigo ── */
 .gradient-border-gold {
   position: relative;
-  background: var(--background-elevated, #0d0d10);
+  background: var(--background-elevated, #FFFFFF);
   border-radius: inherit;
 }
 .gradient-border-gold::before {
@@ -481,10 +541,10 @@
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgba(244, 214, 118, 0.4) 0%,
-    rgba(212, 175, 55, 0.2) 30%,
-    rgba(184, 134, 11, 0.1) 60%,
-    rgba(244, 214, 118, 0.3) 100%
+    rgba(199, 210, 254, 0.4) 0%,
+    rgba(79, 70, 229, 0.2) 30%,
+    rgba(55, 48, 163, 0.1) 60%,
+    rgba(199, 210, 254, 0.3) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -492,7 +552,7 @@
   pointer-events: none;
 }
 
-/* ── Scroll-driven reveal — fade + rise + scale (2026 native CSS) ── */
+/* ── Scroll-driven reveal ── */
 @keyframes reveal-3d {
   0% { opacity: 0; transform: translateY(40px) scale(0.96); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -501,17 +561,17 @@
   animation: reveal-3d 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ── Text gradient — 2026 multi-stop gold with bright highlight ── */
+/* ── Text gradient — indigo multi-stop ── */
 .text-gold-gradient-v2 {
   background: linear-gradient(
     135deg,
-    #b8860b 0%,
-    #d4af37 25%,
-    #f4d676 45%,
-    #ffe066 50%,
-    #f4d676 55%,
-    #d4af37 75%,
-    #b8860b 100%
+    #3730A3 0%,
+    #4F46E5 25%,
+    #818CF8 45%,
+    #A5B4FC 50%,
+    #818CF8 55%,
+    #4F46E5 75%,
+    #3730A3 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -519,17 +579,17 @@
   color: transparent;
 }
 
-/* ── Mesh gradient — 2026 background mesh for hero sections ── */
+/* ── Mesh gradient — indigo ── */
 .mesh-gradient {
-  background-color: #08080a;
+  background-color: #F8FAFC;
   background-image:
-    radial-gradient(at 20% 30%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(184, 134, 11, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(244, 214, 118, 0.06) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, rgba(107, 83, 20, 0.10) 0px, transparent 50%);
+    radial-gradient(at 20% 30%, rgba(79, 70, 229, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(124, 58, 237, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(129, 140, 248, 0.06) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(30, 27, 75, 0.10) 0px, transparent 50%);
 }
 
-/* ── Glow ring — pulsing gold ring for featured elements ── */
+/* ── Glow ring — indigo ── */
 .glow-ring {
   position: relative;
 }
@@ -538,7 +598,7 @@
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(244, 214, 118, 0.5), rgba(212, 175, 55, 0.2), transparent);
+  background: linear-gradient(135deg, rgba(199, 210, 254, 0.5), rgba(79, 70, 229, 0.2), transparent);
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: -1;
@@ -571,7 +631,7 @@
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }
-/* ── Skeleton shimmer (loading placeholders) ── */
+/* ── Skeleton shimmer (indigo) ── */
 @keyframes skeleton-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -579,15 +639,15 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(212, 175, 55, 0.04) 0%,
-    rgba(212, 175, 55, 0.12) 50%,
-    rgba(212, 175, 55, 0.04) 100%
+    rgba(79, 70, 229, 0.04) 0%,
+    rgba(79, 70, 229, 0.12) 50%,
+    rgba(79, 70, 229, 0.04) 100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.8s ease-in-out infinite;
   border-radius: 0.5rem;
 }
-/* ── Gold shimmer sweep across buttons (luxury hover) ── */
+/* ── Indigo shimmer sweep across buttons ── */
 @keyframes button-sheen {
   0% { transform: translateX(-120%) skewX(-20deg); }
   100% { transform: translateX(220%) skewX(-20deg); }
@@ -616,9 +676,7 @@
   }
 }
 
-/* ===== Premium button sheen overlay =====
-   Apply `.btn-sheen` to any gold-gradient button. On hover, a light sweep
-   crosses the surface — a luxury micro-interaction. */
+/* ===== Premium button sheen overlay (indigo) ===== */
 .btn-sheen {
   position: relative;
   overflow: hidden;
@@ -646,8 +704,7 @@
   animation: button-sheen 0.9s ease-out;
 }
 
-/* ===== Card hover lift =====
-   Apply `.card-lift` to cards/interactive surfaces for a subtle 3D lift. */
+/* ===== Card hover lift (indigo) ===== */
 .card-lift {
   transition:
     transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -658,13 +715,12 @@
 .card-lift:hover {
   transform: translateY(-4px);
   box-shadow:
-    0 0 0 1px rgba(212, 175, 55, 0.22),
-    0 22px 50px -22px rgba(212, 175, 55, 0.35),
-    0 12px 30px -18px rgba(0, 0, 0, 0.4);
+    0 0 0 1px rgba(79, 70, 229, 0.22),
+    0 22px 50px -22px rgba(79, 70, 229, 0.35),
+    0 12px 30px -18px rgba(30, 27, 75, 0.10);
 }
 
-/* ===== Magnetic glow ring (for primary CTAs) =====
-   Apply `.magnetic-glow` — a soft gold halo that intensifies on hover. */
+/* ===== Magnetic glow ring (indigo) ===== */
 .magnetic-glow {
   position: relative;
   isolation: isolate;
@@ -676,7 +732,7 @@
   inset: -2px;
   z-index: -1;
   border-radius: inherit;
-  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(212, 175, 55, 0.55), transparent 60%);
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(79, 70, 229, 0.55), transparent 60%);
   opacity: 0;
   transition: opacity 300ms ease;
 }
@@ -687,7 +743,7 @@
   transform: translateY(-1px);
 }
 
-/* ===== Smooth input focus glow ===== */
+/* ===== Smooth input focus glow (indigo) ===== */
 .input-glow {
   transition:
     border-color 200ms ease,
@@ -696,10 +752,10 @@
 }
 .input-glow:focus-visible,
 .input-glow:focus-within {
-  border-color: rgba(212, 175, 55, 0.55) !important;
+  border-color: rgba(79, 70, 229, 0.55) !important;
   box-shadow:
-    0 0 0 1px rgba(212, 175, 55, 0.35),
-    0 0 24px -6px rgba(212, 175, 55, 0.45);
+    0 0 0 1px rgba(79, 70, 229, 0.35),
+    0 0 24px -6px rgba(79, 70, 229, 0.45);
 }
 
 /* ===== Utility: tracking for wordmark ===== */
@@ -710,17 +766,11 @@
   letter-spacing: 0.34em;
 }
 
-/* ===== RTL / Arabic typography =====
-   When the LanguageProvider switches <html dir="rtl">, swap the base font
-   to Cairo so Arabic glyphs render with the dedicated Arabic typeface.
-   The latin fonts above remain loaded and are still used for any latin
-   runs inside an RTL document via the unicode-range fallback chain. */
+/* ===== RTL / Arabic typography ===== */
 html[dir="rtl"] body {
   font-family: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
 }
 
-/* Slightly relax tracking in Arabic — Arabic script doesn't benefit from
-   the wide latin letter-spacing used in the wordmark/tagline. */
 html[dir="rtl"] .tracking-wordmark,
 html[dir="rtl"] .tracking-tagline {
   letter-spacing: 0.06em;

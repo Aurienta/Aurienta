@@ -1743,3 +1743,39 @@ model RiskProfileQuery {
   @@index([enterpriseId])
   @@index([requesterOrg])
 }
+
+// ───────────────────────────────────────────────────────────
+// STATE-OF-THE-ART AUTHENTICATION — WebAuthn/Passkey + Argon2id
+// PasskeyCredential stores WebAuthn authenticator bindings for
+// passwordless authentication (FIDO2 / platform authenticators).
+// ═══════════════════════════════════════════════════════════
+model PasskeyCredential {
+  id              String   @id @default(cuid())
+  userId          String
+  credentialId    String   @unique // base64url WebAuthn credential ID
+  publicKey       String   // base64url COSE public key
+  counter         Int      @default(0) // sign count for replay protection
+  transports      String   @default("") // comma-separated: internal,hybrid,usb,nfc,ble
+  deviceType      String   @default("singleDevice") // singleDevice, multiDevice
+  backedUp        Boolean  @default(false) // true if authenticator is backed up
+  name            String?  // user-friendly label (e.g. "MacBook Pro Touch ID")
+  createdAt       DateTime @default(now())
+  lastUsedAt      DateTime?
+
+  @@index([userId])
+}
+
+// ───────────────────────────────────────────────────────────
+// ACCOUNT LOCKOUT — brute-force protection (state of the art)
+// Tracks failed login attempts per email; locks after 5 fails
+// for 15 minutes. Resets on successful login.
+// ═══════════════════════════════════════════════════════════
+model AccountLockout {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  failedAttempts  Int      @default(0)
+  lockedUntil     DateTime?
+  lastFailedAt    DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

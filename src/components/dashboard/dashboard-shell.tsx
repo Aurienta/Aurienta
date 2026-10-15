@@ -326,7 +326,7 @@ export function DashboardShell({
       {/* Skip-to-content link for keyboard users (a11y) */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[100] focus:rounded focus:bg-gold focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:text-black"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[100] focus:rounded focus:bg-gold focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:text-white"
       >
         Skip to content
       </a>
@@ -410,7 +410,7 @@ export function DashboardShell({
             <Link href="/dashboard/notifications">
               <Bell className="h-4 w-4" />
               {user.notifications.length > 0 && (
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(212,175,55,0.6)]" />
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(79,70,229,0.6)]" />
               )}
             </Link>
           </Button>
@@ -420,8 +420,8 @@ export function DashboardShell({
               <button className="flex items-center gap-2 rounded-full border border-gold/15 bg-gold/5 py-1 pl-1 pr-3 transition-colors hover:border-gold/30">
                 <Avatar className="h-7 w-7 border border-gold/20">
                   <AvatarFallback
-                    className="text-xs font-semibold"
-                    style={{ background: `linear-gradient(135deg, ${user.avatarColor}, #b8860b)`, color: "#0a0a0b" }}
+                    className="text-xs font-semibold text-white"
+                    style={{ background: `linear-gradient(135deg, ${user.avatarColor}, #3730A3)` }}
                   >
                     {initials}
                   </AvatarFallback>
@@ -616,8 +616,8 @@ function SidebarContent({
       <div className="border-b border-gold/10 p-4">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-full font-serif text-sm font-semibold text-black"
-            style={{ background: `linear-gradient(135deg, #d4af37, #b8860b)` }}
+            className="flex h-10 w-10 items-center justify-center rounded-full font-serif text-sm font-semibold text-white"
+            style={{ background: `linear-gradient(135deg, #4F46E5, #3730A3)` }}
           >
             {user.legalName.split(" ").map((p) => p[0]).slice(0, 2).join("")}
           </div>
@@ -707,11 +707,11 @@ function SidebarContent({
                             className={cn(
                               "group flex items-center gap-3 rounded-lg px-3 py-2 font-sans text-sm transition-all",
                               active
-                                ? "bg-gold-gradient text-black shadow-[0_4px_20px_-6px_rgba(212,175,55,0.5)]"
+                                ? "bg-gold-gradient text-white shadow-[0_4px_20px_-6px_rgba(79,70,229,0.5)]"
                                 : "text-muted-foreground hover:bg-gold/5 hover:text-foreground"
                             )}
                           >
-                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-gold/70 group-hover:text-gold")} />
+                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-white" : "text-gold/70 group-hover:text-gold")} />
                             <span className="truncate">{tNav(item.label)}</span>
                           </Link>
                         );

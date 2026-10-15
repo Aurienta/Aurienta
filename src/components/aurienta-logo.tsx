@@ -35,7 +35,7 @@ export function AurientaMark({
       style={
         withGlow
           ? {
-              filter: `drop-shadow(0 0 24px rgba(212,175,55,0.55)) drop-shadow(0 0 48px rgba(212,175,55,0.25))`,
+              filter: `drop-shadow(0 0 24px rgba(79,70,229,0.55)) drop-shadow(0 0 48px rgba(79,70,229,0.25))`,
             }
           : undefined
       }
@@ -43,21 +43,21 @@ export function AurientaMark({
       <defs>
         {/* 2026 enhanced metallic gold gradient — 9 stops with bright highlight */}
         <linearGradient id={gradientId} x1="60" y1="6" x2="60" y2="124" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#ffe066" />
-          <stop offset="0.15" stopColor="#f7e9a6" />
-          <stop offset="0.30" stopColor="#f4d676" />
-          <stop offset="0.45" stopColor="#d4af37" />
-          <stop offset="0.55" stopColor="#ffe066" />
-          <stop offset="0.65" stopColor="#d4af37" />
-          <stop offset="0.82" stopColor="#b8860b" />
-          <stop offset="1" stopColor="#6b5314" />
+          <stop offset="0" stopColor="#A5B4FC" />
+          <stop offset="0.15" stopColor="#C7D2FE" />
+          <stop offset="0.30" stopColor="#818CF8" />
+          <stop offset="0.45" stopColor="#4F46E5" />
+          <stop offset="0.55" stopColor="#A5B4FC" />
+          <stop offset="0.65" stopColor="#4F46E5" />
+          <stop offset="0.82" stopColor="#3730A3" />
+          <stop offset="1" stopColor="#1E1B4B" />
         </linearGradient>
         <linearGradient id={strokeId} x1="20" y1="10" x2="100" y2="120" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#ffe066" />
-          <stop offset="0.3" stopColor="#f7e9a6" />
-          <stop offset="0.5" stopColor="#d4af37" />
-          <stop offset="0.7" stopColor="#f4d676" />
-          <stop offset="1" stopColor="#b8860b" />
+          <stop offset="0" stopColor="#A5B4FC" />
+          <stop offset="0.3" stopColor="#C7D2FE" />
+          <stop offset="0.5" stopColor="#4F46E5" />
+          <stop offset="0.7" stopColor="#818CF8" />
+          <stop offset="1" stopColor="#3730A3" />
         </linearGradient>
         {/* Shimmer sweep mask */}
         <linearGradient id={shimmerId} x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">

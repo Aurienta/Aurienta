@@ -42,12 +42,12 @@ export function AuthBrandPanel() {
       <div className="absolute inset-0 bg-[#3730A3]/20" />
       <div className="aurienta-noise absolute inset-0 opacity-[0.06] mix-blend-soft-light" />
 
-      {/* Floating gold orbs */}
+      {/* Floating indigo orbs */}
       <motion.div
         className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(212,175,55,0.22) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(129,140,248,0.30) 0%, transparent 70%)",
         }}
         animate={{ y: [0, -18, 0], x: [0, 12, 0] }}
         transition={{ duration: 11, ease: "easeInOut", repeat: Infinity }}
@@ -56,7 +56,7 @@ export function AuthBrandPanel() {
         className="pointer-events-none absolute bottom-0 -left-16 h-80 w-80 rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(184,134,11,0.16) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)",
         }}
         animate={{ y: [0, 22, 0], x: [0, -10, 0] }}
         transition={{ duration: 13, ease: "easeInOut", repeat: Infinity }}

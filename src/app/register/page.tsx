@@ -17,9 +17,9 @@ export default function RegisterPage() {
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
-            background: "rgba(16,16,18,0.95)",
-            color: "#f3eedd",
+            border: "1px solid rgba(79,70,229,0.25)",
+            background: "rgba(255,255,255,0.95)",
+            color: "#1E1B4B",
           },
         }}
       />
