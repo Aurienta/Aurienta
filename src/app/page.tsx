@@ -1,6 +1,7 @@
 import { LandingHeader } from "@/components/landing/header";
 import { LandingHero } from "@/components/landing/hero";
 import { PlatformModules } from "@/components/landing/platform-modules";
+import { TierSystem } from "@/components/landing/tier-system";
 import { ProcessLifecycle } from "@/components/landing/process-lifecycle";
 import { BusinessImpact } from "@/components/landing/business-impact";
 import { SecurityTrust } from "@/components/landing/security-trust";
@@ -17,6 +18,7 @@ export default function Home() {
       <main id="main-content" className="flex-1">
         <LandingHero />
         <PlatformModules />
+        <TierSystem />
         <ProcessLifecycle />
         <BusinessImpact />
         <SecurityTrust />

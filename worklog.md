@@ -16414,3 +16414,56 @@ Stage Summary:
 - Dependencies: @node-rs/argon2, @simplewebauthn/server, @simplewebauthn/browser (latest)
 - Production: LIVE and verified (aurienta.vercel.app)
 - Build: PASS | Lint: 0 errors | 76 DB tables | 0 runtime errors
+
+---
+Task ID: LANDING-BLUEPRINT
+Agent: general-purpose
+Task: Rebuild landing page with correct blueprint slogan + tier system
+
+Work Log:
+- Read /home/z/my-project/worklog.md to load prior context (THEME-AUTH-FINAL confirmed unified indigo theme, build PASS, lint 0 errors).
+- Read existing landing files: hero.tsx, platform-modules.tsx, process-lifecycle.tsx, security-trust.tsx, page.tsx, plus ui/card.tsx + ui/badge.tsx for shadcn APIs.
+- Confirmed official terminology in src/lib/aurienta/terminology.ts (Capital Partner, Capital Participation, Capital Formation, Equity Units, Enterprise, Founding Operator, Law Firm Client Account, Constitutional Holdings, Enterprise Registry, Graduation, Constitutional Workspace, Capital Formation Goal, Capital Participated).
+- Rewrote src/components/landing/hero.tsx:
+  - Eyebrow: "CONSTITUTIONAL ENTERPRISE INFRASTRUCTURE GROUP" (added "Group")
+  - Headline (3 lines, blueprint slogan): "Rules, Not Trust." (navy #1E1B4B) → "Capital That Builds." (gradient #6D28D9→#10B981) → "Enterprises That Graduate." (purple #6D28D9)
+  - Subtext: full blueprint description (noncustodial infrastructure, 50 EGP participation, Ed25519-signed verdicts, graduation not exit)
+  - 4 trust indicators = 4 constitutional pillars: Zero Custody (Shield/indigo), CRE-Enforced (Cpu/purple), Fundamental Pricing (TrendingUp/emerald), Graduation Doctrine (GraduationCap/cyan)
+  - Kept 3D isometric cityscape + 5 floating cards (renamed: Constitutional Governance, Ownership Ledger, CRE Runtime Engine, Enterprise Operations, Graduation Path)
+  - CTAs: "Explore the Platform" (primary indigo #4F46E5) + "Watch Video" (secondary outlined)
+- Created src/components/landing/tier-system.tsx (NEW — the prominent main-model section):
+  - Header: "The Constitutional Tier System" with subtitle explaining 6-tier classification
+  - 6 tier cards (A=indigo, B=purple, C=teal, D=amber, E=cyan, F=navy) each with: letter badge, name, legal form, max capital formation, min participation, founding operator equity, fee, ERP requirement, audit standard, target founder description
+  - Built with shadcn Card, CardContent, Badge components
+  - Framer Motion fade-in-up animations
+  - Zero Custody callout panel: "All tiers preserve Zero Custody. AURIENTA never holds funds. All fees are flat (5% + 2.5%) — never a percentage of capital formed." with Shield icon and "Flat fees only" badge
+  - Dark navy graduation path bar: A → B → C → D → E → F → Sovereign Independence
+  - Light indigo theme (bg-[#F8FAFC], text-[#1E1B4B], primary #4F46E5)
+- Updated src/components/landing/platform-modules.tsx:
+  - Module titles use official terminology: "Constitutional Governance (CRE)", "Immutable Ownership Ledger", "PDPL & AML Compliance", "Brain AI Intelligence", "Enterprise Operations", "Growth & Graduation"
+  - Added "How Capital Flows" banner: Capital Partner → Capital Participation → Equity Units → Ownership Ledger → Milestone Release → Fundamental Pricing → Graduation (with ArrowRightCircle connectors)
+  - Header CTA now links to #tier-system
+- Updated src/components/landing/process-lifecycle.tsx:
+  - 6 steps renamed per blueprint: Constitute Enterprise / Tier Classification / Capital Formation / Milestone Execution / Fundamental Pricing / Graduation
+  - Each step has a subtitle (e.g., "Capital Partners participate from 50 EGP") and full description using official terms (Founding Operator, Law Firm Client Account, Equity Units, Ownership Ledger, CRE, Enterprise Registry)
+  - Section title: "From Constitution to Graduation — In Six Steps"
+- Updated src/components/landing/security-trust.tsx:
+  - Leads with Zero Custody as Pillar 1 of 4, with dedicated highlight panel showing 4 bullet points (never holds funds, Law Firm Client Account flow, milestone-based release, Amendment IX)
+  - Capability cards rewritten with constitutional language (hash-chained, Ed25519-signed, Passkey/WebAuthn, public CRE decision log)
+  - Dark institutional callout reframed as "comparable to World Bank, OECD, BIS — not a software vendor"
+- Updated src/app/page.tsx to insert <TierSystem /> between <PlatformModules /> and <ProcessLifecycle /> as a major section
+- Ran `bun run lint` → 0 errors (486 warnings, all pre-existing in seed/migrate files; 0 warnings in any of the touched files).
+- Killed the running `next dev` server (PID 1126) to free memory before build.
+- Ran `DATABASE_URL=file:... bun run build` → PASS. ✓ Compiled successfully in 18.0s; ✓ Generating static pages (21/21) in 127ms; / landing route present in output manifest. The only stderr lines were `[env] FATAL: FIELD_ENCRYPTION_KEY is not set` which is an expected warning when building without env vars set (does not block the build — pre-existing in all prior agents' runs).
+
+Stage Summary:
+- Files created:
+  - src/components/landing/tier-system.tsx (NEW — the 6-tier main-model section)
+- Files modified:
+  - src/components/landing/hero.tsx (new slogan + 4 pillars + official subtext)
+  - src/components/landing/platform-modules.tsx (official terms + capital-flow banner)
+  - src/components/landing/process-lifecycle.tsx (6 constitutional lifecycle steps)
+  - src/components/landing/security-trust.tsx (Zero Custody as #1 differentiator)
+  - src/app/page.tsx (inserted TierSystem between PlatformModules and ProcessLifecycle)
+- Build: PASS (Next.js 16.3.5 Turbopack; 0 type errors; / landing + all 21 static pages generated)
+- Lint: 0 errors (486 pre-existing warnings, none introduced by this task)

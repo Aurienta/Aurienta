@@ -4,30 +4,55 @@ import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Play, Shield, Cpu, TrendingUp, Scale,
-  FileCheck, Building2, type LucideIcon
+  ArrowRight, Play, Shield, Cpu, TrendingUp, GraduationCap,
+  FileCheck, Building2, Scale, type LucideIcon
 } from "lucide-react";
 
-const EYEBROW = "CONSTITUTIONAL ENTERPRISE INFRASTRUCTURE";
-const SUBTEXT = "AURIENTA provides the constitutional infrastructure for real-economy businesses — turning capital into ownership through AI, rules, and immutable governance.";
+const EYEBROW = "CONSTITUTIONAL ENTERPRISE INFRASTRUCTURE GROUP";
+const SUBTEXT =
+  "AURIENTA is noncustodial constitutional infrastructure for real-economy enterprise creation. Capital Partners participate from 50 EGP. Equity Units are recorded on an immutable ledger. The CRE enforces governance with Ed25519-signed verdicts. Enterprises graduate to sovereign independence — not exit.";
 
-// EXACT colors from reference pixel analysis:
+// EXACT colors from blueprint:
 // Line 1: #1E1B4B (deep navy)
 // Line 2: gradient #6D28D9 (purple) → #10B981 (teal/green)
 // Line 3: #6D28D9 (purple)
 const TRUST_ITEMS: { icon: LucideIcon; title: string; desc: string; bg: string; iconColor: string }[] = [
-  { icon: Shield, title: "Non-Custodial", desc: "Full ownership remains with you.", bg: "bg-[#EEF2FF]", iconColor: "text-[#6366F1]" },
-  { icon: Cpu, title: "AI-Enforced", desc: "Rules & compliance automated.", bg: "bg-[#F3E8FF]", iconColor: "text-[#7C3AED]" },
-  { icon: TrendingUp, title: "Real Economy", desc: "Build and scale actual businesses.", bg: "bg-[#ECFDF5]", iconColor: "text-[#10B981]" },
-  { icon: Scale, title: "Constitutional Governance", desc: "Transparent, immutable, verifiable.", bg: "bg-[#ECFEFF]", iconColor: "text-[#0891B2]" },
+  {
+    icon: Shield,
+    title: "Zero Custody",
+    desc: "AURIENTA never holds your funds. Capital flows to licensed law firm accounts.",
+    bg: "bg-[#EEF2FF]",
+    iconColor: "text-[#4F46E5]",
+  },
+  {
+    icon: Cpu,
+    title: "CRE-Enforced",
+    desc: "32+ constitutional policies, AI-enforced, Ed25519-signed, hash-chained.",
+    bg: "bg-[#F3E8FF]",
+    iconColor: "text-[#7C3AED]",
+  },
+  {
+    icon: TrendingUp,
+    title: "Fundamental Pricing",
+    desc: "EPS × P/E × growth. ±5% band. No speculation, no derivatives.",
+    bg: "bg-[#ECFDF5]",
+    iconColor: "text-[#10B981]",
+  },
+  {
+    icon: GraduationCap,
+    title: "Graduation Doctrine",
+    desc: "AURIENTA succeeds when enterprises no longer need it.",
+    bg: "bg-[#ECFEFF]",
+    iconColor: "text-[#0891B2]",
+  },
 ];
 
 const FLOATING_CARDS = [
-  { label: "Governance & Compliance", icon: Scale, top: "4%", left: "-4%", delay: 0.5 },
+  { label: "Constitutional Governance", icon: Scale, top: "4%", left: "-4%", delay: 0.5 },
   { label: "Ownership Ledger", icon: FileCheck, top: "22%", right: "-4%", delay: 0.7 },
-  { label: "AI Engine", icon: Cpu, top: "48%", left: "-2%", delay: 0.9 },
-  { label: "Business Operations", icon: Building2, top: "68%", right: "-2%", delay: 1.1 },
-  { label: "Real Economy Growth", icon: TrendingUp, top: "8%", right: "8%", delay: 1.3 },
+  { label: "CRE Runtime Engine", icon: Cpu, top: "48%", left: "-2%", delay: 0.9 },
+  { label: "Enterprise Operations", icon: Building2, top: "68%", right: "-2%", delay: 1.1 },
+  { label: "Graduation Path", icon: TrendingUp, top: "8%", right: "8%", delay: 1.3 },
 ];
 
 export function LandingHero() {
@@ -42,33 +67,33 @@ export function LandingHero() {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8">
           {/* LEFT */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.1em] text-[#64748B] mb-4">{EYEBROW}</p>
+            <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.1em] text-[#4F46E5] mb-4">{EYEBROW}</p>
 
-            {/* Headline with EXACT reference colors */}
+            {/* Headline — blueprint slogan (3 lines) */}
             <h1 className="font-sans text-[48px] font-bold leading-[1.1] tracking-tight sm:text-[56px] lg:text-[60px]">
               {/* Line 1: deep navy #1E1B4B */}
-              <span className="block text-[#1E1B4B]">Real Ownership.</span>
+              <span className="block text-[#1E1B4B]">Rules, Not Trust.</span>
               {/* Line 2: gradient purple #6D28D9 → teal #10B981 */}
-              <span className="block bg-gradient-to-r from-[#6D28D9] to-[#10B981] bg-clip-text text-transparent">AI-Enforced Governance.</span>
+              <span className="block bg-gradient-to-r from-[#6D28D9] to-[#10B981] bg-clip-text text-transparent">Capital That Builds.</span>
               {/* Line 3: purple #6D28D9 */}
-              <span className="block text-[#6D28D9]">Lasting Value.</span>
+              <span className="block text-[#6D28D9]">Enterprises That Graduate.</span>
             </h1>
 
             <p className="mt-6 max-w-[480px] font-sans text-[18px] leading-[1.6] text-[#475569]">{SUBTEXT}</p>
 
-            {/* CTAs — primary #5B50E8, secondary outlined */}
+            {/* CTAs — primary indigo, secondary outlined */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/register" className="group inline-flex items-center gap-2 rounded-lg bg-[#5B50E8] px-7 py-3.5 font-sans text-[14px] font-semibold text-white shadow-lg shadow-indigo-200/50 transition-all hover:bg-[#4F46E5] hover:shadow-xl hover:shadow-indigo-300/50">
+              <Link href="/register" className="group inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-7 py-3.5 font-sans text-[14px] font-semibold text-white shadow-lg shadow-indigo-200/50 transition-all hover:bg-[#4338CA] hover:shadow-xl hover:shadow-indigo-300/50">
                 Explore the Platform
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <button className="group inline-flex items-center gap-2 rounded-lg border border-[#CBD5E1] bg-white px-6 py-3.5 font-sans text-[14px] font-semibold text-[#334155] shadow-sm transition-all hover:border-[#94A3B8] hover:bg-slate-50">
-                <Play className="h-4 w-4 text-[#5B50E8]" />
+                <Play className="h-4 w-4 text-[#4F46E5]" />
                 Watch Video
               </button>
             </div>
 
-            {/* Trust strip — 4 indicators */}
+            {/* Trust strip — the 4 Constitutional Pillars */}
             <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
               {TRUST_ITEMS.map((item, i) => (
                 <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }} className="flex flex-col gap-2">
@@ -131,7 +156,7 @@ function FloatingCityscape() {
             </React.Fragment>
           ))}
 
-          {/* Left building 1 (glass blue) */}
+          {/* Left building 1 (indigo glass) */}
           <polygon points="112,200 112,105 140,90 140,200" fill="url(#glassBldg)" />
           <polygon points="140,90 168,105 168,200 140,200" fill="url(#glassBldgDark)" />
           <polygon points="112,105 140,90 168,105 140,120" fill="url(#glassBldgTop)" />
@@ -142,7 +167,7 @@ function FloatingCityscape() {
           <polygon points="95,118 120,130 120,200 95,200" fill="url(#glassBldgDark)" opacity="0.8" />
           <polygon points="70,130 95,118 120,130 95,143" fill="url(#glassBldgTop)" opacity="0.8" />
 
-          {/* Right building 1 (glass blue) */}
+          {/* Right building 1 (indigo glass) */}
           <polygon points="232,200 232,95 260,80 260,200" fill="url(#glassBldg)" />
           <polygon points="260,80 288,95 288,200 260,200" fill="url(#glassBldgDark)" />
           <polygon points="232,95 260,80 288,95 260,108" fill="url(#glassBldgTop)" />
