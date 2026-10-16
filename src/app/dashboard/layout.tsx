@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { ShieldAlert } from "lucide-react";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ConstitutionalFooter } from "@/components/dashboard/constitutional-footer";
 import { PageTransition } from "@/components/ux/page-transition";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // P0 #16: Privileged roles that MUST have MFA verified.
 // These roles can move money, sign documents, or access PII.
@@ -30,14 +33,28 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect(`/signin?next=${encodeURIComponent(pathname)}`);
   }
 
-  // P0 #16: Enforce MFA for privileged roles.
-  // If the user holds a privileged role in ANY enterprise AND has not verified
-  // MFA, redirect to MFA enrollment. This prevents police-clearance-bypass
-  // via session hijack.
-  // NOTE: In sandbox, MFA is optional (ALLOW_DEMO_SIGNIN=true). In production,
-  // this check is hard-enforced.
-  const isPrivileged = user.memberships.some((m: any) => PRIVILEGED_ROLES.has(m.role));
-  const mfaRequired = process.env.ALLOW_DEMO_SIGNIN !== "true" && isPrivileged;
+  // P0 #16 / AUD-003: MFA enforcement for privileged roles.
+  //
+  // Privileged roles (manager, founding_operator, board_member, law_firm_rep,
+  // accounting_firm_rep, aurienta_rep) MUST have MFA enrolled. Until the
+  // passkey enrollment flow is fully built, we cannot hard-block these users
+  // without locking them out of the platform entirely (no demo user has MFA
+  // enabled today). Instead, surface a persistent warning banner at the top
+  // of every dashboard page directing them to enroll a passkey.
+  //
+  // The hard `redirect("/dashboard/mfa-enroll")` block (commented out below)
+  // is re-enabled in a future release once:
+  //   1. The passkey enrollment flow is shipped end-to-end.
+  //   2. All demo users seeded in `prisma/seed.ts` have `mfaEnabled=true` +
+  //      at least one registered passkey.
+  //
+  // Sandbox escape hatch: when ALLOW_DEMO_SIGNIN=true the banner is still
+  // shown so the requirement is visible, but the dashboard remains usable.
+  const isPrivileged = user.memberships.some((m: { role: string }) =>
+    PRIVILEGED_ROLES.has(m.role)
+  );
+  const mfaRequired = isPrivileged;
+  const mfaMissing = mfaRequired && user.mfaEnabled !== true;
   // TODO: When MFA enrollment flow is built, uncomment this:
   // if (mfaRequired && !user.mfaVerifiedAt) {
   //   redirect("/dashboard/mfa-enroll");
@@ -51,6 +68,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // PageTransition wraps children for smooth fade+rise on route change.
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      {mfaMissing && (
+        <Alert variant="destructive" className="mb-0 rounded-none border-x-0 border-t-0">
+          <ShieldAlert className="size-4" />
+          <AlertTitle>MFA enrollment required for your role</AlertTitle>
+          <AlertDescription>
+            Your role can move money, sign documents, or access PII — phishing-resistant
+            multi-factor authentication is mandatory. Please set up a passkey.{" "}
+            <Link
+              href="/dashboard/passkeys"
+              className="font-medium underline underline-offset-4 hover:no-underline"
+            >
+              Go to Passkeys &amp; Security →
+            </Link>
+          </AlertDescription>
+        </Alert>
+      )}
       <DashboardShell user={user}>
         <PageTransition>{children}</PageTransition>
       </DashboardShell>

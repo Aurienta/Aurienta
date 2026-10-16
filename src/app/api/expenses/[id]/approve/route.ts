@@ -6,6 +6,7 @@ import {
   enforceExpenseAuthority,
   enforceNotFrozen,
   enforceNosiExpenseFreeze,
+  logCreDecision,
 } from "@/lib/aurienta/cre";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -233,6 +234,24 @@ export const POST = withErrorHandler(
 
   // ── Update expense + append ledger event inside ONE transaction ──
   const updated = await db.$transaction(async (tx) => {
+    // AUD-013: persist the CRE expense_authority verdict that authorised
+    // this approval. Computed above; logged here so the row commits with
+    // the ledger event.
+    await logCreDecision(tx, {
+      enterpriseId: expense.enterpriseId,
+      policy: verdict.policy,
+      verdict,
+      actorId: user.id,
+      payload: {
+        expenseId: id,
+        amountEgp: expense.amountEgp,
+        capital,
+        pct: Number(pct.toFixed(4)),
+        roleForCre,
+        requiredApproverRoles,
+      },
+    });
+
     const u = await tx.expense.update({
       where: { id },
       data,

@@ -4,6 +4,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { RefreshCw, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 
 type Gate = { label: string; passed: boolean };
 
@@ -24,7 +25,7 @@ export function RecomputeReadinessButton({ enterpriseId }: { enterpriseId: strin
       // PATCH with no fields — the route still re-runs computeGraduationReadiness
       // and returns the readiness payload. We also use the GET endpoint as a
       // fallback by re-patching a no-op (status stays the same).
-      const res = await fetch(`/api/admin/enterprises/${enterpriseId}`, {
+      const res = await csrfFetch(`/api/admin/enterprises/${enterpriseId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ __recompute: true }),

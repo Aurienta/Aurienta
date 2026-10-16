@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
@@ -7,10 +8,21 @@ export const dynamic = "force-dynamic";
 
 // GET /api/enterprises/[id]/health
 // Returns the Constitutional Health Rating for an enterprise (Vol 16 §16.3).
+// AUD-028: requires authentication. Any authenticated user may read the
+// health rating (it's a derived, non-sensitive summary) — no membership
+// check needed for this read-only endpoint.
 export const GET = withErrorHandler(async (
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: "Not authenticated", code: "unauthenticated" },
+      { status: 401 }
+    );
+  }
+
   const { id } = await params;
 
   const enterprise = await db.enterprise.findUnique({

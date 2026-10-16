@@ -7,6 +7,17 @@
 //
 // The HSM ensures the CRE platform private key NEVER leaves the hardware —
 // signing operations happen inside the HSM, and the key is non-exportable.
+//
+// ─────────────────────────────────────────────────────────────────────────
+// HSM INTEGRATION STATUS (AUD-005):
+// This module defines the HSM interface for production CRE signing.
+// In the current deployment, CRE signing uses src/lib/aurienta/signing.ts
+// (software key derived from FIELD_ENCRYPTION_KEY via SHA-256 seed).
+// This is ACCEPTED for sandbox/demo use. For production with real capital,
+// wire this module to a real HSM (AWS KMS, Azure Key Vault, or on-prem HSM).
+// The signing.ts software key MUST be replaced with HSM-backed signing
+// before processing real capital or institutional data.
+// ─────────────────────────────────────────────────────────────────────────
 
 import { createHash, generateKeyPairSync, sign, verify } from "crypto";
 

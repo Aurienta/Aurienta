@@ -69,10 +69,12 @@ export async function requireUser() {
 
 /**
  * Platform-wide RBAC helper. Returns the current user if they hold ANY of the
- * given roles (via EnterpriseMember.role) OR their primaryIntent matches one
- * of the supplied strings. Otherwise throws — callers in route handlers can
- * surface this as a 403; server components typically `redirect("/dashboard")`
- * before reaching this throw via an explicit `user.memberships.some(...)` guard.
+ * given roles via ACTUAL EnterpriseMember.role records (AUD-019: previously
+ * also accepted the self-declared `user.primaryIntent` field as a substitute,
+ * which let any newly-registered user pass any role check).
+ *
+ * Platform admins (`aurienta_rep` via primaryIntent OR a membership) bypass
+ * every role check — AURIENTA Reps have full platform access by design.
  *
  * Usage:
  *   // API route:
@@ -86,8 +88,13 @@ export async function requireRole(
 ): Promise<NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Not authenticated");
-  const hasRole = user.memberships.some((m) => roles.includes(m.role));
-  if (!hasRole && !roles.includes(user.primaryIntent ?? "")) {
+  // AUD-019: check ACTUAL enterprise memberships, not self-declared primaryIntent.
+  const hasRole = (user.memberships ?? []).some((m) => roles.includes(m.role));
+  // AURIENTA Reps are platform-wide admins — they bypass every role check.
+  const isPlatformAdmin =
+    user.primaryIntent === "aurienta_rep" ||
+    (user.memberships ?? []).some((m) => m.role === "aurienta_rep");
+  if (!hasRole && !isPlatformAdmin) {
     throw new Error(`Forbidden: requires one of ${roles.join(", ")}`);
   }
   return user;

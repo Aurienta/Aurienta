@@ -2,7 +2,10 @@
 //
 // Hardening over the legacy route:
 // - Sessions are persisted in the Session table (revocable, rotating, device-tracked).
-// - Passwords are verified against scrypt hashes via verifyPassword().
+// - Passwords are verified via Argon2id (verifyPasswordV2) with transparent upgrade
+//   of legacy scrypt hashes on the next successful login (AUD-001).
+// - Account lockout (5 attempts → 15-min lock) is enforced BEFORE the password
+//   verify path so timing oracles cannot reveal user existence (AUD-002).
 // - Plaintext / `$mock$` hashes are refused in production (hard 500) and only
 //   accepted in dev when ALLOW_DEMO_SIGNIN=true (sandbox convenience).
 // - Rate-limited via the shared `limiters.signin` limiter.
@@ -19,7 +22,8 @@ import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
 import { authSchema, parseBody } from "@/lib/aurienta/validation";
 import { createSession, signOut, signInAs } from "@/lib/aurienta/auth";
-import { verifyPassword, isPlaintextHash } from "@/lib/aurienta/password";
+import { verifyPasswordV2, hashPasswordV2, isPlaintextHash } from "@/lib/aurienta/password-v2";
+import { checkLockout, recordFailedAttempt, resetLockout } from "@/lib/aurienta/account-lockout";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 
 export const runtime = "nodejs";
@@ -68,12 +72,13 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // Helper: on auth failure, redirect form submissions back to signin,
-  // or return JSON for API calls.
-  function authFail(status: number, error: string) {
+  // or return JSON for API calls. `extra` is merged into the JSON body so
+  // the client can surface "X attempts remaining" (AUD-002).
+  function authFail(status: number, error: string, extra?: Record<string, unknown>) {
     if (isFormSubmission) {
       return NextResponse.redirect(new URL("/signin?error=invalid_credentials", req.url), { status: 303 });
     }
-    return NextResponse.json({ error }, { status });
+    return NextResponse.json({ error, ...(extra ?? {}) }, { status });
   }
 
   // ── Sign-out branch (kept for backwards compatibility) ──
@@ -82,21 +87,46 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     return NextResponse.json({ ok: true });
   }
 
+  // ── Account lockout (AUD-002) — keyed by email so it applies even
+  // before user lookup, eliminating user-exists timing side-channel. ──
+  const lockout = await checkLockout(email);
+  if (lockout.locked) {
+    const retryAfterSec = Math.ceil((lockout.remainingMs ?? 0) / 1000);
+    await audit({
+      action: "auth.signin",
+      result: "denied",
+      reason: "account_locked",
+      metadata: { retryAfterSec },
+      ip,
+      userAgent,
+    });
+    logger.warn("auth refused: account locked", { email, ip, retryAfterSec });
+    return NextResponse.json(
+      { error: "Account locked", retryAfter: retryAfterSec },
+      { status: 423, headers: { "Retry-After": String(retryAfterSec) } }
+    );
+  }
+
   // ── Demo sign-in: only when ALLOW_DEMO_SIGNIN=true AND no password supplied ──
   // Sandbox convenience: lets the demo-user-picker work without a password.
   // In production this branch is unreachable (env.allowDemoSignIn is false).
   if (env.allowDemoSignIn && !password) {
     const user = await signInAs(email);
     if (!user) {
+      // Record failed attempt even for demo flow so lockout triggers on
+      // repeated unknown emails (timing-oracle hardening).
+      const { attemptsRemaining } = await recordFailedAttempt(email);
       await audit({
         action: "auth.signin",
         result: "denied",
         reason: "demo_unknown_email",
+        metadata: { attemptsRemaining },
         ip,
         userAgent,
       });
-      return authFail(401, "invalid_credentials");
+      return authFail(401, "invalid_credentials", { attemptsRemaining });
     }
+    await resetLockout(email);
     await audit({
       action: "auth.signin",
       actorId: user.id,
@@ -115,15 +145,19 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await db.user.findUnique({ where: { email } });
   if (!user) {
     // Deliberately do NOT reveal which of email/password failed.
+    // Record failed attempt so lockout fires for non-existent emails too
+    // (prevents user-existence enumeration via lockout timing).
+    const { attemptsRemaining } = await recordFailedAttempt(email);
     await audit({
       action: "auth.signin",
       result: "denied",
       reason: "unknown_email",
+      metadata: { attemptsRemaining },
       ip,
       userAgent,
     });
-    logger.info("auth failed: unknown email", { email, ip });
-    return authFail(401, "invalid_credentials");
+    logger.info("auth failed: unknown email", { email, ip, attemptsRemaining });
+    return authFail(401, "invalid_credentials", { attemptsRemaining });
   }
 
   // Legacy / mocked hash handling. In production a plaintext hash means the
@@ -141,6 +175,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     if (env.allowDemoSignIn) {
       const demoUser = await signInAs(email);
       if (demoUser) {
+        await resetLockout(email);
         await audit({
           action: "auth.signin",
           actorId: demoUser.id,
@@ -155,33 +190,72 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
         });
       }
     }
+    const { attemptsRemaining } = await recordFailedAttempt(email);
     await audit({
       action: "auth.signin",
       actorId: user.id,
       result: "denied",
       reason: "plaintext_hash_refused",
+      metadata: { attemptsRemaining },
       ip,
       userAgent,
     });
-    return authFail(401, "invalid_credentials");
+    return authFail(401, "invalid_credentials", { attemptsRemaining });
   }
 
-  // ── Verify password ──
-  const passwordOk = password ? verifyPassword(password, user.passwordHash) : false;
-  if (!passwordOk) {
+  // ── Verify password via Argon2id (AUD-001) ──
+  // verifyPasswordV2 supports BOTH argon2id$ (new) and scrypt$ (legacy).
+  // On success against a legacy scrypt hash, needsUpgrade=true triggers a
+  // transparent re-hash with Argon2id (lazy migration on next login).
+  const passwordResult = password
+    ? await verifyPasswordV2(password, user.passwordHash)
+    : { valid: false, needsUpgrade: false };
+
+  if (!passwordResult.valid) {
+    const { locked, attempts, attemptsRemaining } = await recordFailedAttempt(email);
     await audit({
       action: "auth.signin",
       actorId: user.id,
       result: "denied",
       reason: "wrong_password",
+      metadata: { attemptsRemaining, locked },
       ip,
       userAgent,
     });
-    logger.info("auth failed: bad password", { email, ip });
-    return authFail(401, "invalid_credentials");
+    logger.info("auth failed: bad password", { email, ip, attempts, locked });
+    // If this attempt just crossed the lockout threshold, surface the lock
+    // instead of a generic 401 so the client can show a countdown.
+    if (locked) {
+      const retryAfterSec = Math.ceil(15 * 60); // LOCK_DURATION_MS / 1000
+      return NextResponse.json(
+        { error: "Account locked", retryAfter: retryAfterSec },
+        { status: 423, headers: { "Retry-After": String(retryAfterSec) } }
+      );
+    }
+    return authFail(401, "invalid_credentials", { attemptsRemaining });
   }
 
-  // ── Success — create a server-side Session ──
+  // ── Transparent hash upgrade (AUD-001): re-hash with Argon2id ──
+  if (passwordResult.needsUpgrade) {
+    try {
+      const newHash = await hashPasswordV2(password);
+      await db.user.update({
+        where: { id: user.id },
+        data: { passwordHash: newHash },
+      });
+      logger.info("password hash upgraded to argon2id", { userId: user.id });
+    } catch (e) {
+      // Non-fatal — user is already authenticated. Log and continue; the
+      // next login will retry the upgrade.
+      logger.error("failed to upgrade password hash", {
+        userId: user.id,
+        error: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+
+  // ── Success: clear lockout + create a server-side Session (AUD-002) ──
+  await resetLockout(email);
   await createSession(user.id, { ip, userAgent });
   await audit({
     action: "auth.signin",

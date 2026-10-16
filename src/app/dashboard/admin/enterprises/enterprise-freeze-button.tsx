@@ -19,6 +19,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 
 type RowEnterprise = {
   id: string;
@@ -49,7 +50,7 @@ export function EnterpriseFreezeButton({
     }
     setBusy(true);
     try {
-      const res = await fetch(
+      const res = await csrfFetch(
         `/api/admin/enterprises/${enterprise.id}/${action}`,
         {
           method: "POST",

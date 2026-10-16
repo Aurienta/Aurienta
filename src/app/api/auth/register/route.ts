@@ -1,9 +1,9 @@
 // AURIENTA registration API — creates a Constitutional Partner with a real
-// Ed25519 Identity Anchor, scrypt password hash, and signed Constitutional Pledge.
+// Ed25519 Identity Anchor, Argon2id password hash, and signed Constitutional Pledge.
 //
-// Hardening (REMED-1A):
+// Hardening (REMED-1A + AUD-001):
 // - Email/mobile uniqueness enforced (409 on collision).
-// - Password hashed via scrypt (hashPassword).
+// - Password hashed via Argon2id (hashPasswordV2) — OWASP-recommended.
 // - nationalIdLast4 AES-GCM encrypted at rest (encryptField).
 // - Ed25519 keypair generated server-side; private key encrypted before persistence.
 // - Pledge is signed with the user's private key over a deterministic message
@@ -21,7 +21,7 @@ import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
 import { parseBody, registerSchema } from "@/lib/aurienta/validation";
 import { createSession } from "@/lib/aurienta/auth";
-import { hashPassword } from "@/lib/aurienta/password";
+import { hashPasswordV2 } from "@/lib/aurienta/password-v2";
 import { generateUserKeypair, signWithUserKey } from "@/lib/aurienta/signing";
 import { encryptField } from "@/lib/aurienta/encryption";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
@@ -89,7 +89,8 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const pledgeSignature = signWithUserKey(kp.secretEnc, pledgeMessage);
 
   // ── Password + PII hashing/encryption ──
-  const passwordHash = hashPassword(body.password);
+  // Argon2id (OWASP-recommended, memory-hard) — AUD-001.
+  const passwordHash = await hashPasswordV2(body.password);
   const nationalIdLast4Enc = body.nationalIdLast4
     ? encryptField(body.nationalIdLast4)
     : null;

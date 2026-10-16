@@ -8,6 +8,7 @@ import {
   enforceNotFrozen,
   enforcePriceBand,
   enforceVerificationGate,
+  logCreDecision,
 } from "@/lib/aurienta/cre";
 import { orderSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -250,6 +251,22 @@ export async function POST(req: NextRequest) {
 
   // ── Persist order + ledger event inside ONE transaction ──
   const order = await db.$transaction(async (tx) => {
+    // AUD-013: persist the CRE fundamental_pricing verdict that allowed this
+    // order. Computed above; logged here so the row commits with the ledger.
+    await logCreDecision(tx, {
+      enterpriseId,
+      policy: verdict.policy,
+      verdict,
+      actorId: user.id,
+      payload: {
+        orderPrice: priceEgp,
+        fundamentalPrice: enterprise.equityUnitPriceEgp,
+        phase,
+        side,
+        shares,
+      },
+    });
+
     const created = await tx.tradeOrder.create({
       data: {
         enterpriseId,

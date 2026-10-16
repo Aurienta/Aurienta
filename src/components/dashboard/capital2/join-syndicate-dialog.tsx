@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { egp } from "@/lib/aurienta/format";
 import { type SyndicateForUi } from "./types";
 
@@ -62,7 +63,7 @@ export function JoinSyndicateDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/syndicates/${syndicate.id}/join`, {
+      const res = await csrfFetch(`/api/syndicates/${syndicate.id}/join`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

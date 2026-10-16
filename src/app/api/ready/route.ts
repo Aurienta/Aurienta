@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { logger } from "@/lib/aurienta/logger";
+import { checkAiProviders } from "@/lib/aurienta/ai-router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,13 +9,29 @@ export const dynamic = "force-dynamic";
 // Process start time
 const STARTED_AT = Date.now();
 
-type CheckResult = { name: string; status: "ok" | "degraded" | "down"; latencyMs: number; detail?: string };
+// AI providers expected to be online for "ok" status (AUD-008).
+// Mirrors the 5 providers probed by checkAiProviders() in ai-router.ts.
+const AI_PROVIDER_TOTAL = 5;
+
+type CheckResult = {
+  name: string;
+  status: "ok" | "degraded" | "down";
+  latencyMs: number;
+  detail?: string;
+  connected?: number;
+  total?: number;
+};
 
 /**
  * GET /api/ready
  * Readiness probe — checks ALL critical dependencies (DB, AI config, CRE).
  * Returns 200 if all critical checks pass, 503 if any are down.
- * Used by orchestrators to decide whether to route traffic to this instance.
+ *
+ * AUD-008: the `ai_providers` check now ACTUALLY pings each provider via
+ * `checkAiProviders()` (a minimal "ping" request) rather than only checking
+ * env-var presence. The check reports `{ connected, total, ok }` and, if
+ * fewer than 5 providers are reachable, downgrades the overall probe status
+ * to "degraded" (200) — matching the brain-status endpoint's view.
  */
 export async function GET() {
   const checks: CheckResult[] = [];
@@ -39,14 +56,35 @@ export async function GET() {
     detail: !hasEncryptionKey ? "FIELD_ENCRYPTION_KEY missing" : !hasSessionSecret ? "SESSION_SECRET missing" : undefined,
   });
 
-  // 3. AI providers — non-critical (degraded mode if down)
+  // 3. AI providers — actually ping each provider (AUD-008).
+  // Previously this only checked env-var presence and reported "ok" even when
+  // brain-status showed 0/5 connected. Now it mirrors brain-status: probes
+  // gemini/groq/huggingface/openrouter/nvidia with a minimal request and
+  // reports the connected count. If <5 are reachable, the check is degraded
+  // and the overall probe status is degraded too (still 200 — AI providers
+  // are not critical-path for serving dashboard pages, only for AI features).
   const aiStart = Date.now();
-  const aiKeys = ["GEMINI_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY", "HUGGINGFACE_API_KEY", "OPENROUTER_API_KEY", "NVIDIA_API_KEY"].filter(k => !!process.env[k]);
+  let aiConnected = 0;
+  let aiDetail = "";
+  try {
+    const providers = await checkAiProviders();
+    aiConnected = Object.values(providers).filter((p) => p.connected).length;
+    const providersStr = Object.entries(providers)
+      .map(([k, v]) => `${k}:${v.connected ? "on" : "off"}`)
+      .join(",");
+    aiDetail = `${aiConnected}/${AI_PROVIDER_TOTAL} connected (${providersStr})`;
+  } catch (e) {
+    aiDetail = `probe failed: ${e instanceof Error ? e.message : String(e)}`;
+  }
+  const aiStatus: CheckResult["status"] =
+    aiConnected >= AI_PROVIDER_TOTAL ? "ok" : aiConnected > 0 ? "degraded" : "down";
   checks.push({
     name: "ai_providers",
-    status: aiKeys.length >= 1 ? "ok" : "degraded",
+    status: aiStatus,
     latencyMs: Date.now() - aiStart,
-    detail: `${aiKeys.length}/6 providers configured`,
+    detail: aiDetail,
+    connected: aiConnected,
+    total: AI_PROVIDER_TOTAL,
   });
 
   // 4. Ledger integrity — critical

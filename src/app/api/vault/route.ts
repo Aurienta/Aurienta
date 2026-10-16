@@ -34,7 +34,8 @@ const contributeSchema = z.object({
 });
 
 // GET /api/vault?enterpriseId=xxx — read the Anti-Fragility Insurance Vault
-// balance for the named enterprise. Auth required.
+// balance for the named enterprise. Auth + enterprise membership required
+// (AUD-009: previously any authenticated user could read ANY enterprise's vault).
 export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
@@ -52,6 +53,17 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
         code: "invalid_body",
       },
       { status: 400 }
+    );
+  }
+
+  // AUD-009: only members of this enterprise may read its vault.
+  const isMember = (user.memberships ?? []).some(
+    (m) => m.enterpriseId === enterpriseId
+  );
+  if (!isMember) {
+    return NextResponse.json(
+      { error: "Forbidden: not a member of this enterprise", code: "forbidden" },
+      { status: 403 }
     );
   }
 
@@ -88,7 +100,9 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
 
 // POST /api/vault — contribute 0.5% of a Capital Formation close to the
 // Anti-Fragility Insurance Vault. Creates the vault record on first
-// contribution. Appends a tamper-evident ledger event. Auth required.
+// contribution. Appends a tamper-evident ledger event. Auth + enterprise
+// membership required (AUD-009: previously any authed user could contribute
+// to ANY enterprise's vault).
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await getCurrentUser();
   if (!user) {
@@ -101,6 +115,17 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const body = await parseBody(req, contributeSchema);
   if (body instanceof NextResponse) return body;
   const { enterpriseId, amountEgp } = body;
+
+  // AUD-009: only members of this enterprise may contribute to its vault.
+  const isMember = (user.memberships ?? []).some(
+    (m) => m.enterpriseId === enterpriseId
+  );
+  if (!isMember) {
+    return NextResponse.json(
+      { error: "Forbidden: not a member of this enterprise", code: "forbidden" },
+      { status: 403 }
+    );
+  }
 
   const enterprise = await db.enterprise.findUnique({
     where: { id: enterpriseId },

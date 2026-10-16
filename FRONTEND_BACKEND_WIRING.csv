@@ -1,0 +1,184 @@
+Component,File,Action,APIEndpoint,HTTPMethod,RequestShape,ResponseShape,Wired,Issue,Priority
+SignInForm,src/components/auth/signin-form.tsx,Email+password submit,/api/auth,POST,"{email,password}",{user:{id,email,legalName}},Yes,Hardcoded fallback password 'aurienta2026' in demo fill function,P2
+SignInForm,src/components/auth/signin-form.tsx,Native HTML form action,/api/auth,POST,form-encoded,{redirect 303},Yes,None,P3
+DemoUserPicker,src/components/auth/demo-user-picker.tsx,Demo login,/api/auth,POST,"{email,password}",{user:{id,email,legalName}},Yes,Hardcoded DEMO_PASSWORD 'aurienta2026' shown in UI helper text,P2
+RegisterWizard,src/components/auth/register-wizard.tsx,Register partner,/api/auth/register,POST,"{email,mobile,legalName,password,verificationLevel,nationality,nationalIdLast4,primaryIntent}",{user:{id,email,legalName,identityAnchor}},Yes,None,P3
+StepKYC,src/components/auth/steps/step-kyc.tsx,Liveness verification,/api/verification/kyc,POST,"{nationality,documentOcr,liveness,method}",{verificationLevel},Yes,Mock method 'sandbox-mock' passes fabricated DFDC/facenet scores into prod pipeline,P2
+PasskeyManager,src/components/auth/passkey-manager.tsx,List passkeys,/api/auth/passkey/list,GET,-,{passkeys[]},Yes,None,P3
+PasskeyManager,src/components/auth/passkey-manager.tsx,Register start,/api/auth/passkey/register/start,POST,"{name}",{options},Yes,None,P3
+PasskeyManager,src/components/auth/passkey-manager.tsx,Register finish,/api/auth/passkey/register/finish,POST,"{response,name}",{ok},Yes,None,P3
+PasskeyManager,src/components/auth/passkey-manager.tsx,Delete passkey,/api/auth/passkey/delete,POST,"{credentialId}",{ok},Yes,None,P3
+EnterpriseDiscoveryClient,src/components/dashboard/roadmap/enterprise-discovery-client.tsx,Save profile,/api/discovery,POST,DiscoveryProfile,{ok,profile},Yes,None,P3
+EnterpriseDiscoveryClient,src/components/dashboard/roadmap/enterprise-discovery-client.tsx,Refresh matches,/api/discovery,GET,-,{matches[]},Yes,Uses plain fetch not csrfFetch (acceptable for GET),P3
+EnterpriseDiscoveryClient,src/components/dashboard/roadmap/enterprise-discovery-client.tsx,Dismiss/invest match,/api/discovery/[matchId],PATCH,"{action}",{ok,action},Yes,None,P3
+ProfitSharingClient,src/components/dashboard/roadmap/profit-sharing-client.tsx,List agreements,/api/profit-sharing,GET,-,{agreements[]},Yes,None,P3
+ProfitSharingClient,src/components/dashboard/roadmap/profit-sharing-client.tsx,Create agreement,/api/profit-sharing,POST,"{enterpriseId,title,contributionEgp,profitSharePct,termMonths}",{agreement,verdict},Yes,None,P3
+ProfitSharingClient,src/components/dashboard/roadmap/profit-sharing-client.tsx,Terminate agreement,/api/profit-sharing/[agreementId],PATCH,{terminate},(?),Yes,Field name action/value not verified against API route; UI assumes route exists,P3
+AreiClient,src/components/dashboard/roadmap/arei-client.tsx,Recompute index,/api/arei/compute,POST,-,{ok,snapshot,constituents},Yes,None,P3
+GaasClient,src/components/dashboard/roadmap/gaas-client.tsx,Register org,/api/gaas/organizations,POST,"{name,type,contactEmail,subscriptionPlan}",{organization},Yes,None,P3
+GaasClient,src/components/dashboard/roadmap/gaas-client.tsx,Register policy,/api/gaas/organizations/[orgId]/policies,POST,"{name,ruleText,enforcementLogic:{threshold,quorum}}",{policy},Yes,None,P3
+GaasClient,src/components/dashboard/roadmap/gaas-client.tsx,Record decision,/api/gaas/organizations/[orgId]/decisions,POST,(?),(?),No,UI exposes 'register decision' button but no fetch() call to /decisions endpoint found; route exists but unreachable from UI,P1
+OracleClient,src/components/dashboard/roadmap/oracle-client.tsx,Generate API key,/api/oracle/keys,POST,-,{key,hash},Yes,None,P3
+OracleClient,src/components/dashboard/roadmap/oracle-client.tsx,Run consensus query,/api/oracle/consensus,POST,"{query,apiKey}",{verdict,decisionToken,modelsConsulted,responseTimeMs},Yes,Uses plain fetch (not csrfFetch) — exempted from CSRF middleware intentionally; OK,P3
+QuadraticVotingClient,src/components/dashboard/roadmap/quadratic-voting-client.tsx,Cast vote,/api/quadratic-voting/[proposalId],POST,"{creditsSpent}",{allocation},Yes,None,P3
+QuadraticVotingClient,src/components/dashboard/roadmap/quadratic-voting-client.tsx,Fetch allocation,/api/quadratic-voting/[proposalId],GET,-,{allocation},Yes,None,P3
+EndorsementsClient,src/components/dashboard/roadmap/endorsements-client.tsx,Create endorsement,/api/endorsements,POST,"{enterpriseId,stakeSts}",{endorsement,verdict},Yes,None,P3
+EndorsementsClient,src/components/dashboard/roadmap/endorsements-client.tsx,Resolve endorsement,/api/endorsements/[endorsementId],PATCH,"{outcome}",{ok},Yes,None,P3
+SoulboundClient,src/components/dashboard/roadmap/soulbound-client.tsx,Mint credential,/api/soulbound,POST,{},{credential},Yes,None,P3
+SoulboundClient,src/components/dashboard/roadmap/soulbound-client.tsx,Verify credential,/api/soulbound/verify,POST,"{credentialId}",{valid,credential,reason},Yes,None,P3
+SoulboundClient,src/components/dashboard/roadmap/soulbound-client.tsx,Revoke credential,/api/soulbound/revoke,POST,"{userId,reason}",{ok,credential},No,Route exists but UI only displays endpoint name as static text — no button calls it. AURIENTA reps have no UI path to revoke.,P2
+StandaloneSuccessionClient,src/components/dashboard/roadmap/standalone-succession-client.tsx,Create case,/api/standalone-succession,POST,"{businessName,businessType,shamirThreshold,shamirShares}",{ok,case},Yes,None,P3
+StandaloneSuccessionClient,src/components/dashboard/roadmap/standalone-succession-client.tsx,Activate case,/api/standalone-succession/[caseId],PATCH,"{action}",{ok,case},Yes,None,P3
+StandaloneSuccessionClient,src/components/dashboard/roadmap/standalone-succession-client.tsx,Refresh diaspora rounds,/api/diaspora-corridor,GET,-,{rounds[]},Yes,None,P3
+GenomeClient,src/components/dashboard/roadmap/genome-client.tsx,Fetch genome,/api/genome/[enterpriseId],GET,-,{genome},Yes,None,P3
+ZeitgeistClient,src/components/dashboard/roadmap/zeitgeist-client.tsx,Refresh zeitgeist,/api/zeitgeist,GET,?refresh=1&days=30,{snapshots[]},Yes,None,P3
+RiskProfileClient,src/components/dashboard/roadmap/risk-profile-client.tsx,Generate API key,/api/risk-profile/keys,POST,-,{key,hash},Yes,None,P3
+RiskProfileClient,src/components/dashboard/roadmap/risk-profile-client.tsx,Generate profile,/api/risk-profile/[enterpriseId],GET,headers:{X-Risk-Profile-Api-Key,...},{profile},Yes,None,P3
+PriorityAllocationClient,src/components/dashboard/roadmap/priority-allocation-client.tsx,Register interest,/api/priority-allocation,POST,"{enterpriseId,windowPhase}",{allocation},Yes,None,P3
+PriorityAllocationClient,src/components/dashboard/roadmap/priority-allocation-client.tsx,Fetch rankings,/api/priority-allocation/rankings,GET,?enterpriseId=...&phase=...,{rankings[]},Yes,None,P3
+SuccessionDeclarationClient,src/components/dashboard/succession/succession-declaration-client.tsx,Save declaration,/api/succession,POST,DeclarationDraft,{declaration:{id,status}},Yes,None,P3
+SuccessionDeclarationClient,src/components/dashboard/succession/succession-declaration-client.tsx,Execute declaration,/api/succession/[id]/execute,POST,(?),(?),No,API route exists but UI never calls execute/activate routes — only POST /api/succession to file. Succession lifecycle stuck after filing.,P1
+VotingModal,src/components/dashboard/governance/voting-modal.tsx,Cast vote,/api/proposals/[id]/vote,POST,"{choice,reason}",{proposal,vote,executed,tally},Yes,None,P3
+NewProposalDialog,src/components/dashboard/governance/new-proposal-dialog.tsx,Create proposal,/api/proposals,POST,"{enterpriseId,type,title,description}",{proposal},Yes,None,P3
+CallVoteButton,src/components/dashboard/institutional/call-vote-button.tsx,Call graduation vote,/api/proposals,POST,"{enterpriseId,title,description,type,votingDurationHours}",{proposal},Yes,UI sends votingDurationHours field which API silently ignores (route uses meta.voting from constants),P2
+ManagerRemovalButton,src/app/dashboard/governance/manager-removal-button.tsx,Initiate removal proposal,/api/proposals,POST,"{enterpriseId,type,title,description}",{proposal},Yes,None,P3
+ExecuteGraduationButton,src/components/dashboard/institutional/execute-graduation-button.tsx,Execute graduation,/api/graduation/execute,POST,"{enterpriseId}",{ok,enterprise},Yes,None,P3
+ExecuteGraduationButton,src/components/dashboard/institutional/execute-graduation-button.tsx,Export sovereign package,/api/graduation/export,POST,(?),(?),No,Route exists but no UI button to trigger the export package download (institutional/export-package-card only links to docs),P2
+SubmitExpenseDialog,src/components/dashboard/manager/submit-expense-dialog.tsx,Submit expense,/api/expenses,POST,"{enterpriseId,category,description,vendor,amountEgp,receiptNote}",{ok,expense},Yes,Field name mismatch: UI sends 'vendor'+'receiptNote' but schema expects 'vendorName'+'receiptCid' — vendor always saved as 'unspecified',P0
+ApproveExpenseButton,src/components/dashboard/manager/approve-expense-button.tsx,Approve expense,/api/expenses/[id]/approve,POST,-,{ok,expense},Yes,None,P3
+ApproveExpenseButton,src/components/dashboard/manager/approve-expense-button.tsx,Reject expense,/api/expenses/[id]/reject,POST,-,{ok,expense},No,Route exists but no 'Reject' button in UI — managers can only approve; reject endpoint is unreachable from any dashboard view,P1
+SkillEquityReviewButtons,src/components/dashboard/manager/skill-equity-review-buttons.tsx,Review skill-equity claim,/api/skill-equity/[id]/review,PATCH,"{decision,reason}",{ok,claim},Yes,None,P3
+SkillEquityClient,src/components/dashboard/workforce/skill-equity-client.tsx,Submit skill-equity claim,/api/skill-equity,POST,ClaimBody,{ok,claim},Yes,None,P3
+RequestMentorshipDialog,src/components/dashboard/workforce/request-mentorship-dialog.tsx,Request mentorship,/api/mentorship,POST,RequestBody,{ok,mentorship},Yes,None,P3
+DiasporaClient,src/components/dashboard/workforce/diaspora-client.tsx,List diaspora,/api/diaspora,GET,-,{diaspora[]},Yes,None,P3
+SalaryCalculatorClient,src/components/dashboard/workforce/salary-calculator-client.tsx,Compute salary,/api/ai/salary,POST,"{role,experience,sector,market}",{salary,benchmark},Yes,None,P3
+MarketWorkspace,src/components/dashboard/capital/market-workspace.tsx,Place order,/api/orders,POST,"{enterpriseId,side,shares,priceEgp,phase}",{order},Yes,None,P3
+ReserveSharesDialog,src/components/dashboard/capital/reserve-shares-dialog.tsx,Reserve shares,/api/reservations,POST,"{enterpriseId,shares}",{reservation},Yes,None,P3
+ReserveSharesDialog,src/components/dashboard/capital/reserve-shares-dialog.tsx,Confirm funds received,/api/reservations/[id]/confirm,POST,"{referenceCode}",{ok,reservation},No,Critical Blueprint §5 funds-receipt confirmation endpoint has NO UI caller — law-firm confirmation step never happens; capital formation loop broken,P0
+DripCard,src/components/dashboard/capital2/drip-card.tsx,Enroll/unenroll DRIP,/api/drip,POST,"{enterpriseId,reinvestPct,action}",{ok},Yes,None,P3
+DripCard,src/components/dashboard/capital2/drip-card.tsx,Update DRIP %,/api/drip,POST,"{enterpriseId,reinvestPct,action}",{ok},Yes,None,P3
+JoinSyndicateDialog,src/components/dashboard/capital2/join-syndicate-dialog.tsx,Join syndicate,/api/syndicates/[id]/join,POST,"{shares,amount}",{member,ok},Yes,Uses plain fetch not csrfFetch for state-changing POST; relies on same-origin Origin header (works but skips X-CSRF-Token layer),P2
+FormSyndicateDialog,src/components/dashboard/capital2/form-syndicate-dialog.tsx,Form syndicate,/api/syndicates,POST,SyndicateBody,{syndicate},Yes,Uses plain fetch not csrfFetch for state-changing POST,P2
+NewEnterpriseWizard,src/components/dashboard/founder/new-enterprise-wizard.tsx,Constitute enterprise,/api/enterprises,POST,"{name,tagline,description,sector,tier,fundraisingGoalEgp,equityUnitPriceEgp,investorCap}",{ok,enterprise},Yes,None,P3
+EnterpriseCard,src/components/dashboard/founder/enterprise-card.tsx,List for capital formation,/api/enterprises/[id]/list,POST,-,{ok,enterprise},Yes,None,P3
+EnterpriseProfileClient,src/components/dashboard/founder/enterprise-profile-client.tsx,Update profile,/api/enterprises/[id]/profile,PATCH,ProfileForm,{ok},Yes,None,P3
+MilestoneEvidenceDialog,src/components/dashboard/founder/milestone-evidence-dialog.tsx,Submit milestone evidence,/api/enterprises/[id]/milestones,POST,"{milestoneId,evidenceNote}",{ok,milestone},Yes,Backend uses Math.random() to mock EVE confidence (0.70-0.87) in production path; not a real Evidence Verification Engine verdict,P1
+MilestoneEvidenceDialog,src/components/dashboard/founder/milestone-evidence-dialog.tsx,Accountant release,/api/milestones/[id]/accountant-release,POST,"{note}",{ok,milestone},No,Route exists but no UI button — milestone 'accountant release' step has no dashboard entry point,P1
+PitchDeckGenerator,src/components/dashboard/founder/pitch-deck-generator.tsx,Generate pitch deck,/api/ai/pitch-deck,POST,PitchBody,{deck},Yes,None,P3
+StepFeasibility,src/components/dashboard/founder/wizard/step-feasibility.tsx,Feasibility check,/api/ai/feasibility,POST,"{sector,tier,goalEgp}",{feasibility},Yes,None,P3
+VaultClient,src/components/dashboard/transparency/vault-client.tsx,Read vault,/api/vault,GET,?enterpriseId=...,{vault},Yes,None,P3
+VaultClient,src/components/dashboard/transparency/vault-client.tsx,Petition loan,/api/vault/loan,POST,"{enterpriseId,amountEgp,reason}",{ok,loan},Yes,None,P3
+VaultLoanActions,src/components/dashboard/transparency/vault-loan-actions.tsx,Repay loan,/api/vault/loan/[id],PATCH,"{action:repay,amountEgp}",{ok,loan},Yes,None,P3
+VaultLoanActions,src/components/dashboard/transparency/vault-loan-actions.tsx,Forgive loan,/api/vault/loan/[id],PATCH,"{action:forgive}",{ok,loan},Yes,None,P3
+VaultLoanActions,src/components/dashboard/transparency/vault-loan-actions.tsx,Approve/reject petition,/api/vault/loan/[id],PATCH,"{action:approve|reject,note}",{ok,loan},Yes,None,P3
+SolvencyClient,src/components/dashboard/transparency/solvency-client.tsx,Read assertions,/api/solvency,GET,?enterpriseId=...,{assertions[]},Yes,None,P3
+SolvencyClient,src/components/dashboard/transparency/solvency-client.tsx,File assertion,/api/solvency,POST,"{enterpriseId,lawFirmBalanceEgp}",{assertion,emergencyFreeze},Yes,None,P3
+AppealsClient,src/components/dashboard/transparency/appeals-client.tsx,File appeal,/api/appeals,POST,"{enterpriseId,caseType,description}",{caseId},Yes,None,P3
+WhistleblowerClient,src/components/dashboard/transparency/whistleblower-client.tsx,File report,/api/whistleblower,POST,"{enterpriseId,category,description}",{trackingCode},Yes,None,P3
+WhistleblowerClient,src/components/dashboard/transparency/whistleblower-client.tsx,Resolve report,/api/whistleblower/[id]/resolve,POST,"{resolution,note}",{ok,report},No,Admin resolve endpoint exists but whistleblower UI has no 'resolve' action — AURIENTA reps cannot close reports from UI,P1
+RiskDisclosureClient,src/components/dashboard/transparency/risk-disclosure-client.tsx,Read disclosure,/api/risk-disclosure,GET,-,{disclosure},Yes,None,P3
+RiskDisclosureClient,src/components/dashboard/transparency/risk-disclosure-client.tsx,Acknowledge disclosure,/api/risk-disclosure,POST,"{acknowledged}",{ok},Yes,None,P3
+NotificationCenter,src/components/dashboard/ux/notification-center.tsx,Triage notifications,/api/ai/triage,POST,"{ids?}",{triaged[],fallbackUsed},Yes,None,P3
+NotificationCenter,src/components/dashboard/ux/notification-center.tsx,Mark read,/api/notifications/[id]/read,POST,-,{ok},Yes,None,P3
+NotificationCenter,src/components/dashboard/ux/notification-center.tsx,Mark all read,/api/notifications/[id]/read,POST,-,{ok},Yes,Fans out N parallel POSTs (one per notification) instead of a batch endpoint — inefficient but works,P3
+AuditActivityFeed,src/components/dashboard/admin/audit-activity-feed.tsx,Read audit log,/api/admin/audit,GET,?pageSize=50,{events[]},Yes,None,P3
+AdminAuditPage,src/app/dashboard/admin/audit/page.tsx,Export audit log,/api/admin/audit/export,GET,?filters,{file},Yes,Linked via <a href> not fetch (acceptable for file download),P3
+SettingsConsole,src/app/dashboard/admin/settings/settings-console.tsx,Update setting,/api/admin/settings,PATCH,"{key,value}",{ok},Yes,Uses plain fetch not csrfFetch for state-changing PATCH; bypasses X-CSRF-Token layer,P2
+UserAdmin,src/app/dashboard/admin/users/[id]/user-admin.tsx,Update verification,/api/admin/users/[id],PATCH,"{verificationLevel,reason}",{ok,user},Yes,Uses plain fetch not csrfFetch; bypasses X-CSRF-Token layer,P2
+UserAdmin,src/app/dashboard/admin/users/[id]/user-admin.tsx,Assign role,/api/admin/users/[id]/role,POST,"{enterpriseId,role}",{ok},Yes,Uses plain fetch not csrfFetch,P2
+UserAdmin,src/app/dashboard/admin/users/[id]/user-admin.tsx,Revoke role,/api/admin/users/[id]/role,DELETE,"{enterpriseId}",{ok},Yes,Uses plain fetch not csrfFetch,P2
+UserAdmin,src/app/dashboard/admin/users/[id]/user-admin.tsx,Suspend user,/api/admin/users/[id]/suspend,POST,"{reason}",{ok,user,sessionsRevoked},Yes,Uses plain fetch not csrfFetch,P2
+UserAdmin,src/app/dashboard/admin/users/[id]/user-admin.tsx,Restore user (re-patch verification),/api/admin/users/[id],PATCH,"{verificationLevel}",{ok,user},Yes,Uses plain fetch not csrfFetch,P2
+RecomputeReadinessButton,src/app/dashboard/admin/enterprises/recompute-readiness-button.tsx,Recompute readiness,/api/admin/enterprises/[id],PATCH,"{__recompute:true}",{ok,readiness},Yes,Uses plain fetch not csrfFetch; relies on undocumented __recompute flag hack,P2
+EnterpriseFreezeButton,src/app/dashboard/admin/enterprises/enterprise-freeze-button.tsx,Freeze/unfreeze,/api/admin/enterprises/[id]/(freeze|unfreeze),POST,"{reason}",{ok},Yes,Uses plain fetch not csrfFetch,P2
+ChatInterface,src/components/dashboard/copilot/chat-interface.tsx,Send chat,/api/copilot,POST,"{message}",{reply},Yes,Uses plain fetch not csrfFetch for state-changing POST; bypasses X-CSRF-Token layer,P2
+OracleMirrorSyncButton,src/components/dashboard/oracle-mirror/oracle-mirror-sync-button.tsx,Seal checkpoint,/api/ledger/sync,POST,"{enterpriseId,note}",{hash,timestamp},Yes,Uses plain fetch not csrfFetch for state-changing POST; bypasses X-CSRF-Token layer,P2
+LiveLedgerTicker,src/components/dashboard/live-ticker.tsx,Poll ticker,/api/ledger/ticker,GET,?enterpriseId=...,{events[]},Yes,None,P3
+UpdatesFeed,src/components/dashboard/engagement/updates-feed.tsx,List updates,/api/enterprise-updates,GET,?enterpriseId=...&page=...,{updates[]},Yes,None,P3
+UpdatesFeed,src/components/dashboard/engagement/updates-feed.tsx,Post update,/api/enterprise-updates,POST,"{enterpriseId,title,body}",{update,milestone?},Yes,Uses plain fetch not csrfFetch for state-changing POST; bypasses X-CSRF-Token layer,P2
+PartnerCrmClient,src/components/dashboard/engagement/partner-crm-client.tsx,Refresh insights,/api/ai/partner-insights,POST,"{enterpriseId}",{partners,summary,fellBack},Yes,Uses plain fetch not csrfFetch for state-changing POST,P2
+ShareButton,src/components/dashboard/share-button.tsx,Generate share message,/api/ai/share-message,POST,"{enterpriseId}",{message},Yes,Uses plain fetch not csrfFetch for state-changing POST,P2
+LegalDisclaimerClient,src/components/legal/legal-disclaimer-client.tsx,Read acceptance,/api/terms/acceptance,GET,-,{accepted},Yes,None,P3
+LegalDisclaimerClient,src/components/legal/legal-disclaimer-client.tsx,Accept terms,/api/terms/acceptance,POST,"{version}",{ok},Yes,None,P3
+EvidenceStream,src/components/trust/evidence-stream.tsx,Fetch evidence,/api/evidence,GET,-,{events[]},Yes,None,P3
+PublicTradeLog,src/components/transparency/public-trade-log.tsx,Fetch trades,/api/public/enterprise/[slug]/trades,GET,?limit=50,{trades[]},Yes,None,P3
+PublicCreDecisionLog,src/components/transparency/public-cre-decision-log.tsx,Fetch CRE decisions,/api/public/enterprise/[slug]/cre-decisions,GET,?limit=50,{decisions[]},Yes,None,P3
+TransparencyScoreBadge,src/components/transparency/transparency-score-badge.tsx,Fetch score,/api/public/enterprise/[slug]/transparency,GET,-,{score},Yes,None,P3
+AnnualReportGenerator,src/components/transparency/annual-report-generator.tsx,Generate report,/api/ai/annual-report,POST,RequestBody,{report},Yes,None,P3
+BrainAiFinancialNarrative,src/components/transparency/brain-ai-financial-narrative.tsx,Explain number,/api/ai/explain,POST,"{label,value,enterpriseId}",{explanation},Yes,None,P3
+DriftPanel,src/components/dashboard/intel/drift-panel.tsx,Detect drift,/api/ai/drift,POST,RequestBody,{drifts[]},Yes,None,P3
+CharterDiffViewer,src/components/dashboard/intel/charter-diff-viewer.tsx,Charter diff,/api/ai/charter-diff,POST,RequestBody,{diff},Yes,None,P3
+PrecedentPanel,src/components/dashboard/intel/precedent-panel.tsx,Fetch precedents,/api/ai/precedent,POST,RequestBody,{precedents[]},Yes,None,P3
+ConstitutionAssistant,src/components/dashboard/intel/constitution-assistant.tsx,Multilingual translate,/api/ai/multilingual,POST,RequestBody,{translation},Yes,None,P3
+ExplainNumber,src/components/dashboard/intel/explain-number.tsx,Explain number,/api/ai/explain,POST,"{label,value,enterpriseId}",{explanation},Yes,None,P3
+AnomalyCard,src/components/dashboard/intel/anomaly-card.tsx,Narrate anomaly,/api/ai/anomaly,POST,"{expenseId,flag,enterpriseId}",{narration},Yes,None,P3
+SurvivalDrillPage,src/components/dashboard/sovereignty2/survival-drill-page.tsx,Run survival drill,/api/ai/survival-drill,POST,"{enterpriseId}",{drill},Yes,None,P3
+IrPage,src/components/dashboard/sovereignty2/ir-page.tsx,Investor relations Q&A,/api/ai/ir,POST,"{enterpriseId,question}",{answer},Yes,None,P3
+SuccessionPage,src/components/dashboard/sovereignty2/succession-page.tsx,Succession simulation,/api/ai/succession,POST,"{enterpriseId}",{succession},Yes,None,P3
+TaxPage,src/components/dashboard/sovereignty2/tax-page.tsx,Tax analysis,/api/ai/tax,POST,"{enterpriseId}",{tax},Yes,None,P3
+BoardBriefingsPage,src/components/dashboard/sovereignty2/board-briefings-page.tsx,Briefing generation,/api/ai/board-briefing,POST,"{enterpriseId}",{briefing},Yes,None,P3
+GraduationSimulatorPage,src/components/dashboard/sovereignty2/graduation-simulator-page.tsx,Simulate graduation,/api/ai/graduation-simulator,POST,"{enterpriseId}",{simulation},Yes,None,P3
+MilestoneDesignerPage,src/components/dashboard/sovereignty2/milestone-designer-page.tsx,Design milestone,/api/ai/milestone-designer,POST,"{enterpriseId,title,description,sector}",{design},Yes,None,P3
+GraduationCoachPage,src/components/dashboard/sovereignty2/graduation-coach-page.tsx,Coach guidance,/api/ai/graduation-coach,POST,"{enterpriseId}",{coach},Yes,None,P3
+Unreachable endpoint,-,Close capital formation,/api/enterprises/[id]/close-capital-formation,POST,(?),(?),No,Route fully implemented but no UI button calls it — founders cannot close capital formation via dashboard,P1
+Unreachable endpoint,-,List enterprise endorsements,/api/endorsements/enterprise/[enterpriseId],GET,-,{endorsements[]},No,Route exists; only root /api/endorsements is called from UI. Enterprise-scoped listing unreachable.,P2
+Unreachable endpoint,-,Root quadratic-voting list,/api/quadratic-voting,GET,-,{proposals[]},No,Route exists; only /api/quadratic-voting/[proposalId] is called. Root list endpoint unreachable.,P2
+Unreachable endpoint,-,Whistleblower resolve (also listed above),/api/whistleblower/[id]/resolve,POST,"{resolution}",{ok},No,See WhistleblowerClient row — admin cannot resolve via UI,P1
+Unreachable endpoint,-,Soulbound revoke (also listed above),/api/soulbound/revoke,POST,"{userId,reason}",{ok},No,See SoulboundClient row — AURIENTA reps cannot revoke via UI,P2
+Unreachable endpoint,-,Succession execute/activate,/api/succession/[id]/execute,POST,"{confirmation}",{ok,declaration},No,See SuccessionDeclarationClient row — lifecycle stops at 'filed',P1
+Unreachable endpoint,-,Succession activate,/api/succession/[id]/activate,POST,-,{ok,declaration},No,See SuccessionDeclarationClient row — lifecycle stops at 'filed',P1
+Unreachable endpoint,-,GaaS decisions,/api/gaas/organizations/[orgId]/decisions,GET/POST,-,{decisions[]},No,See GaasClient row — UI has no decision-recording flow,P1
+Unreachable endpoint,-,Graduation export,/api/graduation/export,POST,"{enterpriseId}",{package},No,See ExecuteGraduationButton row — sovereign export package has no UI,P2
+Unreachable endpoint,-,Documents sign,/api/documents/[id]/sign,POST,"{signature}",{ok},No,Document signing has no UI; legal agreements cannot be cryptographically signed from dashboard,P2
+Unreachable endpoint,-,Legal templates list/render,/api/legal-templates,GET,-,{templates[]},No,Entire legal-template subsystem has no dashboard UI,P2
+Unreachable endpoint,-,Legal template render,/api/legal-templates/[id]/render,POST,"{vars}",{html},No,Same as above,P2
+Unreachable endpoint,-,Export readiness,/api/export-readiness,GET/POST,?enterpriseId=...,{readiness},No,Graduation export-readiness report has no UI,P2
+Unreachable endpoint,-,API keys,/api/api-keys,GET/POST,-,{keys[]},No,Platform API key management has no UI; admins must use raw HTTP,P2
+Unreachable endpoint,-,Delete API key,/api/api-keys/[id],DELETE,-,{ok},No,Same as above,P2
+Unreachable endpoint,-,Trade instruments,/api/trade-instruments,GET,-,{instruments[]},No,Trade instruments catalog has no UI,P2
+Unreachable endpoint,-,FX rates,/api/fx,GET,-,{rates},No,FX oracle endpoint has no UI caller,P3
+Unreachable endpoint,-,FX refresh,/api/fx/refresh,POST,-,{ok},No,FX refresh trigger has no UI caller,P3
+Unreachable endpoint,-,Trade documents,/api/trade-documents,GET,-,{documents[]},No,Trade document storage has no UI,P2
+Unreachable endpoint,-,Circuit breaker status,/api/circuit-breaker/[enterpriseId],GET,-,{armed,trippedAt},No,Circuit-breaker monitoring has no UI,P2
+Unreachable endpoint,-,Reality sync,/api/reality-sync,GET/POST,-,{ok},No,Reality-sync oracle mirror has no UI caller,P3
+Unreachable endpoint,-,Proxies,/api/proxies,GET/POST,-,{proxies[]},No,Proxy-voting subsystem has no UI,P2
+Unreachable endpoint,-,Revoke proxy,/api/proxies/[id]/revoke,POST,-,{ok},No,Same as above,P2
+Unreachable endpoint,-,Q&A,/api/qa,GET/POST,-,{questions[]},No,Constitutional Q&A subsystem has no UI,P2
+Unreachable endpoint,-,Answer Q&A,/api/qa/[id]/answer,POST,"{answer}",{ok},No,Same as above,P2
+Unreachable endpoint,-,Verification list,/api/verification,GET,-,{requests[]},No,Verification queue has no admin UI,P2
+Unreachable endpoint,-,Verification detail,/api/verification/[id],GET,-,{request},No,Same as above,P2
+Unreachable endpoint,-,Risk-profile public GET (UI uses /[enterpriseId] only),/api/risk-profile/[enterpriseId],GET,headers,{profile},Yes,Already called by RiskProfileClient — not unreachable,P3
+Unreachable endpoint,-,Public stats,/api/public/stats,GET,-,{stats},Yes,Linked via <a href> on /trust and /badge/[slug] pages — not a fetch but reachable,P3
+Unreachable endpoint,-,Public enterprise detail,/api/public/enterprise/[slug],GET,-,{enterprise},No,Route exists but no UI client fetches it (server components consume directly),P3
+Unreachable endpoint,-,Sign out,/api/auth/signout,POST,-,{ok},No,Route exists but no UI button calls it (sign-out uses middleware cookie clear); logout button may be dead,P2
+Unreachable endpoint,-,Platform health,/api/platform-health,GET,-,{health},No,Route exists but no UI status widget calls it,P3
+Unreachable endpoint,-,Health,/api/health,GET,-,{ok},No,Root healthcheck — used by ops/monitoring not UI,P3
+Unreachable endpoint,-,Ready,/api/ready,GET,-,{ok},No,Readiness probe — ops only,P3
+Unreachable endpoint,-,Metrics,/api/metrics,GET,-,{metrics},No,Prometheus metrics — ops only,P3
+Unreachable endpoint,-,Benchmark,/api/benchmark,GET,-,{benchmark},No,Performance benchmark — ops only,P3
+Unreachable endpoint,-,Matching,/api/matching,GET,-,{matches[]},No,Internal matching engine endpoint — no UI caller,P3
+Unreachable endpoint,-,Employees,/api/employees,GET,-,{employees[]},No,Employee roster — no UI caller,P3
+Unreachable endpoint,-,Screening,/api/screening,GET/POST,-,{ok},No,AML screening endpoint — no UI caller,P3
+Unreachable endpoint,-,Root /api,/api/route,GET,-,{name,version},No,Root API descriptor — no UI caller,P3
+Unreachable endpoint,-,AI brain-status,/api/ai/brain-status,GET,-,{status},No,Brain-AI health endpoint — no UI caller,P3
+Unreachable endpoint,-,AI EVE,/api/ai/eve,POST,RequestBody,{verdict},No,EVE endpoint — no UI caller (milestones use Math.random instead),P2
+Unreachable endpoint,-,AI evidence-verification,/api/ai/evidence-verification,POST,RequestBody,{verdict},No,Evidence-verification endpoint — no UI caller,P2
+Unreachable endpoint,-,AI mentor-matching,/api/ai/mentor-matching,POST,RequestBody,{match},No,Mentor-matching endpoint — no UI caller,P2
+Unreachable endpoint,-,AI salary override,/api/ai/salary/override,POST,RequestBody,{ok},No,Salary override endpoint — no UI caller (admin only),P2
+Unreachable endpoint,-,v1 GAFI,/api/v1/gov/gafi,GET,?crNumber&name,{status},No,Government GAFI integration — no UI caller,P2
+Unreachable endpoint,-,v1 ETA,/api/v1/gov/eta,GET,?taxId&name&period,{status},No,Government ETA (tax) integration — no UI caller,P2
+Unreachable endpoint,-,v1 NOSI,/api/v1/gov/nosi,GET,?nationalId&name,{status},No,Government NOSI integration — no UI caller,P2
+Unreachable endpoint,-,v1 CRE policies,/api/v1/cre/policies,GET,-,{policies[]},No,Public CRE policy catalog — no UI caller,P3
+Unreachable endpoint,-,v1 CRE validate,/api/v1/cre/validate,POST,RequestBody,{verdict},No,Public CRE validation endpoint — no UI caller,P3
+Unreachable endpoint,-,v1 intelligence conflicts,/api/v1/intelligence/conflicts,GET,-,{conflicts[]},No,Intelligence graph conflicts endpoint — no UI caller,P3
+Unreachable endpoint,-,v1 IPFS pin,/api/v1/ipfs/pin,POST,RequestBody,{cid},No,IPFS pinning endpoint — no UI caller,P3
+Unreachable endpoint,-,v1 FRA dashboard,/api/v1/regulatory/fra/dashboard,GET,-,{dashboard},No,FRA regulator dashboard endpoint — no UI caller,P3
+Unreachable endpoint,-,v1 enterprise data,/api/v1/enterprise/[slug]/data,GET,-,{data},No,Public enterprise data endpoint — no UI caller,P3
+Unreachable endpoint,-,v1 webhook payment,/api/v1/webhook/payment,POST,WebhookBody,{ok},No,Webhook — incoming only (OK by design),P3
+Unreachable endpoint,-,Cron reservation-expiry,/api/cron/reservation-expiry,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Cron stage-transition,/api/cron/stage-transition,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Cron proposal-expiry,/api/cron/proposal-expiry,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Cron verification-sla,/api/cron/verification-sla,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Cron crcica-arbitration,/api/cron/crcica-arbitration,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Cron health-rating,/api/cron/health-rating,POST,?token=...,{ok},No,Cron — server-only (OK by design),P3
+Unreachable endpoint,-,Inngest,/api/inngest,POST,InngestBody,{ok},No,Inngest webhook — server-only (OK by design),P3

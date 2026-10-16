@@ -482,6 +482,38 @@ function hashPayload(payload: unknown): string {
   return createHash("sha3-256").update(JSON.stringify(payload)).digest("hex");
 }
 
+// ── AUD-013: Persist a CRE decision to the CreDecision table ──
+// Previously 0 CreDecision rows existed despite 339 AuditLog entries — the
+// CRE functions returned a verdict but never persisted it, leaving the
+// constitutional decision ledger empty and breaking the audit trail.
+//
+// This helper MUST be called inside a db.$transaction (same tx that calls
+// appendLedgerEvent) so the decision row commits atomically with the ledger
+// event. The schema has `allowed: Boolean` + `payloadHash: String` (NOT a
+// `verdict` string / `payload` JSON column — those names are conceptual).
+export async function logCreDecision(
+  tx: PrismaTransaction,
+  params: {
+    enterpriseId?: string;
+    policy: string;
+    verdict: CreVerdict;
+    actorId?: string;
+    payload: Record<string, unknown>;
+  }
+): Promise<void> {
+  await tx.creDecision.create({
+    data: {
+      enterpriseId: params.enterpriseId ?? null,
+      policy: params.policy,
+      allowed: params.verdict.allowed,
+      reason: params.verdict.reason ?? null,
+      decisionToken: params.verdict.decisionToken,
+      payloadHash: hashPayload(params.payload),
+      actorId: params.actorId ?? null,
+    },
+  });
+}
+
 // ── Append a ledger event (immutable hash chain) — TRANSACTIONAL ──
 // Must be called inside a db.$transaction. Uses per-enterprise monotonic
 // sequence to prevent the race that forked the chain under concurrency.

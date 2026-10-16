@@ -14,6 +14,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import {
   Dialog,
   DialogContent,
@@ -77,7 +78,7 @@ export function ShareButton({
     setLoading(true);
     setCopied(false);
     try {
-      const res = await fetch("/api/ai/share-message", {
+      const res = await csrfFetch("/api/ai/share-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enterpriseId }),

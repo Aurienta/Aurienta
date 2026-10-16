@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
-import { appendLedgerEvent, enforceFundFlow, enforceAccountantGate, enforceZeroCustody } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceFundFlow, enforceAccountantGate, enforceZeroCustody, logCreDecision } from "@/lib/aurienta/cre";
 import { audit } from "@/lib/aurienta/audit";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
@@ -128,6 +128,29 @@ export const POST = withErrorHandler(async (req: NextRequest, ctx: { params: Pro
   const netReleasedEgp = milestone.amountEgp - totalFeesEgp;
 
   const result = await db.$transaction(async (tx) => {
+    // AUD-013: persist the CRE decisions for the two critical policies that
+    // gated this release (fund_flow.rego + zero_custody.rego). Computed
+    // before the transaction; logged inside it so the decision rows commit
+    // atomically with the ledger event.
+    await logCreDecision(tx, {
+      enterpriseId: milestone.enterprise.id,
+      policy: fundFlow.policy,
+      verdict: fundFlow,
+      actorId: user.id,
+      payload: {
+        lawFirmStatus: milestone.enterprise.lawFirm?.status ?? "active",
+        releaseAmount: milestone.amountEgp,
+        lawFirmBalance: milestone.enterprise.lawFirmClientAccountBalanceEgp,
+      },
+    });
+    await logCreDecision(tx, {
+      enterpriseId: milestone.enterprise.id,
+      policy: zc.policy,
+      verdict: zc,
+      actorId: user.id,
+      payload: { beneficiary: milestone.enterprise.name },
+    });
+
     // Update milestone status to "released".
     const updated = await tx.milestone.update({
       where: { id: milestoneId },

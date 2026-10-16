@@ -149,9 +149,13 @@ export function SubmitExpenseDialog({
           enterpriseId,
           category,
           description: description.trim(),
-          vendor: vendor.trim(),
+          // AUD-012: form previously sent `vendor` + `receiptNote` but the
+          // expenseSchema expects `vendorName` + `receiptCid` — Zod was
+          // silently dropping these fields so vendors were saved as
+          // "unspecified". Send the schema-aligned field names.
+          vendorName: vendor.trim(),
           amountEgp: amountNum,
-          receiptNote: receiptNote.trim() || undefined,
+          receiptCid: receiptNote.trim() || undefined,
         }),
       });
       const json = await res.json();

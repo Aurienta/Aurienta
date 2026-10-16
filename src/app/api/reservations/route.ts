@@ -9,6 +9,7 @@ import {
   enforceNotFrozen,
   enforcePriceBand,
   enforceVerificationGate,
+  logCreDecision,
 } from "@/lib/aurienta/cre";
 import { reservationSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -277,6 +278,21 @@ export async function POST(req: NextRequest) {
   let reservation;
   try {
     reservation = await db.$transaction(async (tx) => {
+      // AUD-013: persist the CRE fundamental_pricing verdict that allowed
+      // this reservation (Phase 1 — price must equal fundamental exactly).
+      await logCreDecision(tx, {
+        enterpriseId,
+        policy: priceCheck.policy,
+        verdict: priceCheck,
+        actorId: user.id,
+        payload: {
+          orderPrice: enterprise.equityUnitPriceEgp,
+          fundamentalPrice: enterprise.equityUnitPriceEgp,
+          phase: "phase_1",
+          shares,
+        },
+      });
+
       const created = await tx.reservation.create({
         data: {
           enterpriseId,

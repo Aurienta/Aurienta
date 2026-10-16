@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Sparkles, Bot, User as UserIcon, AlertTriangle } from "lucide-react";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -51,7 +52,7 @@ export function CopilotChat({ history }: { history: ChatMessage[] }) {
     setSending(true);
 
     try {
-      const res = await fetch("/api/copilot", {
+      const res = await csrfFetch("/api/copilot", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: trimmed }),

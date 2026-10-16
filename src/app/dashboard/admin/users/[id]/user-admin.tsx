@@ -36,6 +36,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 
 type Membership = {
   id: string;
@@ -102,7 +103,7 @@ export function VerificationSelector({
     setBusy(true);
     setValue(next);
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const res = await csrfFetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -175,7 +176,7 @@ export function RoleManager({
   const revoke = async (enterpriseId: string, roleToRemove: string, label: string) => {
     setBusyId(`${enterpriseId}:${roleToRemove}`);
     try {
-      const res = await fetch(`/api/admin/users/${userId}/role`, {
+      const res = await csrfFetch(`/api/admin/users/${userId}/role`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -210,7 +211,7 @@ export function RoleManager({
     }
     setAssigning(true);
     try {
-      const res = await fetch(`/api/admin/users/${userId}/role`, {
+      const res = await csrfFetch(`/api/admin/users/${userId}/role`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -394,7 +395,7 @@ export function SessionsManager({
       // then restore the verification level. To keep the surface minimal,
       // we accept that "revoke all sessions" without suspension is a niche
       // need — for now we route it through a soft-suspend + restore pattern.
-      const suspendRes = await fetch(`/api/admin/users/${userId}/suspend`, {
+      const suspendRes = await csrfFetch(`/api/admin/users/${userId}/suspend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Soft session-revoke only — restoring verification level immediately." }),
@@ -406,7 +407,7 @@ export function SessionsManager({
       }
       const previous = suspendData.previousVerificationLevel ?? "L2";
       // Restore the verification level (L0 → previous).
-      const restoreRes = await fetch(`/api/admin/users/${userId}`, {
+      const restoreRes = await csrfFetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -544,7 +545,7 @@ export function SuspendButton({
     }
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/users/${userId}/suspend`, {
+      const res = await csrfFetch(`/api/admin/users/${userId}/suspend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: reason.trim() }),
@@ -673,7 +674,7 @@ export function PoliceClearanceToggle({
   const save = async () => {
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const res = await csrfFetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

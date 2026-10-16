@@ -109,7 +109,7 @@ export function OracleClient({
     setRunning(true);
     setResult(null);
     try {
-      const res = await fetch("/api/oracle/consensus", {
+      const res = await csrfFetch("/api/oracle/consensus", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: query.trim(), apiKey: apiKey.trim() }),

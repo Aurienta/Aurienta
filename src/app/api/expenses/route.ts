@@ -5,6 +5,7 @@ import {
   appendLedgerEvent,
   enforceExpenseAuthority,
   enforceNotFrozen,
+  logCreDecision,
 } from "@/lib/aurienta/cre";
 import { expenseSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
@@ -277,6 +278,22 @@ export async function POST(req: NextRequest) {
 
   // ── Persist expense + ledger event inside ONE transaction ──
   const expense = await db.$transaction(async (tx) => {
+    // AUD-013: persist the CRE expense_authority verdict for the winning role
+    // (computed above, before the transaction). Atomic with the ledger event.
+    await logCreDecision(tx, {
+      enterpriseId,
+      policy: winning.verdict.policy,
+      verdict: winning.verdict,
+      actorId: user.id,
+      payload: {
+        amountEgp,
+        capital,
+        role: winning.role,
+        pct: Number(pct.toFixed(4)),
+        requiredApproverRoles,
+      },
+    });
+
     const created = await tx.expense.create({
       data: {
         enterpriseId,

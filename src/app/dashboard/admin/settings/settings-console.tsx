@@ -23,6 +23,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { timeAgo } from "@/lib/aurienta/format";
 
 export type SettingValue = number | boolean | string;
@@ -76,7 +77,7 @@ export function SettingsConsole({ initial }: { initial: GroupedSettings }) {
     // makes the audit trail easier to read.
     for (const row of rows) {
       try {
-        const res = await fetch("/api/admin/settings", {
+        const res = await csrfFetch("/api/admin/settings", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key: row.key, value: row.value }),

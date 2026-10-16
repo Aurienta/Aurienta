@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import {
   Select,
   SelectContent,
@@ -73,7 +74,7 @@ export function FormSyndicateDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/syndicates", {
+      const res = await csrfFetch("/api/syndicates", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

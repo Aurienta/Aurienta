@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { toast } from "sonner";
 
 export type Partner = {
@@ -86,7 +87,7 @@ export function PartnerCRMClient({
     async (entId: string, silent = false) => {
       setLoading(true);
       try {
-        const res = await fetch("/api/ai/partner-insights", {
+        const res = await csrfFetch("/api/ai/partner-insights", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ enterpriseId: entId }),

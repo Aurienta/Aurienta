@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireRole } from "@/lib/aurienta/auth";
+import { requireRole, revokeAllSessions } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
@@ -139,6 +139,12 @@ export async function POST(
         data: { enterpriseId, userId: id, role, boardSeat },
       });
 
+      // AUD-020: revoke all sessions so the target user must re-authenticate
+      // and pick up the new role on their next request. Without this, a user
+      // whose role was elevated/revoked could retain stale access up to the
+      // 7-day session TTL.
+      await revokeAllSessions(id);
+
       await audit({
         actorId: actor.id,
         action: "admin.user.role.assign",
@@ -152,6 +158,7 @@ export async function POST(
           boardSeat,
           memberId: member.id,
           actorName: actor.legalName,
+          sessionsRevoked: true,
         },
       });
 
@@ -191,6 +198,10 @@ export async function POST(
 
     await db.enterpriseMember.delete({ where: { id: existing.id } });
 
+    // AUD-020: revoke all sessions so the revoked-role user loses access
+    // immediately (instead of retaining it up to the 7-day session TTL).
+    await revokeAllSessions(id);
+
     await audit({
       actorId: actor.id,
       action: "admin.user.role.revoke",
@@ -204,6 +215,7 @@ export async function POST(
         removedMemberId: existing.id,
         boardSeat: existing.boardSeat,
         actorName: actor.legalName,
+        sessionsRevoked: true,
       },
     });
 

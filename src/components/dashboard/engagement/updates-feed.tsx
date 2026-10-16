@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { toast } from "sonner";
 
 export type UpdateRow = {
@@ -326,7 +327,7 @@ function PostUpdateDialog({
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/enterprise-updates", {
+      const res = await csrfFetch("/api/enterprise-updates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
