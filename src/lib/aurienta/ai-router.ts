@@ -1,11 +1,11 @@
-// AURIENTA Brain AI — Multi-Model Consensus Orchestrator (2026 Upgrade)
+// AURIENTA Brain AI — Multi-Model Consensus Orchestrator (2026 Upgrade, AI-FIX)
 //
 // 5 AI providers with multiple models each — all work in CONSENSUS:
 //   1. Google Gemini  — gemini-2.0-flash (fast), gemini-2.5-flash (balanced)
 //   2. Groq          — llama-3.3-70b-versatile (reasoning), llama-3.1-8b-instant (fast)
-//   3. OpenRouter    — multi-model gateway: claude-3.5-sonnet, gpt-4o-mini, deepseek-r1
-//   4. NVIDIA NIM    — llama-3.1-nemotron-70b-instruct (enterprise), mixtral-8x22b
-//   5. HuggingFace   — Meta-Llama-3.1-70B-Instruct, Mixtral-8x7B-Instruct
+//   3. OpenRouter    — multi-model gateway: llama-3.3-70b:free, gemini-2.0-flash:free
+//   4. NVIDIA NIM    — llama-3.3-nemotron-super-49b-v1, mistral-small-24b-instruct
+//   5. HuggingFace   — Meta-Llama-3.1-8B-Instruct, Mistral-7B-Instruct-v0.3
 //
 // CONSENSUS MODE: For critical tasks, the Brain queries multiple providers +
 // multiple models in PARALLEL and synthesizes their responses into one answer.
@@ -14,8 +14,22 @@
 // to the consensus (e.g., Gemini-2.0-flash + Gemini-2.5-pro for complex tasks).
 //
 // NO z.ai / NO OpenAI direct — OpenAI is accessed via OpenRouter gateway.
+//
+// ROBUST CONSENSUS (AI-FIX):
+//   - All configured models are queried in parallel via Promise.allSettled.
+//   - Per-provider failures are logged (provider + model + reason) but DO NOT
+//     abort the consensus. As long as ≥1 provider returns content, synthesis
+//     proceeds with the survivors.
+//   - If ALL providers fail, askMultiModel returns a clear `[AI_FALLBACK]`
+//     response whose `error` field lists every provider/model + the underlying
+//     HTTP status or exception message, so operators can see exactly which
+//     provider is down and why.
+//   - getAiProviderStatus() pings each provider with a tiny "ping" request
+//     and returns {configured, connected, latencyMs, lastError} per provider.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { logger } from "./logger";
+
 let GoogleGenerativeAI: any = null;
 let Groq: any = null;
 
@@ -48,37 +62,37 @@ const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
   feasibility:    { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "openrouter", model: "anthropic/claude-3.5-sonnet" },
+    { provider: "openrouter", model: "meta-llama/llama-3.3-70b-instruct:free" },
   ], synthesize: true },
   pitch_deck:    { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "nvidia", model: "nvidia/llama-3.1-nemotron-70b-instruct" },
+    { provider: "nvidia", model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
   ], synthesize: true },
   advisory:      { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "openrouter", model: "anthropic/claude-3.5-sonnet" },
+    { provider: "openrouter", model: "meta-llama/llama-3.3-70b-instruct:free" },
   ], synthesize: true },
   board_briefing:    { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "nvidia", model: "nvidia/llama-3.1-nemotron-70b-instruct" },
+    { provider: "nvidia", model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
   ], synthesize: true },
   charter_diff:      { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
-    { provider: "openrouter", model: "anthropic/claude-3.5-sonnet" },
+    { provider: "openrouter", model: "meta-llama/llama-3.3-70b-instruct:free" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
   ], synthesize: true },
   graduation_coach:  { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "nvidia", model: "nvidia/llama-3.1-nemotron-70b-instruct" },
+    { provider: "nvidia", model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
   ], synthesize: true },
   graduation_simulation: { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "openrouter", model: "openai/gpt-4o-mini" },
+    { provider: "openrouter", model: "google/gemini-2.0-flash-exp:free" },
   ], synthesize: true },
   milestone_design:  { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
@@ -86,11 +100,11 @@ const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
   ], synthesize: true },
   survival_drill:    { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
-    { provider: "nvidia", model: "nvidia/llama-3.1-nemotron-70b-instruct" },
+    { provider: "nvidia", model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
   ], synthesize: true },
   succession_plan:   { mode: "consensus", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
-    { provider: "openrouter", model: "anthropic/claude-3.5-sonnet" },
+    { provider: "openrouter", model: "meta-llama/llama-3.3-70b-instruct:free" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
   ], synthesize: true },
   tax_suggestion:    { mode: "consensus", models: [
@@ -102,16 +116,16 @@ const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
     { provider: "groq", model: "llama-3.3-70b-versatile" },
   ], synthesize: true },
   sanity_check:   { mode: "consensus", models: [
-    { provider: "huggingface", model: "meta-llama/Meta-Llama-3.1-70B-Instruct" },
+    { provider: "huggingface", model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "nvidia", model: "mistralai/mixtral-8x22b-instruct-v0.1" },
+    { provider: "nvidia", model: "mistralai/mistral-small-24b-instruct" },
   ], synthesize: true },
 
   // STANDARD tasks — try providers in order, use first success
   copilot:        { mode: "standard", models: [
     { provider: "groq", model: "llama-3.3-70b-versatile" },
     { provider: "gemini", model: "gemini-2.0-flash" },
-    { provider: "openrouter", model: "openai/gpt-4o-mini" },
+    { provider: "openrouter", model: "google/gemini-2.0-flash-exp:free" },
   ], synthesize: false },
   explain:        { mode: "standard", models: [
     { provider: "gemini", model: "gemini-2.0-flash" },
@@ -124,7 +138,7 @@ const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
   general:        { mode: "standard", models: [
     { provider: "gemini", model: "gemini-2.0-flash" },
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "openrouter", model: "openai/gpt-4o-mini" },
+    { provider: "openrouter", model: "google/gemini-2.0-flash-exp:free" },
   ], synthesize: false },
   precedent_match:    { mode: "standard", models: [
     { provider: "gemini", model: "gemini-2.5-flash" },
@@ -166,7 +180,7 @@ const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
   ], synthesize: false },
   evidence_verification:     { mode: "fast", models: [
     { provider: "groq", model: "llama-3.3-70b-versatile" },
-    { provider: "huggingface", model: "mistralai/Mixtral-8x7B-Instruct-v0.1" },
+    { provider: "huggingface", model: "mistralai/Mistral-7B-Instruct-v0.3" },
   ], synthesize: false },
 };
 
@@ -220,7 +234,7 @@ async function callGroq(system: string, user: string, model: string = "llama-3.3
   return { content: c.choices[0]?.message?.content ?? "", provider: "groq", model, latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: c.usage?.prompt_tokens ?? null, tokensOut: c.usage?.completion_tokens ?? null };
 }
 
-async function callHuggingFace(system: string, user: string, model: string = "meta-llama/Meta-Llama-3.1-70B-Instruct"): Promise<MultiModelResult> {
+async function callHuggingFace(system: string, user: string, model: string = "meta-llama/Meta-Llama-3.1-8B-Instruct"): Promise<MultiModelResult> {
   const key = getHfKey(); if (!key) throw new Error("HuggingFace API key not configured");
   const start = Date.now();
   const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
@@ -233,7 +247,7 @@ async function callHuggingFace(system: string, user: string, model: string = "me
   return { content: Array.isArray(data) ? data[0]?.generated_text ?? "" : data.generated_text ?? "", provider: "huggingface", model, latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: null, tokensOut: null };
 }
 
-async function callOpenRouter(system: string, user: string, model: string = "openai/gpt-4o-mini"): Promise<MultiModelResult> {
+async function callOpenRouter(system: string, user: string, model: string = "google/gemini-2.0-flash-exp:free"): Promise<MultiModelResult> {
   const key = getOrKey(); if (!key) throw new Error("OpenRouter API key not configured");
   const start = Date.now();
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -246,7 +260,7 @@ async function callOpenRouter(system: string, user: string, model: string = "ope
   return { content: data.choices?.[0]?.message?.content ?? "", provider: "openrouter", model, latencyMs: Date.now() - start, fellBack: false, error: null, tokensIn: data.usage?.prompt_tokens ?? null, tokensOut: data.usage?.completion_tokens ?? null };
 }
 
-async function callNvidia(system: string, user: string, model: string = "nvidia/llama-3.1-nemotron-70b-instruct"): Promise<MultiModelResult> {
+async function callNvidia(system: string, user: string, model: string = "nvidia/llama-3.3-nemotron-super-49b-v1"): Promise<MultiModelResult> {
   const key = getNvidiaKey(); if (!key) throw new Error("NVIDIA API key not configured");
   const start = Date.now();
   const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
@@ -375,10 +389,19 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
     const responses: MultiModelResult[] = [];
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
+      const m = config.models[i];
       if (r.status === "fulfilled") {
         responses.push(r.value);
       } else {
-        errors.push(`${config.models[i].provider}/${config.models[i].model}: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`);
+        // Per-provider failure: log + record. Do NOT abort — consensus proceeds
+        // with the survivors. The reason may be 401/403 (bad key), 402 (no
+        // credits), 404 (deprecated model id), 503 (cold-start), or network.
+        const reason = r.reason instanceof Error ? r.reason.message : String(r.reason);
+        const detail = `${m.provider}/${m.model}: ${reason}`;
+        errors.push(detail);
+        logger.warn("consensus provider failed", {
+          taskKind: opts.taskKind, provider: m.provider, model: m.model, error: reason,
+        });
       }
     }
 
@@ -395,9 +418,9 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
 
     // All consensus models failed → fall back to remaining providers
     const fallbackModels = ([
-      { provider: "openrouter" as const, model: "openai/gpt-4o-mini" },
-      { provider: "nvidia" as const, model: "nvidia/llama-3.1-nemotron-70b-instruct" },
-      { provider: "huggingface" as const, model: "meta-llama/Meta-Llama-3.1-70B-Instruct" },
+      { provider: "openrouter" as const, model: "google/gemini-2.0-flash-exp:free" },
+      { provider: "nvidia" as const, model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
+      { provider: "huggingface" as const, model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },
     ] as ModelEntry[]).filter(m => !config.models.some(cm => cm.provider === m.provider));
 
     for (const m of fallbackModels) {
@@ -419,15 +442,20 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
       if (memory.artifactCount > 0) result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity };
       return result;
     } catch (e) {
-      errors.push(`${m.provider}/${m.model}: ${e instanceof Error ? e.message : String(e)}`);
+      const reason = e instanceof Error ? e.message : String(e);
+      const detail = `${m.provider}/${m.model}: ${reason}`;
+      errors.push(detail);
+      logger.warn("standard/fast provider failed", {
+        taskKind: opts.taskKind, provider: m.provider, model: m.model, error: reason,
+      });
     }
   }
 
   // ── LAST RESORT: try OpenRouter + NVIDIA + HuggingFace ──
   const lastResort = ([
-    { provider: "openrouter" as const, model: "openai/gpt-4o-mini" },
-    { provider: "nvidia" as const, model: "nvidia/llama-3.1-nemotron-70b-instruct" },
-    { provider: "huggingface" as const, model: "mistralai/Mixtral-8x7B-Instruct-v0.1" },
+    { provider: "openrouter" as const, model: "google/gemini-2.0-flash-exp:free" },
+    { provider: "nvidia" as const, model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
+    { provider: "huggingface" as const, model: "mistralai/Mistral-7B-Instruct-v0.3" },
   ] as ModelEntry[]);
   for (const m of lastResort) {
     if (config.models.some(cm => cm.provider === m.provider && cm.model === m.model)) continue;
@@ -437,33 +465,120 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
       if (memory.artifactCount > 0) result.learnedFrom = { artifactCount: memory.artifactCount, topSimilarity: memory.topSimilarity };
       return result;
     } catch (e) {
-      errors.push(`${m.provider}/${m.model}: ${e instanceof Error ? e.message : String(e)}`);
+      const reason = e instanceof Error ? e.message : String(e);
+      const detail = `${m.provider}/${m.model}: ${reason}`;
+      errors.push(detail);
+      logger.warn("last-resort provider failed", {
+        taskKind: opts.taskKind, provider: m.provider, model: m.model, error: reason,
+      });
     }
   }
 
+  // All providers failed (consensus + fallback + last-resort). Build a clear,
+  // operator-readable error message that names each failing provider + the
+  // underlying HTTP status / exception message.
+  const total = errors.length;
+  logger.error("all AI providers failed — returning AI_FALLBACK", {
+    taskKind: opts.taskKind, failureCount: total, errors,
+  });
   return {
-    content: `[AI_FALLBACK] All AI providers unavailable. Errors: ${errors.join("; ")}. The constitutional rules remain enforced by the CRE regardless.`,
-    provider: "gemini", model: "fallback", latencyMs: 0, fellBack: true, error: errors.join("; "), tokensIn: null, tokensOut: null,
+    content: `[AI_FALLBACK] All AI providers unavailable (${total} failure${total === 1 ? "" : "s"}). ` +
+             `Per-provider reasons: ${errors.join(" | ")}. ` +
+             `The constitutional rules remain enforced by the CRE regardless.`,
+    provider: "gemini", model: "fallback", latencyMs: 0, fellBack: true,
+    error: errors.join("; "), tokensIn: null, tokensOut: null,
   };
 }
 
 // ── Health check: ping all configured providers ──
+// Legacy shape (kept for backward-compat with any external callers). Returns
+// only {connected, model, latencyMs}. For richer status (with lastError,
+// configured flag, lastCheckedAt), use getAiProviderStatus().
 export async function checkAiProviders(): Promise<Record<string, { connected: boolean; model: string; latencyMs: number }>> {
-  const results: Record<string, { connected: boolean; model: string; latencyMs: number }> = {};
-  const testModels: ModelEntry[] = [
-    { provider: "gemini", model: "gemini-2.0-flash" },
-    { provider: "groq", model: "llama-3.1-8b-instant" },
-    { provider: "huggingface", model: "mistralai/Mixtral-8x7B-Instruct-v0.1" },
-    { provider: "openrouter", model: "openai/gpt-4o-mini" },
-    { provider: "nvidia", model: "nvidia/llama-3.1-nemotron-70b-instruct" },
-  ];
-  await Promise.all(testModels.map(async (m) => {
-    try {
-      const result = await PROVIDERS[m.provider]("Reply with OK", "ping", m.model);
-      results[m.provider] = { connected: !result.fellBack && result.content.length > 0, model: m.model, latencyMs: result.latencyMs };
-    } catch {
-      results[m.provider] = { connected: false, model: m.model, latencyMs: 0 };
-    }
-  }));
+  const statuses = await getAiProviderStatus();
+  const out: Record<string, { connected: boolean; model: string; latencyMs: number }> = {};
+  for (const s of statuses) {
+    out[s.provider] = { connected: s.connected, model: s.model, latencyMs: s.latencyMs };
+  }
+  return out;
+}
+
+// ── Richer health check: actual status of each AI provider (AI-FIX) ──
+// Pings each provider with a tiny "Reply with OK" / "ping" request using the
+// smallest/most-available model on that provider. Returns one entry per
+// provider with: configured (API key present), connected (provider actually
+// responded with non-empty content), latencyMs, lastError (string|nnull),
+// lastCheckedAt (ISO ts). Used by /api/ready and /api/ai/brain-status.
+export type AiProviderStatus = {
+  provider: AiProvider;
+  configured: boolean;   // API key (or equivalent) is present in env
+  model: string;         // model used for the ping
+  connected: boolean;    // provider actually responded with non-empty content
+  latencyMs: number;     // round-trip response time (0 if failed)
+  lastError: string | null;  // underlying error message (e.g. "OpenRouter API error: 402")
+  lastCheckedAt: string;     // ISO timestamp of the probe
+};
+
+// Smallest / most-available model per provider for cheap ping probes.
+const PING_MODELS: ModelEntry[] = [
+  { provider: "gemini",      model: "gemini-2.0-flash" },
+  { provider: "groq",        model: "llama-3.1-8b-instant" },
+  { provider: "huggingface", model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },
+  { provider: "openrouter",  model: "google/gemini-2.0-flash-exp:free" },
+  { provider: "nvidia",      model: "nvidia/llama-3.3-nemotron-super-49b-v1" },
+];
+
+export async function getAiProviderStatus(): Promise<AiProviderStatus[]> {
+  const envKeyFor: Record<AiProvider, string | null> = {
+    gemini: process.env.GEMINI_API_KEY ?? null,
+    groq: process.env.GROQ_API_KEY ?? null,
+    huggingface: process.env.HUGGINGFACE_API_KEY ?? null,
+    openrouter: process.env.OPENROUTER_API_KEY ?? null,
+    nvidia: process.env.NVIDIA_API_KEY ?? null,
+  };
+
+  const checkedAt = new Date().toISOString();
+
+  const results = await Promise.all(
+    PING_MODELS.map(async (m): Promise<AiProviderStatus> => {
+      const configured = !!envKeyFor[m.provider];
+      if (!configured) {
+        return {
+          provider: m.provider,
+          configured: false,
+          model: m.model,
+          connected: false,
+          latencyMs: 0,
+          lastError: "API key not configured",
+          lastCheckedAt: checkedAt,
+        };
+      }
+      try {
+        const result = await PROVIDERS[m.provider]("Reply with OK.", "ping", m.model);
+        const connected = !result.fellBack && !!result.content && result.content.length > 0;
+        return {
+          provider: m.provider,
+          configured: true,
+          model: m.model,
+          connected,
+          latencyMs: result.latencyMs,
+          lastError: connected ? null : "empty response",
+          lastCheckedAt: checkedAt,
+        };
+      } catch (e) {
+        const reason = e instanceof Error ? e.message : String(e);
+        logger.warn("provider ping failed", { provider: m.provider, model: m.model, error: reason });
+        return {
+          provider: m.provider,
+          configured: true,
+          model: m.model,
+          connected: false,
+          latencyMs: 0,
+          lastError: reason,
+          lastCheckedAt: checkedAt,
+        };
+      }
+    })
+  );
   return results;
 }

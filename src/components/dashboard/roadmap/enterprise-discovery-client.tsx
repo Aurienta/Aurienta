@@ -159,9 +159,12 @@ function scoreColor(score: number): { text: string; ring: string; bg: string } {
     };
   if (score >= 30)
     return {
-      text: "text-amber-700",
-      ring: "text-amber-500",
-      bg: "bg-amber-50 border-amber-200",
+      // AUD-036: previously amber-* — brand violation. Use a lighter indigo
+      // (indigo-400/300/50 instead of indigo-700/500/200) so the medium tier
+      // still reads as "below the good tier" without leaving the brand palette.
+      text: "text-indigo-400",
+      ring: "text-indigo-300",
+      bg: "bg-indigo-50/60 border-indigo-200/70",
     };
   return {
     text: "text-rose-700",
@@ -261,7 +264,7 @@ export function EnterpriseDiscoveryClient({ user, profile, matches }: Props) {
 
   async function refreshMatches() {
     try {
-      const res = await fetch("/api/discovery", { cache: "no-store" });
+      const res = await csrfFetch("/api/discovery", { cache: "no-store" });
       const data = (await res.json()) as {
         matches?: DiscoveryMatchClient[];
       };
@@ -354,16 +357,16 @@ export function EnterpriseDiscoveryClient({ user, profile, matches }: Props) {
         </p>
       </header>
 
-      {/* ── Compliance disclaimer banner ── */}
-      <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-start sm:gap-4">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
+      {/* ── Compliance disclaimer banner (indigo — AUD-036: was amber, brand violation) ── */}
+      <div className="flex flex-col gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-4 sm:flex-row sm:items-start sm:gap-4">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-100 text-indigo-700">
           <Sparkles className="h-4 w-4" />
         </span>
         <div className="space-y-1">
-          <p className="text-sm font-medium text-amber-900">
+          <p className="text-sm font-medium text-indigo-900">
             Discovery is informational only
           </p>
-          <p className="text-xs leading-relaxed text-amber-800/90">
+          <p className="text-xs leading-relaxed text-indigo-800/90">
             AURIENTA does not auto-diversify, auto-debit, or manage funds. Each
             investment is your individual decision. This complies with Egyptian
             law — AURIENTA is not a fund manager, not a deposit-taker, and

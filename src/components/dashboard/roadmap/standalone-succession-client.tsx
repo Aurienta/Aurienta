@@ -238,7 +238,7 @@ export function StandaloneSuccessionClient({ user, cases, rounds }: Props) {
   async function handleRefreshRounds() {
     setRefreshingRounds(true);
     try {
-      const res = await fetch("/api/diaspora-corridor", { method: "GET" });
+      const res = await csrfFetch("/api/diaspora-corridor", { method: "GET" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load rounds");
       setOpenRounds((data.rounds as DiasporaRound[]) ?? []);

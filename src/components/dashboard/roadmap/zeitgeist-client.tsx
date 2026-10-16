@@ -85,7 +85,10 @@ function SentimentGauge({ score, confidence }: { score: number; confidence: numb
         />
         <path
           d={arcPath(-0.3, 0.3)}
-          stroke="#f59e0b"
+          // AUD-036: previously #f59e0b (amber-500) — brand violation. Replaced
+          // with indigo-500 (#6366F1) to keep the gauge "neutral" segment in
+          // the brand palette while still distinct from red (-1) and green (+1).
+          stroke="#6366F1"
           strokeWidth={strokeWidth}
           fill="none"
           opacity={0.85}
@@ -117,7 +120,7 @@ function SentimentGauge({ score, confidence }: { score: number; confidence: numb
         <text x={cx - radius - 4} y={cy + 14} fontSize="9" fontFamily="monospace" fill="currentColor" className="text-rose-400">
           -1
         </text>
-        <text x={cx - 4} y={cy - radius - 4} fontSize="9" fontFamily="monospace" fill="currentColor" className="text-amber-400">
+        <text x={cx - 4} y={cy - radius - 4} fontSize="9" fontFamily="monospace" fill="currentColor" className="text-indigo-500">
           0
         </text>
         <text x={cx + radius - 6} y={cy + 14} fontSize="9" fontFamily="monospace" fill="currentColor" className="text-emerald-400">
@@ -330,11 +333,11 @@ export function ZeitgeistClient({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Amber disclaimer */}
-      <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+      {/* Disclaimer banner (indigo — AUD-036: was amber, brand violation) */}
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-400/30 bg-indigo-400/[0.06] p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" />
         <div>
-          <p className="font-sans text-sm font-medium text-amber-700 dark:text-amber-300">
+          <p className="font-sans text-sm font-medium text-indigo-700 dark:text-indigo-300">
             Sentiment is informational, NOT investment advice.
           </p>
           <p className="mt-1 font-sans text-xs text-muted-foreground">

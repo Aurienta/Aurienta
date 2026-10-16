@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { logger } from "@/lib/aurienta/logger";
-import { checkAiProviders } from "@/lib/aurienta/ai-router";
+import { getAiProviderStatus } from "@/lib/aurienta/ai-router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 const STARTED_AT = Date.now();
 
 // AI providers expected to be online for "ok" status (AUD-008).
-// Mirrors the 5 providers probed by checkAiProviders() in ai-router.ts.
+// Mirrors the 5 providers probed by getAiProviderStatus() in ai-router.ts.
 const AI_PROVIDER_TOTAL = 5;
 
 type CheckResult = {
@@ -20,6 +20,7 @@ type CheckResult = {
   detail?: string;
   connected?: number;
   total?: number;
+  providers?: Array<{ provider: string; configured: boolean; connected: boolean; model: string; latencyMs: number; lastError: string | null }>;
 };
 
 /**
@@ -27,11 +28,13 @@ type CheckResult = {
  * Readiness probe — checks ALL critical dependencies (DB, AI config, CRE).
  * Returns 200 if all critical checks pass, 503 if any are down.
  *
- * AUD-008: the `ai_providers` check now ACTUALLY pings each provider via
- * `checkAiProviders()` (a minimal "ping" request) rather than only checking
- * env-var presence. The check reports `{ connected, total, ok }` and, if
- * fewer than 5 providers are reachable, downgrades the overall probe status
- * to "degraded" (200) — matching the brain-status endpoint's view.
+ * AUD-008 (AI-FIX): the `ai_providers` check now calls `getAiProviderStatus()`
+ * which ACTUALLY pings each provider (a minimal "ping" request via the
+ * smallest available model) rather than only checking env-var presence.
+ * Each provider entry reports {configured, connected, model, latencyMs,
+ * lastError}. If <5 providers are reachable, the overall probe status is
+ * downgraded to "degraded" (still 200 — AI features are not critical-path for
+ * serving dashboard pages, only for AI features themselves).
  */
 export async function GET() {
   const checks: CheckResult[] = [];
@@ -56,23 +59,33 @@ export async function GET() {
     detail: !hasEncryptionKey ? "FIELD_ENCRYPTION_KEY missing" : !hasSessionSecret ? "SESSION_SECRET missing" : undefined,
   });
 
-  // 3. AI providers — actually ping each provider (AUD-008).
+  // 3. AI providers — actually ping each provider (AUD-008, AI-FIX).
   // Previously this only checked env-var presence and reported "ok" even when
-  // brain-status showed 0/5 connected. Now it mirrors brain-status: probes
-  // gemini/groq/huggingface/openrouter/nvidia with a minimal request and
-  // reports the connected count. If <5 are reachable, the check is degraded
-  // and the overall probe status is degraded too (still 200 — AI providers
-  // are not critical-path for serving dashboard pages, only for AI features).
+  // brain-status showed 0/5 connected. Now it calls getAiProviderStatus()
+  // which probes gemini/groq/huggingface/openrouter/nvidia with a minimal
+  // request and returns {configured, connected, model, latencyMs, lastError}
+  // per provider. If <5 are reachable, the check is degraded (still 200).
   const aiStart = Date.now();
   let aiConnected = 0;
+  let aiConfigured = 0;
   let aiDetail = "";
+  let aiProviders: CheckResult["providers"];
   try {
-    const providers = await checkAiProviders();
-    aiConnected = Object.values(providers).filter((p) => p.connected).length;
-    const providersStr = Object.entries(providers)
-      .map(([k, v]) => `${k}:${v.connected ? "on" : "off"}`)
+    const statuses = await getAiProviderStatus();
+    aiConnected = statuses.filter(s => s.connected).length;
+    aiConfigured = statuses.filter(s => s.configured).length;
+    aiProviders = statuses.map(s => ({
+      provider: s.provider,
+      configured: s.configured,
+      connected: s.connected,
+      model: s.model,
+      latencyMs: s.latencyMs,
+      lastError: s.lastError,
+    }));
+    const providersStr = statuses
+      .map(s => `${s.provider}:${s.connected ? "on" : s.configured ? "err" : "off"}`)
       .join(",");
-    aiDetail = `${aiConnected}/${AI_PROVIDER_TOTAL} connected (${providersStr})`;
+    aiDetail = `${aiConnected}/${AI_PROVIDER_TOTAL} connected, ${aiConfigured}/${AI_PROVIDER_TOTAL} configured (${providersStr})`;
   } catch (e) {
     aiDetail = `probe failed: ${e instanceof Error ? e.message : String(e)}`;
   }
@@ -85,6 +98,7 @@ export async function GET() {
     detail: aiDetail,
     connected: aiConnected,
     total: AI_PROVIDER_TOTAL,
+    providers: aiProviders,
   });
 
   // 4. Ledger integrity — critical

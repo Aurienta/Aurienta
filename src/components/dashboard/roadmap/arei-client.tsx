@@ -48,8 +48,13 @@ const HEALTH_RATING_TONE: Record<string, string> = {
   A: "border-indigo-200 bg-indigo-50 text-indigo-700",
   BBB: "border-emerald-300 bg-emerald-100 text-emerald-800",
   BB: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  B: "border-amber-300 bg-amber-100 text-amber-800",
-  CCC: "border-amber-200 bg-amber-50 text-amber-700",
+  // AUD-036: B and CCC previously used amber-* — a brand theme violation.
+  // B is the lowest investment-grade tier (still acceptable): indigo-darker
+  // to keep it in the brand palette without over-stating positivity.
+  B: "border-indigo-400 bg-indigo-200 text-indigo-900",
+  // CCC is the lowest non-investment-grade tier (caution zone): rose-tinted
+  // to flag elevated risk without duplicating the rose tone reserved for CC/C.
+  CCC: "border-rose-200 bg-rose-50 text-rose-700",
   CC: "border-rose-300 bg-rose-100 text-rose-800",
   C: "border-rose-400 bg-rose-200 text-rose-900",
 };
@@ -157,9 +162,9 @@ export function AreiClient({ snapshot, history, constituents, canRecompute }: Pr
 
   return (
     <div className="flex flex-col gap-6">
-      {/* ── Compliance banner (amber) ─────────────────────────────────── */}
-      <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900">
-        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+      {/* ── Compliance banner (indigo — AUD-036: was amber, brand violation) ── */}
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-3 text-indigo-900">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
         <p className="font-sans text-sm leading-relaxed">
           <span className="font-semibold">⚠️ {DISCLAIMER}</span>
         </p>

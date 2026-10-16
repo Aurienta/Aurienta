@@ -54,7 +54,12 @@ export const getCurrentUser = cache(async () => {
     if (session.revokedAt) return null;
     if (session.expiresAt.getTime() < Date.now()) return null;
 
-    return session.user;
+    // AUD-003 / FIX 3: surface the session's `mfaVerifiedAt` onto the returned
+    // user object so the dashboard layout's MFA gate can decide whether the
+    // user has completed second-factor verification THIS session (vs. just
+    // having MFA enrolled on their account, which is `user.mfaEnabled`).
+    // The session is the source of truth for "MFA verified for this login".
+    return { ...session.user, mfaVerifiedAt: session.mfaVerifiedAt };
   } catch (e) {
     console.error("[auth] getCurrentUser error:", e);
     return null;

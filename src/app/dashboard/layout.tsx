@@ -33,32 +33,55 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect(`/signin?next=${encodeURIComponent(pathname)}`);
   }
 
-  // P0 #16 / AUD-003: MFA enforcement for privileged roles.
+  // P0 #16 / AUD-003 / FIX 3: MFA enforcement.
   //
-  // Privileged roles (manager, founding_operator, board_member, law_firm_rep,
-  // accounting_firm_rep, aurienta_rep) MUST have MFA enrolled. Until the
-  // passkey enrollment flow is fully built, we cannot hard-block these users
-  // without locking them out of the platform entirely (no demo user has MFA
-  // enabled today). Instead, surface a persistent warning banner at the top
-  // of every dashboard page directing them to enroll a passkey.
+  // Two layers of enforcement:
   //
-  // The hard `redirect("/dashboard/mfa-enroll")` block (commented out below)
-  // is re-enabled in a future release once:
-  //   1. The passkey enrollment flow is shipped end-to-end.
-  //   2. All demo users seeded in `prisma/seed.ts` have `mfaEnabled=true` +
-  //      at least one registered passkey.
+  // (A) HARD GATE (active): if a user has MFA enrolled (`mfaEnabled === true`)
+  //     but the current session has NOT completed second-factor verification
+  //     (`mfaVerifiedAt` is null), they MUST re-verify before accessing any
+  //     dashboard page. We redirect them to `/dashboard/passkeys` so they can
+  //     sign in with a passkey (which sets `mfaVerifiedAt` on the session via
+  //     /api/auth/passkey/authenticate/finish).
+  //     - For users with `mfaEnabled === false` (MFA not yet enrolled), access
+  //       is allowed — MFA is optional until enrolled (per audit guidance).
+  //     - The redirect is skipped when the user is ALREADY on a passkeys route
+  //       (read from the `x-pathname` middleware header) to prevent an
+  //       infinite redirect loop — the PasskeyManager UI on /dashboard/passkeys
+  //       is what lets them complete verification.
   //
-  // Sandbox escape hatch: when ALLOW_DEMO_SIGNIN=true the banner is still
-  // shown so the requirement is visible, but the dashboard remains usable.
+  // (B) SOFT BANNER (informational): for privileged roles (manager,
+  //     founding_operator, board_member, law_firm_rep, accounting_firm_rep,
+  //     aurienta_rep) who haven't yet enrolled in MFA, a persistent banner is
+  //     shown directing them to /dashboard/passkeys. We don't hard-block these
+  //     users because (until the passkey enrollment flow is fully shipped +
+  //     every demo user has `mfaEnabled=true`) doing so would lock them out
+  //     of the platform entirely.
+  //
+  // When the passkey enrollment flow is fully shipped end-to-end AND every
+  // seeded demo user has `mfaEnabled=true` + at least one registered passkey,
+  // layer (B) can be upgraded to a hard `redirect("/dashboard/passkeys")`
+  // for privileged roles without MFA enrolled — closing the audit gap
+  // completely. Until then, the active gate in (A) covers the user-controlled
+  // half of the threat model (an attacker who steals a session cookie cannot
+  // bypass MFA if the user has it enrolled).
+  const h = await headers();
+  const currentPath = h.get("x-pathname") ?? "";
+  const isOnPasskeysPage =
+    currentPath === "/dashboard/passkeys" ||
+    currentPath.startsWith("/dashboard/passkeys/");
+
+  // (A) Hard MFA gate — active, not commented out (AUD-003).
+  if (user.mfaEnabled === true && !user.mfaVerifiedAt && !isOnPasskeysPage) {
+    redirect("/dashboard/passkeys");
+  }
+
+  // (B) Soft banner for privileged roles without MFA enrolled.
   const isPrivileged = user.memberships.some((m: { role: string }) =>
     PRIVILEGED_ROLES.has(m.role)
   );
   const mfaRequired = isPrivileged;
   const mfaMissing = mfaRequired && user.mfaEnabled !== true;
-  // TODO: When MFA enrollment flow is built, uncomment this:
-  // if (mfaRequired && !user.mfaVerifiedAt) {
-  //   redirect("/dashboard/mfa-enroll");
-  // }
 
   // Wrap the dashboard shell + shared footer in a min-h-screen flex column so
   // the footer sticks to the bottom of the viewport on short pages and is

@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Activity, ArrowUpRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { csrfFetch } from "@/lib/aurienta/csrf-client";
 
 type TickerEvent = {
   id: string;
@@ -48,7 +49,7 @@ export function LiveLedgerTicker({
   const fetchTicker = React.useCallback(async () => {
     try {
       const qs = enterpriseId ? `?enterpriseId=${encodeURIComponent(enterpriseId)}` : "";
-      const res = await fetch(`/api/ledger/ticker${qs}`, { cache: "no-store" });
+      const res = await csrfFetch(`/api/ledger/ticker${qs}`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data?.events)) {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { PROPOSAL_TYPES } from "@/lib/aurienta/constants";
-import { appendLedgerEvent, enforceConsultingOptOut, enforceDividendLock, enforceLawFirmReplacement } from "@/lib/aurienta/cre";
+import { appendLedgerEvent, enforceConsultingOptOut, enforceDividendLock, enforceLawFirmReplacement, logCreDecision } from "@/lib/aurienta/cre";
 import { proposalSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -93,8 +93,15 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // ── CRE: consulting_optout prerequisites (3 profitable quarters OR 2 years) ──
+  // AUD-013: capture the verdict so we can persist it to CreDecision after
+  // the proposal row commits (denied verdicts return early before the txn).
+  let consultingOptoutVerdict: { verdict: ReturnType<typeof enforceConsultingOptOut>; payload: Record<string, unknown> } | null = null;
   if (type === "consulting_optout") {
     const optout = enforceConsultingOptOut(enterprise);
+    consultingOptoutVerdict = {
+      verdict: optout,
+      payload: { enterpriseId, tier: enterprise.tier, quarterlyReports: enterprise.quarterlyReports.length },
+    };
     if (!optout.allowed) {
       await audit({
         actorId: user.id,
@@ -123,6 +130,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // — this enforces realizedProfits ≥ 1 (i.e. positive). The 30-day cooling
   // check is skipped here (lastDividendAt unknown at creation time) and is
   // enforced at execution instead.
+  // AUD-013: capture the verdict so we can persist it to CreDecision after
+  // the proposal row commits.
+  let dividendLockVerdict: { verdict: ReturnType<typeof enforceDividendLock>; payload: Record<string, unknown> } | null = null;
   if (type === "dividend") {
     const realizedProfits = enterprise.quarterlyReports.reduce(
       (sum, q) => sum + (q.netProfitEgp ?? 0),
@@ -133,6 +143,10 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       realizedProfits,
       lastDividendAt: null,
     });
+    dividendLockVerdict = {
+      verdict: dividendLock,
+      payload: { enterpriseId, dividendAmount: 1, realizedProfits, lastDividendAt: null },
+    };
     if (!dividendLock.allowed) {
       await audit({
         actorId: user.id,
@@ -160,6 +174,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // meets the constitutional bar: active, licensed, insured ≥100M EGP,
   // expertise ≥75. If no qualifying candidate exists, the replacement
   // proposal is premature and blocked.
+  // AUD-013: capture the verdict of the qualifying candidate (if any) so we
+  // can persist it to CreDecision after the proposal row commits.
+  let lawFirmReplacementVerdict: { verdict: ReturnType<typeof enforceLawFirmReplacement>; payload: Record<string, unknown> } | null = null;
   if (type === "law_firm_replacement") {
     const candidates = await db.lawFirm.findMany({
       where: {
@@ -168,15 +185,22 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       },
       take: 20,
     });
-    const validCandidate = candidates.find((f) =>
-      enforceLawFirmReplacement({
+    let validCandidate: typeof candidates[number] | null = null;
+    let validVerdict: ReturnType<typeof enforceLawFirmReplacement> | null = null;
+    for (const f of candidates) {
+      const v = enforceLawFirmReplacement({
         status: f.status,
         frLicenseNumber: f.frLicenseNumber,
         insuranceEgp: f.insuranceEgp,
         expertiseScore: f.expertiseScore,
-      }).allowed
-    );
-    if (!validCandidate) {
+      });
+      if (v.allowed) {
+        validCandidate = f;
+        validVerdict = v;
+        break;
+      }
+    }
+    if (!validCandidate || !validVerdict) {
       const sample = candidates[0]
         ? enforceLawFirmReplacement({
             status: candidates[0].status,
@@ -207,6 +231,18 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
         { status: 400 }
       );
     }
+    lawFirmReplacementVerdict = {
+      verdict: validVerdict,
+      payload: {
+        enterpriseId,
+        candidateLawFirmId: validCandidate.id,
+        candidateName: validCandidate.name,
+        status: validCandidate.status,
+        frLicenseNumber: validCandidate.frLicenseNumber,
+        insuranceEgp: validCandidate.insuranceEgp,
+        expertiseScore: validCandidate.expertiseScore,
+      },
+    };
   }
 
   // ── manager_appointment: police clearance is enforced at EXECUTION, not creation ──
@@ -265,6 +301,40 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       },
       actorId: user.id,
     });
+
+    // ── AUD-013: persist the CRE verdicts that authorised this proposal ──
+    // For consulting_optout / dividend / law_firm_replacement proposals, the
+    // corresponding enforce* call ran above and returned `allowed`. We log
+    // the verdict here so the CreDecision row commits atomically with the
+    // proposal + ledger event — closing the audit gap where 0 CreDecision
+    // rows existed despite active CRE enforcement.
+    if (consultingOptoutVerdict) {
+      await logCreDecision(tx, {
+        enterpriseId,
+        policy: consultingOptoutVerdict.verdict.policy,
+        verdict: consultingOptoutVerdict.verdict,
+        actorId: user.id,
+        payload: { ...consultingOptoutVerdict.payload, proposalId: created.id, type },
+      });
+    }
+    if (dividendLockVerdict) {
+      await logCreDecision(tx, {
+        enterpriseId,
+        policy: dividendLockVerdict.verdict.policy,
+        verdict: dividendLockVerdict.verdict,
+        actorId: user.id,
+        payload: { ...dividendLockVerdict.payload, proposalId: created.id, type },
+      });
+    }
+    if (lawFirmReplacementVerdict) {
+      await logCreDecision(tx, {
+        enterpriseId,
+        policy: lawFirmReplacementVerdict.verdict.policy,
+        verdict: lawFirmReplacementVerdict.verdict,
+        actorId: user.id,
+        payload: { ...lawFirmReplacementVerdict.payload, proposalId: created.id, type },
+      });
+    }
 
     // ── Notify every enterprise member that a new proposal is open for voting. ──
     // The audit found zero state-mutating endpoints emitted Notifications — the

@@ -8,6 +8,17 @@ type EnvShape = {
   publicBaseUrl: string;
   allowDemoSignIn: boolean;
   fieldEncryptionKey: string;
+  // AI provider keys (AI-FIX): loaded from env and exposed on `env` so that
+  // ai-router.ts and the readiness/health endpoints can read them without
+  // re-walking process.env. A key is `null` when not set — callers must
+  // handle that (the router skips un-configured providers in consensus).
+  groqApiKey: string | null;
+  geminiApiKey: string | null;
+  openrouterApiKey: string | null;
+  nvidiaApiKey: string | null;
+  huggingfaceApiKey: string | null;
+  // Number of AI providers with a key present (0..5). Used by /api/ready.
+  aiProvidersConfigured: number;
 };
 
 function read(): EnvShape {
@@ -32,7 +43,31 @@ function read(): EnvShape {
   }
   if (!databaseUrl) console.error("[env] FATAL: DATABASE_URL is not set");
   if (nodeEnv === "production" && allowDemoSignIn) console.warn("[env] WARNING: ALLOW_DEMO_SIGNIN=true in production — sandbox/pilot mode.");
-  return { databaseUrl, nodeEnv, logLevel: level, cookieSecure, publicBaseUrl, allowDemoSignIn, fieldEncryptionKey };
+
+  // ── AI provider keys (AI-FIX) ──
+  // All 5 keys are read from environment and exposed via `env`. ai-router.ts
+  // also reads process.env directly (for backward compat / lazy loading) so
+  // both paths agree. A null value means "key not configured" — the AI router
+  // will skip that provider in consensus and report it as unconfigured in
+  // getAiProviderStatus().
+  const groqApiKey = process.env.GROQ_API_KEY || null;
+  const geminiApiKey = process.env.GEMINI_API_KEY || null;
+  const openrouterApiKey = process.env.OPENROUTER_API_KEY || null;
+  const nvidiaApiKey = process.env.NVIDIA_API_KEY || null;
+  const huggingfaceApiKey = process.env.HUGGINGFACE_API_KEY || null;
+  const aiProvidersConfigured = [
+    groqApiKey, geminiApiKey, openrouterApiKey, nvidiaApiKey, huggingfaceApiKey,
+  ].filter(k => !!k).length;
+  if (aiProvidersConfigured === 0) {
+    console.error("[env] FATAL: 0 AI provider API keys are configured — Brain AI will always return AI_FALLBACK.");
+  } else if (aiProvidersConfigured < 5) {
+    console.warn(`[env] WARNING: ${aiProvidersConfigured}/5 AI provider API keys are configured — consensus will degrade for some tasks.`);
+  }
+
+  return {
+    databaseUrl, nodeEnv, logLevel: level, cookieSecure, publicBaseUrl, allowDemoSignIn, fieldEncryptionKey,
+    groqApiKey, geminiApiKey, openrouterApiKey, nvidiaApiKey, huggingfaceApiKey, aiProvidersConfigured,
+  };
 }
 
 export const env = read();
