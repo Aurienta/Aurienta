@@ -73,9 +73,9 @@ const SEV_META: Record<
   },
   amber: {
     label: "Drift emerging",
-    color: "#f4d676",
-    bg: "rgba(244,214,118,0.10)",
-    border: "rgba(244,214,118,0.32)",
+    color: "#818CF8",
+    bg: "rgba(129,140,248,0.10)",
+    border: "rgba(129,140,248,0.32)",
     icon: AlertTriangle,
   },
   red: {
@@ -98,8 +98,8 @@ function scoreBand(score: number) {
   if (score <= 55) {
     return {
       label: "Drift emerging",
-      color: "#f4d676",
-      tint: "rgba(244,214,118,0.12)",
+      color: "#818CF8",
+      tint: "rgba(129,140,248,0.12)",
     };
   }
   return {

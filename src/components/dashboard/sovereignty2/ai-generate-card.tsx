@@ -56,7 +56,7 @@ export function AiGenerateCard({
             disabled={isGenerating || buttonDisabled}
             aria-busy={isGenerating}
             className={cn(
-              "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(212,175,55,0.7)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+              "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(79,70,229,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(79,70,229,0.7)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
             )}
             title={disabledReason}
           >

@@ -104,7 +104,7 @@ export function StepRole({ state, update }: StepRoleProps) {
               className={cn(
                 "group relative flex cursor-pointer items-start gap-3.5 rounded-xl border p-4 transition-all",
                 state.intent === it.value
-                  ? "border-gold/55 bg-gold/[0.07] shadow-[0_0_24px_-10px_rgba(212,175,55,0.7)]"
+                  ? "border-gold/55 bg-gold/[0.07] shadow-[0_0_24px_-10px_rgba(79,70,229,0.7)]"
                   : "border-gold/15 bg-background/40 hover:border-gold/30"
               )}
             >

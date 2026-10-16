@@ -201,7 +201,7 @@ function UpdateCard({ update }: { update: UpdateRow }) {
             <span
               className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
               style={{
-                background: `linear-gradient(135deg, ${update.author.avatarColor}, #b8860b)`,
+                background: `linear-gradient(135deg, ${update.author.avatarColor}, #3730A3)`,
                 color: "#0a0a0b",
               }}
             >
@@ -356,7 +356,7 @@ function PostUpdateDialog({
         createdAt: data.update.createdAt,
         author: {
           legalName: "You",
-          avatarColor: "#d4af37",
+          avatarColor: "#4F46E5",
           primaryIntent: null,
         },
       };

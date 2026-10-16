@@ -156,7 +156,7 @@ export function MarketWorkspace({
                 onClick={() => setActiveSlug(e.slug)}
                 className={`group flex shrink-0 items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left transition-all ${
                   isActive
-                    ? "border-gold/40 bg-gold-gradient text-black shadow-[0_4px_20px_-6px_rgba(212,175,55,0.4)]"
+                    ? "border-gold/40 bg-gold-gradient text-black shadow-[0_4px_20px_-6px_rgba(79,70,229,0.4)]"
                     : "border-gold/12 glass text-foreground hover:border-gold/25"
                 }`}
                 aria-pressed={isActive}

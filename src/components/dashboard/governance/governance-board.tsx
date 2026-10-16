@@ -127,7 +127,7 @@ export function GovernanceBoard({ proposals, enterprises }: Props) {
               {active && (
                 <motion.span
                   layoutId="gov-filter-pill"
-                  className="absolute inset-0 rounded-lg bg-gold-gradient shadow-[0_4px_18px_-6px_rgba(212,175,55,0.6)]"
+                  className="absolute inset-0 rounded-lg bg-gold-gradient shadow-[0_4px_18px_-6px_rgba(79,70,229,0.6)]"
                   transition={{ type: "spring", damping: 24, stiffness: 280 }}
                 />
               )}

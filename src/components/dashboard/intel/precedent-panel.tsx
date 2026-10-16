@@ -407,7 +407,7 @@ function ProposalLibraryCard({
 function SimilarityPill({ value }: { value: number }) {
   const pct = Math.round(value * 100);
   const color =
-    value >= 0.9 ? "#34d399" : value >= 0.8 ? "#f4d676" : "#c9a03d";
+    value >= 0.9 ? "#34d399" : value >= 0.8 ? "#818CF8" : "#6366F1";
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-xs font-medium"
@@ -448,9 +448,9 @@ function OutcomeBadge({ outcome }: { outcome: string }) {
     },
     "voting open": {
       label: "Voting open",
-      color: "#f4d676",
-      bg: "rgba(244,214,118,0.10)",
-      border: "rgba(244,214,118,0.32)",
+      color: "#818CF8",
+      bg: "rgba(129,140,248,0.10)",
+      border: "rgba(129,140,248,0.32)",
       icon: Clock,
     },
     unknown: {

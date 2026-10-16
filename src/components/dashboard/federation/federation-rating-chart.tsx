@@ -20,9 +20,9 @@ export type RatingBucket = {
 
 const TONE_COLORS: Record<RatingBucket["tone"], string> = {
   green: "#34d399",
-  amber: "#f4d676",
+  amber: "#818CF8",
   red: "#ef4444",
-  gold: "#d4af37",
+  gold: "#4F46E5",
 };
 
 type Props = {
@@ -46,18 +46,18 @@ export function FederationRatingChart({ data, height = 240 }: Props) {
     <div style={{ width: "100%", height }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-          <CartesianGrid stroke="rgba(212,175,55,0.08)" vertical={false} />
+          <CartesianGrid stroke="rgba(79,70,229,0.08)" vertical={false} />
           <XAxis
             dataKey="rating"
             tick={{ fill: "#a89f86", fontSize: 10, fontFamily: "monospace" }}
-            stroke="rgba(212,175,55,0.15)"
+            stroke="rgba(79,70,229,0.15)"
           />
           <YAxis
             tick={{ fill: "#a89f86", fontSize: 10, fontFamily: "monospace" }}
-            stroke="rgba(212,175,55,0.15)"
+            stroke="rgba(79,70,229,0.15)"
             allowDecimals={false}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(212,175,55,0.05)" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(79,70,229,0.05)" }} />
           <Bar dataKey="count" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={500}>
             {data.map((entry, i) => (
               <Cell key={`cell-${i}`} fill={TONE_COLORS[entry.tone]} fillOpacity={0.85} />
@@ -76,7 +76,7 @@ function CustomTooltip({ active, payload, label }: any) {
     <div
       style={{
         background: "rgba(16,16,18,0.95)",
-        border: "1px solid rgba(212,175,55,0.25)",
+        border: "1px solid rgba(79,70,229,0.25)",
         borderRadius: 8,
         padding: "10px 12px",
         fontSize: 11,
@@ -86,7 +86,7 @@ function CustomTooltip({ active, payload, label }: any) {
       }}
     >
       <p style={{ fontSize: 10, color: "#a89f86", marginBottom: 4 }}>Health rating · {label}</p>
-      <p style={{ color: "#f4d676", fontWeight: 600 }}>{v} federated member(s)</p>
+      <p style={{ color: "#818CF8", fontWeight: 600 }}>{v} federated member(s)</p>
     </div>
   );
 }

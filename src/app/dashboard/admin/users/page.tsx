@@ -401,7 +401,7 @@ export default async function AdminUsersPage({
                       <div className="flex items-center gap-3">
                         <span
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full font-mono text-xs font-semibold text-background"
-                          style={{ background: u.avatarColor || "#d4af37" }}
+                          style={{ background: u.avatarColor || "#4F46E5" }}
                           aria-hidden
                         >
                           {initials(u.legalName)}

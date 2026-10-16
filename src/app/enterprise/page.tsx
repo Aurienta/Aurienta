@@ -206,7 +206,7 @@ export default async function EnterpriseDirectoryPage() {
               {entries.map((e) => (
                 <Card
                   key={e.slug}
-                  className="group relative border-gold/15 bg-card/60 backdrop-blur-sm transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.4)]"
+                  className="group relative border-gold/15 bg-card/60 backdrop-blur-sm transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(79,70,229,0.4)]"
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">

@@ -76,7 +76,7 @@ export function ManagerHeader({
                     className={cn(
                       "inline-flex min-h-[44px] items-center gap-2 rounded-full border px-4 py-2 font-sans text-xs font-medium transition-all",
                       active
-                        ? "border-gold/40 bg-gold-gradient text-black shadow-[0_4px_20px_-6px_rgba(212,175,55,0.55)]"
+                        ? "border-gold/40 bg-gold-gradient text-black shadow-[0_4px_20px_-6px_rgba(79,70,229,0.55)]"
                         : "border-gold/15 bg-background/40 text-muted-foreground hover:border-gold/30 hover:text-foreground"
                     )}
                   >

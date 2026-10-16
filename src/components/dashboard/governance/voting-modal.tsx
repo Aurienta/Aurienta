@@ -215,9 +215,9 @@ export function VotingModal({
                 title="For"
                 description="Support the proposal as written."
                 icon={<ThumbsUp className="h-4 w-4" />}
-                accent="#f4d676"
-                bg="rgba(244,214,118,0.08)"
-                border="rgba(244,214,118,0.3)"
+                accent="#818CF8"
+                bg="rgba(129,140,248,0.08)"
+                border="rgba(129,140,248,0.3)"
                 selected={choice === "for"}
               />
               <ChoiceOption
@@ -280,7 +280,7 @@ export function VotingModal({
                     label="For"
                     value={projected.t.for}
                     delta={choice === "for" ? userVotingPower : 0}
-                    color="#f4d676"
+                    color="#818CF8"
                   />
                   <TallyCell
                     label="Against"
@@ -416,7 +416,7 @@ function ChoiceOption({
       )}
       style={{
         background: selected ? bg : "rgba(255,255,255,0.01)",
-        borderColor: selected ? border : "rgba(212,175,55,0.10)",
+        borderColor: selected ? border : "rgba(79,70,229,0.10)",
         ...(selected ? { boxShadow: `0 0 0 1px ${border}` } : {}),
       }}
     >

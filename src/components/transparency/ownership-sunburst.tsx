@@ -28,7 +28,7 @@ function ActiveShape(props: ActiveShapeProps) {
         x={cx}
         y={cy - 14}
         textAnchor="middle"
-        fill="#f4d676"
+        fill="#818CF8"
         style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600 }}
       >
         {payload.label}

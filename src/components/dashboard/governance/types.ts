@@ -80,10 +80,10 @@ export function riskBand(score: number): {
   if (score <= 60) {
     return {
       label: "Moderate",
-      color: "#f4d676",
-      bg: "rgba(244, 214, 118, 0.12)",
-      border: "rgba(244, 214, 118, 0.35)",
-      text: "#f4d676",
+      color: "#818CF8",
+      bg: "rgba(129, 140, 248, 0.12)",
+      border: "rgba(129, 140, 248, 0.35)",
+      text: "#818CF8",
     };
   }
   return {
@@ -113,9 +113,9 @@ export function statusMeta(status: string): {
     case "voting_open":
       return {
         label: "Voting open",
-        color: "#f4d676",
-        bg: "rgba(244, 214, 118, 0.14)",
-        border: "rgba(244, 214, 118, 0.4)",
+        color: "#818CF8",
+        bg: "rgba(129, 140, 248, 0.14)",
+        border: "rgba(129, 140, 248, 0.4)",
         pulse: true,
       };
     case "executed":
@@ -142,9 +142,9 @@ export function statusMeta(status: string): {
     case "published":
       return {
         label: "Cooling",
-        color: "#d4af37",
-        bg: "rgba(212, 175, 55, 0.10)",
-        border: "rgba(212, 175, 55, 0.3)",
+        color: "#4F46E5",
+        bg: "rgba(79, 70, 229, 0.10)",
+        border: "rgba(79, 70, 229, 0.3)",
       };
     default:
       return {

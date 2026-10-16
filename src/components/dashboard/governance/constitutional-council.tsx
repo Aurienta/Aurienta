@@ -75,7 +75,7 @@ export function ConstitutionalCouncil({
                 <div
                   className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-[11px] font-semibold text-black"
                   style={{
-                    background: `linear-gradient(135deg, ${m.avatarColor}, #b8860b)`,
+                    background: `linear-gradient(135deg, ${m.avatarColor}, #3730A3)`,
                   }}
                 >
                   {initials}
@@ -88,9 +88,9 @@ export function ConstitutionalCouncil({
                     <span
                       className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-mono text-[11px]"
                       style={{
-                        background: "rgba(212,175,55,0.10)",
-                        color: "#f4d676",
-                        border: "1px solid rgba(212,175,55,0.25)",
+                        background: "rgba(79,70,229,0.10)",
+                        color: "#818CF8",
+                        border: "1px solid rgba(79,70,229,0.25)",
                       }}
                     >
                       <Icon className="h-2.5 w-2.5" />

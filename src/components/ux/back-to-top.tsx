@@ -40,7 +40,7 @@ export function BackToTop() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.7, y: 12 }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          className="magnetic-glow fixed bottom-6 right-6 z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-background/80 backdrop-blur-md shadow-[0_8px_30px_-8px_rgba(212,175,55,0.5)] hover:border-gold/70 hover:bg-gold/10 print:hidden"
+          className="magnetic-glow fixed bottom-6 right-6 z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-background/80 backdrop-blur-md shadow-[0_8px_30px_-8px_rgba(79,70,229,0.5)] hover:border-gold/70 hover:bg-gold/10 print:hidden"
         >
           <ArrowUp className="h-5 w-5 text-gold" />
         </motion.button>

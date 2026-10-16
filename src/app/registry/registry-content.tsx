@@ -397,7 +397,7 @@ function RegistryCard({ entry: e }: { entry: RegistryEntry }) {
   return (
     <Link
       href={`/enterprise/${e.slug}`}
-      className="group flex h-full flex-col gap-4 rounded-2xl border border-gold/15 glass p-5 transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.4)]"
+      className="group flex h-full flex-col gap-4 rounded-2xl border border-gold/15 glass p-5 transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(79,70,229,0.4)]"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
@@ -456,7 +456,7 @@ function RegistryCard({ entry: e }: { entry: RegistryEntry }) {
         </div>
         <div className="h-2 overflow-hidden rounded-full border border-gold/15 bg-background/50">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#d4af37] to-[#f4d676] transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#4F46E5] to-[#818CF8] transition-all"
             style={{ width: `${Math.min(100, goalPct).toFixed(1)}%` }}
           />
         </div>

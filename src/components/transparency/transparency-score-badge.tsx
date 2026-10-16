@@ -123,7 +123,7 @@ export function TransparencyScoreBadge({
       <div className="mt-3">
         <div className="h-2 overflow-hidden rounded-full border border-gold/15 bg-background/50">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#d4af37] to-[#f4d676] transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#4F46E5] to-[#818CF8] transition-all"
             style={{ width: `${data.score}%` }}
             role="progressbar"
             aria-valuenow={data.score}

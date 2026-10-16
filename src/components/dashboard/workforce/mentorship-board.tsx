@@ -232,7 +232,7 @@ function MentorCard({
       <div className="flex items-start gap-3">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-[12px] font-semibold text-black"
-          style={{ background: `linear-gradient(135deg, ${mentor.avatarColor}, #b8860b)` }}
+          style={{ background: `linear-gradient(135deg, ${mentor.avatarColor}, #3730A3)` }}
         >
           {mentor.legalName.split(" ").map((p) => p[0]).slice(0, 2).join("")}
         </div>
@@ -355,7 +355,7 @@ function MenteeCard({
       <div className="mt-3 flex items-center gap-2 rounded-lg border border-gold/10 bg-background/30 p-2.5">
         <div
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-serif text-xs font-semibold text-black"
-          style={{ background: `linear-gradient(135deg, ${mentee.founder.avatarColor}, #b8860b)` }}
+          style={{ background: `linear-gradient(135deg, ${mentee.founder.avatarColor}, #3730A3)` }}
         >
           {mentee.founder.legalName.split(" ").map((p) => p[0]).slice(0, 2).join("")}
         </div>
@@ -428,7 +428,7 @@ function ActiveMentorshipCard({
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-serif text-[11px] font-semibold text-black"
             style={{
-              background: `linear-gradient(135deg, ${mentorship.mentor.avatarColor}, #b8860b)`,
+              background: `linear-gradient(135deg, ${mentorship.mentor.avatarColor}, #3730A3)`,
             }}
           >
             {mentorship.mentor.legalName.split(" ").map((p) => p[0]).slice(0, 2).join("")}
@@ -575,7 +575,7 @@ function AiMatchPanel({
                         m.matchScore >= 80
                           ? "#34d399"
                           : m.matchScore >= 60
-                            ? "#f4d676"
+                            ? "#818CF8"
                             : "#a89f86",
                     }}
                   >

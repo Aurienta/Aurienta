@@ -87,7 +87,7 @@ function CircularProgress({ value, size = 88 }: { value: number; size?: number }
   const offset = circumference * (1 - value);
   const pctStr = pct(value);
   const color =
-    value >= 0.7 ? "#10b981" : value >= 0.4 ? "#d4af37" : "#ef4444";
+    value >= 0.7 ? "#10b981" : value >= 0.4 ? "#4F46E5" : "#ef4444";
 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>

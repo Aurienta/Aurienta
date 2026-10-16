@@ -22,8 +22,8 @@ type Report = {
   grossMarginPct: number;
 };
 
-const GOLD = "#d4af37";
-const GOLD_LIGHT = "#f4d676";
+const GOLD = "#4F46E5";
+const GOLD_LIGHT = "#818CF8";
 const GOLD_DARK = "#8a6d1f";
 
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name?: string; value?: number; color?: string; dataKey?: string | number }>; label?: string }) {
@@ -85,21 +85,21 @@ export function QuarterlyFinancialsChart({ reports }: { reports: Report[] }) {
                 <stop offset="100%" stopColor={GOLD_DARK} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(212,175,55,0.08)" strokeDasharray="2 4" />
+            <CartesianGrid stroke="rgba(79,70,229,0.08)" strokeDasharray="2 4" />
             <XAxis
               dataKey="quarter"
               tick={{ fill: "#a89f86", fontSize: 10, fontFamily: "ui-monospace, monospace" }}
-              axisLine={{ stroke: "rgba(212,175,55,0.18)" }}
+              axisLine={{ stroke: "rgba(79,70,229,0.18)" }}
               tickLine={false}
             />
             <YAxis
               tick={{ fill: "#a89f86", fontSize: 10, fontFamily: "ui-monospace, monospace" }}
               tickFormatter={(v) => egp(v, { compact: true })}
-              axisLine={{ stroke: "rgba(212,175,55,0.18)" }}
+              axisLine={{ stroke: "rgba(79,70,229,0.18)" }}
               tickLine={false}
               width={70}
             />
-            <Tooltip content={<ChartTooltip />} cursor={{ stroke: "rgba(212,175,55,0.4)", strokeWidth: 1 }} />
+            <Tooltip content={<ChartTooltip />} cursor={{ stroke: "rgba(79,70,229,0.4)", strokeWidth: 1 }} />
             <Legend
               wrapperStyle={{ fontFamily: "ui-sans-serif, system-ui", fontSize: 11, paddingTop: 8 }}
               iconType="circle"

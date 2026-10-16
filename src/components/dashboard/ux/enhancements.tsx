@@ -95,7 +95,7 @@ export function EnterpriseSwitcher({
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 rounded-full border border-gold/20 bg-gold/[0.04] px-3 py-1.5 font-sans text-xs font-medium text-foreground transition-colors hover:border-gold/40 hover:bg-gold/[0.08]"
       >
-        <span className="h-2 w-2 rounded-full bg-gold shadow-[0_0_6px_1px_rgba(212,175,55,0.5)]" />
+        <span className="h-2 w-2 rounded-full bg-gold shadow-[0_0_6px_1px_rgba(79,70,229,0.5)]" />
         <span className="max-w-[120px] truncate">{selected.name}</span>
         <span className="rounded border border-gold/20 bg-gold/5 px-1 py-0.5 font-mono text-[11px] text-gold/70">
           T{selected.tier}
@@ -398,7 +398,7 @@ export function QuickActions({ roles }: { roles: Set<string> } ) {
       </AnimatePresence>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_4px_20px_-4px_rgba(212,175,55,0.6)] transition-all hover:shadow-[0_6px_30px_-4px_rgba(212,175,55,0.8)]"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_4px_20px_-4px_rgba(79,70,229,0.6)] transition-all hover:shadow-[0_6px_30px_-4px_rgba(79,70,229,0.8)]"
         aria-label="Quick actions"
       >
         <Plus className={cn("h-5 w-5 transition-transform", open && "rotate-45")} />

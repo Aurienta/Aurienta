@@ -255,7 +255,7 @@ export function PartnerCRMClient({
                           <span
                             className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold"
                             style={{
-                              background: `linear-gradient(135deg, #d4af37, #8a6d1f)`,
+                              background: `linear-gradient(135deg, #4F46E5, #8a6d1f)`,
                               color: "#0a0a0b",
                             }}
                           >

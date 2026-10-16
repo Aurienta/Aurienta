@@ -42,11 +42,11 @@ export function ReadinessHero({
               <defs>
                 <linearGradient id="scoreGold" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0" stopColor="#f7e9a6" />
-                  <stop offset="0.5" stopColor="#d4af37" />
-                  <stop offset="1" stopColor="#b8860b" />
+                  <stop offset="0.5" stopColor="#4F46E5" />
+                  <stop offset="1" stopColor="#3730A3" />
                 </linearGradient>
               </defs>
-              <circle cx="90" cy="90" r={radius} fill="none" stroke="rgba(212,175,55,0.12)" strokeWidth="10" />
+              <circle cx="90" cy="90" r={radius} fill="none" stroke="rgba(79,70,229,0.12)" strokeWidth="10" />
               <circle
                 cx="90"
                 cy="90"
@@ -56,7 +56,7 @@ export function ReadinessHero({
                 strokeWidth="10"
                 strokeLinecap="round"
                 strokeDasharray={`${dash} ${circumference}`}
-                style={{ filter: "drop-shadow(0 0 10px rgba(212,175,55,0.45))" }}
+                style={{ filter: "drop-shadow(0 0 10px rgba(79,70,229,0.45))" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -132,7 +132,7 @@ export function ReadinessHero({
                           c.tone === "green"
                             ? "linear-gradient(90deg, #34d399, #10b981)"
                             : c.tone === "amber"
-                            ? "linear-gradient(90deg, #fbbf24, #d4af37)"
+                            ? "linear-gradient(90deg, #fbbf24, #4F46E5)"
                             : "linear-gradient(90deg, #f87171, #e0584b)",
                       }}
                     />

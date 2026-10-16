@@ -474,7 +474,7 @@ function MilestoneRow({
           <Button
             onClick={onSubmit}
             size="sm"
-            className="ml-auto h-8 bg-gold-gradient px-3 text-xs font-semibold text-black shadow-[0_8px_24px_-10px_rgba(212,175,55,0.6)]"
+            className="ml-auto h-8 bg-gold-gradient px-3 text-xs font-semibold text-black shadow-[0_8px_24px_-10px_rgba(79,70,229,0.6)]"
           >
             Submit evidence <ChevronRight className="h-3.5 w-3.5" />
           </Button>

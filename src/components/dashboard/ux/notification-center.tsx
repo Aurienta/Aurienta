@@ -57,8 +57,8 @@ const CATEGORY_META: Record<
   NotifCategory,
   { label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string }
 > = {
-  governance: { label: "Governance", icon: Scale, color: "#d4af37" },
-  treasury: { label: "Treasury", icon: Wallet, color: "#c9a03d" },
+  governance: { label: "Governance", icon: Scale, color: "#4F46E5" },
+  treasury: { label: "Treasury", icon: Wallet, color: "#6366F1" },
   compliance: { label: "Compliance", icon: ShieldAlert, color: "#e0584b" },
   milestone: { label: "Milestone", icon: FlagTriangleRight, color: "#fbbf24" },
   dividend: { label: "Dividend", icon: Coins, color: "#34d399" },
@@ -70,8 +70,8 @@ const PRIORITY_META: Record<
   { label: string; color: string; bg: string; ring: string; order: number }
 > = {
   urgent: { label: "Urgent", color: "#f87171", bg: "rgba(224,88,75,0.18)", ring: "rgba(224,88,75,0.55)", order: 0 },
-  high: { label: "High", color: "#f4d676", bg: "rgba(212,175,55,0.18)", ring: "rgba(212,175,55,0.55)", order: 1 },
-  medium: { label: "Medium", color: "#c9a03d", bg: "rgba(201,160,61,0.14)", ring: "rgba(201,160,61,0.45)", order: 2 },
+  high: { label: "High", color: "#818CF8", bg: "rgba(79,70,229,0.18)", ring: "rgba(79,70,229,0.55)", order: 1 },
+  medium: { label: "Medium", color: "#6366F1", bg: "rgba(201,160,61,0.14)", ring: "rgba(201,160,61,0.45)", order: 2 },
   low: { label: "Low", color: "#a89f86", bg: "rgba(168,159,134,0.12)", ring: "rgba(168,159,134,0.35)", order: 3 },
 };
 
@@ -188,7 +188,7 @@ export function NotificationCenter({ initial }: { initial: NotifForUi[] }) {
     toast("Snoozed for 24h", {
       description: "The notification will resurface tomorrow.",
       style: {
-        border: "1px solid rgba(212,175,55,0.25)",
+        border: "1px solid rgba(79,70,229,0.25)",
         background: "rgba(16,16,18,0.95)",
         color: "#f3eedd",
       },
@@ -412,7 +412,7 @@ function NotificationRow({
           )}
           style={{
             background: pri ? pri.color : "transparent",
-            border: pri ? "none" : "1px solid rgba(212,175,55,0.25)",
+            border: pri ? "none" : "1px solid rgba(79,70,229,0.25)",
             boxShadow: pri && !n.read ? `0 0 8px 2px ${pri.ring}` : undefined,
           }}
           aria-label={pri ? `${pri.label} priority` : "Not yet triaged"}
@@ -459,12 +459,12 @@ function NotificationRow({
               <p
                 className="mt-2 border-l-2 pl-2 font-serif text-xs italic"
                 style={{
-                  borderColor: pri ? pri.color : "rgba(212,175,55,0.3)",
+                  borderColor: pri ? pri.color : "rgba(79,70,229,0.3)",
                   color: "var(--foreground)",
                   opacity: 0.85,
                 }}
               >
-                <Sparkles className="mr-1 inline h-3 w-3" style={{ color: pri ? pri.color : "#d4af37" }} />
+                <Sparkles className="mr-1 inline h-3 w-3" style={{ color: pri ? pri.color : "#4F46E5" }} />
                 {n.aiSummary}
               </p>
             )}

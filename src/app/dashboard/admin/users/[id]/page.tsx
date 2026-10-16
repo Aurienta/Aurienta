@@ -241,7 +241,7 @@ export default async function AdminUserDetailPage({
           <div className="flex items-start gap-4">
             <span
               className="inline-flex h-16 w-16 items-center justify-center rounded-full font-mono text-lg font-semibold text-background"
-              style={{ background: user.avatarColor || "#d4af37" }}
+              style={{ background: user.avatarColor || "#4F46E5" }}
               aria-hidden
             >
               {initials(user.legalName)}

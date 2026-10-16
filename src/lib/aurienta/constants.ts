@@ -47,11 +47,11 @@ export const STAGE_META: Record<string, { name: string; role: string; duration: 
 };
 
 export const STS_LEVELS = [
-  { min: 90, name: "Constitutional Pillar", color: "#f4d676" },
-  { min: 80, name: "Ecosystem Builder", color: "#d4af37" },
-  { min: 65, name: "Trusted Contributor", color: "#c9a03d" },
+  { min: 90, name: "Constitutional Pillar", color: "#818CF8" },
+  { min: 80, name: "Ecosystem Builder", color: "#4F46E5" },
+  { min: 65, name: "Trusted Contributor", color: "#6366F1" },
   { min: 50, name: "Active Member", color: "#8a6d1f" },
-  { min: 0, name: "Emerging Participant", color: "#6b5314" },
+  { min: 0, name: "Emerging Participant", color: "#1E1B4B" },
 ];
 
 export function stsLevel(score: number) {

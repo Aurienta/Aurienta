@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
           sts: e.user.sovereignTrustScore,
           tier: e.user.tier,
           role: e.position,
-          avatarColor: "#d4af37",
+          avatarColor: "#4F46E5",
         })),
     ];
     const dedup = new Map<string, (typeof candidatePool)[number]>();

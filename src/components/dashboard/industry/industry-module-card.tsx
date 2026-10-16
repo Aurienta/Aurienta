@@ -97,7 +97,7 @@ export function IndustryModuleCard({ module, index }: Props) {
     >
       <div
         className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-3xl"
-        style={{ background: "rgba(212,175,55,0.08)" }}
+        style={{ background: "rgba(79,70,229,0.08)" }}
       />
 
       {/* Header */}

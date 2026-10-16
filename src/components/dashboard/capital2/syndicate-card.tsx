@@ -60,7 +60,7 @@ export function SyndicateCard({
       <div className="flex items-start gap-3 pr-12">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/20 bg-gold/5"
-          style={{ boxShadow: "0 0 18px -6px rgba(212,175,55,0.45)" }}
+          style={{ boxShadow: "0 0 18px -6px rgba(79,70,229,0.45)" }}
         >
           <Users className="h-4 w-4 text-gold" />
         </div>
@@ -158,7 +158,7 @@ export function SyndicateCard({
       <div className="mt-4 flex items-center gap-2 rounded-lg border border-gold/10 bg-background/30 p-2.5">
         <div
           className="flex h-7 w-7 items-center justify-center rounded-full font-serif text-xs font-semibold text-black"
-          style={{ background: `linear-gradient(135deg, ${syndicate.leadPartner.avatarColor}, #b8860b)` }}
+          style={{ background: `linear-gradient(135deg, ${syndicate.leadPartner.avatarColor}, #3730A3)` }}
         >
           {syndicate.leadPartner.legalName
             .split(" ")

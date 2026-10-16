@@ -55,7 +55,7 @@ export function EmptyState({
         {actionLabel && actionHref && (
           <button
             onClick={() => router.push(actionHref)}
-            className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-black transition-all hover:shadow-[0_8px_30px_-8px_rgba(212,175,55,0.6)]"
+            className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-black transition-all hover:shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)]"
           >
             {actionLabel}
             <ArrowRight className="h-3.5 w-3.5" />
@@ -191,7 +191,7 @@ export function StarterBanner({ stsScore }: { stsScore: number }) {
       </div>
       <button
         onClick={() => router.push("/dashboard/profile")}
-        className="btn-sheen rounded-lg bg-gold-gradient px-3 py-1.5 font-sans text-[11px] font-semibold text-black transition-all hover:shadow-[0_6px_20px_-6px_rgba(212,175,55,0.5)]"
+        className="btn-sheen rounded-lg bg-gold-gradient px-3 py-1.5 font-sans text-[11px] font-semibold text-black transition-all hover:shadow-[0_6px_20px_-6px_rgba(79,70,229,0.5)]"
       >
         Complete Profile
       </button>

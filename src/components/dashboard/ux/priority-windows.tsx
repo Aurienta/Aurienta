@@ -211,7 +211,7 @@ function WindowCard({ w, index }: { w: PriorityWindow; index: number }) {
         <CountdownTimer closesAt={closesAt} />
         <Link
           href={`/dashboard/market?enterprise=${w.enterpriseSlug}`}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gold-gradient px-4 font-sans text-sm font-semibold text-black shadow-[0_4px_20px_-6px_rgba(212,175,55,0.6)] transition-transform hover:scale-[1.02]"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gold-gradient px-4 font-sans text-sm font-semibold text-black shadow-[0_4px_20px_-6px_rgba(79,70,229,0.6)] transition-transform hover:scale-[1.02]"
         >
           Exercise pro-rata
           <ArrowRight className="h-3.5 w-3.5" />

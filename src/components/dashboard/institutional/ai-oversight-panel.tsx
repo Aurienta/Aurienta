@@ -95,16 +95,16 @@ export function AiOversightPanel() {
               <LineChart data={CONFIDENCE} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}>
                 <defs>
                   <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stopColor="#b8860b" />
-                    <stop offset="0.5" stopColor="#d4af37" />
-                    <stop offset="1" stopColor="#f4d676" />
+                    <stop offset="0" stopColor="#3730A3" />
+                    <stop offset="0.5" stopColor="#4F46E5" />
+                    <stop offset="1" stopColor="#818CF8" />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(212,175,55,0.08)" vertical={false} />
+                <CartesianGrid stroke="rgba(79,70,229,0.08)" vertical={false} />
                 <XAxis
                   dataKey="t"
                   tick={{ fill: "#a89f86", fontSize: 9, fontFamily: "var(--font-mono)" }}
-                  axisLine={{ stroke: "rgba(212,175,55,0.15)" }}
+                  axisLine={{ stroke: "rgba(79,70,229,0.15)" }}
                   tickLine={false}
                 />
                 <YAxis
@@ -116,10 +116,10 @@ export function AiOversightPanel() {
                   tickFormatter={(v: number) => v.toFixed(2)}
                 />
                 <Tooltip
-                  cursor={{ stroke: "rgba(212,175,55,0.3)" }}
+                  cursor={{ stroke: "rgba(79,70,229,0.3)" }}
                   contentStyle={{
                     background: "rgba(16,16,20,0.96)",
-                    border: "1px solid rgba(212,175,55,0.25)",
+                    border: "1px solid rgba(79,70,229,0.25)",
                     borderRadius: 10,
                     color: "#f3eedd",
                     fontSize: 11,
@@ -131,7 +131,7 @@ export function AiOversightPanel() {
                 <Line
                   type="monotone"
                   dataKey="lower"
-                  stroke="rgba(212,175,55,0.35)"
+                  stroke="rgba(79,70,229,0.35)"
                   strokeWidth={1.2}
                   dot={false}
                 />
@@ -140,7 +140,7 @@ export function AiOversightPanel() {
                   dataKey="v"
                   stroke="url(#goldLine)"
                   strokeWidth={2.4}
-                  dot={{ r: 2.5, fill: "#f4d676", stroke: "#b8860b", strokeWidth: 1 }}
+                  dot={{ r: 2.5, fill: "#818CF8", stroke: "#3730A3", strokeWidth: 1 }}
                   activeDot={{ r: 4 }}
                 />
               </LineChart>

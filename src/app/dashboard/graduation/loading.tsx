@@ -16,7 +16,7 @@ export default function GraduationLoading() {
             className="absolute inset-0 -m-4 animate-spin-slow rounded-full"
             style={{
               background:
-                "conic-gradient(from 0deg, transparent 0%, rgba(212,175,55,0.0) 60%, rgba(212,175,55,0.4) 85%, transparent 100%)",
+                "conic-gradient(from 0deg, transparent 0%, rgba(79,70,229,0.0) 60%, rgba(79,70,229,0.4) 85%, transparent 100%)",
               filter: "blur(6px)",
             }}
             aria-hidden

@@ -59,7 +59,7 @@ export function RegulatoryIntegrations() {
           <h2 className="font-serif text-lg font-semibold">Regulatory integration status</h2>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/25 bg-gold/8 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider text-gold-light">
-          <span className="h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(212,175,55,0.5)]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(79,70,229,0.5)]" />
           Pilot — integrations roadmap
         </span>
       </div>

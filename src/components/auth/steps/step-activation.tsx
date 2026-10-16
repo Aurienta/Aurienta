@@ -38,9 +38,9 @@ export function StepActivation({ state }: StepActivationProps) {
       >
         <span
           aria-hidden="true"
-          className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.28),transparent_70%)] animate-pulse-gold"
+          className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(79,70,229,0.28),transparent_70%)] animate-pulse-gold"
         />
-        <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_18px_60px_-18px_rgba(212,175,55,0.85)]">
+        <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)]">
           <motion.span
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
@@ -133,7 +133,7 @@ export function StepActivation({ state }: StepActivationProps) {
       <div className="flex w-full flex-col gap-3 sm:flex-row">
         <Button
           asChild
-          className="group relative h-11 flex-1 overflow-hidden rounded-lg bg-gold-gradient text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.65)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(212,175,55,0.9)]"
+          className="group relative h-11 flex-1 overflow-hidden rounded-lg bg-gold-gradient text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(79,70,229,0.65)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(79,70,229,0.9)]"
         >
           <Link href="/dashboard">
             <span className="relative inline-flex items-center gap-2">

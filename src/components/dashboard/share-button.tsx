@@ -43,7 +43,7 @@ const CHANNELS: { id: Channel; label: string; icon: React.ElementType; color: st
   { id: "facebook", label: "Facebook", icon: Facebook, color: "#1877F2" },
   { id: "linkedin", label: "LinkedIn", icon: Linkedin, color: "#0A66C2" },
   { id: "telegram", label: "Telegram", icon: Share2, color: "#0088cc" },
-  { id: "email", label: "Email", icon: Mail, color: "#d4af37" },
+  { id: "email", label: "Email", icon: Mail, color: "#4F46E5" },
 ];
 
 /**

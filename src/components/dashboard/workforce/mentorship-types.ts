@@ -81,7 +81,7 @@ export const FOCUS_AREA_OPTIONS = [
 export function statusMeta(status: string) {
   switch (status) {
     case "proposed":
-      return { label: "Proposed", color: "#f4d676", pulse: true };
+      return { label: "Proposed", color: "#818CF8", pulse: true };
     case "active":
       return { label: "Active", color: "#34d399", pulse: false };
     case "completed":

@@ -95,7 +95,7 @@ export function riskMeta(key: string) {
 export function statusMeta(status: string) {
   switch (status) {
     case "forming":
-      return { label: "Forming", color: "#f4d676", pulse: true };
+      return { label: "Forming", color: "#818CF8", pulse: true };
     case "active":
       return { label: "Active", color: "#34d399", pulse: false };
     case "completed":

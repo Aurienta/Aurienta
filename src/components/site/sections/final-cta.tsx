@@ -54,7 +54,7 @@ export function FinalCta() {
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
                 <Link
                   href="/register"
-                  className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-all hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)]"
+                  className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(79,70,229,0.7)] transition-all hover:shadow-[0_18px_70px_-10px_rgba(79,70,229,0.9)]"
                 >
                   {t("finalCta.button")}
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

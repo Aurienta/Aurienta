@@ -201,7 +201,7 @@ export function NewEnterpriseWizard({
             className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full"
             style={{
               background:
-                "radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)",
+                "radial-gradient(circle, rgba(79,70,229,0.12) 0%, transparent 70%)",
             }}
             animate={{ y: [0, -12, 0], x: [0, -8, 0] }}
             transition={{ duration: 12, ease: "easeInOut", repeat: Infinity }}
@@ -261,7 +261,7 @@ export function NewEnterpriseWizard({
                 type="button"
                 onClick={launch}
                 disabled={launching || validating}
-                className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.7)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(212,175,55,0.95)]"
+                className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(79,70,229,0.7)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(79,70,229,0.95)]"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative inline-flex items-center gap-2">
@@ -281,7 +281,7 @@ export function NewEnterpriseWizard({
                 type="button"
                 onClick={goNext}
                 disabled={validating}
-                className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.65)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(212,175,55,0.9)]"
+                className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(79,70,229,0.65)] transition-all hover:shadow-[0_18px_60px_-14px_rgba(79,70,229,0.9)]"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative inline-flex items-center gap-2">

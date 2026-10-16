@@ -147,7 +147,7 @@ export function PublicTradeLog({
             width: 6px;
           }
           div::-webkit-scrollbar-thumb {
-            background: rgba(212, 175, 55, 0.3);
+            background: rgba(79, 70, 229, 0.3);
             border-radius: 3px;
           }
           div::-webkit-scrollbar-track {

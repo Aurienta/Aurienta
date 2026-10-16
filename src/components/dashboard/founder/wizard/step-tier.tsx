@@ -70,7 +70,7 @@ export function StepTierStructure({
                 className={cn(
                   "group relative flex cursor-pointer flex-col gap-2 rounded-xl border p-3.5 transition-all",
                   selected
-                    ? "border-gold/55 bg-gold/[0.06] shadow-[0_0_22px_-8px_rgba(212,175,55,0.55)]"
+                    ? "border-gold/55 bg-gold/[0.06] shadow-[0_0_22px_-8px_rgba(79,70,229,0.55)]"
                     : "border-gold/12 bg-background/40 hover:border-gold/30"
                 )}
               >

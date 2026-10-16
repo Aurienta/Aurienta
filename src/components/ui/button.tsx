@@ -24,7 +24,7 @@ const buttonVariants = cva(
         // `gold`: full gold-gradient fill, dark text, sheen sweep on hover,
         // gold halo glow. Use for the single primary CTA on each surface.
         gold:
-          "btn-sheen bg-gold-gradient text-black shadow-[0_10px_40px_-12px_rgba(212,175,55,0.65)] hover:shadow-[0_14px_55px_-10px_rgba(212,175,55,0.85)] hover:-translate-y-0.5 active:translate-y-0",
+          "btn-sheen bg-gold-gradient text-black shadow-[0_10px_40px_-12px_rgba(79,70,229,0.65)] hover:shadow-[0_14px_55px_-10px_rgba(79,70,229,0.85)] hover:-translate-y-0.5 active:translate-y-0",
         // `gold-outline`: transparent with gold border, gold text, fills on hover.
         goldOutline:
           "border border-gold/40 bg-transparent text-gold-light hover:bg-gold/8 hover:border-gold/70 hover:text-gold-light hover:-translate-y-0.5 active:translate-y-0 backdrop-blur-sm",

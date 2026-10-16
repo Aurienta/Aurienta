@@ -161,7 +161,7 @@ export function StepKyc({ state, update }: StepKycProps) {
               className={cn(
                 "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all",
                 state.nationality === n.value
-                  ? "border-gold/55 bg-gold/[0.07] shadow-[0_0_22px_-8px_rgba(212,175,55,0.6)]"
+                  ? "border-gold/55 bg-gold/[0.07] shadow-[0_0_22px_-8px_rgba(79,70,229,0.6)]"
                   : "border-gold/15 bg-background/40 hover:border-gold/30"
               )}
             >
@@ -255,10 +255,10 @@ export function StepKyc({ state, update }: StepKycProps) {
               className={cn(
                 "absolute inset-0 rounded-full",
                 state.livenessDone
-                  ? "bg-[radial-gradient(circle,rgba(212,175,55,0.18),transparent_70%)]"
+                  ? "bg-[radial-gradient(circle,rgba(79,70,229,0.18),transparent_70%)]"
                   : state.livenessStarted
-                    ? "bg-[radial-gradient(circle,rgba(212,175,55,0.22),transparent_70%)] animate-pulse-gold"
-                    : "bg-[radial-gradient(circle,rgba(212,175,55,0.10),transparent_70%)]"
+                    ? "bg-[radial-gradient(circle,rgba(79,70,229,0.22),transparent_70%)] animate-pulse-gold"
+                    : "bg-[radial-gradient(circle,rgba(79,70,229,0.10),transparent_70%)]"
               )}
             />
             <span
@@ -285,7 +285,7 @@ export function StepKyc({ state, update }: StepKycProps) {
               aria-hidden="true"
             />
             {state.livenessDone && (
-              <span className="absolute -bottom-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_0_18px_-4px_rgba(212,175,55,0.8)]">
+              <span className="absolute -bottom-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-gold-gradient text-black shadow-[0_0_18px_-4px_rgba(79,70,229,0.8)]">
                 <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
               </span>
             )}

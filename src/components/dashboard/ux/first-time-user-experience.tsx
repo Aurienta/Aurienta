@@ -315,7 +315,7 @@ export function FirstTimeUserExperience({ userRole }: { userRole?: string }) {
                 )}
                 <button
                   onClick={handleNext}
-                  className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-black transition-all hover:shadow-[0_8px_30px_-8px_rgba(212,175,55,0.6)]"
+                  className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-black transition-all hover:shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)]"
                 >
                   {step === FTUE_STEPS.length - 1 ? (
                     <>

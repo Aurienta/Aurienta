@@ -35,7 +35,7 @@ function mood(score: number): {
 } {
   if (score > 0.4) return { label: "Bullish", color: "#10b981", icon: TrendingUp };
   if (score > 0.1) return { label: "Cautiously positive", color: "#84cc16", icon: TrendingUp };
-  if (score > -0.1) return { label: "Neutral", color: "#d4af37", icon: Activity };
+  if (score > -0.1) return { label: "Neutral", color: "#4F46E5", icon: Activity };
   if (score > -0.4) return { label: "Cautiously negative", color: "#f59e0b", icon: TrendingDown };
   return { label: "Bearish", color: "#ef4444", icon: TrendingDown };
 }
@@ -225,7 +225,7 @@ function HistoryChart({ history }: { history: Snapshot[] }) {
       <motion.polyline
         points={points}
         fill="none"
-        stroke="#d4af37"
+        stroke="#4F46E5"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -245,7 +245,7 @@ function HistoryChart({ history }: { history: Snapshot[] }) {
               ? "#10b981"
               : h.sentimentScore < -0.1
               ? "#ef4444"
-              : "#d4af37"
+              : "#4F46E5"
           }
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}

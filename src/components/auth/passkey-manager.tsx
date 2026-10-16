@@ -274,7 +274,7 @@ export function PasskeyManager({ initialPasskeys, userEmail }: PasskeyManagerPro
             type="button"
             onClick={handleRegister}
             disabled={busy === "register" || webAuthnSupported === false}
-            className="btn-sheen h-11 w-full rounded-lg bg-gold-gradient text-sm font-semibold text-white shadow-[0_10px_40px_-12px_rgba(212,175,55,0.65)] hover:shadow-[0_14px_55px_-10px_rgba(212,175,55,0.85)]"
+            className="btn-sheen h-11 w-full rounded-lg bg-gold-gradient text-sm font-semibold text-white shadow-[0_10px_40px_-12px_rgba(79,70,229,0.65)] hover:shadow-[0_14px_55px_-10px_rgba(79,70,229,0.85)]"
           >
             {busy === "register" ? (
               <>

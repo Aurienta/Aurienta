@@ -63,9 +63,9 @@ export function WizardVerticalStepper({
                 className={cn(
                   "group relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[11px] font-medium transition-all",
                   done
-                    ? "border-gold/50 bg-gold-gradient text-black shadow-[0_0_18px_-4px_rgba(212,175,55,0.6)]"
+                    ? "border-gold/50 bg-gold-gradient text-black shadow-[0_0_18px_-4px_rgba(79,70,229,0.6)]"
                     : active
-                      ? "border-gold/70 bg-[#101014] text-gold-light shadow-[0_0_22px_-4px_rgba(212,175,55,0.6)]"
+                      ? "border-gold/70 bg-[#101014] text-gold-light shadow-[0_0_22px_-4px_rgba(79,70,229,0.6)]"
                       : "border-gold/20 bg-[#0c0c0f] text-muted-foreground/85",
                   reachable && "cursor-pointer hover:border-gold/45",
                   !reachable && "cursor-not-allowed opacity-60"

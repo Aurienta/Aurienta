@@ -61,8 +61,8 @@ export default async function EnterpriseProfilePage({ params }: { params: Promis
     : 0;
 
   const ownershipSlices = [
-    { label: "Founder", value: founderShares, color: "#d4af37" },
-    { label: "investors", value: partnerShares, color: "#f4d676" },
+    { label: "Founder", value: founderShares, color: "#4F46E5" },
+    { label: "investors", value: partnerShares, color: "#818CF8" },
     { label: "Reserve pool", value: reserveShares, color: "#8a6d1f" },
   ].filter((s) => s.value > 0);
 
@@ -188,7 +188,7 @@ export default async function EnterpriseProfilePage({ params }: { params: Promis
               </div>
               <div className="relative h-3 overflow-hidden rounded-full border border-gold/20 bg-background/50">
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#d4af37] to-[#f4d676] transition-all"
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#8a6d1f] via-[#4F46E5] to-[#818CF8] transition-all"
                   style={{ width: `${Math.min(100, goalPct).toFixed(2)}%` }}
                   role="progressbar"
                   aria-valuenow={Number(goalPct.toFixed(1))}
@@ -427,7 +427,7 @@ function PublicLinkCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-2 rounded-2xl border border-gold/15 glass p-4 transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.4)]"
+      className="group flex flex-col gap-2 rounded-2xl border border-gold/15 glass p-4 transition-all hover:border-gold/30 hover:shadow-[0_8px_30px_-12px_rgba(79,70,229,0.4)]"
     >
       <div className="flex items-center gap-2">
         <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-gold/20 bg-gold/8">

@@ -5,12 +5,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 // Gold-toned palette — no blue/indigo.
 const GOLD_PALETTE = [
-  "#f4d676",
-  "#d4af37",
-  "#c9a03d",
-  "#b8860b",
+  "#818CF8",
+  "#4F46E5",
+  "#6366F1",
+  "#3730A3",
   "#8a6d1f",
-  "#6b5314",
+  "#1E1B4B",
   "#e8c860",
   "#a67c1a",
 ];
@@ -58,7 +58,7 @@ export function PortfolioAllocationChart({
             <Tooltip
               contentStyle={{
                 background: "rgba(16,16,20,0.95)",
-                border: "1px solid rgba(212,175,55,0.25)",
+                border: "1px solid rgba(79,70,229,0.25)",
                 borderRadius: 12,
                 fontSize: 12,
                 color: "#f3eedd",

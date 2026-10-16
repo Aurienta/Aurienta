@@ -47,14 +47,14 @@ function OrbitalSystem() {
           animate={{ rotate: 360 }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         >
-          <span className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-gold-light shadow-[0_0_20px_6px_rgba(212,175,55,0.6)]" />
+          <span className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-gold-light shadow-[0_0_20px_6px_rgba(79,70,229,0.6)]" />
         </motion.div>
         <motion.div
           className="absolute inset-[4rem]"
           animate={{ rotate: -360 }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
         >
-          <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-gold shadow-[0_0_12px_3px_rgba(212,175,55,0.5)]" />
+          <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-gold shadow-[0_0_12px_3px_rgba(79,70,229,0.5)]" />
           <span className="absolute right-0 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-gold/60" />
         </motion.div>
         {/* Center glow */}
@@ -93,7 +93,7 @@ function ParticleField() {
             width: p.size,
             height: p.size,
             opacity: p.opacity,
-            boxShadow: "0 0 8px 1px rgba(212,175,55,0.4)",
+            boxShadow: "0 0 8px 1px rgba(79,70,229,0.4)",
           }}
           animate={{ y: [0, -20, 0], opacity: [p.opacity, p.opacity * 1.5, p.opacity] }}
           transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
@@ -206,7 +206,7 @@ export function Hero() {
             as={Link}
             href="/register"
             strength={0.25}
-            className="btn-sheen group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(212,175,55,0.7)] transition-shadow duration-300 hover:shadow-[0_18px_70px_-10px_rgba(212,175,55,0.9)] animate-glow-breathe"
+            className="btn-sheen group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-4 font-sans text-sm font-semibold text-black shadow-[0_14px_50px_-12px_rgba(79,70,229,0.7)] transition-shadow duration-300 hover:shadow-[0_18px_70px_-10px_rgba(79,70,229,0.9)] animate-glow-breathe"
           >
             {t("hero.cta.primary")}
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

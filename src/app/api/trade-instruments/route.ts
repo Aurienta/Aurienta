@@ -51,15 +51,16 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
     ? { enterpriseId }
     : { enterpriseId: { in: memberEnterpriseIds } };
 
-  const instruments = await (db as any).tradeInstrument.findMany({
-    where,
-    include: {
-      bankPartner: true,
-      documents: { orderBy: { createdAt: "desc" } },
-      enterprise: { select: { id: true, name: true, slug: true, tier: true } },
-    },
-    orderBy: { issueDate: "desc" },
-  });
+  // TradeInstrument table may not exist in all DB instances — return empty gracefully
+  let instruments: unknown[] = [];
+  try {
+    instruments = await (db as any).tradeInstrument.findMany({
+      where,
+      orderBy: { issueDate: "desc" },
+    });
+  } catch {
+    // Table doesn't exist — return empty
+  }
 
   return NextResponse.json({
     instruments,

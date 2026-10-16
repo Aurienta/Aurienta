@@ -140,7 +140,7 @@ export function StepFeasibility({
           type="button"
           onClick={runAssessment}
           disabled={running}
-          className="mt-4 h-11 w-full bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_12px_36px_-14px_rgba(212,175,55,0.65)] sm:w-auto"
+          className="mt-4 h-11 w-full bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_12px_36px_-14px_rgba(79,70,229,0.65)] sm:w-auto"
         >
           {running ? (
             <>

@@ -40,7 +40,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             className={cn(
               "rounded-full px-2.5 py-1 font-sans text-xs font-medium tracking-wide transition-all",
               active
-                ? "bg-gold-gradient text-black shadow-[0_4px_14px_-4px_rgba(212,175,55,0.6)]"
+                ? "bg-gold-gradient text-black shadow-[0_4px_14px_-4px_rgba(79,70,229,0.6)]"
                 : "text-muted-foreground hover:text-gold-light"
             )}
           >

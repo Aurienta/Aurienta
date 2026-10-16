@@ -72,7 +72,7 @@ export function GraduationSimulatorPage({ enterprises, initialEnterpriseId }: Si
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },
@@ -285,16 +285,16 @@ function ForecastChart({ financials }: { financials: SimResponse["financials"] }
           <LineChart data={data} margin={{ top: 4, right: 12, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="lineBase" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#b8860b" />
-                <stop offset="0.5" stopColor="#d4af37" />
-                <stop offset="1" stopColor="#f4d676" />
+                <stop offset="0" stopColor="#3730A3" />
+                <stop offset="0.5" stopColor="#4F46E5" />
+                <stop offset="1" stopColor="#818CF8" />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(212,175,55,0.08)" vertical={false} />
+            <CartesianGrid stroke="rgba(79,70,229,0.08)" vertical={false} />
             <XAxis
               dataKey="m"
               tick={{ fill: "#a89f86", fontSize: 9, fontFamily: "var(--font-mono)" }}
-              axisLine={{ stroke: "rgba(212,175,55,0.15)" }}
+              axisLine={{ stroke: "rgba(79,70,229,0.15)" }}
               tickLine={false}
             />
             <YAxis
@@ -305,10 +305,10 @@ function ForecastChart({ financials }: { financials: SimResponse["financials"] }
               tickFormatter={(v: number) => `${v}M`}
             />
             <Tooltip
-              cursor={{ stroke: "rgba(212,175,55,0.3)" }}
+              cursor={{ stroke: "rgba(79,70,229,0.3)" }}
               contentStyle={{
                 background: "rgba(16,16,20,0.96)",
-                border: "1px solid rgba(212,175,55,0.25)",
+                border: "1px solid rgba(79,70,229,0.25)",
                 borderRadius: 10,
                 color: "#f3eedd",
                 fontSize: 11,
@@ -322,8 +322,8 @@ function ForecastChart({ financials }: { financials: SimResponse["financials"] }
               iconType="line"
             />
             <Line type="monotone" dataKey="baseline" stroke="url(#lineBase)" strokeWidth={2.4} dot={false} />
-            <Line type="monotone" dataKey="stressA" stroke="#f4d676" strokeWidth={1.6} strokeDasharray="4 3" dot={false} />
-            <Line type="monotone" dataKey="stressB" stroke="#c9a03d" strokeWidth={1.6} strokeDasharray="2 2" dot={false} />
+            <Line type="monotone" dataKey="stressA" stroke="#818CF8" strokeWidth={1.6} strokeDasharray="4 3" dot={false} />
+            <Line type="monotone" dataKey="stressB" stroke="#6366F1" strokeWidth={1.6} strokeDasharray="2 2" dot={false} />
             <Line type="monotone" dataKey="stressC" stroke="#e0584b" strokeWidth={1.8} strokeDasharray="6 2" dot={false} />
           </LineChart>
         </ResponsiveContainer>

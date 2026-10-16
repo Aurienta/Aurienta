@@ -212,7 +212,7 @@ export function ConstitutionAssistant() {
               {active && (
                 <motion.span
                   layoutId="concept-active"
-                  className="absolute right-3 top-3 inline-flex h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(212,175,55,0.6)]"
+                  className="absolute right-3 top-3 inline-flex h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_2px_rgba(79,70,229,0.6)]"
                 />
               )}
             </motion.button>

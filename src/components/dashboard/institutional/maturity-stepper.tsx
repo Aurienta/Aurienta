@@ -56,7 +56,7 @@ export function MaturityStepper({ currentStage }: { currentStage: string }) {
                 className={cn(
                   "relative inline-flex h-10 w-10 items-center justify-center rounded-full border-2 font-serif text-sm font-semibold transition-all",
                   isCurrent
-                    ? "border-gold bg-gold-gradient text-black shadow-[0_0_0_4px_rgba(212,175,55,0.18),0_8px_30px_-6px_rgba(212,175,55,0.55)]"
+                    ? "border-gold bg-gold-gradient text-black shadow-[0_0_0_4px_rgba(79,70,229,0.18),0_8px_30px_-6px_rgba(79,70,229,0.55)]"
                     : isPast
                     ? "border-gold/60 bg-gold/10 text-gold-light"
                     : "border-gold/15 bg-background text-muted-foreground"

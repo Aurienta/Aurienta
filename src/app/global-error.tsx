@@ -45,7 +45,7 @@ export default function GlobalError({
             height="78"
             aria-label="AURIENTA emblem"
             style={{
-              filter: "drop-shadow(0 0 18px rgba(212,175,55,0.45))",
+              filter: "drop-shadow(0 0 18px rgba(79,70,229,0.45))",
               display: "block",
               margin: "0 auto",
             }}
@@ -53,7 +53,7 @@ export default function GlobalError({
             <defs>
               <linearGradient id="gm" x1="60" y1="6" x2="60" y2="124" gradientUnits="userSpaceOnUse">
                 <stop offset="0" stopColor="#f7e9a6" />
-                <stop offset="0.55" stopColor="#d4af37" />
+                <stop offset="0.55" stopColor="#4F46E5" />
                 <stop offset="1" stopColor="#8a6d1f" />
               </linearGradient>
             </defs>
@@ -61,7 +61,7 @@ export default function GlobalError({
             <path d="M60 12 L100 118 L89.5 118 L60 33 Z" fill="url(#gm)" />
             <path
               d="M34.2 73 Q60 96 85.8 73"
-              stroke="#d4af37"
+              stroke="#4F46E5"
               strokeWidth="6.5"
               strokeLinecap="round"
               fill="none"
@@ -81,18 +81,18 @@ export default function GlobalError({
               gap: 8,
             }}
           >
-            <span style={{ width: 24, height: 1, background: "linear-gradient(to right, transparent, rgba(212,175,55,0.6))" }} />
+            <span style={{ width: 24, height: 1, background: "linear-gradient(to right, transparent, rgba(79,70,229,0.6))" }} />
             <span
               style={{
                 fontSize: 10,
                 letterSpacing: "0.28em",
                 textTransform: "uppercase",
-                color: "rgba(244,214,118,0.85)",
+                color: "rgba(129,140,248,0.85)",
               }}
             >
               Constitutional Boundary
             </span>
-            <span style={{ width: 24, height: 1, background: "linear-gradient(to left, transparent, rgba(212,175,55,0.6))" }} />
+            <span style={{ width: 24, height: 1, background: "linear-gradient(to left, transparent, rgba(79,70,229,0.6))" }} />
           </div>
 
           <h1
@@ -133,7 +133,7 @@ export default function GlobalError({
                 padding: "10px 22px",
                 borderRadius: 999,
                 border: "none",
-                background: "linear-gradient(135deg, #f4d676, #d4af37 45%, #b8860b)",
+                background: "linear-gradient(135deg, #818CF8, #4F46E5 45%, #3730A3)",
                 color: "#0a0a0b",
                 fontWeight: 500,
                 fontSize: 14,
@@ -147,7 +147,7 @@ export default function GlobalError({
               style={{
                 padding: "10px 22px",
                 borderRadius: 999,
-                border: "1px solid rgba(212,175,55,0.25)",
+                border: "1px solid rgba(79,70,229,0.25)",
                 color: "#f3eedd",
                 textDecoration: "none",
                 fontSize: 14,

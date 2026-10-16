@@ -260,7 +260,7 @@ export function PitchDeckGenerator({
           type="button"
           onClick={generate}
           disabled={loading}
-          className="mt-5 h-11 bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.65)]"
+          className="mt-5 h-11 bg-gold-gradient px-6 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(79,70,229,0.65)]"
         >
           {loading ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Generating 10 slides…</>

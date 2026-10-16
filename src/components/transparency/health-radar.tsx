@@ -29,7 +29,7 @@ export function HealthRadar({ axes, healthScore }: { axes: Axis[]; healthScore: 
       <div className="mt-3 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={axes} cx="50%" cy="50%" outerRadius="72%">
-            <PolarGrid stroke="rgba(212,175,55,0.18)" />
+            <PolarGrid stroke="rgba(79,70,229,0.18)" />
             <PolarAngleAxis
               dataKey="axis"
               tick={{ fill: "#a89f86", fontSize: 10, fontFamily: "ui-sans-serif, system-ui" }}
@@ -43,9 +43,9 @@ export function HealthRadar({ axes, healthScore }: { axes: Axis[]; healthScore: 
             <Radar
               name="Health"
               dataKey="value"
-              stroke="#d4af37"
+              stroke="#4F46E5"
               strokeWidth={2}
-              fill="#d4af37"
+              fill="#4F46E5"
               fillOpacity={0.28}
             />
           </RadarChart>

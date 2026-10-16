@@ -39,8 +39,8 @@ export function VoteTallyBar({
       key: "for",
       label: "For",
       count: votesFor,
-      color: "linear-gradient(90deg, #f4d676, #d4af37)",
-      glow: "rgba(244,214,118,0.45)",
+      color: "linear-gradient(90deg, #818CF8, #4F46E5)",
+      glow: "rgba(129,140,248,0.45)",
     },
     {
       key: "against",
@@ -110,7 +110,7 @@ export function VoteTallyBar({
                 style={{
                   background:
                     seg.key === "for"
-                      ? "#d4af37"
+                      ? "#4F46E5"
                       : seg.key === "against"
                       ? "#f87171"
                       : "#9ca3af",

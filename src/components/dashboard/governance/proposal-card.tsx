@@ -335,9 +335,9 @@ function labelForChoice(c: Choice): string {
 function choiceColor(c: Choice): { text: string; bg: string; border: string } {
   if (c === "for")
     return {
-      text: "#f4d676",
-      bg: "rgba(244,214,118,0.10)",
-      border: "rgba(244,214,118,0.35)",
+      text: "#818CF8",
+      bg: "rgba(129,140,248,0.10)",
+      border: "rgba(129,140,248,0.35)",
     };
   if (c === "against")
     return {

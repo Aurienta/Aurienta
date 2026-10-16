@@ -79,7 +79,7 @@ export function AiMatchedSyndicates({
                           m.matchScore >= 80
                             ? "#34d399"
                             : m.matchScore >= 60
-                              ? "#f4d676"
+                              ? "#818CF8"
                               : "#a89f86",
                       }}
                     >

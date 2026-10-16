@@ -94,7 +94,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/register"
-            className="btn-sheen group inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-8px_rgba(212,175,55,0.6)] transition-shadow hover:shadow-[0_10px_40px_-6px_rgba(212,175,55,0.8)] hover:-translate-y-0.5 active:translate-y-0"
+            className="btn-sheen group inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)] transition-shadow hover:shadow-[0_10px_40px_-6px_rgba(79,70,229,0.8)] hover:-translate-y-0.5 active:translate-y-0"
           >
             Become a Partner
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

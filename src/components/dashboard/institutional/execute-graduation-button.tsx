@@ -101,7 +101,7 @@ export function ExecuteGraduationButton({
         type="button"
         onClick={onExecute}
         disabled={!eligible || pending}
-        className="h-12 gap-2 rounded-xl bg-gold-gradient px-6 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-6px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(212,175,55,0.7)] disabled:opacity-50 disabled:shadow-none"
+        className="h-12 gap-2 rounded-xl bg-gold-gradient px-6 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-6px_rgba(79,70,229,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(79,70,229,0.7)] disabled:opacity-50 disabled:shadow-none"
       >
         {pending ? (
           <Loader2 className="h-4 w-4 animate-spin" />

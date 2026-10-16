@@ -113,7 +113,7 @@ export function FounderStudioClient({
           <div className="shrink-0">
             <Button
               onClick={() => setTab("new")}
-              className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(212,175,55,0.7)]"
+              className="group relative h-11 overflow-hidden rounded-lg bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_14px_40px_-14px_rgba(79,70,229,0.7)]"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               <span className="relative inline-flex items-center gap-2">

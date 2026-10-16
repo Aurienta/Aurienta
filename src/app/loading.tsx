@@ -15,7 +15,7 @@ export default function Loading() {
             className="absolute inset-0 -m-6 animate-spin-slow rounded-full"
             style={{
               background:
-                "conic-gradient(from 0deg, transparent 0%, rgba(212,175,55,0.0) 60%, rgba(212,175,55,0.45) 85%, transparent 100%)",
+                "conic-gradient(from 0deg, transparent 0%, rgba(79,70,229,0.0) 60%, rgba(79,70,229,0.45) 85%, transparent 100%)",
               filter: "blur(8px)",
             }}
             aria-hidden

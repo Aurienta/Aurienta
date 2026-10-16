@@ -52,7 +52,7 @@ export function NewsletterSignup({ className }: { className?: string }) {
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },

@@ -50,10 +50,10 @@ const CATEGORY_META: Record<
 > = {
   vote: {
     label: "Votes",
-    color: "#f4d676",
-    bg: "rgba(212,175,55,0.16)",
-    border: "rgba(212,175,55,0.4)",
-    ring: "rgba(212,175,55,0.6)",
+    color: "#818CF8",
+    bg: "rgba(79,70,229,0.16)",
+    border: "rgba(79,70,229,0.4)",
+    ring: "rgba(79,70,229,0.6)",
     icon: Vote,
   },
   milestone: {
@@ -66,7 +66,7 @@ const CATEGORY_META: Record<
   },
   task: {
     label: "Tasks",
-    color: "#d4af37",
+    color: "#4F46E5",
     bg: "rgba(201,160,61,0.14)",
     border: "rgba(201,160,61,0.35)",
     ring: "rgba(201,160,61,0.55)",

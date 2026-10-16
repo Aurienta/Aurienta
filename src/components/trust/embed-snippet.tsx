@@ -13,7 +13,7 @@ export function EmbedSnippet({ slug }: { slug: string }) {
   src="${origin}/badge/${slug}"
   width="480"
   height="640"
-  style="border:1px solid rgba(212,175,55,0.25);border-radius:16px;background:#08080a"
+  style="border:1px solid rgba(79,70,229,0.25);border-radius:16px;background:#08080a"
   title="AURIENTA Constitutional Badge — ${slug}"
   loading="lazy"
 ></iframe>`;
@@ -35,7 +35,7 @@ export function EmbedSnippet({ slug }: { slug: string }) {
         position="top-right"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },

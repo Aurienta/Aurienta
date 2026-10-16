@@ -178,7 +178,7 @@ export function EvidenceStream({
         position="top-right"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },
@@ -295,7 +295,7 @@ export function EvidenceStream({
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploadState === "uploading"}
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black transition-all hover:shadow-[0_10px_30px_-8px_rgba(212,175,55,0.6)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black transition-all hover:shadow-[0_10px_30px_-8px_rgba(79,70,229,0.6)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <UploadCloud className="h-4 w-4" />
             Choose file

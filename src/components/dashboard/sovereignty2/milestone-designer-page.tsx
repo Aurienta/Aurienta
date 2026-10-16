@@ -86,7 +86,7 @@ export function MilestoneDesignerPage({
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },
@@ -111,7 +111,7 @@ export function MilestoneDesignerPage({
             type="button"
             onClick={() => setDialogOpen(true)}
             disabled={!enterpriseId}
-            className="h-11 gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(212,175,55,0.5)] hover:shadow-[0_10px_38px_-6px_rgba(212,175,55,0.7)] disabled:opacity-40"
+            className="h-11 gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(79,70,229,0.5)] hover:shadow-[0_10px_38px_-6px_rgba(79,70,229,0.7)] disabled:opacity-40"
           >
             <Plus className="h-4 w-4" />
             Design a new milestone

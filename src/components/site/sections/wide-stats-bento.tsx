@@ -110,7 +110,7 @@ export function WideStatsBar() {
           variant="dark"
           glow
           hover={false}
-          className="rounded-3xl border-gold/20 shadow-[0_30px_80px_-30px_rgba(212,175,55,0.35)]"
+          className="rounded-3xl border-gold/20 shadow-[0_30px_80px_-30px_rgba(79,70,229,0.35)]"
         >
           <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             {stats.map((stat, i) => (

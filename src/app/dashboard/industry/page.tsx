@@ -47,7 +47,7 @@ const MODULES = [
     key: "manufacturing",
     label: "Manufacturing",
     icon: Factory,
-    accent: "#d4af37",
+    accent: "#4F46E5",
     description: "Industrial Output Index, capacity utilisation, ISO 9001 audit cadence, and dual-source raw-material policy.",
     kpis: [
       { label: "Industrial Output Index", value: "112.8", hint: "QoQ (CAPMAS-aligned)" },
@@ -66,7 +66,7 @@ const MODULES = [
     key: "tourism",
     label: "Tourism & Hospitality",
     icon: Palmtree,
-    accent: "#f4d676",
+    accent: "#818CF8",
     description: "ETA licensing, seasonal cashflow smoothing, guest-satisfaction NPS, and cultural-heritage protection covenants.",
     kpis: [
       { label: "ETA license status", value: "current", hint: "all properties" },
@@ -85,7 +85,7 @@ const MODULES = [
     key: "technology",
     label: "Technology",
     icon: Cpu,
-    accent: "#c9a03d",
+    accent: "#6366F1",
     description: "ITIDA registration, IP assignment cliffs, source-code law firm client account, and dual-cloud failover for SaaS-tier enterprises.",
     kpis: [
       { label: "ITIDA registration", value: "verified", hint: "active members" },

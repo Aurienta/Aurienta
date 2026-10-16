@@ -73,7 +73,7 @@ export function AnnualReportGenerator({
       <button
         onClick={generate}
         disabled={loading}
-        className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-8px_rgba(212,175,55,0.6)] transition-all hover:shadow-[0_10px_40px_-6px_rgba(212,175,55,0.8)] disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 font-sans text-sm font-semibold text-black shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)] transition-all hover:shadow-[0_10px_40px_-6px_rgba(79,70,229,0.8)] disabled:opacity-60"
       >
         {loading ? (
           <>

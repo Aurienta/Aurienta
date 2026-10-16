@@ -35,7 +35,7 @@ export function PresentExternallyButton({
       duration: 5500,
       icon: <CheckCircle2 className="h-4 w-4 text-gold" />,
       style: {
-        border: "1px solid rgba(212,175,55,0.25)",
+        border: "1px solid rgba(79,70,229,0.25)",
         background: "rgba(16,16,18,0.95)",
         color: "#f3eedd",
       },
@@ -48,7 +48,7 @@ export function PresentExternallyButton({
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },

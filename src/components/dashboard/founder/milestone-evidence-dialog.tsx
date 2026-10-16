@@ -143,7 +143,7 @@ export function MilestoneEvidenceDialog({
           <Button
             onClick={submit}
             disabled={submitting}
-            className="h-10 bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_10px_30px_-12px_rgba(212,175,55,0.65)]"
+            className="h-10 bg-gold-gradient px-5 text-sm font-semibold text-black shadow-[0_10px_30px_-12px_rgba(79,70,229,0.65)]"
           >
             {submitting ? (
               <>

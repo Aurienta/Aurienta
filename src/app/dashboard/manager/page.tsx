@@ -32,7 +32,7 @@ export default async function ManagerPage({
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 p-8 text-center">
         <div className="relative">
-          <div className="absolute inset-0 -m-4 animate-spin-slow rounded-full" style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(212,175,55,0.0) 60%, rgba(212,175,55,0.3) 85%, transparent 100%)", filter: "blur(8px)" }} aria-hidden />
+          <div className="absolute inset-0 -m-4 animate-spin-slow rounded-full" style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(79,70,229,0.0) 60%, rgba(79,70,229,0.3) 85%, transparent 100%)", filter: "blur(8px)" }} aria-hidden />
           <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-3xl border border-gold/25 bg-gold/8">
             <HardHat className="h-9 w-9 text-gold" />
           </div>

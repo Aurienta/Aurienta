@@ -26,11 +26,11 @@ export const ENTRY_TYPE_META: Record<
   string,
   { label: string; icon: string; color: string }
 > = {
-  milestone: { label: "Milestone", icon: "Flag", color: "#f4d676" },
-  contribution: { label: "Contribution", icon: "HandCoins", color: "#d4af37" },
+  milestone: { label: "Milestone", icon: "Flag", color: "#818CF8" },
+  contribution: { label: "Contribution", icon: "HandCoins", color: "#4F46E5" },
   promotion: { label: "Promotion", icon: "TrendingUp", color: "#34d399" },
-  equity_grant: { label: "Equity Grant", icon: "Award", color: "#f4d676" },
-  training: { label: "Training", icon: "GraduationCap", color: "#c9a03d" },
+  equity_grant: { label: "Equity Grant", icon: "Award", color: "#818CF8" },
+  training: { label: "Training", icon: "GraduationCap", color: "#6366F1" },
 };
 
 export function entryMeta(key: string) {

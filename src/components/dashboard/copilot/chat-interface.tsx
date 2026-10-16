@@ -148,7 +148,7 @@ export function CopilotChat({ history }: { history: ChatMessage[] }) {
                     className={cn(
                       "max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed",
                       m.role === "user"
-                        ? "bg-gold-gradient text-black shadow-[0_8px_24px_-8px_rgba(212,175,55,0.6)]"
+                        ? "bg-gold-gradient text-black shadow-[0_8px_24px_-8px_rgba(79,70,229,0.6)]"
                         : "border border-gold/15 bg-background/60 text-foreground/90 backdrop-blur-sm"
                     )}
                   >
@@ -231,7 +231,7 @@ export function CopilotChat({ history }: { history: ChatMessage[] }) {
           type="submit"
           disabled={!input.trim() || sending}
           aria-label="Send message"
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-gradient text-black shadow-[0_6px_22px_-6px_rgba(212,175,55,0.55)] transition-all hover:shadow-[0_8px_28px_-6px_rgba(212,175,55,0.75)] disabled:opacity-40 disabled:shadow-none"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-gradient text-black shadow-[0_6px_22px_-6px_rgba(79,70,229,0.55)] transition-all hover:shadow-[0_8px_28px_-6px_rgba(79,70,229,0.75)] disabled:opacity-40 disabled:shadow-none"
         >
           {sending ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />

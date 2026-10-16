@@ -148,7 +148,7 @@ export default async function OracleMirrorPage() {
         {/* Live mirror status row — computed from real ledger data */}
         <div className="mt-4 flex flex-wrap items-center gap-4 rounded-xl border border-gold/12 bg-background/40 px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className={`inline-flex h-2.5 w-2.5 rounded-full ${statusStyle.dot} shadow-[0_0_8px_2px_rgba(212,175,55,0.35)]`} />
+            <span className={`inline-flex h-2.5 w-2.5 rounded-full ${statusStyle.dot} shadow-[0_0_8px_2px_rgba(79,70,229,0.35)]`} />
             <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground/80">Mirror status</span>
             <span className={`font-mono text-xs font-semibold ${statusStyle.text}`}>{statusStyle.label}</span>
           </div>

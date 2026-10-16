@@ -163,7 +163,7 @@ export function AnomalyCard({
             "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-[11.5px] font-medium transition-all",
             narration
               ? "border border-gold/25 bg-gold/[0.04] text-gold-light hover:bg-gold/[0.08]"
-              : "bg-gold-gradient text-black shadow-[0_4px_18px_-6px_rgba(212,175,55,0.6)] hover:opacity-95",
+              : "bg-gold-gradient text-black shadow-[0_4px_18px_-6px_rgba(79,70,229,0.6)] hover:opacity-95",
             loading && "opacity-70"
           )}
         >

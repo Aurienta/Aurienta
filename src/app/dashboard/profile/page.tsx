@@ -82,7 +82,7 @@ export default async function ProfilePage() {
             <div className="flex flex-col items-center gap-1">
               <div className="relative h-20 w-20">
                 <svg className="h-20 w-20 -rotate-90" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(212,175,55,0.15)" strokeWidth="6" />
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(79,70,229,0.15)" strokeWidth="6" />
                   <circle
                     cx="40" cy="40" r="34" fill="none" stroke={level.color} strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={`${(user.sovereignTrustScore / 100) * 213.6} 213.6`}

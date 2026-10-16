@@ -109,7 +109,7 @@ export function SurvivalDrillPage({
         position="top-center"
         toastOptions={{
           style: {
-            border: "1px solid rgba(212,175,55,0.25)",
+            border: "1px solid rgba(79,70,229,0.25)",
             background: "rgba(16,16,18,0.95)",
             color: "#f3eedd",
           },
@@ -156,7 +156,7 @@ export function SurvivalDrillPage({
               onClick={onGenerate}
               disabled={isLoading || !enterpriseId}
               aria-busy={isLoading}
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(212,175,55,0.7)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 font-sans text-[13px] font-semibold text-black shadow-[0_8px_30px_-6px_rgba(79,70,229,0.5)] transition-all hover:shadow-[0_10px_38px_-6px_rgba(79,70,229,0.7)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
             >
               <Play className="h-4 w-4" />
               {isLoading ? "Running drill…" : "Run survival drill"}
