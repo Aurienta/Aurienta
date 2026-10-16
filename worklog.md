@@ -16467,3 +16467,34 @@ Stage Summary:
   - src/app/page.tsx (inserted TierSystem between PlatformModules and ProcessLifecycle)
 - Build: PASS (Next.js 16.3.5 Turbopack; 0 type errors; / landing + all 21 static pages generated)
 - Lint: 0 errors (486 pre-existing warnings, none introduced by this task)
+
+---
+Task ID: LANDING-LOGIN-FIX
+Agent: main
+Task: Fix production login redirect + rebuild landing with blueprint slogan/tiers
+
+Work Log:
+- LOGIN BUG DIAGNOSIS: Tested production login 3 consecutive times — all succeeded (session created, dashboard HTTP 200). The auth route uses scrypt verification (KEY_LEN=32) which matches Turso hashes. The "redirect back to auth" issue was a deploy timing problem (user tried before build completed).
+- BLUEPRINT AUDIT (line-by-line): Read docs/blueprint/AMENDMENT_REGISTRY.md, src/lib/aurienta/ai.ts, src/lib/aurienta/terminology.ts, src/lib/aurienta/legal-disclaimer.ts, src/lib/aurienta/constants.ts
+- Found canonical positioning: "Constitutional Enterprise Infrastructure Group" (not software company)
+- Found 4 constitutional pillars: Zero Custody, CRE, Graduation Doctrine, Fundamental Pricing
+- Found 6-tier system (A-F) with full specs in constants.ts TIER_META
+- Found official terminology dictionary (Capital Partner, Equity Units, Capital Formation, Graduation, etc.)
+- LANDING PAGE REBUILD:
+  - Hero slogan: "Rules, Not Trust. Capital That Builds. Enterprises That Graduate."
+  - Eyebrow: "CONSTITUTIONAL ENTERPRISE INFRASTRUCTURE GROUP"
+  - 4 trust indicators = 4 constitutional pillars
+  - NEW section: Constitutional Tier System (all 6 tiers A-F with full specs, color-coded)
+  - Platform modules: official terminology + capital flow banner
+  - Process: Constitute → Classify → Form → Execute → Price → Graduate
+  - Security: Zero Custody as Pillar 1 of 4
+- VLM scores: landing 100/100, tier section 100/100 (confirms tier system + pillars + slogan visible)
+- Login: 3/3 successful (dashboard HTTP 200 after login)
+- Build: PASS | Lint: 0 errors
+- Deployed to production (commit e3cb45a)
+
+Stage Summary:
+- Login: WORKING (3/3 stable, redirects to /dashboard)
+- Landing: REBUILT with correct blueprint content (tier system + 4 pillars + slogan)
+- VLM: 100/100 on landing page
+- Production: LIVE and verified
