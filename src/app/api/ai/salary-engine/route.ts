@@ -1,5 +1,5 @@
 // AURIENTA Brain AI — Salary Engine
-// Uses the Brain (standard mode: Groq + OpenAI) to calculate a fair salary
+// Uses the Brain (consensus mode: Groq + NVIDIA + Gemini) to calculate a fair salary
 // for a position based on sector, tier, market data, and enterprise financials.
 
 import { NextRequest, NextResponse } from "next/server";

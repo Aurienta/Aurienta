@@ -158,11 +158,11 @@ export function OracleClient({
               AI Consensus Oracle Network
             </p>
             <h1 className="mt-1.5 font-serif text-2xl font-semibold leading-tight text-slate-900 sm:text-3xl">
-              External queries to AURIENTA&apos;s 5-provider AI consensus
+              External queries to AURIENTA&apos;s 4-provider AI consensus
             </h1>
             <p className="mt-2 max-w-2xl font-sans text-sm leading-relaxed text-slate-600">
               Ed25519-signed verdicts. Per-query pricing. The Brain AI runs
-              Gemini, Groq, OpenRouter, NVIDIA, and HuggingFace in consensus —
+              Gemini, Groq, NVIDIA, and HuggingFace in consensus —
               the output is a cryptographic attestation of model agreement.
             </p>
           </div>

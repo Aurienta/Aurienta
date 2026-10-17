@@ -38,13 +38,12 @@ export default async function BrainAiPage() {
     } catch {}
   });
 
-  // The 5 configured providers
+  // The 4 configured providers (AI-REBUILD: 4 native AI providers, no OpenRouter)
   const PROVIDERS = [
-    { name: "Google Gemini", key: "gemini", model: "gemini-1.5-flash", task: "Complex reasoning, feasibility, analysis", color: "#4285f4" },
-    { name: "OpenAI GPT-4", key: "openai", model: "gpt-4o-mini", task: "Conversational copilot, explanations", color: "#10a37f" },
-    { name: "Groq Llama 3.2", key: "groq", model: "llama-3.3-70b-versatile", task: "Low-latency: fraud, anomaly, triage", color: "#f55036" },
-    { name: "HuggingFace Mixtral", key: "huggingface", model: "mixtral-8x7b-instruct", task: "Sanity check, consistency review", color: "#ff9d00" },
-    { name: "OpenRouter", key: "openrouter", model: "llama-3.3-70b-instruct", task: "Multi-model gateway fallback", color: "#8b5cf6" },
+    { name: "Groq Llama 3.3", key: "groq", model: "llama-3.3-70b-versatile", task: "Reasoning, feasibility, low-latency fallback", color: "#f55036" },
+    { name: "NVIDIA NIM Nemotron", key: "nvidia", model: "nvidia/llama-3.1-nemotron-51b-instruct", task: "Enterprise reasoning, board briefings", color: "#76b900" },
+    { name: "Google Gemini", key: "gemini", model: "gemini-2.5-flash", task: "Complex reasoning, multilingual", color: "#4285f4" },
+    { name: "HuggingFace Zephyr", key: "huggingface", model: "HuggingFaceH4/zephyr-7b-beta", task: "Creative, sanity check, lightweight tasks", color: "#ff9d00" },
   ];
 
   return (
@@ -159,15 +158,15 @@ export default async function BrainAiPage() {
               </thead>
               <tbody>
                 {[
-                  ["Feasibility Engine", "gemini → groq → openrouter"],
-                  ["Pitch Deck Generator", "gemini → groq → openrouter"],
-                  ["Copilot (conversational)", "groq → gemini → openrouter"],
-                  ["Anomaly Narration", "groq → gemini"],
-                  ["Fraud Detection", "groq → gemini"],
-                  ["Sanity Check", "huggingface → groq → nvidia"],
-                  ["Notification Triage", "groq → gemini"],
-                  ["Multilingual", "groq → gemini → openrouter"],
-                  ["Advisory (tax/IR)", "gemini → groq → openrouter"],
+                  ["Feasibility Engine", "groq → nvidia → gemini"],
+                  ["Pitch Deck Generator", "groq → gemini → huggingface"],
+                  ["Copilot (conversational)", "groq → nvidia → gemini"],
+                  ["Anomaly Narration", "groq → nvidia → gemini"],
+                  ["Fraud Detection", "groq → nvidia → gemini"],
+                  ["Sanity Check", "groq → nvidia → gemini"],
+                  ["Notification Triage", "groq → nvidia → gemini"],
+                  ["Multilingual", "gemini → groq → huggingface"],
+                  ["Advisory (tax/IR)", "groq → nvidia → gemini"],
                 ].map(([task, chain]) => (
                   <tr key={task} className="border-b border-gold/5">
                     <td className="py-2 pr-4 font-sans text-xs text-foreground">{task}</td>
@@ -178,7 +177,7 @@ export default async function BrainAiPage() {
             </table>
           </div>
           <p className="mt-3 font-sans text-[11px] text-muted-foreground">
-            In production (supported regions), the external providers take priority for better quality. In production, all 5 providers are configured with real API keys (Groq, Gemini, OpenRouter, NVIDIA, HuggingFace). The router automatically falls back to the next provider on failure.
+            In production (supported regions), the external providers take priority for better quality. In production, all 4 providers are configured with real API keys (Groq, NVIDIA, Gemini, HuggingFace). The router queries 3+ models from different providers in parallel via Promise.allSettled() and synthesizes a consensus answer.
           </p>
         </CardContent>
       </Card>

@@ -1,8 +1,8 @@
 // AURIENTA — AI Consensus Oracle Network (Phase 4)
 //
-// External queries to AURIENTA's 5-provider AI consensus. Each query is
-// answered by the multi-model Brain (gemini / groq / openrouter / nvidia /
-// huggingface) running in consensus mode and signed with the platform Ed25519
+// External queries to AURIENTA's 4-provider AI consensus. Each query is
+// answered by the multi-model Brain (groq / nvidia / gemini / huggingface)
+// running in consensus mode and signed with the platform Ed25519
 // key so external consumers can verify the verdict cryptographically.
 //
 // COMPLIANCE: This is a technology service, NOT financial/investment advice.

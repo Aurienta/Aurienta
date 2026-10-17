@@ -337,7 +337,7 @@ export const BRAIN_AI_ALIGNMENT = {
     "PASS — Constitutional terminology enforced in all responses",
     "PASS — Untrusted user content delimited and guarded against prompt injection",
     "PASS — Zero Custody, Fundamental Pricing, Graduation Doctrine, No Speculation all embedded in prompt",
-    "PASS — 5-provider consensus (Gemini, OpenAI, Groq, HuggingFace, OpenRouter) — no single AI authority",
+    "PASS — 4-provider consensus (Groq, NVIDIA, Gemini, HuggingFace) — no single AI authority",
     "PASS — AI artifacts persisted with full audit trail (10-year retention)",
     "OBSERVATION — The AI prompt has grown very large (16+ sections from 16 prompts). The constitutional core is at the top and well-preserved, but the execution/management sections may dilute the AI's focus on the constitutional mission.",
   ],

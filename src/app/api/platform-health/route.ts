@@ -78,7 +78,7 @@ export const GET = withErrorHandler(async () => {
 
   // AI model failover status
   try {
-    const aiProviders = ["GEMINI_API_KEY", "GROQ_API_KEY", "HUGGINGFACE_API_KEY", "OPENROUTER_API_KEY", "NVIDIA_API_KEY"];
+    const aiProviders = ["GROQ_API_KEY", "NVIDIA_API_KEY", "GEMINI_API_KEY", "HUGGINGFACE_API_KEY"];
     const configured = aiProviders.filter((k) => process.env[k]).length;
     platforms.aiFailover = {
       status: configured > 0 ? "connected" : "not-configured",
@@ -87,9 +87,9 @@ export const GET = withErrorHandler(async () => {
         name: k.replace("_API_KEY", "").toLowerCase(),
         configured: !!process.env[k],
       })),
-      failoverChain: "Gemini → OpenAI → Groq → HuggingFace → OpenRouter → NVIDIA → safe fallback",
+      failoverChain: "Groq → NVIDIA → Gemini → HuggingFace → safe fallback",
       note: configured > 0
-        ? `${configured}/6 AI providers configured. Automatic failover on model failure.`
+        ? `${configured}/4 AI providers configured. Automatic failover on model failure.`
         : "No AI providers configured. All AI calls return safe fallback (CRE rules still enforced).",
     };
   } catch {

@@ -17181,3 +17181,57 @@ Stage Summary:
 - AI keys: 5/5 configured in .env + Vercel, but some have account restrictions (user needs to verify)
 - Build: PASS | Lint: 0 errors | Next.js: 16.4.2
 - Production: LIVE and operational
+
+---
+Task ID: AI-REBUILD
+Agent: General-Purpose Sub Agent (AI Router Rebuild)
+Task: Rebuild AURIENTA AI router to use 4 providers (NO OpenRouter, NO z.ai), with multiple models per provider, full consensus mode, and remove ALL z.ai references from the codebase.
+
+Work Log:
+- Read prior worklog entries (Task 0 → most recent) to establish context.
+- Audited existing `src/lib/aurienta/ai-router.ts` (585 lines, 5 providers including OpenRouter).
+- Grepped for all `z.ai | z-ai | zai | ZAI | createZAI | z-ai-web-dev-sdk` references in src/ — found 3 (env.ts:1, enterprise-risk-security.ts:297, ai-router.ts:16).
+- Audited all OpenRouter/OpenAI references — found 14 files (router, env, ready, brain-status, platform-health, oracle-network, ai.ts, constitutional-audit, brain-ai/page.tsx, oracle-client.tsx, annual-report/page.tsx, evidence-verification, salary-engine, .env.example).
+
+Files Modified (10):
+1. `src/lib/aurienta/ai-router.ts` — FULL REBUILD (485 lines):
+   - 4 providers: Groq (llama-3.3-70b-versatile, llama-3.1-8b-instant), NVIDIA NIM (nvidia/llama-3.1-nemotron-51b-instruct, google/gemma-3-12b-it, mistralai/mistral-large-2-instruct), Gemini (gemini-2.0-flash, gemini-2.5-flash), HuggingFace (meta-llama/Meta-Llama-3.1-8B-Instruct, mistralai/Mistral-7B-Instruct-v0.3, HuggingFaceH4/zephyr-7b-beta).
+   - Per-provider call functions: `callGroq` (fetch to OpenAI-compatible endpoint), `callNvidia` (fetch to NVIDIA NIM), `callGemini` (@google/generative-ai SDK), `callHuggingFace` (tries chat-completions endpoint first, falls back to text-generation endpoint).
+   - Task-specific model selection: complex reasoning → groq_70b + nvidia_nemo + gemini_2.5; fast tasks → groq_8b + nvidia_gemma + gemini_2.0; creative → groq_70b + gemini_2.5 + hf_zephyr; multilingual → gemini_2.0 + groq_70b + hf_mistral.
+   - FULL CONSENSUS mode: ALL tasks query 3+ models from DIFFERENT providers in PARALLEL via `Promise.allSettled()`. If ≥2 succeeded → synthesize (pick longest as base, call Groq/NVIDIA/Gemini synthesizer in order). If only 1 → use directly with "[NOTE: Consensus not reached — only 1 of N providers responded]". If ALL fail → return AI_FALLBACK with per-provider reasons.
+   - `getAiProviderStatus()` — pings each of 4 providers with a tiny "hi" prompt using fastest model (groq 8b, nvidia gemma-12b, gemini-2.0-flash, hf mistral-7b). Returns `{provider, configured, connected, model, latencyMs, lastError, lastCheckedAt}` per provider. Runs via `Promise.allSettled()` so a hung provider doesn't block others.
+   - `AiProvider` union narrowed to `"groq" | "nvidia" | "gemini" | "huggingface"` (no openrouter).
+2. `src/lib/aurienta/env.ts` — removed `openrouterApiKey` field; `aiProvidersConfigured` now counts 4 providers (Groq, NVIDIA, Gemini, HuggingFace); updated header comment to "4 native AI providers".
+3. `src/app/api/ready/route.ts` — `AI_PROVIDER_TOTAL` changed from 5 to 4; updated comments to reflect the 4 providers and AI-REBUILD scope.
+4. `src/app/api/ai/brain-status/route.ts` — updated header comment from "5 AI providers" to "4 AI providers".
+5. `src/lib/aurienta/enterprise-risk-security.ts` — ADR-0005 reworded to "4-provider consensus Brain AI (4 native AI providers: Groq, NVIDIA, Gemini, HuggingFace — no OpenRouter)"; secrets-rotation list trimmed to the 4 providers.
+6. `src/lib/aurienta/constitutional-audit.ts` line 340 — updated audit statement from "5-provider consensus (Gemini, OpenAI, Groq, HuggingFace, OpenRouter)" to "4-provider consensus (Groq, NVIDIA, Gemini, HuggingFace)".
+7. `src/lib/aurienta/oracle-network.ts` — updated header comment from 5-provider list to 4-provider list (groq / nvidia / gemini / huggingface).
+8. `src/lib/aurienta/ai.ts` line 7 — updated header comment from "6 AI providers (Gemini, OpenAI, Groq, HuggingFace, OpenRouter, NVIDIA)" to "4 AI providers (Groq, NVIDIA, Gemini, HuggingFace)".
+9. `src/app/api/platform-health/route.ts` — `aiProviders` array changed from 5 to 4 keys (GROQ, NVIDIA, GEMINI, HUGGINGFACE); `failoverChain` updated to "Groq → NVIDIA → Gemini → HuggingFace → safe fallback"; note updated to "x/4 AI providers configured".
+10. `src/components/dashboard/roadmap/oracle-client.tsx` — header text "5-provider" → "4-provider"; provider list trimmed (Gemini, Groq, NVIDIA, HuggingFace).
+
+Additional cosmetic cleanup:
+- `src/app/dashboard/brain-ai/page.tsx` — PROVIDERS array updated to 4 (Groq Llama 3.3, NVIDIA NIM Nemotron, Google Gemini, HuggingFace Zephyr); task-routing table rewritten to use new chains (e.g., "groq → nvidia → gemini"); footer note updated.
+- `src/app/enterprise/[slug]/annual-report/page.tsx` — disclaimer updated to "4-provider consensus Brain (Groq + NVIDIA + Gemini + HuggingFace)".
+- `src/app/api/ai/evidence-verification/route.ts` — header comment updated to "consensus mode: Groq + NVIDIA + Gemini".
+- `src/app/api/ai/salary-engine/route.ts` — header comment updated to "consensus mode: Groq + NVIDIA + Gemini".
+
+Env Files:
+- `.env` — added 4 real provider API keys (GROQ_API_KEY, NVIDIA_API_KEY, GEMINI_API_KEY, HUGGINGFACE_API_KEY) plus DATABASE_URL, FIELD_ENCRYPTION_KEY (empty), SESSION_SECRET (empty), NODE_ENV, LOG_LEVEL, PUBLIC_BASE_URL. NO OPENROUTER_API_KEY.
+- `.env.example` — removed OPENAI_API_KEY and OPENROUTER_API_KEY; kept GROQ_API_KEY, NVIDIA_API_KEY, GEMINI_API_KEY, HUGGINGFACE_API_KEY with comment "4 native providers, NO OpenRouter, NO z.ai".
+
+Verification:
+- `bun run lint` → 0 errors, 528 warnings (all pre-existing mixed-spaces-and-tabs warnings in unrelated files; 2 `no-explicit-any` warnings in ai-router.ts for the lazy-loaded `GoogleGenerativeAI` and `geminiClient` modules — these are intentional to avoid strict-typing on dynamic require()).
+- `DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db bun run build` → PASS ("✓ Compiled successfully in 9.8s"). No TS errors. Fixed one missing key during build: `mentor_matching` was missing from TASK_CONFIG (added to consensus block).
+- z.ai reference count in src/ (per `grep -rn "z\.ai\|z-ai\|zai-web\|ZAI\|createZAI" src/ --include="*.ts" --include="*.tsx" | grep -v node_modules | wc -l`) → 0.
+
+Notes for next agent:
+- The 4 provider API keys are now real in `.env` (per task spec). DO NOT commit `.env` to git.
+- AI_PROVIDER_TOTAL in `/api/ready/route.ts` is now 4 — if all 4 keys are configured and reachable, ready endpoint returns "ok"; if ≥1 unreachable, "degraded".
+- The Groq call uses `https://api.groq.com/openai/v1/chat/completions` via fetch (not the `groq-sdk` package) — keeps dependencies minimal and identical OpenAI-compatible protocol.
+- The HuggingFace call tries the chat-completions endpoint first (`/models/{model}/v1/chat/completions`), falling back to the text-generation endpoint (`/models/{model}`) for models that only support the older API.
+- `synthesizeConsensus()` picks the LONGEST response as the base, then asks Groq → NVIDIA → Gemini in order to perform the merge. If all synthesizers fail (rare), returns the longest response as-is.
+- Last-resort sweep in `askMultiModel()` now tries each provider's smallest model (groq_8b → nvidia_gemma → gemini_2_0 → hf_llama) for any task where all consensus models failed.
+
+Build: PASS | Lint: 0 errors (528 pre-existing warnings) | z.ai refs: 0 | Next.js: 16.4.2

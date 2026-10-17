@@ -4,7 +4,7 @@
 // Managed by: AURIENTA Operations
 // Partners coordinated by: AURIENTA Advisory
 //
-// Wraps 6 AI providers (Gemini, OpenAI, Groq, HuggingFace, OpenRouter, NVIDIA)
+// Wraps 4 AI providers (Groq, NVIDIA, Gemini, HuggingFace)
 // with task-specific routing, consensus synthesis, and continuous learning.
 //
 // Prompt-injection hardening:

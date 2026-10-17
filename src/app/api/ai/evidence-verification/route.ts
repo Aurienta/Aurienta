@@ -1,5 +1,5 @@
 // AURIENTA Brain AI — Evidence Verification Engine
-// Uses the Brain (fast mode: Groq + OpenAI) to verify milestone evidence.
+// Uses the Brain (consensus mode: Groq + NVIDIA + Gemini) to verify milestone evidence.
 // The accounting firm calls this to get an AI assessment of submitted evidence
 // before authorizing fund release.
 

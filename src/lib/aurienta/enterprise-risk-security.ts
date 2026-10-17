@@ -194,7 +194,7 @@ export const BCP_DR = {
   disasterRecovery: {
     infrastructure: "Restore from Docker image + .next/standalone; rebuild on alternate server within 4 hours",
     database: "Restore from latest backup (daily, 5-copy retention); verify ledger hash chain integrity via verifyLedgerChain()",
-    secrets: "Rotate all API keys (Gemini, OpenAI, Groq, HuggingFace, OpenRouter); rotate FIELD_ENCRYPTION_KEY (requires re-encrypting all PII)",
+    secrets: "Rotate all API keys (Groq, NVIDIA, Gemini, HuggingFace); rotate FIELD_ENCRYPTION_KEY (requires re-encrypting all PII)",
     brainAi: "Brain AI is stateless — restart with new provider keys; AiArtifact table restored from DB backup; continuous learning resumes from restored artifacts",
     cre: "CRE is deterministic — restart with same code; ledger hash chain verified; no state to recover",
     identity: "Session table restored from DB; active sessions may need re-authentication; Ed25519 keypairs are in DB (encrypted)",
@@ -294,7 +294,7 @@ export const ADR_TEMPLATE = {
     "ADR-0002: Prisma + SQLite as database (temporary) | Accepted | Constitutional impact: None | Superseded by ADR-0003 (pending)",
     "ADR-0003: Migration to PostgreSQL (pending) | Proposed | Constitutional impact: None",
     "ADR-0004: Ed25519 via tweetnacl for cryptographic signing | Accepted | Constitutional impact: Implements constitutional Ed25519 requirement",
-    "ADR-0005: 5-provider consensus Brain AI (no z.ai SDK — 5 native providers) | Accepted | Constitutional impact: Implements multi-model AI requirement",
+    "ADR-0005: 4-provider consensus Brain AI (4 native AI providers: Groq, NVIDIA, Gemini, HuggingFace — no OpenRouter) | Accepted | Constitutional impact: Implements multi-model AI requirement",
     "ADR-0006: Amendment IX — direct law firm transfer model | Accepted | Constitutional impact: Amends charter to eliminate escrow",
     "ADR-0007: PDPL-compliant transparency (anonymized public data) | Accepted | Constitutional impact: Implements transparency requirement",
     "ADR-0008: Constitutional terminology standard | Accepted | Constitutional impact: Establishes language governance",
