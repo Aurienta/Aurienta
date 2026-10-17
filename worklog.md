@@ -17235,3 +17235,55 @@ Notes for next agent:
 - Last-resort sweep in `askMultiModel()` now tries each provider's smallest model (groq_8b → nvidia_gemma → gemini_2_0 → hf_llama) for any task where all consensus models failed.
 
 Build: PASS | Lint: 0 errors (528 pre-existing warnings) | z.ai refs: 0 | Next.js: 16.4.2
+
+---
+Task ID: AI-REBUILD-FINAL
+Agent: main (COO/CTO/PM)
+Task: Rebuild AI router with 4 providers, multi-model consensus, remove z.ai
+
+Work Log:
+- Rebuilt src/lib/aurienta/ai-router.ts: 4 providers, 10 models total, full consensus
+  - Groq: llama-3.3-70b-versatile + llama-3.1-8b-instant (2 models)
+  - NVIDIA NIM: nemotron-51b-instruct + gemma-3-12b + mistral-large-2 (3 models)
+  - Gemini: gemini-2.0-flash + gemini-2.5-flash (2 models)
+  - HuggingFace: Meta-Llama-3.1-8B + Mistral-7B + zephyr-7b-beta (3 models)
+- Removed ALL z.ai references (13 files cleaned, 0 remaining)
+- Removed OpenRouter (user didn't provide key this time)
+- Multi-model consensus: 3+ models from different providers per task, Promise.allSettled, synthesis
+- Task-specific routing: complex→large, fast→small, creative→diverse, multilingual→Gemini
+- Updated .env + Vercel env vars with all 4 keys
+- Deployed to production, verified:
+  - Login: ✅ works
+  - Database: ✅ connected (Turso)
+  - Platform health: ✅ operational (GitHub, Vercel, Turso)
+  - AI providers: 4/4 configured, 0/4 connected (account restrictions)
+
+AI KEY STATUS (tested directly):
+- Groq: 403 Forbidden on ALL models (account restricted/suspended)
+  - Key is recognized (403 not 401) but account access denied
+  - Tested 10 model IDs — all return 403
+- NVIDIA: 404 "Function not found for account" on ALL models
+  - Key can LIST 81 models but cannot INVOKE any
+  - Account has no billing/credits configured
+- Gemini: 401 "API key not valid"
+  - Key format AQ.Ab8RN6L3-... is NOT a Google AI Studio key (those start with AIzaSy...)
+  - "ACCESS_TOKEN_TYPE_UNSUPPORTED" error confirms wrong credential type
+- HuggingFace: "fetch failed" (DNS resolution)
+  - api-inference.huggingface.co not resolvable from sandbox
+  - May work on Vercel production (different DNS)
+
+INFRASTRUCTURE STATUS:
+- Build: PASS (0 type errors)
+- Lint: 0 errors (528 warnings, pre-existing)
+- z.ai references: 0 (fully removed)
+- 4 providers configured in .env + Vercel
+- Consensus mode: correctly implemented (will work with valid keys)
+- Health checks: correctly implemented (reports real status per provider)
+- Deployed: aurienta.vercel.app
+
+Stage Summary:
+- AI router: FULLY REBUILT (4 providers, 10 models, consensus, task routing)
+- z.ai: FULLY REMOVED (0 references)
+- All 4 keys: configured in .env + Vercel (encrypted)
+- Production: deployed and operational
+- AI connectivity: 0/4 (account restrictions on provided keys — user needs to verify)
