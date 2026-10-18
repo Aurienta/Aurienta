@@ -259,16 +259,33 @@ async function callNvidia(system: string, user: string, model: string = "nvidia/
   };
 }
 
-// Google Gemini — uses @google/generative-ai SDK.
+// Google Gemini — native REST API (no SDK, supports AQ. key format).
+// The old @google/generative-ai SDK misinterprets AQ.-prefixed keys as OAuth tokens.
+// This native fetch uses x-goog-api-key header which is the correct auth method for AQ. keys.
 // Endpoint: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
 async function callGemini(system: string, user: string, model: string = "gemini-2.0-flash"): Promise<MultiModelResult> {
-  const client = getGemini();
-  if (!client) throw new Error("Gemini API key not configured");
+  const key = getGeminiKey();
+  if (!key) throw new Error("Gemini API key not configured");
   const start = Date.now();
-  const genModel = client.getGenerativeModel({ model, systemInstruction: system });
-  const result = await genModel.generateContent(user);
-  const usage = result.response.usageMetadata;
-  const content = result.response.text();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "x-goog-api-key": key,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ parts: [{ text: user }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+    }),
+  });
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`Gemini API error: ${response.status}${txt ? ` — ${txt.slice(0, 200)}` : ""}`);
+  }
+  const data = await response.json();
+  const content = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   if (!content) throw new Error("Gemini returned empty content");
   return {
     content,
@@ -277,8 +294,8 @@ async function callGemini(system: string, user: string, model: string = "gemini-
     latencyMs: Date.now() - start,
     fellBack: false,
     error: null,
-    tokensIn: usage?.promptTokenCount ?? null,
-    tokensOut: usage?.candidatesTokenCount ?? null,
+    tokensIn: data?.usageMetadata?.promptTokenCount ?? null,
+    tokensOut: data?.usageMetadata?.candidatesTokenCount ?? null,
   };
 }
 
