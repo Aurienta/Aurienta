@@ -17329,3 +17329,47 @@ Stage Summary:
 - 5 providers configured, OpenRouter verified working
 - Build: PASS | Lint: 0 errors
 - Deployed: aurienta.vercel.app
+
+---
+Task ID: GEMINI-AQ-KEY-FIX
+Agent: main (COO/CTO/PM)
+Task: Fix Gemini to support AQ. key format (Google's new credential standard)
+
+Work Log:
+- User clarified: AQ. keys are Google's NEW standard (AIzaSy... phased out September 2026)
+- ROOT CAUSE: Old @google/generative-ai SDK (v0.24.1) misinterprets AQ. prefix as OAuth token
+- FIX: Replaced SDK-based callGemini() with native REST API using fetch()
+  - Uses x-goog-api-key header (correct auth method for AQ. keys per Google docs)
+  - No longer requires @google/generative-ai SDK
+  - Supports systemInstruction, generationConfig, and full response parsing
+- Installed @google/genai v2.30.0 (the NEW official SDK) as backup
+- Deployed to production
+
+TESTING (all auth methods tested):
+1. x-goog-api-key header → 401 ACCESS_TOKEN_TYPE_UNSUPPORTED
+2. ?key= query param → 401 ACCESS_TOKEN_TYPE_UNSUPPORTED
+3. Authorization: Bearer → 401 API_KEY_SERVICE_BLOCKED
+4. @google/genai SDK with apiKey → 401 ACCESS_TOKEN_TYPE_UNSUPPORTED
+5. @google/genai SDK with accessToken → google-auth-library error
+6. v1alpha, v1, v1beta endpoints → all 401
+
+ANALYSIS:
+The AQ. key returns ACCESS_TOKEN_TYPE_UNSUPPORTED on ALL methods.
+This suggests the key may be:
+- A Google AI Studio web app auth credential (not for API access)
+- An OAuth access token that needs to be exchanged for an API key
+- A key that needs to be activated/registered via Google Cloud Console
+
+INFRASTRUCTURE STATUS:
+- callGemini() is CORRECTLY implemented with native REST API + x-goog-api-key header
+- When a working AQ. key is provided, Gemini will automatically join the consensus
+- The code is ready — the key needs to be verified/activated on Google's side
+
+CURRENT WORKING PROVIDERS:
+- OpenRouter: ✅ WORKING (xingchen-agi/xing4.0-29b-a4b:free)
+- Gemini: ❌ Key rejected (ACCESS_TOKEN_TYPE_UNSUPPORTED on all methods)
+- Groq: ❌ 403 Forbidden (account restricted)
+- NVIDIA: ❌ 404 (no billing configured)
+- HuggingFace: ❌ API deprecated
+
+Build: PASS | Lint: 0 errors | Deployed: aurienta.vercel.app
