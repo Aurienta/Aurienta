@@ -477,6 +477,85 @@ export function enforceTierMigration(params: {
   };
 }
 
+// ── Tier cap (AUD-024) — enforce per-tier fundraising maximums ──
+// Blueprint: each tier (A, B, C, D, E, F) has a constitutional fundraising
+// cap (Tier A: 3M EGP, Tier B: 25M EGP, Tier E: 5M EGP; C, D, F are
+// "Unlimited"). The CRE must reject any reservation that would push the
+// enterprise's raised total above the tier's cap. Without this guard, a
+// Tier A micro-enterprise could silently accumulate 50M EGP — violating
+// the tier doctrine (Art. 14) and creating a regulatory mis-classification.
+//
+// `maxRaiseEgp` is the parsed numerical cap (Infinity for "Unlimited" tiers).
+// `currentRaisedEgp` is the enterprise.raisedEgp at the time of the request.
+// `newAmountEgp` is the reservation amount being added.
+export function enforceTierCap(params: {
+  tier: string;
+  currentRaisedEgp: number;
+  newAmountEgp: number;
+  maxRaiseEgp: number;
+}): CreVerdict {
+  const policy = "tier_cap.rego";
+  const payloadHash = hashPayload({
+    tier: params.tier,
+    raised: params.currentRaisedEgp,
+    amount: params.newAmountEgp,
+    max: params.maxRaiseEgp,
+  });
+  const newTotal = params.currentRaisedEgp + params.newAmountEgp;
+  if (newTotal > params.maxRaiseEgp) {
+    return {
+      allowed: false,
+      reason: `Tier ${params.tier} cap exceeded: ${newTotal} > ${params.maxRaiseEgp}`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
+// ── Anti-capture (AUD-025) — no shareholder may own ≥50% via market accumulation ──
+// Blueprint (Art. 22 — Anti-Capture Doctrine): no single Capital Partner
+// may accumulate ≥50% of any enterprise's equity through market purchases.
+// This is the structural safeguard against hostile takeovers and the
+// re-concentration of ownership that AURIENTA was created to prevent.
+//
+// Note: Founding Operators are governed by `enforceFounderEquityCap()` at
+// enterprise creation (Tier D requires founder ≥51%); the anti-capture
+// rule applies to ongoing market accumulation by Capital Partners via
+// reservations (primary market) and buy orders (secondary market).
+//
+// `shareholderEquityPct` is the partner's CURRENT ownership percentage.
+// `newPurchasePct` is the percentage this transaction would add.
+// Deny when the sum exceeds 50%.
+export function enforceAntiCapture(params: {
+  shareholderEquityPct: number;
+  newPurchasePct: number;
+}): CreVerdict {
+  const policy = "anti_capture.rego";
+  const payloadHash = hashPayload({
+    current: params.shareholderEquityPct,
+    new: params.newPurchasePct,
+  });
+  const totalPct = params.shareholderEquityPct + params.newPurchasePct;
+  if (totalPct > 50) {
+    return {
+      allowed: false,
+      reason: `Anti-capture: shareholder would own ${totalPct}% (>50% cap)`,
+      policy,
+      decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }),
+    };
+  }
+  return {
+    allowed: true,
+    policy,
+    decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
+  };
+}
+
 // ── Hash helper ──
 function hashPayload(payload: unknown): string {
   return createHash("sha3-256").update(JSON.stringify(payload)).digest("hex");

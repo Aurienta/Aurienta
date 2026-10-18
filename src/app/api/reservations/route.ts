@@ -4,13 +4,16 @@ import { db } from "@/lib/db";
 import {
   appendLedgerEvent,
   computeDynamicMinimum,
+  enforceAntiCapture,
   enforceFamilyConsent,
   enforceKycGate,
   enforceNotFrozen,
   enforcePriceBand,
+  enforceTierCap,
   enforceVerificationGate,
   logCreDecision,
 } from "@/lib/aurienta/cre";
+import { tierMaxRaiseEgp } from "@/lib/aurienta/constants";
 import { reservationSchema, parseBody } from "@/lib/aurienta/validation";
 import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 import { audit } from "@/lib/aurienta/audit";
@@ -76,6 +79,99 @@ export async function POST(req: NextRequest) {
   }
 
   const amountEgp = Math.round(shares * enterprise.equityUnitPriceEgp);
+
+  // ── AUD-024: CRE Tier Cap enforcement (tier_cap.rego) ──
+  // Blueprint §4.2: each tier has a constitutional fundraising cap (A: 3M,
+  // B: 25M, E: 5M EGP; C/D/F: Unlimited). Block any reservation that would
+  // push the enterprise's cumulative raisedEgp above the cap. This prevents
+  // a Tier A micro-enterprise from accumulating 50M EGP — a regulatory
+  // mis-classification. The cap is fetched via `tierMaxRaiseEgp()` which
+  // returns Infinity for "Unlimited" tiers so the check trivially passes.
+  const tierCap = enforceTierCap({
+    tier: enterprise.tier,
+    currentRaisedEgp: enterprise.raisedEgp,
+    newAmountEgp: amountEgp,
+    maxRaiseEgp: tierMaxRaiseEgp(enterprise.tier),
+  });
+  if (!tierCap.allowed) {
+    await audit({
+      actorId: user.id,
+      action: "reservation.create",
+      target: `enterprise:${enterpriseId}`,
+      result: "denied",
+      reason: tierCap.reason,
+      metadata: {
+        policy: tierCap.policy,
+        decisionToken: tierCap.decisionToken,
+        tier: enterprise.tier,
+        currentRaisedEgp: enterprise.raisedEgp,
+        newAmountEgp: amountEgp,
+        maxRaiseEgp: tierMaxRaiseEgp(enterprise.tier),
+      },
+    });
+    return NextResponse.json(
+      {
+        error: tierCap.reason ?? "Tier cap exceeded",
+        code: "cre_denied",
+        policy: tierCap.policy,
+        decisionToken: tierCap.decisionToken,
+      },
+      { status: 403 }
+    );
+  }
+
+  // ── AUD-025: CRE Anti-Capture enforcement (anti_capture.rego) ──
+  // Blueprint Art. 22: no Capital Partner may accumulate ≥50% of any
+  // enterprise's equity through primary-market reservations. Founding
+  // Operators are exempt (their ≥51% floor is governed by
+  // enforceFounderEquityCap at enterprise creation, Tier D). The check
+  // uses enterprise.totalEquityUnits as the denominator.
+  const isFounder = user.memberships.some(
+    (m) =>
+      m.enterpriseId === enterpriseId &&
+      (m.role === "founding_operator" || m.role === "company_owner")
+  );
+  if (!isFounder && enterprise.totalEquityUnits > 0) {
+    const existingHolding = await db.ownershipRecord.findUnique({
+      where: {
+        enterpriseId_userId: { enterpriseId, userId: user.id },
+      },
+      select: { equityUnits: true },
+    });
+    const currentUnits = existingHolding?.equityUnits ?? 0;
+    const shareholderEquityPct = (currentUnits / enterprise.totalEquityUnits) * 100;
+    const newPurchasePct = (shares / enterprise.totalEquityUnits) * 100;
+    const antiCapture = enforceAntiCapture({
+      shareholderEquityPct,
+      newPurchasePct,
+    });
+    if (!antiCapture.allowed) {
+      await audit({
+        actorId: user.id,
+        action: "reservation.create",
+        target: `enterprise:${enterpriseId}`,
+        result: "denied",
+        reason: antiCapture.reason,
+        metadata: {
+          policy: antiCapture.policy,
+          decisionToken: antiCapture.decisionToken,
+          currentUnits,
+          totalEquityUnits: enterprise.totalEquityUnits,
+          shareholderEquityPct,
+          newPurchasePct,
+        },
+      });
+      return NextResponse.json(
+        {
+          error: antiCapture.reason ?? "Anti-capture violation",
+          code: "cre_denied",
+          policy: antiCapture.policy,
+          decisionToken: antiCapture.decisionToken,
+        },
+        { status: 403 }
+      );
+    }
+  }
 
   // ── CRE: Price Band enforcement (Blueprint §6 — Fundamental Pricing) ──
   // Reservations are Phase 1 (primary market) — price must equal the

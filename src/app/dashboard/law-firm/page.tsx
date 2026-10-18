@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/dashboard/institutional/page-header";
 import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { egp, timeAgo } from "@/lib/aurienta/format";
+import { ConfirmReservationButton } from "@/components/dashboard/capital/confirm-reservation-button";
 import Link from "next/link";
 import {
   Scale,
@@ -42,6 +43,14 @@ export default async function LawFirmPage() {
       enterprise: {
         include: {
           lawFirm: true,
+          reservations: {
+            where: { status: "reserved" },
+            orderBy: { createdAt: "desc" },
+            take: 12,
+            include: {
+              user: { select: { legalName: true, email: true } },
+            },
+          },
           expenses: {
             where: { status: "pending_approval" },
             orderBy: { createdAt: "desc" },
@@ -49,7 +58,11 @@ export default async function LawFirmPage() {
             select: { id: true, amountEgp: true, description: true, category: true, createdAt: true },
           },
           milestones: {
-            where: { status: "pending_release" },
+            // Milestones awaiting accountant verification (the law firm has a
+            // custodial interest: funds are about to leave the Law Firm Client
+            // Account). The law firm sees these as informational; the actual
+            // Accountant Release action lives on the accounting firm console.
+            where: { status: { in: ["evidence_submitted", "board_review"] } },
             orderBy: { createdAt: "desc" },
             take: 6,
             select: { id: true, title: true, dueAt: true, status: true },
@@ -64,6 +77,22 @@ export default async function LawFirmPage() {
   const totalEscrow = enterprises.reduce((s, e) => s + e.lawFirmClientAccountBalanceEgp, 0);
   const pendingExpenses = enterprises.flatMap((e) => e.expenses.map((x) => ({ ...x, enterpriseName: e.name })));
   const pendingMilestones = enterprises.flatMap((e) => e.milestones.map((m) => ({ ...m, enterpriseName: e.name })));
+  // Reservations awaiting fund-receipt confirmation. The law firm must call
+  // POST /api/reservations/[id]/confirm when wired funds land in the client
+  // account — until then the capital is not reflected in the Law Firm Client
+  // Account balance, the partner's OwnershipRecord, or the Anti-Fragility Vault.
+  const pendingReservations = enterprises.flatMap((e) =>
+    e.reservations.map((r) => ({
+      id: r.id,
+      referenceCode: r.referenceCode,
+      equityUnits: r.equityUnits,
+      amountEgp: r.amountEgp,
+      expiresAt: r.expiresAt,
+      createdAt: r.createdAt,
+      partnerName: r.user?.legalName ?? "—",
+      enterpriseName: e.name,
+    }))
+  );
 
   // Pull a representative law firm for the badge.
   const firm = enterprises.find((e) => e.lawFirm)?.lawFirm;
@@ -113,6 +142,71 @@ export default async function LawFirmPage() {
         <KPI label="Pending milestone releases" value={String(pendingMilestones.length)} icon={FileText} />
         <KPI label="Enterprises served" value={String(enterprises.length)} icon={Building2} />
       </div>
+
+      {/* Pending reservations awaiting fund-receipt confirmation (AUD-011 / AUD-022).
+          Each row exposes a Confirm Reservation button that calls
+          POST /api/reservations/[id]/confirm. */}
+      {pendingReservations.length > 0 && (
+        <section className="overflow-hidden rounded-2xl border border-gold/15 glass">
+          <div className="border-b border-gold/12 px-5 py-3.5">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-3.5 w-3.5 text-gold" />
+              <h2 className="font-serif text-base font-semibold">
+                Reservations awaiting fund confirmation
+              </h2>
+              <span className="ml-auto font-mono text-xs text-muted-foreground/80">
+                {pendingReservations.length} pending · CRE-gated
+              </span>
+            </div>
+            <p className="mt-1 font-sans text-xs leading-relaxed text-muted-foreground/85">
+              Capital Partners have reserved Equity Units and submitted wire
+              transfers against these reference codes. Confirm receipt when the
+              funds land in your Law Firm Client Account — the CRE will
+              atomically credit the partner&apos;s OwnershipRecord, increment
+              the enterprise balance, and contribute 0.5% to the Anti-Fragility
+              Vault.
+            </p>
+          </div>
+          <ul className="divide-y divide-gold/8">
+            {pendingReservations.map((r) => {
+              const expired = r.expiresAt.getTime() < Date.now();
+              return (
+                <li key={r.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code className="font-mono text-xs text-gold-light">
+                        {r.referenceCode}
+                      </code>
+                      <span className="font-sans text-xs text-muted-foreground">
+                        · {r.enterpriseName}
+                      </span>
+                      {expired && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-rose-400/30 bg-rose-400/10 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-rose-300">
+                          <AlertTriangle className="h-3 w-3" /> expired
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-0.5 font-sans text-xs text-muted-foreground/85">
+                      {r.partnerName} · {r.equityUnits.toLocaleString()} units · filed {timeAgo(r.createdAt)}
+                    </div>
+                  </div>
+                  <span className="font-mono text-xs text-gold-light">
+                    {egp(r.amountEgp)}
+                  </span>
+                  <ConfirmReservationButton
+                    reservationId={r.id}
+                    referenceCode={r.referenceCode}
+                    amountEgp={r.amountEgp}
+                    equityUnits={r.equityUnits}
+                    enterpriseName={r.enterpriseName}
+                    variant="compact"
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Pending expenses */}

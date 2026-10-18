@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/dashboard/institutional/page-header";
 import { AccessRestricted } from "@/components/dashboard/access-restricted";
 import { AurientaMark, GoldStar } from "@/components/aurienta-logo";
 import { egp, timeAgo } from "@/lib/aurienta/format";
+import { MilestoneAccountantReleaseButton } from "@/components/dashboard/accountant/milestone-accountant-release-button";
 import Link from "next/link";
 import {
   Calculator,
@@ -50,6 +51,25 @@ export default async function AccountingPage() {
       enterprise: {
         include: {
           accountingFirm: true,
+          milestones: {
+            // Milestones awaiting accountant verification (Amendment IX):
+            // evidence_submitted — founder submitted evidence pack, awaiting
+            //   board review / accountant verification.
+            // board_review — board approved; accountant is the final gate
+            //   before funds leave the Law Firm Client Account.
+            where: { status: { in: ["evidence_submitted", "board_review"] } },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+            select: {
+              id: true,
+              title: true,
+              amountEgp: true,
+              status: true,
+              dueAt: true,
+              createdAt: true,
+              evidenceNote: true,
+            },
+          },
           expenses: {
             where: { status: "pending_approval" },
             orderBy: { createdAt: "desc" },
@@ -65,6 +85,14 @@ export default async function AccountingPage() {
 
   const firm = enterprises.find((e) => e.accountingFirm)?.accountingFirm;
   const pendingExpenses = enterprises.flatMap((e) => e.expenses.map((x) => ({ ...x, enterpriseName: e.name, enterpriseTier: e.tier, enterpriseId: e.id })));
+  const pendingMilestones = enterprises.flatMap((e) =>
+    e.milestones.map((m) => ({
+      ...m,
+      enterpriseName: e.name,
+      enterpriseTier: e.tier,
+      enterpriseId: e.id,
+    }))
+  );
 
   // Mock statutory deadlines.
   const deadlines = [
@@ -108,10 +136,69 @@ export default async function AccountingPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <KPI label="Pending 2nd signatures" value={String(pendingExpenses.length)} icon={PenLine} />
-        <KPI label="Enterprises served" value={String(enterprises.length)} icon={FileText} />
+        <KPI label="Milestone verifications" value={String(pendingMilestones.length)} icon={FileText} />
         <KPI label="Upcoming deadlines" value={String(deadlines.filter((d) => d.status === "upcoming").length)} icon={Clock} />
         <KPI label="Filed (last 90d)" value={String(deadlines.filter((d) => d.status === "filed").length)} icon={CheckCircle2} />
       </div>
+
+      {/* Milestone evidence verification queue (Amendment IX / AUD-022).
+          The accounting firm is the final gate before funds leave the Law Firm
+          Client Account. Each row exposes the Accountant Release button that
+          calls POST /api/milestones/[id]/accountant-release with
+          { action: "verify" | "reject", verificationNote? }. */}
+      {pendingMilestones.length > 0 && (
+        <section className="overflow-hidden rounded-2xl border border-gold/15 glass">
+          <div className="border-b border-gold/12 px-5 py-3.5">
+            <div className="flex items-center gap-2">
+              <FileText className="h-3.5 w-3.5 text-gold" />
+              <h2 className="font-serif text-base font-semibold">
+                Milestone evidence verification queue
+              </h2>
+              <span className="ml-auto font-mono text-xs text-muted-foreground/80">
+                {pendingMilestones.length} pending · Amendment IX
+              </span>
+            </div>
+            <p className="mt-1 font-sans text-xs leading-relaxed text-muted-foreground/85">
+              Verify milestone evidence and authorize release of funds from
+              the Law Firm Client Account to the enterprise&apos;s operating
+              account. The CRE enforces the accountant gate, fund flow, and
+              zero-custody rules. Fees (5% platform + 2.5% consulting unless
+              opted out) are deducted automatically.
+            </p>
+          </div>
+          <ul className="divide-y divide-gold/8">
+            {pendingMilestones.map((m) => (
+              <li key={m.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-serif text-sm font-semibold text-foreground">
+                      {m.title}
+                    </p>
+                    <span className="rounded-full border border-gold/20 bg-gold/5 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-gold-light/80">
+                      {m.status.replace(/_/g, " ")}
+                    </span>
+                    <span className="font-sans text-xs text-muted-foreground">
+                      · {m.enterpriseName} · T{m.enterpriseTier}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 font-sans text-xs text-muted-foreground/85">
+                    {egp(m.amountEgp)}
+                    {m.dueAt ? ` · due ${timeAgo(m.dueAt)}` : ""}
+                    {" · filed "}{timeAgo(m.createdAt)}
+                  </p>
+                </div>
+                <MilestoneAccountantReleaseButton
+                  milestoneId={m.id}
+                  milestoneTitle={m.title}
+                  amountEgp={m.amountEgp}
+                  enterpriseName={m.enterpriseName}
+                  variant="compact"
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Dual-sig queue */}

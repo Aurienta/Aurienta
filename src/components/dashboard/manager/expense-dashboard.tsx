@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { SubmitExpenseDialog } from "./submit-expense-dialog";
 import { ApproveExpenseButton } from "./approve-expense-button";
+import { RejectExpenseButton } from "./reject-expense-button";
 
 export type ExpenseRow = {
   id: string;
@@ -243,12 +244,19 @@ export function ExpenseDashboard({
                   <TableCell className="text-right">
                     {canApprove &&
                     ["pending", "dual_signature_pending"].includes(e.status) ? (
-                      <ApproveExpenseButton
-                        expenseId={e.id}
-                        status={e.status}
-                        hasMySignature={e.hasMySignature}
-                        variant="compact"
-                      />
+                      <div className="flex items-center justify-end gap-1.5">
+                        <ApproveExpenseButton
+                          expenseId={e.id}
+                          status={e.status}
+                          hasMySignature={e.hasMySignature}
+                          variant="compact"
+                        />
+                        <RejectExpenseButton
+                          expenseId={e.id}
+                          status={e.status}
+                          variant="compact"
+                        />
+                      </div>
                     ) : e.status === "flagged" ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-red-400/30 bg-red-400/5 px-2.5 py-1 font-sans text-xs text-red-300">
                         <ShieldAlert className="h-3 w-3" /> Review

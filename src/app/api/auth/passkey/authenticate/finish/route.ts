@@ -22,6 +22,7 @@ import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
 import { db } from "@/lib/db";
+import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,6 +50,15 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
+
+  // ── Rate-limit (DB-backed — AUD-030 / AUD-031) ──
+  // WebAuthn assertion verification is CPU-heavy (signature verification +
+  // counter check). 15/min/IP.
+  const rl = await limiters.passkeyDb(ip);
+  if (!rl.allowed) {
+    logger.warn("passkey authenticate/finish rate-limited", { ip, resetAt: rl.resetAt });
+    return rateLimitedResponse(rl.resetAt);
+  }
 
   let parsed: z.infer<typeof bodySchema>;
   try {

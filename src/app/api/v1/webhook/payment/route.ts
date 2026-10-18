@@ -73,6 +73,47 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     );
   }
 
+  // ── AUD-018: Webhook idempotency ──
+  // If the law firm sends a webhook with a `reference` field that already
+  // exists in our database, return 200 (idempotent success) but DO NOT
+  // process the event again. This prevents duplicate ledger events /
+  // balance increments if the law firm retries a webhook due to network
+  // timeout. The `reference` column has a @unique constraint in the
+  // schema, so `findUnique` is the canonical lookup. NULL references
+  // are skipped (legacy webhooks without a reference still go through).
+  if (reference) {
+    const existing = await (db as any).lawFirmWebhookEvent.findUnique({
+      where: { reference },
+      select: { id: true, eventType: true, receivedAt: true },
+    });
+    if (existing) {
+      await audit({
+        actorId: "system",
+        action: "lawfirm.webhook.idempotent_replay",
+        target: `enterprise:${enterpriseId}`,
+        result: "allowed",
+        metadata: {
+          lawFirmId,
+          reference,
+          originalEventId: existing.id,
+          originalEventType: existing.eventType,
+          originalReceivedAt: existing.receivedAt,
+          note: "Duplicate webhook reference — returning 200 without reprocessing (AUD-018 idempotency).",
+        },
+      });
+      return NextResponse.json(
+        {
+          acknowledged: true,
+          idempotent: true,
+          eventId: existing.id,
+          eventType: existing.eventType,
+          message: "Webhook with this reference already processed — idempotent replay (AUD-018).",
+        },
+        { status: 200 }
+      );
+    }
+  }
+
   // Persist the webhook event
   const event = await (db as any).lawFirmWebhookEvent.create({
     data: {

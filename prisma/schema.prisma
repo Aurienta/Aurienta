@@ -1366,7 +1366,7 @@ model LawFirmWebhookEvent {
   enterpriseId    String?
   eventType       String   // escrow_received, escrow_released, escrow_refunded, balance_assertion
   amountEgp       Float?
-  reference       String?
+  reference       String?  @unique // AUD-018: idempotency key — law-firm-side reference. NULL allowed (multiple), but non-NULL values must be unique.
   rawPayload      String   // JSON
   signatureValid  Boolean
   receivedAt      DateTime @default(now())
@@ -1778,4 +1778,32 @@ model AccountLockout {
   lastFailedAt    DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════
+// RATE LIMITING (P1) — AUD-030 / AUD-031
+// ═══════════════════════════════════════════════════════════
+// DB-backed rate-limit store for Vercel serverless.
+// Each row is a (key, windowStart) bucket where `key` is a
+// namespaced identity (e.g. "signin:ip:1.2.3.4", "ai:user:cuid").
+//
+// `count` increments within the window; `windowStart` is the
+// epoch (ms) of the bucket's birth. Old buckets are pruned by a
+// periodic cleanup pass on read. The unique constraint on `key`
+// makes increments atomic via upsert.
+//
+// The in-memory limiter in lib/aurienta/rate-limit.ts remains
+// as a fast-path best-effort guard; the DB store is the source
+// of truth that survives across serverless invocations.
+model RateLimitEntry {
+  id          String   @id @default(cuid())
+  // Composite identity: e.g. "signin:ip:1.2.3.4" or "ai:user:cuid123"
+  key         String   @unique
+  count       Int      @default(1)
+  // ISO timestamp the current window opened.
+  windowStart DateTime @default(now())
+  // Auto-set on every increment so we can prune LRU buckets.
+  updatedAt   DateTime @updatedAt
+
+  @@index([windowStart])
 }

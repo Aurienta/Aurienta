@@ -41,10 +41,17 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
 
-  // ── Rate-limit ──
-  const rl = limiters.signin(ip);
+  // ── Rate-limit (DB-backed — AUD-030 / AUD-031) ──
+  // Registration shares the sign-in per-IP budget so an attacker can't
+  // enumerate registration to bypass the limiter.
+  const mem = limiters.signin(ip);
+  if (!mem.allowed) {
+    logger.warn("register rate-limited (memory)", { ip, resetAt: mem.resetAt });
+    return rateLimitedResponse(mem.resetAt);
+  }
+  const rl = await limiters.registerDb(ip);
   if (!rl.allowed) {
-    logger.warn("register rate-limited", { ip, resetAt: rl.resetAt });
+    logger.warn("register rate-limited (db)", { ip, resetAt: rl.resetAt });
     return rateLimitedResponse(rl.resetAt);
   }
 

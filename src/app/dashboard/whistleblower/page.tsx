@@ -64,6 +64,10 @@ export default async function WhistleblowerPage() {
     bountyPaid: merged.reduce((s, r) => s + r.bountyPaidEgp, 0),
   };
 
+  // AURIENTA Representatives can resolve reports (POST /api/whistleblower/[id]/resolve).
+  // Pass the flag down so the client surfaces a Resolve button on each non-terminal report.
+  const isAurientaRep = user.memberships.some((m) => m.role === "aurienta_rep");
+
   return (
     <div className="flex flex-col gap-6 sm:gap-8">
       <PageHeader
@@ -76,6 +80,7 @@ export default async function WhistleblowerPage() {
       <WhistleblowerClient
         userId={user.id}
         enterprises={enterprises}
+        isAurientaRep={isAurientaRep}
         reports={merged.map((r) => ({
           id: r.id,
           trackingCode: r.trackingCode,

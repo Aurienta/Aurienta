@@ -19,6 +19,7 @@ import {
 import { setChallengeCookie } from "@/lib/aurienta/passkey-challenge";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { logger } from "@/lib/aurienta/logger";
+import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,6 +36,15 @@ function clientIp(req: NextRequest): string {
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const ip = clientIp(req);
+
+  // ── Rate-limit (DB-backed — AUD-030 / AUD-031) ──
+  // Passkey ceremonies are replay-able: an attacker could spam /start to
+  // consume server CPU and pollute challenge cookies. 15/min/IP.
+  const rl = await limiters.passkeyDb(ip);
+  if (!rl.allowed) {
+    logger.warn("passkey authenticate/start rate-limited", { ip, resetAt: rl.resetAt });
+    return rateLimitedResponse(rl.resetAt);
+  }
 
   let parsed: z.infer<typeof bodySchema>;
   try {

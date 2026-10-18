@@ -42,9 +42,17 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const userAgent = req.headers.get("user-agent") ?? undefined;
 
   // ── Rate-limit: 10 attempts / 60s / IP ──
-  const rl = limiters.signin(ip);
+  // In-memory limiter stays as the fast-path backstop; DB-backed limiter
+  // is the source of truth (survives serverless cold starts + replicas).
+  // AUD-030 / AUD-031.
+  const mem = limiters.signin(ip);
+  if (!mem.allowed) {
+    logger.warn("auth rate-limited (memory)", { ip, resetAt: mem.resetAt });
+    return rateLimitedResponse(mem.resetAt);
+  }
+  const rl = await limiters.signinDb(ip);
   if (!rl.allowed) {
-    logger.warn("auth rate-limited", { ip, resetAt: rl.resetAt });
+    logger.warn("auth rate-limited (db)", { ip, resetAt: rl.resetAt });
     return rateLimitedResponse(rl.resetAt);
   }
 

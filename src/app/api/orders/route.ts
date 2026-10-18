@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import {
   appendLedgerEvent,
+  enforceAntiCapture,
   enforceEquityLockUp,
   enforceKycGate,
   enforceNotFrozen,
@@ -222,6 +223,11 @@ export async function POST(req: NextRequest) {
   }
 
   // ── CRE: enforce the fundamental_pricing.rego price band ──
+  // AUD-026: enforcePriceBand() is called on EVERY trade submission (both
+  // buy and sell orders, all phases). Phase 1/2 orders must equal the AI
+  // fundamental price exactly; Phase 3 orders must be within ±5%. The
+  // FIFO matching engine additionally filters candidate orders by the ±5%
+  // band on its query (see src/lib/aurienta/matching-engine.ts).
   const verdict = enforcePriceBand(priceEgp, enterprise.equityUnitPriceEgp, phase);
   if (!verdict.allowed) {
     await audit({
@@ -241,6 +247,62 @@ export async function POST(req: NextRequest) {
       },
       { status: 400 }
     );
+  }
+
+  // ── AUD-025: CRE Anti-Capture enforcement (anti_capture.rego) ──
+  // Blueprint Art. 22: no Capital Partner may accumulate ≥50% of any
+  // enterprise's equity through secondary-market buy orders. Founding
+  // Operators are exempt (their ≥51% floor for Tier D is governed by
+  // enforceFounderEquityCap at enterprise creation, not by ongoing
+  // market activity). Only checked on BUY orders — sells can never
+  // increase the seller's ownership above the cap.
+  if (side === "buy" && enterprise.totalEquityUnits > 0) {
+    const isFounder = user.memberships.some(
+      (m) =>
+        m.enterpriseId === enterpriseId &&
+        (m.role === "founding_operator" || m.role === "company_owner")
+    );
+    if (!isFounder) {
+      const existingHolding = await db.ownershipRecord.findUnique({
+        where: {
+          enterpriseId_userId: { enterpriseId, userId: user.id },
+        },
+        select: { equityUnits: true },
+      });
+      const currentUnits = existingHolding?.equityUnits ?? 0;
+      const shareholderEquityPct = (currentUnits / enterprise.totalEquityUnits) * 100;
+      const newPurchasePct = (shares / enterprise.totalEquityUnits) * 100;
+      const antiCapture = enforceAntiCapture({
+        shareholderEquityPct,
+        newPurchasePct,
+      });
+      if (!antiCapture.allowed) {
+        await audit({
+          actorId: user.id,
+          action: "order.create",
+          target: `enterprise:${enterpriseId}`,
+          result: "denied",
+          reason: antiCapture.reason,
+          metadata: {
+            policy: antiCapture.policy,
+            decisionToken: antiCapture.decisionToken,
+            currentUnits,
+            totalEquityUnits: enterprise.totalEquityUnits,
+            shareholderEquityPct,
+            newPurchasePct,
+          },
+        });
+        return NextResponse.json(
+          {
+            error: antiCapture.reason ?? "Anti-capture violation",
+            code: "cre_denied",
+            policy: antiCapture.policy,
+            decisionToken: antiCapture.decisionToken,
+          },
+          { status: 403 }
+        );
+      }
+    }
   }
 
   // ── Fees: 0.5% platform fee always; 10% CGT on sells (capital gains) ──

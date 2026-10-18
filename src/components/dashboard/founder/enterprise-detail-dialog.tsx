@@ -30,6 +30,7 @@ import {
   Flag,
   GraduationCap,
   Layers,
+  Lock,
   ScrollText,
   Share2,
   Sparkles,
@@ -46,6 +47,7 @@ import {
   TierBadge,
 } from "./badges";
 import { MilestoneEvidenceDialog } from "./milestone-evidence-dialog";
+import { CloseCapitalFormationButton } from "./close-capital-formation-button";
 
 const LEDGER_ICONS: Record<string, React.ElementType> = {
   share_issued: Share2,
@@ -282,6 +284,38 @@ export function EnterpriseDetailDialog({
                   value={pct(enterprise.platformFeePct, 1)}
                 />
               </div>
+
+              {/* Close Capital Formation action.
+                  Visible only when the enterprise is in fundraising_active status.
+                  Calls POST /api/enterprises/[id]/close-capital-formation. */}
+              {enterprise.status === "fundraising_active" && (
+                <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Lock className="h-4 w-4 text-gold" />
+                        <p className="font-serif text-sm font-semibold">
+                          Close Capital Formation
+                        </p>
+                      </div>
+                      <p className="mt-1 font-sans text-xs leading-relaxed text-muted-foreground">
+                        Transition {enterprise.name} from fundraising to
+                        operations. The CRE will append a{" "}
+                        <code className="font-mono">capital_formation_closed</code>{" "}
+                        ledger event and the enterprise will become operational
+                        (milestones, expenses, distributions unlocked).
+                      </p>
+                    </div>
+                    <CloseCapitalFormationButton
+                      enterpriseId={enterprise.id}
+                      enterpriseName={enterprise.name}
+                      raisedEgp={enterprise.raisedEgp}
+                      goalEgp={enterprise.fundraisingGoalEgp}
+                      variant="compact"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="rounded-xl border border-gold/12 bg-background/40 p-4">
                 <div className="mb-2 flex items-center justify-between">

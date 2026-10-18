@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { egp, pct, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { WhistleblowerResolveButton } from "./whistleblower-resolve-button";
 
 export type WhistleblowerReport = {
   id: string;
@@ -72,11 +73,18 @@ export function WhistleblowerClient({
   enterprises,
   reports,
   stats,
+  isAurientaRep = false,
 }: {
   userId: string;
   enterprises: { id: string; name: string; slug: string; tier: string }[];
   reports: WhistleblowerReport[];
   stats: { total: number; validated: number; investigating: number; bountyPaid: number };
+  /**
+   * AURIENTA Representatives can resolve reports via POST
+   * /api/whistleblower/[id]/resolve. When true, each non-terminal report row
+   * shows a Resolve button.
+   */
+  isAurientaRep?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -332,6 +340,13 @@ export function WhistleblowerClient({
                         <span className="inline-flex items-center gap-1 font-mono text-xs text-emerald-300">
                           <Coins className="h-3 w-3" /> bounty paid {egp(r.bountyPaidEgp)}
                         </span>
+                      )}
+                      {isAurientaRep && r.status !== "resolved" && r.status !== "dismissed" && (
+                        <WhistleblowerResolveButton
+                          reportId={r.id}
+                          trackingCode={r.trackingCode}
+                          variant="compact"
+                        />
                       )}
                       <button
                         onClick={() => toggleReveal(r.id)}

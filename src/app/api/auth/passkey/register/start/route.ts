@@ -17,6 +17,7 @@ import { setChallengeCookie } from "@/lib/aurienta/passkey-challenge";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +40,15 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
+
+  // ── Rate-limit (DB-backed — AUD-030 / AUD-031) ──
+  // Passkey enrollment is a privileged action; rate-limit per-user so a
+  // compromised session can't enumerate enrollments.
+  const rl = await limiters.passkeyDb(`${user.id}:${ip}`);
+  if (!rl.allowed) {
+    logger.warn("passkey register/start rate-limited", { ip, userId: user.id, resetAt: rl.resetAt });
+    return rateLimitedResponse(rl.resetAt);
+  }
 
   let parsed: z.infer<typeof bodySchema>;
   try {

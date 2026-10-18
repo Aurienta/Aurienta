@@ -213,7 +213,12 @@ export const POST = withErrorHandler(
       actorId: user.id,
     });
 
-    // 4. Anti-Fragility Vault contribution (0.5%)
+    // 4. Anti-Fragility Vault contribution (0.5%) — AUD-014
+    // Blueprint §5.4: 0.5% of every confirmed Capital Formation contribution
+    // is auto-diverted to the enterprise's InsuranceVault (Anti-Fragility
+    // Vault). This builds a self-insurance reserve that can be drawn on for
+    // exogenous shocks (pandemic, currency devaluation, war, natural
+    // disaster). See VaultLoan model for the disbursement side.
     if (vaultContribution > 0) {
       const vault = await tx.insuranceVault.upsert({
         where: { enterpriseId: reservation.enterpriseId },

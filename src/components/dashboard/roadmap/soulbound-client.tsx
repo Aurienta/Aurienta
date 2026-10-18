@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { shortHash } from "@/lib/aurienta/format";
+import { SoulboundRevokeButton } from "./soulbound-revoke-button";
 
 // ── Types ──
 type Credential = {
@@ -347,12 +348,21 @@ export function SoulboundClient({
           )}
 
           {isRep && (
-            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
-              <p className="font-sans text-[11px] text-amber-800">
-                <strong>AURIENTA rep:</strong> to revoke a credential, call{" "}
-                <code className="font-mono">POST /api/soulbound/revoke</code>{" "}
-                with <code className="font-mono">{"{ userId, reason }"}</code>.
-              </p>
+            <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-rose-700">
+                    AURIENTA rep — credential revocation
+                  </p>
+                  <p className="mt-1 font-sans text-[11px] leading-relaxed text-rose-800">
+                    Revoke a holder&apos;s soulbound credential. The credential
+                    remains in the database (it is NOT deleted) so that external
+                    verifiers continue to receive a structured{" "}
+                    <code className="font-mono">revoked on …</code> response.
+                  </p>
+                </div>
+                <SoulboundRevokeButton variant="compact" />
+              </div>
             </div>
           )}
         </section>

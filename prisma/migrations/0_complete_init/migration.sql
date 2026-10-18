@@ -23,6 +23,8 @@ CREATE TABLE "User" (
     "policeClearanceExpiresAt" DATETIME,
     "pledgeSignedAt" DATETIME,
     "pledgeSignature" TEXT,
+    "verificationStatus" TEXT NOT NULL DEFAULT 'pending',
+    "verificationRejectedReason" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -46,6 +48,7 @@ CREATE TABLE "LawFirm" (
     "insuranceEgp" INTEGER NOT NULL DEFAULT 100000000,
     "expertiseScore" INTEGER NOT NULL DEFAULT 80,
     "status" TEXT NOT NULL DEFAULT 'active',
+    "publicKey" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -72,6 +75,7 @@ CREATE TABLE "Enterprise" (
     "legalForm" TEXT NOT NULL DEFAULT 'LLC',
     "healthRating" TEXT,
     "healthScore" INTEGER NOT NULL DEFAULT 75,
+    "healthScoreUpdatedAt" DATETIME,
     "fundraisingGoalEgp" INTEGER NOT NULL,
     "raisedEgp" INTEGER NOT NULL DEFAULT 0,
     "minInvestmentEgp" INTEGER NOT NULL DEFAULT 50,
@@ -887,6 +891,334 @@ CREATE TABLE "VotingProxy" (
     CONSTRAINT "VotingProxy_delegateeId_fkey" FOREIGN KEY ("delegateeId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "SuccessionDeclaration" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "beneficiaryUserId" TEXT,
+    "beneficiaryName" TEXT,
+    "beneficiaryNationalId" TEXT,
+    "conditions" TEXT NOT NULL,
+    "votingProxyActive" BOOLEAN NOT NULL DEFAULT false,
+    "votingProxyActivatedAt" DATETIME,
+    "emergencyManagerId" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'draft',
+    "declaredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "SuccessionDeclaration_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "EconomicBeneficiary" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "successionDeclarationId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "relationship" TEXT NOT NULL,
+    "percentage" REAL NOT NULL,
+    "nationalIdLast4" TEXT,
+    CONSTRAINT "EconomicBeneficiary_successionDeclarationId_fkey" FOREIGN KEY ("successionDeclarationId") REFERENCES "SuccessionDeclaration" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "LawFirmWebhookEvent" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "lawFirmId" TEXT NOT NULL,
+    "enterpriseId" TEXT,
+    "eventType" TEXT NOT NULL,
+    "amountEgp" REAL,
+    "reference" TEXT,
+    "rawPayload" TEXT NOT NULL,
+    "signatureValid" BOOLEAN NOT NULL,
+    "receivedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "LawFirmWebhookEvent_lawFirmId_fkey" FOREIGN KEY ("lawFirmId") REFERENCES "LawFirm" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "CircuitBreakerHalt" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "level" INTEGER NOT NULL,
+    "triggeredByPrice" REAL,
+    "referencePrice" REAL,
+    "deviationPct" REAL,
+    "reason" TEXT NOT NULL,
+    "triggeredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "resumeAt" DATETIME NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    CONSTRAINT "CircuitBreakerHalt_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "FxRate" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "fromCurrency" TEXT NOT NULL,
+    "toCurrency" TEXT NOT NULL,
+    "rate" REAL NOT NULL,
+    "source" TEXT NOT NULL,
+    "sourceRef" TEXT,
+    "fetchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "DiscoveryProfile" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "riskAppetite" TEXT NOT NULL DEFAULT 'balanced',
+    "preferredSectors" TEXT NOT NULL DEFAULT '',
+    "preferredTiers" TEXT NOT NULL DEFAULT 'A,B,C',
+    "minHealthRating" TEXT NOT NULL DEFAULT 'BBB',
+    "minInvestmentEgp" INTEGER NOT NULL DEFAULT 50,
+    "maxInvestmentEgp" INTEGER NOT NULL DEFAULT 10000,
+    "targetDiversification" INTEGER NOT NULL DEFAULT 5,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "DiscoveryMatch" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "enterpriseId" TEXT NOT NULL,
+    "matchScore" INTEGER NOT NULL,
+    "matchReasons" TEXT NOT NULL,
+    "dismissed" BOOLEAN NOT NULL DEFAULT false,
+    "invested" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ProfitShareAgreement" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "partnerId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "contributionEgp" INTEGER NOT NULL,
+    "profitSharePct" REAL NOT NULL,
+    "termMonths" INTEGER NOT NULL,
+    "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "maturesAt" DATETIME NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "totalDistributedEgp" INTEGER NOT NULL DEFAULT 0,
+    "creDecisionToken" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "GaasOrganization" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "contactEmail" TEXT NOT NULL,
+    "subscriptionPlan" TEXT NOT NULL DEFAULT 'standard',
+    "monthlyFeeEgp" INTEGER NOT NULL DEFAULT 2500,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "GaasPolicy" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "organizationId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "ruleText" TEXT NOT NULL,
+    "ruleHash" TEXT NOT NULL,
+    "enforcementLogic" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "GaasDecision" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "organizationId" TEXT NOT NULL,
+    "policyId" TEXT NOT NULL,
+    "decisionText" TEXT NOT NULL,
+    "decisionHash" TEXT NOT NULL,
+    "verdict" TEXT NOT NULL,
+    "reason" TEXT,
+    "decisionToken" TEXT,
+    "actorEmail" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "StandaloneSuccessionCase" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "businessName" TEXT NOT NULL,
+    "businessType" TEXT NOT NULL,
+    "jurisdiction" TEXT NOT NULL DEFAULT 'EG',
+    "declarantId" TEXT NOT NULL,
+    "declarationHash" TEXT NOT NULL,
+    "shamirThreshold" INTEGER NOT NULL DEFAULT 2,
+    "shamirShares" INTEGER NOT NULL DEFAULT 3,
+    "activationDate" DATETIME,
+    "status" TEXT NOT NULL DEFAULT 'drafted',
+    "feeEgp" INTEGER NOT NULL DEFAULT 5000,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "DiasporaCorridorRound" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "totalPledgedEgp" INTEGER NOT NULL DEFAULT 0,
+    "participantCount" INTEGER NOT NULL DEFAULT 0,
+    "fxRateLocked" REAL NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'open',
+    "closesAt" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "AreiSnapshot" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "date" TEXT NOT NULL,
+    "indexValue" REAL NOT NULL,
+    "changePct" REAL NOT NULL,
+    "constituentCount" INTEGER NOT NULL,
+    "topMoverId" TEXT,
+    "bottomMoverId" TEXT,
+    "computedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ConstitutionalEndorsement" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "endorserId" TEXT NOT NULL,
+    "enterpriseId" TEXT NOT NULL,
+    "stakeSts" INTEGER NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "outcome" TEXT NOT NULL DEFAULT 'pending',
+    "stsDelta" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "resolvedAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "EnterpriseGenome" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "attributesJson" TEXT NOT NULL,
+    "graduationProbability" REAL NOT NULL DEFAULT 0.5,
+    "riskScore" REAL NOT NULL DEFAULT 0.5,
+    "modelVersion" TEXT NOT NULL DEFAULT 'genome-v1',
+    "trainedOnCount" INTEGER NOT NULL DEFAULT 0,
+    "predictedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "QuadraticVoteAllocation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "proposalId" TEXT NOT NULL,
+    "voterId" TEXT NOT NULL,
+    "voiceCredits" INTEGER NOT NULL,
+    "creditsSpent" INTEGER NOT NULL DEFAULT 0,
+    "voteWeight" REAL NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ZeitgeistSnapshot" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "date" TEXT NOT NULL,
+    "sentimentScore" REAL NOT NULL,
+    "confidencePct" REAL NOT NULL,
+    "signalCount" INTEGER NOT NULL,
+    "topTheme" TEXT,
+    "summaryText" TEXT NOT NULL,
+    "computedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "PriorityWindowAllocation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "windowPhase" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "stsAtAllocation" INTEGER NOT NULL,
+    "allocationRank" INTEGER NOT NULL,
+    "allocatedEgp" INTEGER NOT NULL DEFAULT 0,
+    "allocatedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "OracleQuery" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "apiKeyHash" TEXT NOT NULL,
+    "queryText" TEXT NOT NULL,
+    "queryHash" TEXT NOT NULL,
+    "consensusVerdict" TEXT NOT NULL,
+    "decisionToken" TEXT,
+    "modelsConsulted" TEXT NOT NULL,
+    "responseTimeMs" INTEGER NOT NULL,
+    "disclaimerShown" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "SoulboundCredential" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "credentialType" TEXT NOT NULL DEFAULT 'identity',
+    "verificationLevel" TEXT NOT NULL,
+    "sovereignTrustScore" INTEGER NOT NULL,
+    "anchorPublicKey" TEXT NOT NULL,
+    "tokenUri" TEXT NOT NULL,
+    "isTransferable" BOOLEAN NOT NULL DEFAULT false,
+    "isRevoked" BOOLEAN NOT NULL DEFAULT false,
+    "mintedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "revokedAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "RiskProfileQuery" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "requesterOrg" TEXT NOT NULL,
+    "apiKeyHash" TEXT NOT NULL,
+    "healthScore" INTEGER NOT NULL,
+    "riskFactors" TEXT NOT NULL,
+    "recommendation" TEXT NOT NULL,
+    "disclaimerShown" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "PasskeyCredential" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "credentialId" TEXT NOT NULL,
+    "publicKey" TEXT NOT NULL,
+    "counter" INTEGER NOT NULL DEFAULT 0,
+    "transports" TEXT NOT NULL DEFAULT '',
+    "deviceType" TEXT NOT NULL DEFAULT 'singleDevice',
+    "backedUp" BOOLEAN NOT NULL DEFAULT false,
+    "name" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsedAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "AccountLockout" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "email" TEXT NOT NULL,
+    "failedAttempts" INTEGER NOT NULL DEFAULT 0,
+    "lockedUntil" DATETIME,
+    "lastFailedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "RateLimitEntry" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "key" TEXT NOT NULL,
+    "count" INTEGER NOT NULL DEFAULT 1,
+    "windowStart" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -1282,4 +1614,154 @@ CREATE INDEX "VotingProxy_delegatorId_idx" ON "VotingProxy"("delegatorId");
 
 -- CreateIndex
 CREATE INDEX "VotingProxy_delegateeId_idx" ON "VotingProxy"("delegateeId");
+
+-- CreateIndex
+CREATE INDEX "SuccessionDeclaration_userId_idx" ON "SuccessionDeclaration"("userId");
+
+-- CreateIndex
+CREATE INDEX "SuccessionDeclaration_status_idx" ON "SuccessionDeclaration"("status");
+
+-- CreateIndex
+CREATE INDEX "EconomicBeneficiary_successionDeclarationId_idx" ON "EconomicBeneficiary"("successionDeclarationId");
+
+-- CreateIndex
+CREATE INDEX "LawFirmWebhookEvent_lawFirmId_idx" ON "LawFirmWebhookEvent"("lawFirmId");
+
+-- CreateIndex
+CREATE INDEX "LawFirmWebhookEvent_enterpriseId_idx" ON "LawFirmWebhookEvent"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "LawFirmWebhookEvent_eventType_idx" ON "LawFirmWebhookEvent"("eventType");
+
+-- CreateIndex
+CREATE INDEX "CircuitBreakerHalt_enterpriseId_idx" ON "CircuitBreakerHalt"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "CircuitBreakerHalt_isActive_idx" ON "CircuitBreakerHalt"("isActive");
+
+-- CreateIndex
+CREATE INDEX "FxRate_fromCurrency_toCurrency_fetchedAt_idx" ON "FxRate"("fromCurrency", "toCurrency", "fetchedAt");
+
+-- CreateIndex
+CREATE INDEX "FxRate_source_idx" ON "FxRate"("source");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DiscoveryProfile_userId_key" ON "DiscoveryProfile"("userId");
+
+-- CreateIndex
+CREATE INDEX "DiscoveryProfile_riskAppetite_idx" ON "DiscoveryProfile"("riskAppetite");
+
+-- CreateIndex
+CREATE INDEX "DiscoveryMatch_userId_idx" ON "DiscoveryMatch"("userId");
+
+-- CreateIndex
+CREATE INDEX "DiscoveryMatch_enterpriseId_idx" ON "DiscoveryMatch"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ProfitShareAgreement_enterpriseId_idx" ON "ProfitShareAgreement"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ProfitShareAgreement_partnerId_idx" ON "ProfitShareAgreement"("partnerId");
+
+-- CreateIndex
+CREATE INDEX "ProfitShareAgreement_status_idx" ON "ProfitShareAgreement"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GaasOrganization_slug_key" ON "GaasOrganization"("slug");
+
+-- CreateIndex
+CREATE INDEX "GaasOrganization_slug_idx" ON "GaasOrganization"("slug");
+
+-- CreateIndex
+CREATE INDEX "GaasPolicy_organizationId_idx" ON "GaasPolicy"("organizationId");
+
+-- CreateIndex
+CREATE INDEX "GaasDecision_organizationId_idx" ON "GaasDecision"("organizationId");
+
+-- CreateIndex
+CREATE INDEX "GaasDecision_policyId_idx" ON "GaasDecision"("policyId");
+
+-- CreateIndex
+CREATE INDEX "GaasDecision_verdict_idx" ON "GaasDecision"("verdict");
+
+-- CreateIndex
+CREATE INDEX "StandaloneSuccessionCase_declarantId_idx" ON "StandaloneSuccessionCase"("declarantId");
+
+-- CreateIndex
+CREATE INDEX "StandaloneSuccessionCase_status_idx" ON "StandaloneSuccessionCase"("status");
+
+-- CreateIndex
+CREATE INDEX "DiasporaCorridorRound_enterpriseId_idx" ON "DiasporaCorridorRound"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "DiasporaCorridorRound_status_idx" ON "DiasporaCorridorRound"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AreiSnapshot_date_key" ON "AreiSnapshot"("date");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalEndorsement_endorserId_idx" ON "ConstitutionalEndorsement"("endorserId");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalEndorsement_enterpriseId_idx" ON "ConstitutionalEndorsement"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalEndorsement_active_idx" ON "ConstitutionalEndorsement"("active");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EnterpriseGenome_enterpriseId_key" ON "EnterpriseGenome"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "EnterpriseGenome_graduationProbability_idx" ON "EnterpriseGenome"("graduationProbability");
+
+-- CreateIndex
+CREATE INDEX "QuadraticVoteAllocation_proposalId_idx" ON "QuadraticVoteAllocation"("proposalId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QuadraticVoteAllocation_proposalId_voterId_key" ON "QuadraticVoteAllocation"("proposalId", "voterId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ZeitgeistSnapshot_date_key" ON "ZeitgeistSnapshot"("date");
+
+-- CreateIndex
+CREATE INDEX "PriorityWindowAllocation_enterpriseId_windowPhase_idx" ON "PriorityWindowAllocation"("enterpriseId", "windowPhase");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PriorityWindowAllocation_enterpriseId_windowPhase_userId_key" ON "PriorityWindowAllocation"("enterpriseId", "windowPhase", "userId");
+
+-- CreateIndex
+CREATE INDEX "OracleQuery_apiKeyHash_idx" ON "OracleQuery"("apiKeyHash");
+
+-- CreateIndex
+CREATE INDEX "OracleQuery_createdAt_idx" ON "OracleQuery"("createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SoulboundCredential_userId_key" ON "SoulboundCredential"("userId");
+
+-- CreateIndex
+CREATE INDEX "SoulboundCredential_credentialType_idx" ON "SoulboundCredential"("credentialType");
+
+-- CreateIndex
+CREATE INDEX "SoulboundCredential_isRevoked_idx" ON "SoulboundCredential"("isRevoked");
+
+-- CreateIndex
+CREATE INDEX "RiskProfileQuery_enterpriseId_idx" ON "RiskProfileQuery"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "RiskProfileQuery_requesterOrg_idx" ON "RiskProfileQuery"("requesterOrg");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasskeyCredential_credentialId_key" ON "PasskeyCredential"("credentialId");
+
+-- CreateIndex
+CREATE INDEX "PasskeyCredential_userId_idx" ON "PasskeyCredential"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AccountLockout_email_key" ON "AccountLockout"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RateLimitEntry_key_key" ON "RateLimitEntry"("key");
+
+-- CreateIndex
+CREATE INDEX "RateLimitEntry_windowStart_idx" ON "RateLimitEntry"("windowStart");
 

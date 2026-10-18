@@ -7,6 +7,7 @@ import { deletePasskey } from "@/lib/aurienta/passkey";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { limiters, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,6 +43,14 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   const ip = clientIp(req);
   const userAgent = req.headers.get("user-agent") ?? undefined;
+
+  // ── Rate-limit (DB-backed — AUD-030 / AUD-031) ──
+  // 15/min/IP+user — destructive credential action, keep tight.
+  const rl = await limiters.passkeyDb(`${user.id}:${ip}`);
+  if (!rl.allowed) {
+    logger.warn("passkey delete rate-limited", { ip, userId: user.id, resetAt: rl.resetAt });
+    return rateLimitedResponse(rl.resetAt);
+  }
 
   const deleted = await deletePasskey(user.id, parsed.credentialId);
   if (!deleted) {

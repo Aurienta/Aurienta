@@ -22,6 +22,33 @@ export const TIER_META: Record<
   F: { name: "Joint Stock", legalForm: "JSC", maxRaise: "Unlimited", minInvest: "1 share", founderEquity: "By bylaws", fee: "5% + 2.5%", erp: "Mandatory", audit: "FRA statutory", trait: "EGX listing" },
 };
 
+// ── AUD-024: Tier cap (numerical max-raise helper) ──
+// `TIER_META[tier].maxRaise` is a human-readable string ("3M EGP", "25M EGP",
+// "5M EGP", "Unlimited"). The CRE's `enforceTierCap()` policy needs the
+// numerical cap to compare against `enterprise.raisedEgp`. This helper parses
+// the string into an EGP integer, returning `Infinity` for "Unlimited" tiers
+// (C, D, F) so the cap check trivially passes.
+//
+// The mapping is hardcoded from the blueprint §4.2 tier table — do not change
+// without a charter amendment. The string in TIER_META is the source of truth
+// for display; this map is the source of truth for enforcement.
+export const TIER_MAX_RAISE_EGP: Record<string, number> = {
+  A: 3_000_000,        // 3M EGP
+  B: 25_000_000,       // 25M EGP
+  C: Number.POSITIVE_INFINITY, // Unlimited
+  D: Number.POSITIVE_INFINITY, // Unlimited (founder ≥51% enforced separately)
+  E: 5_000_000,        // 5M EGP
+  F: Number.POSITIVE_INFINITY, // Unlimited (JSC, EGX-listed)
+};
+
+// tierMaxRaiseEgp(tier) — convenience accessor with a safe fallback for
+// unknown tiers (defaults to Infinity so an unknown tier does not block
+// capital formation; the unknown tier itself should be caught upstream by
+// the enterprise-creation validator).
+export function tierMaxRaiseEgp(tier: string): number {
+  return TIER_MAX_RAISE_EGP[tier] ?? Number.POSITIVE_INFINITY;
+}
+
 export const ROLE_META: Record<
   string,
   { label: string; badge: string; icon: string; policeClearance?: boolean }
