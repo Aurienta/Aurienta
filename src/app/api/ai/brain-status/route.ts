@@ -1,10 +1,10 @@
 // AURIENTA Brain AI — Multi-Model Status Endpoint
-// Returns the connection status of all 4 AI providers + which models are active.
+// Returns the connection status of all 5 AI providers + which models are active.
 //
 // AI-REBUILD: now reports RICH status per provider (configured, connected,
 // model, latencyMs, lastError, lastCheckedAt) by calling
 // getAiProviderStatus() — the endpoint no longer hides WHY a provider is
-// failing (401/402/404/network). The 4 providers are Groq, NVIDIA, Gemini,
+// failing (401/402/404/network). The 5 providers are OpenRouter, Groq, NVIDIA, Gemini,
 // and HuggingFace. NO OpenRouter. 4 native AI providers only.
 
 import { NextResponse } from "next/server";

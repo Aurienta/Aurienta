@@ -17,7 +17,8 @@ type EnvShape = {
   nvidiaApiKey: string | null;
   geminiApiKey: string | null;
   huggingfaceApiKey: string | null;
-  // Number of AI providers with a key present (0..4). Used by /api/ready.
+  openrouterApiKey: string | null;
+  // Number of AI providers with a key present (0..5). Used by /api/ready.
   aiProvidersConfigured: number;
 };
 
@@ -55,18 +56,19 @@ function read(): EnvShape {
   const nvidiaApiKey = process.env.NVIDIA_API_KEY || null;
   const geminiApiKey = process.env.GEMINI_API_KEY || null;
   const huggingfaceApiKey = process.env.HUGGINGFACE_API_KEY || null;
+  const openrouterApiKey = process.env.OPENROUTER_API_KEY || null;
   const aiProvidersConfigured = [
-    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey,
+    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey,
   ].filter(k => !!k).length;
   if (aiProvidersConfigured === 0) {
     console.error("[env] FATAL: 0 AI provider API keys are configured — Brain AI will always return AI_FALLBACK.");
-  } else if (aiProvidersConfigured < 4) {
-    console.warn(`[env] WARNING: ${aiProvidersConfigured}/4 AI provider API keys are configured — consensus will degrade for some tasks.`);
+  } else if (aiProvidersConfigured < 5) {
+    console.warn(`[env] WARNING: ${aiProvidersConfigured}/5 AI provider API keys are configured — consensus will degrade for some tasks.`);
   }
 
   return {
     databaseUrl, nodeEnv, logLevel: level, cookieSecure, publicBaseUrl, allowDemoSignIn, fieldEncryptionKey,
-    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, aiProvidersConfigured,
+    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey, aiProvidersConfigured,
   };
 }
 

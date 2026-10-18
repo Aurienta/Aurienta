@@ -46,7 +46,7 @@ import { logger } from "./logger";
 
 let GoogleGenerativeAI: any = null;
 
-export type AiProvider = "groq" | "nvidia" | "gemini" | "huggingface";
+export type AiProvider = "groq" | "nvidia" | "gemini" | "huggingface" | "openrouter";
 export type AiTaskKind =
   | "feasibility" | "pitch_deck" | "copilot" | "explain" | "anomaly" | "drift"
   | "fraud" | "sanity_check" | "triage" | "general" | "multilingual" | "advisory"
@@ -71,60 +71,67 @@ type TaskConfig = {
 // ═══════════════════════════════════════════════════════════════════
 
 // Reusable model entries (single source of truth)
+// NOTE: OpenRouter xingchen-agi/xing4.0-29b-a4b:free is the ONLY verified-working
+// free model as of 2026-10. All other providers' keys have account restrictions.
+// The consensus queries all configured providers in parallel; working ones
+// contribute to the consensus, failed ones are logged + skipped.
 const M = {
-  // Groq
+  // OpenRouter (VERIFIED WORKING — free model)
+  or_xing4:   { provider: "openrouter" as const, model: "xingchen-agi/xing4.0-29b-a4b:free" },
+  // Groq (key may be restricted — will skip if 403)
   groq_70b:   { provider: "groq" as const, model: "llama-3.3-70b-versatile" },
   groq_8b:    { provider: "groq" as const, model: "llama-3.1-8b-instant" },
-  // NVIDIA NIM
+  // NVIDIA NIM (key may lack billing — will skip if 404)
   nvidia_nemo:    { provider: "nvidia" as const, model: "nvidia/llama-3.1-nemotron-51b-instruct" },
   nvidia_gemma:   { provider: "nvidia" as const, model: "google/gemma-3-12b-it" },
   nvidia_mistral: { provider: "nvidia" as const, model: "mistralai/mistral-large-2-instruct" },
-  // Gemini
+  // Gemini (key format wrong — will skip if 401)
   gemini_2_0:  { provider: "gemini" as const, model: "gemini-2.0-flash" },
   gemini_2_5:  { provider: "gemini" as const, model: "gemini-2.5-flash" },
-  // HuggingFace
+  // HuggingFace (DNS/credits issue — will skip if fails)
   hf_llama:    { provider: "huggingface" as const, model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },
   hf_mistral:  { provider: "huggingface" as const, model: "mistralai/Mistral-7B-Instruct-v0.3" },
   hf_zephyr:   { provider: "huggingface" as const, model: "HuggingFaceH4/zephyr-7b-beta" },
 };
 
 const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
-  // ── COMPLEX REASONING — large models, 3 providers in parallel ──
-  feasibility:    { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  charter_diff:   { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  graduation_coach:    { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  graduation_simulation: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  board_briefing: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  advisory:       { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  succession_plan:{ mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  tax_suggestion: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  ir_answer:      { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  sanity_check:   { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  survival_drill: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  whistleblower_credibility: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  precedent_match: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  skill_equity_review: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  salary_engine:  { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  evidence_verification: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  mentor_matching: { mode: "consensus", models: [M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  // ── COMPLEX REASONING — query ALL providers in parallel, consensus from survivors ──
+  // OpenRouter xing4 is the verified-working model; others join if their keys are fixed.
+  feasibility:    { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  charter_diff:   { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  graduation_coach:    { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  graduation_simulation: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  board_briefing: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  advisory:       { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  succession_plan:{ mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  tax_suggestion: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  ir_answer:      { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  sanity_check:   { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  survival_drill: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  whistleblower_credibility: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  precedent_match: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  skill_equity_review: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  salary_engine:  { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  evidence_verification: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  mentor_matching: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
 
-  // ── CREATIVE — diverse models, 3 providers ──
-  pitch_deck:       { mode: "consensus", models: [M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
-  milestone_design: { mode: "consensus", models: [M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
+  // ── CREATIVE — diverse models ──
+  pitch_deck:       { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
+  milestone_design: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
 
-  // ── MULTILINGUAL — Gemini + Groq + HuggingFace mistral ──
-  multilingual: { mode: "consensus", models: [M.gemini_2_0, M.groq_70b, M.hf_mistral], synthesize: true },
+  // ── MULTILINGUAL ──
+  multilingual: { mode: "consensus", models: [M.or_xing4, M.gemini_2_0, M.groq_70b, M.hf_mistral], synthesize: true },
 
-  // ── FAST TASKS — Groq 8B + NVIDIA gemma-12b + Gemini-2.0-flash ──
-  explain: { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  copilot: { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  triage:  { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  anomaly: { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  drift:   { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  fraud:   { mode: "fast", models: [M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  // ── FAST TASKS ──
+  explain: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  copilot: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  triage:  { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  anomaly: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  drift:   { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  fraud:   { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
 
-  // ── GENERAL — broad coverage ──
-  general: { mode: "consensus", models: [M.groq_70b, M.nvidia_gemma, M.gemini_2_5], synthesize: true },
+  // ── GENERAL ──
+  general: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_gemma, M.gemini_2_5], synthesize: true },
 };
 
 export type MultiModelResult = {
@@ -162,6 +169,7 @@ function getGroqKey()    { return process.env.GROQ_API_KEY ?? null; }
 function getNvidiaKey()  { return process.env.NVIDIA_API_KEY ?? null; }
 function getGeminiKey()  { return process.env.GEMINI_API_KEY ?? null; }
 function getHfKey()      { return process.env.HUGGINGFACE_API_KEY ?? null; }
+function getOrKey()      { return process.env.OPENROUTER_API_KEY ?? null; }
 
 // ═══════════════════════════════════════════════════════════════════
 // PROVIDER CALL FUNCTIONS — each accepts a specific model
@@ -352,12 +360,56 @@ async function callHuggingFace(system: string, user: string, model: string = "me
   };
 }
 
+// OpenRouter — OpenAI-compatible chat completions (VERIFIED WORKING with free model)
+// Endpoint: https://openrouter.ai/api/v1/chat/completions
+async function callOpenRouter(system: string, user: string, model: string = "xingchen-agi/xing4.0-29b-a4b:free"): Promise<MultiModelResult> {
+  const key = getOrKey();
+  if (!key) throw new Error("OpenRouter API key not configured");
+  const start = Date.now();
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://aurienta.vercel.app",
+      "X-Title": "AURIENTA Constitutional AI",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      temperature: 0.7,
+      max_tokens: 2048,
+    }),
+  });
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`OpenRouter API error: ${response.status}${txt ? ` — ${txt.slice(0, 200)}` : ""}`);
+  }
+  const data = await response.json();
+  const content = data?.choices?.[0]?.message?.content ?? "";
+  if (!content) throw new Error("OpenRouter returned empty content");
+  return {
+    content,
+    provider: "openrouter",
+    model,
+    latencyMs: Date.now() - start,
+    fellBack: false,
+    error: null,
+    tokensIn: data?.usage?.prompt_tokens ?? null,
+    tokensOut: data?.usage?.completion_tokens ?? null,
+  };
+}
+
 // ── Provider dispatch table ──
 const PROVIDERS: Record<AiProvider, (system: string, user: string, model?: string) => Promise<MultiModelResult>> = {
   groq: callGroq,
   nvidia: callNvidia,
   gemini: callGemini,
   huggingface: callHuggingFace,
+  openrouter: callOpenRouter,
 };
 
 // ── Continuous learning: retrieve relevant past interactions ──
@@ -675,6 +727,7 @@ export type AiProviderStatus = {
 
 // Fastest / smallest model per provider for cheap ping probes.
 const PING_MODELS: ModelEntry[] = [
+  { provider: "openrouter", model: "xingchen-agi/xing4.0-29b-a4b:free" }, // VERIFIED WORKING
   { provider: "groq",        model: "llama-3.1-8b-instant" },
   { provider: "nvidia",      model: "google/gemma-3-12b-it" },
   { provider: "gemini",      model: "gemini-2.0-flash" },
@@ -687,6 +740,7 @@ export async function getAiProviderStatus(): Promise<AiProviderStatus[]> {
     nvidia: process.env.NVIDIA_API_KEY ?? null,
     gemini: process.env.GEMINI_API_KEY ?? null,
     huggingface: process.env.HUGGINGFACE_API_KEY ?? null,
+    openrouter: process.env.OPENROUTER_API_KEY ?? null,
   };
 
   const checkedAt = new Date().toISOString();

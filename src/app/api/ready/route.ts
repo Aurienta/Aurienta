@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 const STARTED_AT = Date.now();
 
 // AI providers expected to be online for "ok" status (AI-REBUILD).
-// Mirrors the 4 providers probed by getAiProviderStatus() in ai-router.ts:
+// Mirrors the 5 providers probed by getAiProviderStatus() in ai-router.ts:
 // Groq, NVIDIA, Gemini, HuggingFace. NO OpenRouter.
-const AI_PROVIDER_TOTAL = 4;
+const AI_PROVIDER_TOTAL = 5;
 
 type CheckResult = {
   name: string;
@@ -30,10 +30,10 @@ type CheckResult = {
  * Returns 200 if all critical checks pass, 503 if any are down.
  *
  * AUD-008 (AI-FIX) / AI-REBUILD: the `ai_providers` check now calls
- * `getAiProviderStatus()` which ACTUALLY pings each of the 4 providers
+ * `getAiProviderStatus()` which ACTUALLY pings each of the 5 providers
  * (a minimal "hi" request via the smallest available model) rather than
  * only checking env-var presence. Each provider entry reports
- * {configured, connected, model, latencyMs, lastError}. If <4 providers are
+ * {configured, connected, model, latencyMs, lastError}. If <5 providers are
  * reachable, the overall probe status is downgraded to "degraded" (still
  * 200 — AI features are not critical-path for serving dashboard pages,
  * only for AI features themselves).
@@ -61,7 +61,7 @@ export async function GET() {
     detail: !hasEncryptionKey ? "FIELD_ENCRYPTION_KEY missing" : !hasSessionSecret ? "SESSION_SECRET missing" : undefined,
   });
 
-  // 3. AI providers — actually ping each of the 4 providers (AI-REBUILD).
+  // 3. AI providers — actually ping each of the 5 providers (AI-REBUILD).
   // Calls getAiProviderStatus() which probes groq/nvidia/gemini/huggingface
   // with a minimal "hi" request and returns {configured, connected, model,
   // latencyMs, lastError} per provider. If <4 are reachable, the check is
