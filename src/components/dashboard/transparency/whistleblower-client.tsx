@@ -62,7 +62,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
   submitted: { label: "Submitted", cls: "text-muted-foreground border-gold/20 bg-foreground/5" },
-  investigating: { label: "Investigating", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" },
+  investigating: { label: "Investigating", cls: "text-indigo-300 border-indigo-400/30 bg-indigo-400/10" },
   validated: { label: "Validated", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" },
   dismissed: { label: "Dismissed", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" },
   resolved: { label: "Resolved", cls: "text-gold-light border-gold/40 bg-gold/12" },

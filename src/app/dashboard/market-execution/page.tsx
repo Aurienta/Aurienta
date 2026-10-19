@@ -46,7 +46,7 @@ export const dynamic = "force-dynamic";
 const statusBadge = (s: string) => {
   const cls =
     s === "ACHIEVED" || s === "APPROVED" || s === "PASSED" ? "border-emerald-400/30 text-emerald-300" :
-    s === "IN PROGRESS" || s === "IN PROGRESS" || s === "BEING TESTED" ? "border-amber-400/30 text-amber-300" :
+    s === "IN PROGRESS" || s === "IN PROGRESS" || s === "BEING TESTED" ? "border-gold-light/30 text-gold-bright" :
     s === "PENDING" || s === "THEORETICAL" ? "border-sky-400/30 text-sky-300" :
     s === "INSUFFICIENT DATA" ? "border-muted-foreground/30 text-muted-foreground" :
     "border-rose-400/30 text-rose-300"; // NOT ACHIEVED / NOT PASSED / NOT STARTED / NOT SUBMITTED
@@ -59,9 +59,9 @@ export default async function MarketExecutionPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -176,7 +176,7 @@ export default async function MarketExecutionPage() {
         <CardContent>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {MARKET_VALIDATION_GATES.map(g => (
-              <div key={g.gate} className={`rounded border p-2 ${g.status === "PASSED" ? "border-emerald-400/20 bg-emerald-400/5" : g.status === "IN PROGRESS" ? "border-amber-400/20 bg-amber-400/5" : "border-rose-400/20 bg-rose-400/5"}`}>
+              <div key={g.gate} className={`rounded border p-2 ${g.status === "PASSED" ? "border-emerald-400/20 bg-emerald-400/5" : g.status === "IN PROGRESS" ? "border-gold-light/20 bg-gold-light/5" : "border-rose-400/20 bg-rose-400/5"}`}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] text-gold-light">{g.gate}</span>
                   {statusBadge(g.status)}
@@ -187,7 +187,7 @@ export default async function MarketExecutionPage() {
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[11px] text-amber-300">{GATE_RULE}</p>
+          <p className="mt-2 font-sans text-[11px] text-gold-bright">{GATE_RULE}</p>
         </CardContent>
       </Card>
 
@@ -227,13 +227,13 @@ export default async function MarketExecutionPage() {
               <div key={c.category} className="rounded border border-gold/8 bg-background/30 p-2">
                 <div className="flex items-center justify-between">
                   <span className="font-sans text-[11px] font-medium">{c.category}</span>
-                  <span className={`font-mono text-[11px] ${c.score >= 70 ? "text-emerald-300" : c.score >= 40 ? "text-amber-300" : "text-rose-300"}`}>{c.score}</span>
+                  <span className={`font-mono text-[11px] ${c.score >= 70 ? "text-emerald-300" : c.score >= 40 ? "text-gold-bright" : "text-rose-300"}`}>{c.score}</span>
                 </div>
                 <p className="font-sans text-[10px] text-muted-foreground">{c.evidence}</p>
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[11px] text-amber-300">{READINESS_RULE}</p>
+          <p className="mt-2 font-sans text-[11px] text-gold-bright">{READINESS_RULE}</p>
         </CardContent>
       </Card>
 
@@ -286,7 +286,7 @@ export default async function MarketExecutionPage() {
                 <p className="font-sans text-[10px] text-muted-foreground">Qualification: {t.qualificationScore}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TARGET_ACCOUNT_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TARGET_ACCOUNT_RULE}</p>
           </CardContent>
         </Card>
 
@@ -303,7 +303,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PIPELINE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PIPELINE_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -321,7 +321,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{REVENUE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{REVENUE_RULE}</p>
           </CardContent>
         </Card>
 
@@ -339,7 +339,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PRICING_VALIDATION_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PRICING_VALIDATION_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -353,14 +353,14 @@ export default async function MarketExecutionPage() {
               {PARTNER_EXECUTION.map(p => (
                 <div key={p.partnerType} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-sans text-[11px]"><span className={`font-mono text-[10px] ${p.priority === "P0" ? "text-rose-300" : p.priority === "P1" ? "text-amber-300" : "text-sky-300"}`}>{p.priority}</span> {p.partnerType}</span>
+                    <span className="font-sans text-[11px]"><span className={`font-mono text-[10px] ${p.priority === "P0" ? "text-rose-300" : p.priority === "P1" ? "text-gold-bright" : "text-sky-300"}`}>{p.priority}</span> {p.partnerType}</span>
                     <span className="font-mono text-[10px] text-rose-300">{p.signed} signed</span>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{p.status}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PARTNER_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PARTNER_RULE}</p>
           </CardContent>
         </Card>
 
@@ -379,7 +379,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{REGULATORY_TERMINOLOGY_RULE.rule}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{REGULATORY_TERMINOLOGY_RULE.rule}</p>
           </CardContent>
         </Card>
       </div>
@@ -400,7 +400,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{NINETY_DAY_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{NINETY_DAY_RULE}</p>
           </CardContent>
         </Card>
 
@@ -416,11 +416,11 @@ export default async function MarketExecutionPage() {
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground"><span className="text-gold-light">Target:</span> {q.target}</p>
                   <p className="font-sans text-[10px] text-rose-300"><span className="text-muted-foreground">Actual:</span> {q.actual}</p>
-                  <p className="font-sans text-[10px] text-amber-300"><span className="text-muted-foreground">Forecast:</span> {q.forecast}</p>
+                  <p className="font-sans text-[10px] text-gold-bright"><span className="text-muted-foreground">Forecast:</span> {q.forecast}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{ROADMAP_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{ROADMAP_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -443,7 +443,7 @@ export default async function MarketExecutionPage() {
           <CardContent>
             <p className="mb-1 font-mono text-[10px] uppercase text-rose-300">Blockers</p>
             <ul className="mb-2 flex flex-col gap-0.5">{FINAL_CERTIFICATION_MES.remainingBlockers.map(b => <li key={b} className="font-sans text-[10px] text-muted-foreground">• {b}</li>)}</ul>
-            <p className="mb-1 font-mono text-[10px] uppercase text-amber-300">Evidence Gaps</p>
+            <p className="mb-1 font-mono text-[10px] uppercase text-gold-bright">Evidence Gaps</p>
             <ul className="flex flex-col gap-0.5">{FINAL_CERTIFICATION_MES.evidenceGaps.map(g => <li key={g} className="font-sans text-[10px] text-muted-foreground">• {g}</li>)}</ul>
           </CardContent>
         </Card>
@@ -462,7 +462,7 @@ export default async function MarketExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{UNIT_ECONOMICS_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{UNIT_ECONOMICS_RULE}</p>
           </CardContent>
         </Card>
 
@@ -476,7 +476,7 @@ export default async function MarketExecutionPage() {
                     <span className="font-sans text-[11px]">{f.metric}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">{f.value}</span>
                   </div>
-                  <p className="font-sans text-[10px] text-amber-300">Alert: {f.alert}</p>
+                  <p className="font-sans text-[10px] text-gold-bright">Alert: {f.alert}</p>
                 </div>
               ))}
             </div>
@@ -506,7 +506,7 @@ export default async function MarketExecutionPage() {
               <div key={c.priority} className="border-b border-gold/5 py-1.5">
                 <p className="font-sans text-[11px] font-medium">{c.priority}</p>
                 <p className="font-sans text-[10px] text-muted-foreground">{c.activities.join(", ")}</p>
-                <p className="font-sans text-[10px] text-amber-300">{c.principle}</p>
+                <p className="font-sans text-[10px] text-gold-bright">{c.principle}</p>
               </div>
             ))}
           </CardContent>

@@ -281,7 +281,7 @@ export function NewProposalDialog({ enterprises, triggerClassName }: Props) {
                 Cooling {meta.cooling} · Voting {meta.voting} · Pass {meta.threshold}%
               </span>
               {meta.threshold > 50 && (
-                <span className="ml-auto inline-flex items-center gap-1 font-mono text-xs text-amber-300">
+                <span className="ml-auto inline-flex items-center gap-1 font-mono text-xs text-indigo-300">
                   <AlertTriangle className="h-3 w-3" />
                   Supermajority required
                 </span>

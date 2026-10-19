@@ -25,9 +25,9 @@ export const metadata = { title: "Global Launch · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number) =>
-  s >= 75 ? "text-emerald-300" : s >= 65 ? "text-amber-300" : "text-rose-300";
+  s >= 75 ? "text-emerald-300" : s >= 65 ? "text-gold-bright" : "text-rose-300";
 const priorityColor = (p: string) =>
-  p === "P0" ? "text-rose-300" : p === "P1" ? "text-amber-300" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
+  p === "P0" ? "text-rose-300" : p === "P1" ? "text-gold-bright" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
 
 export default async function GlobalLaunchPage() {
   const user = await getCurrentUser();
@@ -35,9 +35,9 @@ export default async function GlobalLaunchPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -283,7 +283,7 @@ export default async function GlobalLaunchPage() {
                 <div key={d.ddId} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{d.package}</span>
-                    <Badge variant="outline" className={`font-mono text-[10px] ${d.access === "Public" ? "border-emerald-400/30 text-emerald-300" : d.access === "Restricted" ? "border-amber-400/30 text-amber-300" : "border-rose-400/30 text-rose-300"}`}>{d.access}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[10px] ${d.access === "Public" ? "border-emerald-400/30 text-emerald-300" : d.access === "Restricted" ? "border-gold-light/30 text-gold-bright" : "border-rose-400/30 text-rose-300"}`}>{d.access}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{d.audience}</p>
                 </div>
@@ -300,7 +300,7 @@ export default async function GlobalLaunchPage() {
                 <div key={t.pillarId} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{t.pillar}</span>
-                    <Badge variant="outline" className={`font-mono text-[10px] ${t.access === "Public" ? "border-emerald-400/30 text-emerald-300" : "border-amber-400/30 text-amber-300"}`}>{t.access}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[10px] ${t.access === "Public" ? "border-emerald-400/30 text-emerald-300" : "border-gold-light/30 text-gold-bright"}`}>{t.access}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{t.content}</p>
                 </div>

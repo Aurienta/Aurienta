@@ -347,9 +347,9 @@ export function VotingModal({
           </div>
 
           {userVotingPower <= 0 && (
-            <div className="mt-3 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/[0.08] p-3">
-              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
-              <p className="font-sans text-[11px] text-amber-300">
+            <div className="mt-3 flex items-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/[0.08] p-3">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-indigo-400" />
+              <p className="font-sans text-[11px] text-indigo-300">
                 You hold no Equity Units in this enterprise. Acquire shares to participate in governance.
               </p>
             </div>

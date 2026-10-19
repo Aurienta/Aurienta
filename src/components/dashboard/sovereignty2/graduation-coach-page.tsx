@@ -212,7 +212,7 @@ function GaugeCard({ score }: { score: number }) {
       <p
         className={cn(
           "font-serif text-sm font-semibold",
-          score >= 90 ? "text-emerald-300" : score >= 75 ? "text-amber-300" : "text-foreground"
+          score >= 90 ? "text-emerald-300" : score >= 75 ? "text-indigo-300" : "text-foreground"
         )}
       >
         {verdict}

@@ -22,13 +22,13 @@ export const metadata = { title: "Commercialization System · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number, target: number) =>
-  s >= target - 5 ? "text-emerald-300" : s >= target - 15 ? "text-amber-300" : "text-rose-300";
+  s >= target - 5 ? "text-emerald-300" : s >= target - 15 ? "text-gold-bright" : "text-rose-300";
 const riskColor = (i: string) =>
-  i === "Critical" ? "text-rose-300" : i === "High" ? "text-amber-300" : i === "Medium" ? "text-sky-300" : "text-emerald-300";
+  i === "Critical" ? "text-rose-300" : i === "High" ? "text-gold-bright" : i === "Medium" ? "text-sky-300" : "text-emerald-300";
 const phaseColor = (p: string) =>
   p.includes("Expansion") || p === "Advocacy" ? "text-emerald-300" :
   p === "Retention" ? "text-sky-300" :
-  p === "Activation" ? "text-amber-300" : "text-gold-light";
+  p === "Activation" ? "text-gold-bright" : "text-gold-light";
 
 export default async function CommercializationPage() {
   const user = await getCurrentUser();
@@ -41,9 +41,9 @@ export default async function CommercializationPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -493,7 +493,7 @@ export default async function CommercializationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="flex flex-col gap-0.5">{GAP_ANALYSIS.remainingGaps.map(g => <li key={g} className="font-sans text-[11px] text-amber-300">• {g}</li>)}</ul>
+            <ul className="flex flex-col gap-0.5">{GAP_ANALYSIS.remainingGaps.map(g => <li key={g} className="font-sans text-[11px] text-gold-bright">• {g}</li>)}</ul>
           </CardContent>
         </Card>
 

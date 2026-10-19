@@ -21,7 +21,7 @@ export const metadata = { title: "Founder Office · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number) =>
-  s >= 80 ? "text-emerald-300" : s >= 70 ? "text-amber-300" : "text-rose-300";
+  s >= 80 ? "text-emerald-300" : s >= 70 ? "text-gold-bright" : "text-rose-300";
 const trendIcon = (t: string) =>
   t === "Up" ? "↑" : t === "Down" ? "↓" : "→";
 
@@ -31,9 +31,9 @@ export default async function FounderOfficePage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -92,7 +92,7 @@ export default async function FounderOfficePage() {
                   <span className={`font-serif text-lg font-semibold ${scoreColor(d.score)}`}>{d.score}</span>
                 </div>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-background/50">
-                  <div className={`h-full ${d.score >= 80 ? "bg-emerald-400" : d.score >= 70 ? "bg-amber-400" : "bg-rose-400"}`} style={{ width: `${d.score}%` }} />
+                  <div className={`h-full ${d.score >= 80 ? "bg-emerald-400" : d.score >= 70 ? "bg-gold-light/30" : "bg-rose-400"}`} style={{ width: `${d.score}%` }} />
                 </div>
                 <p className="mt-0.5 font-mono text-[9px] text-muted-foreground">{d.source}</p>
               </div>
@@ -114,7 +114,7 @@ export default async function FounderOfficePage() {
               <div key={p.panelId} className="rounded border border-gold/10 bg-background/30 p-2">
                 <p className="font-sans text-[11px] font-medium">{p.panel}</p>
                 <p className="font-mono text-[10px] text-muted-foreground">{p.source}</p>
-                <p className="font-sans text-[10px] text-amber-300">Alert: {p.alertThreshold}</p>
+                <p className="font-sans text-[10px] text-gold-bright">Alert: {p.alertThreshold}</p>
               </div>
             ))}
           </div>

@@ -274,7 +274,7 @@ export function OfflineModeClient() {
               {online ? (
                 <Wifi className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
               ) : (
-                <WifiOff className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <WifiOff className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
               )}
               Connectivity
             </CardTitle>
@@ -287,7 +287,7 @@ export function OfflineModeClient() {
                   "inline-flex h-2.5 w-2.5 rounded-full",
                   online
                     ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.7)]"
-                    : "bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.7)]"
+                    : "bg-indigo-500 shadow-[0_0_12px_rgba(245,158,11,0.7)]"
                 )}
                 aria-hidden="true"
               />
@@ -506,10 +506,10 @@ function StatusRow({
       {ok ? (
         <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
       ) : (
-        <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+        <AlertCircle className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
       )}
       <span className="font-medium text-foreground">{label}:</span>
-      <span className={ok ? "text-emerald-700 dark:text-emerald-300" : "text-amber-700 dark:text-amber-300"}>
+      <span className={ok ? "text-emerald-700 dark:text-emerald-300" : "text-indigo-700 dark:text-indigo-300"}>
         {ok ? okText : notOkText}
       </span>
     </div>
@@ -518,7 +518,7 @@ function StatusRow({
 
 function ActionStatusPill({ status }: { status: OfflineAction["status"] }) {
   const styles: Record<OfflineAction["status"], string> = {
-    pending: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    pending: "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
     synced: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     failed: "border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300",
   };

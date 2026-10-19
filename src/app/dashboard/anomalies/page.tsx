@@ -215,8 +215,10 @@ function Kpi({
   detail: string;
   tone: "amber" | "red" | "gold";
 }) {
+  // AUD-UX-2: previously the "amber" tone used amber-* Tailwind utilities —
+  // a brand theme violation. Remap to indigo (the brand's "caution" colour).
   const toneClasses = {
-    amber: "border-amber-400/20 from-amber-400/[0.05] text-amber-300",
+    amber: "border-indigo-400/20 from-indigo-400/[0.05] text-indigo-300",
     red: "border-red-400/20 from-red-400/[0.05] text-red-300",
     gold: "border-gold/20 from-gold/[0.05] text-gold-light",
   }[tone];

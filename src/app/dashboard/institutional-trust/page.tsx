@@ -21,9 +21,9 @@ export const metadata = { title: "Institutional Trust · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number) =>
-  s >= 80 ? "text-emerald-300" : s >= 70 ? "text-amber-300" : "text-rose-300";
+  s >= 80 ? "text-emerald-300" : s >= 70 ? "text-gold-bright" : "text-rose-300";
 const riskColor = (r: string) =>
-  r === "Low" ? "text-emerald-300" : r === "Medium" ? "text-amber-300" : "text-rose-300";
+  r === "Low" ? "text-emerald-300" : r === "Medium" ? "text-gold-bright" : "text-rose-300";
 const trendIcon = (t: string) => t === "Up" ? "↑" : t === "Down" ? "↓" : "→";
 
 export default async function InstitutionalTrustPage() {
@@ -32,9 +32,9 @@ export default async function InstitutionalTrustPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -91,7 +91,7 @@ export default async function InstitutionalTrustPage() {
                 </div>
                 <p className={`mt-0.5 font-serif text-lg font-semibold ${scoreColor(s.score)}`}>{s.score}</p>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-background/50">
-                  <div className={`h-full ${s.score >= 80 ? "bg-emerald-400" : s.score >= 70 ? "bg-amber-400" : "bg-rose-400"}`} style={{ width: `${s.score}%` }} />
+                  <div className={`h-full ${s.score >= 80 ? "bg-emerald-400" : s.score >= 70 ? "bg-gold-light/30" : "bg-rose-400"}`} style={{ width: `${s.score}%` }} />
                 </div>
                 <p className="mt-0.5 font-mono text-[9px] text-muted-foreground">{s.evidenceBase}</p>
               </div>
@@ -113,7 +113,7 @@ export default async function InstitutionalTrustPage() {
               <div key={p.panelId} className="rounded border border-gold/10 bg-background/30 p-2">
                 <p className="font-sans text-[11px] font-medium">{p.panel}</p>
                 <p className="font-mono text-[10px] text-muted-foreground">{p.source}</p>
-                <p className="font-sans text-[10px] text-amber-300">Alert: {p.alertThreshold}</p>
+                <p className="font-sans text-[10px] text-gold-bright">Alert: {p.alertThreshold}</p>
               </div>
             ))}
           </div>
@@ -130,7 +130,7 @@ export default async function InstitutionalTrustPage() {
                 <div key={r.repoId} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{r.repository}</span>
-                    <Badge variant="outline" className={`font-mono text-[10px] ${r.classification === "Public" ? "border-emerald-400/30 text-emerald-300" : r.classification === "Internal" ? "border-sky-400/30 text-sky-300" : r.classification === "Confidential" ? "border-amber-400/30 text-amber-300" : "border-rose-400/30 text-rose-300"}`}>{r.classification}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[10px] ${r.classification === "Public" ? "border-emerald-400/30 text-emerald-300" : r.classification === "Internal" ? "border-sky-400/30 text-sky-300" : r.classification === "Confidential" ? "border-gold-light/30 text-gold-bright" : "border-rose-400/30 text-rose-300"}`}>{r.classification}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{r.owner} · {r.documentCount}</p>
                 </div>
@@ -261,7 +261,7 @@ export default async function InstitutionalTrustPage() {
                 <div key={t.sectionId} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{t.section}</span>
-                    <Badge variant="outline" className={`font-mono text-[10px] ${t.access === "Public" ? "border-emerald-400/30 text-emerald-300" : "border-amber-400/30 text-amber-300"}`}>{t.access}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[10px] ${t.access === "Public" ? "border-emerald-400/30 text-emerald-300" : "border-gold-light/30 text-gold-bright"}`}>{t.access}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{t.content}</p>
                 </div>

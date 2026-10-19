@@ -353,7 +353,7 @@ export function RiskProfileClient({
               )}
             </div>
 
-            <div className="flex items-start gap-2.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5">
+            <div className="flex items-start gap-2.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-2.5">
               <Checkbox
                 id="disclaimer"
                 checked={disclaimerAccepted}
@@ -362,7 +362,7 @@ export function RiskProfileClient({
               />
               <label
                 htmlFor="disclaimer"
-                className="font-sans text-xs leading-relaxed text-amber-900"
+                className="font-sans text-xs leading-relaxed text-indigo-900"
               >
                 I acknowledge that AURIENTA does NOT underwrite insurance.
                 This API provides enterprise risk data only. Insurance
@@ -441,7 +441,7 @@ export function RiskProfileClient({
                           profile.healthScore >= 80
                             ? "text-emerald-500"
                             : profile.healthScore >= 60
-                            ? "text-amber-500"
+                            ? "text-indigo-500"
                             : "text-rose-500"
                         )}
                       />
@@ -461,7 +461,7 @@ export function RiskProfileClient({
                         profile.recommendation === "low_risk"
                           ? "border-emerald-300 bg-emerald-50 text-emerald-700"
                           : profile.recommendation === "moderate_risk"
-                          ? "border-amber-300 bg-amber-50 text-amber-700"
+                          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
                           : "border-rose-300 bg-rose-50 text-rose-700"
                       )}
                     >
@@ -484,7 +484,7 @@ export function RiskProfileClient({
                           vs.status === "healthy"
                             ? "border-emerald-200 bg-emerald-50"
                             : vs.status === "warning"
-                            ? "border-amber-200 bg-amber-50"
+                            ? "border-indigo-200 bg-indigo-50"
                             : "border-rose-200 bg-rose-50"
                         )}
                       >
@@ -514,7 +514,7 @@ export function RiskProfileClient({
                           key={i}
                           className="flex items-start gap-1.5 font-sans text-[11px] text-slate-700"
                         >
-                          <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                          <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-indigo-500" />
                           {d}
                         </li>
                       ))}
@@ -543,9 +543,9 @@ export function RiskProfileClient({
                   </div>
                 </div>
 
-                <div className="flex items-start gap-1.5 rounded border border-amber-200 bg-amber-50 px-2.5 py-1.5">
-                  <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-amber-600" />
-                  <p className="font-sans text-[11px] leading-relaxed text-amber-800">
+                <div className="flex items-start gap-1.5 rounded border border-indigo-200 bg-indigo-50 px-2.5 py-1.5">
+                  <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-indigo-600" />
+                  <p className="font-sans text-[11px] leading-relaxed text-indigo-800">
                     {profile.disclaimer}
                   </p>
                 </div>
@@ -619,7 +619,7 @@ export function RiskProfileClient({
                             h.recommendation === "low_risk"
                               ? "border-emerald-300 bg-emerald-50 text-emerald-700"
                               : h.recommendation === "moderate_risk"
-                              ? "border-amber-300 bg-amber-50 text-amber-700"
+                              ? "border-indigo-300 bg-indigo-50 text-indigo-700"
                               : "border-rose-300 bg-rose-50 text-rose-700"
                           )}
                         >

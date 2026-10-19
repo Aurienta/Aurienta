@@ -231,7 +231,7 @@ export function DiasporaClient({
             <p className="font-serif text-sm font-medium">Regulated banks only</p>
             <span
               title="Simulation — real banking integration pending. Funds flow modeling only; no live banking rails connected yet."
-              className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 font-mono text-xs uppercase tracking-wider text-amber-300"
+              className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/10 px-1.5 py-0.5 font-mono text-xs uppercase tracking-wider text-gold-light"
             >
               Simulation
             </span>
@@ -239,7 +239,7 @@ export function DiasporaClient({
           <p className="mt-1 font-sans text-xs text-muted-foreground">
             Target rails: Wise, Revolut, correspondent banks. No crypto/stablecoin.
           </p>
-          <p className="mt-1 font-sans text-xs text-amber-300/90">
+          <p className="mt-1 font-sans text-xs text-muted-foreground/90">
             1% cross-border surcharge (not yet applied — pilot).
           </p>
         </div>
@@ -264,7 +264,28 @@ export function DiasporaClient({
           <h2 className="font-serif text-lg font-semibold">Diaspora Participation opportunities</h2>
         </div>
         {opportunities.length === 0 ? (
-          <p className="py-6 text-center font-sans text-sm text-muted-foreground">No active capital formation opportunities.</p>
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-gold/25 bg-background/30 py-10 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/20 bg-gold/8">
+              <Building2 className="h-6 w-6 text-gold/70" aria-hidden />
+            </div>
+            <div className="px-6">
+              <p className="font-serif text-base font-semibold text-foreground">
+                No active Capital Formation opportunities
+              </p>
+              <p className="mt-1 font-sans text-xs text-muted-foreground">
+                New rounds open as enterprises enter the fundraising_active phase.
+                Browse all enterprises in the registry meanwhile.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/opportunities"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-white transition-all hover:shadow-[0_8px_24px_-8px_rgba(79,70,229,0.5)]"
+              aria-label="Browse all Capital Participation opportunities"
+            >
+              Browse opportunities
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {opportunities.map((o) => {
@@ -293,9 +314,9 @@ export function DiasporaClient({
       </div>
 
       {/* Compliance note */}
-      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.03] p-4">
-        <p className="flex items-start gap-2 font-sans text-xs text-amber-300/90">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+      <div className="rounded-xl border border-gold/25 bg-gold/[0.04] p-4">
+        <p className="flex items-start gap-2 font-sans text-xs text-foreground/80">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden />
           <span>
             Enhanced due diligence for cross-border Participations &gt;50,000 EGP: source-of-funds declaration
             and proof of wealth required under Egyptian AML Law 80/2002. Capital controls may apply in your

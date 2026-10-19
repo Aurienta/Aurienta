@@ -416,9 +416,13 @@ function SignalCard({
   sub: string;
   tone: "green" | "amber" | "red";
 }) {
+  // AUD-UX-2: previously the "amber" tone used indigo-400 Tailwind utilities —
+  // a brand theme violation. Remap "amber" → indigo to keep within the
+  // brand palette while still distinguishing "emerging drift" from "on-constitution"
+  // (emerald) and "charter breach risk" (rose).
   const toneClasses = {
     green: "border-emerald-400/25 text-emerald-300",
-    amber: "border-amber-400/25 text-amber-300",
+    amber: "border-indigo-400/25 text-indigo-300",
     red: "border-red-400/25 text-red-300",
   }[tone];
   return (

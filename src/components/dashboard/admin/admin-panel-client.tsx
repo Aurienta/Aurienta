@@ -117,9 +117,9 @@ export function AdminPanelClient({
               </p>
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-2">
-            <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-            <p className="text-xs text-amber-200/90">
+          <div className="mt-4 flex items-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/5 px-4 py-2">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
+            <p className="text-xs text-indigo-200/90">
               <span className="font-semibold">BUILD MODE:</span> Admin panel is accessible without password during development. Add a hidden admin gate before production.
             </p>
           </div>
@@ -155,7 +155,7 @@ export function AdminPanelClient({
                   <span className="text-sm text-muted-foreground">{hc.name}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm text-foreground">{hc.count}</span>
-                    <span className={cn("h-2 w-2 rounded-full", hc.status === "ok" ? "bg-emerald-500" : "bg-amber-500")} />
+                    <span className={cn("h-2 w-2 rounded-full", hc.status === "ok" ? "bg-emerald-500" : "bg-indigo-500")} />
                   </div>
                 </div>
               ))}
@@ -274,7 +274,7 @@ export function AdminPanelClient({
                             "text-[10px]",
                             e.status === "active" ? "border-emerald-500/30 text-emerald-500" :
                             e.status === "frozen" ? "border-red-500/30 text-red-500" :
-                            "border-amber-500/30 text-amber-500"
+                            "border-indigo-500/30 text-indigo-500"
                           )}
                         >
                           {e.status}
@@ -344,13 +344,13 @@ export function AdminPanelClient({
 
 function StatCard({ icon: Icon, label, value, alert }: { icon: React.ElementType; label: string; value: number; alert?: boolean }) {
   return (
-    <Card className={cn("border-gold/15", alert && "border-amber-500/30 bg-amber-500/5")}>
+    <Card className={cn("border-gold/15", alert && "border-indigo-500/30 bg-indigo-500/5")}>
       <CardContent className="p-4">
         <div className="flex items-center gap-2">
-          <Icon className={cn("h-4 w-4", alert ? "text-amber-500" : "text-gold/70")} />
+          <Icon className={cn("h-4 w-4", alert ? "text-indigo-500" : "text-gold/70")} />
           <span className="text-xs text-muted-foreground">{label}</span>
         </div>
-        <div className={cn("mt-2 font-serif text-2xl font-bold", alert ? "text-amber-500" : "text-foreground")}>
+        <div className={cn("mt-2 font-serif text-2xl font-bold", alert ? "text-indigo-500" : "text-foreground")}>
           {value.toLocaleString()}
         </div>
       </CardContent>

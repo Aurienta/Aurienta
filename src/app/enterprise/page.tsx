@@ -95,7 +95,7 @@ function tierColor(tier: string): string {
       return "border-gold/40 text-gold-light bg-gold/5";
     case "D":
     case "E":
-      return "border-amber-400/40 text-amber-300 bg-amber-400/5";
+      return "border-indigo-400/40 text-indigo-300 bg-indigo-400/5";
     case "F":
       return "border-fuchsia-400/30 text-fuchsia-300 bg-fuchsia-400/5";
     default:
@@ -107,7 +107,7 @@ function statusColor(status: string): string {
   if (status === "graduated") return "border-emerald-400/40 text-emerald-300 bg-emerald-400/5";
   if (status === "frozen") return "border-red-400/40 text-red-300 bg-red-400/5";
   if (status === "fundraising_active") return "border-gold/40 text-gold-light bg-gold/5";
-  if (status === "graduation_pending") return "border-amber-400/40 text-amber-300 bg-amber-400/5";
+  if (status === "graduation_pending") return "border-indigo-400/40 text-indigo-300 bg-indigo-400/5";
   return "border-muted-foreground/30 text-muted-foreground";
 }
 
@@ -192,7 +192,7 @@ export default async function EnterpriseDirectoryPage() {
               </div>
 
               {usedFallback && (
-                <p className="mt-3 font-sans text-xs text-amber-300/80" role="note">
+                <p className="mt-3 font-sans text-xs text-indigo-300/80" role="note">
                   Showing the curated demo directory — the live database is unreachable from this
                   environment. Visit the public registry for the live, ledger-anchored list.
                 </p>

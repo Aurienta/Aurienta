@@ -350,12 +350,14 @@ function SummaryCard({
 // ── Engagement score pill ──
 function EngagementScore({ score }: { score: number }) {
   const tone = scoreTone(score);
+  // AUD-UX-2: previously the "neutral" tone used amber-* — brand violation.
+  // Remap to indigo so medium engagement scores stay in the brand palette.
   const color =
     tone === "positive"
       ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
       : tone === "negative"
         ? "border-red-400/30 bg-red-400/10 text-red-300"
-        : "border-amber-400/30 bg-amber-400/10 text-amber-300";
+        : "border-indigo-400/30 bg-indigo-400/10 text-indigo-300";
   const Icon = tone === "positive" ? TrendingUp : tone === "negative" ? TrendingDown : Sparkles;
   return (
     <span
@@ -380,7 +382,8 @@ function ChurnRiskBadge({ risk }: { risk: "low" | "medium" | "high" }) {
     },
     medium: {
       label: "Medium",
-      className: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+      // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+      className: "border-indigo-400/30 bg-indigo-400/10 text-indigo-300",
       icon: AlertTriangle,
     },
     high: {

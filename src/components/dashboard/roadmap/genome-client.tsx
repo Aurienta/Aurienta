@@ -62,7 +62,9 @@ function tierColor(tier: string): string {
     case "D":
       return "border-violet-400/30 bg-violet-400/10 text-violet-300";
     case "E":
-      return "border-amber-400/30 bg-amber-400/10 text-amber-300";
+      // AUD-UX-2: previously amber-* — brand violation. Use a muted indigo
+      // to keep within the brand palette while remaining distinct from A–D.
+      return "border-indigo-300 bg-indigo-200/30 text-indigo-200";
     case "F":
       return "border-rose-400/30 bg-rose-400/10 text-rose-300";
     default:
@@ -75,7 +77,9 @@ function healthColor(rating: string | null): string {
   const first = rating[0]?.toUpperCase();
   if (first === "A") return "border-emerald-400/30 bg-emerald-400/10 text-emerald-300";
   if (first === "B") return "border-gold/30 bg-gold/12 text-gold-light";
-  if (first === "C") return "border-amber-400/30 bg-amber-400/10 text-amber-300";
+  // AUD-UX-2: previously amber-* — brand violation. C-rated enterprises
+  // use a deeper indigo to flag elevated risk without leaking the amber palette.
+  if (first === "C") return "border-indigo-400/40 bg-indigo-400/15 text-indigo-200";
   return "border-rose-400/30 bg-rose-400/10 text-rose-300";
 }
 
@@ -291,11 +295,11 @@ function GenomeCardItem({ genome, index }: { genome: GenomeCard; index: number }
 export function GenomeClient({ genomes }: { genomes: GenomeCard[] }) {
   return (
     <div className="flex flex-col gap-6">
-      {/* Amber disclaimer */}
-      <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+      {/* Indigo disclaimer (AUD-UX-2: was amber, brand violation) */}
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-400/30 bg-indigo-400/[0.06] p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" />
         <div>
-          <p className="font-sans text-sm font-medium text-amber-700 dark:text-amber-300">
+          <p className="font-sans text-sm font-medium text-indigo-700 dark:text-indigo-300">
             Predictions are statistical estimates, NOT guarantees of success.
           </p>
           <p className="mt-1 font-sans text-xs text-muted-foreground">

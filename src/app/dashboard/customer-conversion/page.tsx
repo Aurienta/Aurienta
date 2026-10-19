@@ -37,7 +37,7 @@ export const dynamic = "force-dynamic";
 const evidenceColor = (level: string) =>
   level === "E0" ? "text-rose-300" :
   ["E5", "E6", "E7", "E8", "E9"].includes(level) ? "text-emerald-300" :
-  "text-amber-300";
+  "text-gold-bright";
 
 export default async function CustomerConversionPage() {
   const user = await getCurrentUser();
@@ -111,7 +111,7 @@ export default async function CustomerConversionPage() {
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[10px] text-amber-300">{PROMOTION_RULE.rule}</p>
+          <p className="mt-2 font-sans text-[10px] text-gold-bright">{PROMOTION_RULE.rule}</p>
           <p className="mt-1 font-mono text-[10px] uppercase text-rose-300">Invalid Promotion Examples (REJECTED by system)</p>
           <div className="grid gap-1 sm:grid-cols-2">
             {INVALID_PROMOTION_EXAMPLES.map(p => (
@@ -137,7 +137,7 @@ export default async function CustomerConversionPage() {
               <div className="rounded border border-gold/8 bg-background/30 p-2 text-center"><p className="font-serif text-xl font-semibold text-rose-300">{CURRENT_BASELINE.measuredOutcomes}</p><p className="font-mono text-[9px] text-muted-foreground">Measured outcomes</p></div>
               <div className="rounded border border-gold/8 bg-background/30 p-2 text-center"><p className="font-serif text-xl font-semibold text-rose-300">{CURRENT_BASELINE.references}</p><p className="font-mono text-[9px] text-muted-foreground">References</p></div>
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{CURRENT_BASELINE.statement}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{CURRENT_BASELINE.statement}</p>
           </CardContent>
         </Card>
 
@@ -156,7 +156,7 @@ export default async function CustomerConversionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{GATE_RULE_CPR}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{GATE_RULE_CPR}</p>
           </CardContent>
         </Card>
       </div>
@@ -204,7 +204,7 @@ export default async function CustomerConversionPage() {
                 <div key={f.field} className="border-b border-gold/5 py-1">
                   <span className="font-sans text-[11px] font-medium">{f.field}</span>
                   <p className="font-sans text-[10px] text-muted-foreground">{f.capture}</p>
-                  <p className="font-sans text-[9px] text-amber-300">Rule: {f.rule}</p>
+                  <p className="font-sans text-[9px] text-gold-bright">Rule: {f.rule}</p>
                 </div>
               ))}
             </div>
@@ -224,7 +224,7 @@ export default async function CustomerConversionPage() {
               ))}
             </div>
             <p className="mt-2 font-mono text-[10px] text-gold-light">Outputs: {QUALIFICATION_GATE.outputs.join(" / ")}</p>
-            <p className="font-sans text-[10px] text-amber-300">{QUALIFICATION_GATE.rule}</p>
+            <p className="font-sans text-[10px] text-gold-bright">{QUALIFICATION_GATE.rule}</p>
           </CardContent>
         </Card>
       </div>
@@ -243,7 +243,7 @@ export default async function CustomerConversionPage() {
                 <p className="font-sans text-[10px] text-muted-foreground">{s.definition}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{COMMERCIAL_OFFER_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{COMMERCIAL_OFFER_RULE}</p>
           </CardContent>
         </Card>
 
@@ -262,7 +262,7 @@ export default async function CustomerConversionPage() {
             <div className="mt-2 rounded border border-gold/8 bg-background/30 p-2">
               <p className="font-mono text-[10px] uppercase text-gold-light">Revenue Evidence Chain</p>
               <p className="font-sans text-[10px] text-muted-foreground">{REVENUE_EVIDENCE_CHAIN.chain}</p>
-              <p className="font-sans text-[10px] text-amber-300">Current: {REVENUE_EVIDENCE_CHAIN.currentStatus}</p>
+              <p className="font-sans text-[10px] text-gold-bright">Current: {REVENUE_EVIDENCE_CHAIN.currentStatus}</p>
             </div>
           </CardContent>
         </Card>
@@ -315,7 +315,7 @@ export default async function CustomerConversionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{EXECUTION_SCORE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{EXECUTION_SCORE_RULE}</p>
           </CardContent>
         </Card>
 
@@ -330,7 +330,7 @@ export default async function CustomerConversionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{WEEKLY_REVIEW_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{WEEKLY_REVIEW_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -349,7 +349,7 @@ export default async function CustomerConversionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{CLAIM_CONTROL_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{CLAIM_CONTROL_RULE}</p>
           </CardContent>
         </Card>
 
@@ -407,7 +407,7 @@ export default async function CustomerConversionPage() {
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase text-gold-light">Extended</p>
             <div className="flex flex-wrap gap-1">
-              {HONEST_CERTIFICATION_CPR.architectureDisciplineReport.extended.map(e => <Badge key={e} variant="outline" className="border-amber-400/20 font-mono text-[9px] text-amber-300">{e}</Badge>)}
+              {HONEST_CERTIFICATION_CPR.architectureDisciplineReport.extended.map(e => <Badge key={e} variant="outline" className="border-gold-light/20 font-mono text-[9px] text-gold-bright">{e}</Badge>)}
             </div>
             <p className="mt-2 font-sans text-[10px] text-rose-300">New architecture created: {HONEST_CERTIFICATION_CPR.architectureDisciplineReport.newArchitectureCreated}</p>
           </CardContent>
@@ -421,7 +421,7 @@ export default async function CustomerConversionPage() {
             </div>
             <p className="mt-2 font-sans text-[11px] text-rose-300">Decision: {HONEST_CERTIFICATION_CPR.blueprintChangeReport.decision}</p>
             <p className="font-sans text-[11px] text-muted-foreground">{HONEST_CERTIFICATION_CPR.blueprintChangeReport.reason}</p>
-            <p className="mt-1 font-sans text-[11px] text-amber-300">{HONEST_CERTIFICATION_CPR.blueprintChangeReport.statement}</p>
+            <p className="mt-1 font-sans text-[11px] text-gold-bright">{HONEST_CERTIFICATION_CPR.blueprintChangeReport.statement}</p>
           </CardContent>
         </Card>
       </div>

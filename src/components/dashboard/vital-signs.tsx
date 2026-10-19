@@ -64,7 +64,7 @@ export async function VitalSigns({ enterpriseIds }: { enterpriseIds: string[] })
                 <p className="font-sans text-xs uppercase tracking-wider text-muted-foreground">{s.label}</p>
                 <span
                   className={`h-2 w-2 rounded-full ${
-                    status === "green" ? "bg-emerald-400" : status === "yellow" ? "bg-amber-400" : "bg-red-400"
+                    status === "green" ? "bg-emerald-400" : status === "yellow" ? "bg-indigo-400" : "bg-red-400"
                   }`}
                 />
               </div>

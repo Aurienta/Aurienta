@@ -140,7 +140,7 @@ const VERDICT_META: Record<
   },
   pending: {
     label: "Pending",
-    cls: "border-amber-400/50 bg-amber-400/10 text-amber-700",
+    cls: "border-indigo-400/50 bg-indigo-400/10 text-indigo-700",
     icon: Clock,
   },
 };
@@ -1308,7 +1308,7 @@ function StatPill({
     purple: "border-purple-200 bg-white/70 text-purple-700",
     emerald: "border-emerald-200 bg-white/70 text-emerald-700",
     rose: "border-rose-200 bg-white/70 text-rose-700",
-    amber: "border-amber-200 bg-white/70 text-amber-700",
+    amber: "border-indigo-200 bg-white/70 text-indigo-700",
   };
   return (
     <div

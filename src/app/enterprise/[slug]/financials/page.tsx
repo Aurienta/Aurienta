@@ -359,7 +359,7 @@ function VitalMetric({
     tone === "ok"
       ? "text-emerald-300"
       : tone === "alert"
-      ? "text-amber-300"
+      ? "text-indigo-300"
       : "text-foreground";
   return (
     <div className="rounded-lg border border-gold/12 bg-foreground/[0.02] p-3">

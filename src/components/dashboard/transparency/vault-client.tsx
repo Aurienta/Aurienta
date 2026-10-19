@@ -99,7 +99,7 @@ const STATUS_META: Record<
 > = {
   pending: {
     label: "Pending",
-    cls: "text-amber-300 border-amber-400/30 bg-amber-400/10",
+    cls: "text-indigo-300 border-indigo-400/30 bg-indigo-400/10",
     icon: Clock,
   },
   approved: {

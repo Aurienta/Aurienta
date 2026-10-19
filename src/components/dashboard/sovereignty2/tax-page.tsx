@@ -142,8 +142,8 @@ export function TaxPage({ enterprises, initialEnterpriseId }: TaxPageProps) {
 
               <AiContent content={data.content} />
 
-              <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3">
-                <p className="font-mono text-xs leading-relaxed text-amber-200/85">
+              <div className="rounded-xl border border-indigo-400/20 bg-indigo-400/[0.05] px-4 py-3">
+                <p className="font-mono text-xs leading-relaxed text-indigo-200/85">
                   <ShieldCheck className="mr-1.5 inline h-3 w-3 align-text-bottom" />
                   Every suggestion is advisory and must be confirmed by the independent accountant.
                   AURIENTA does not provide tax advice — it surfaces legal optimizations.
@@ -186,7 +186,7 @@ function TaxStatusCard({
     tone === "good"
       ? "border-emerald-400/20 bg-emerald-400/[0.04]"
       : tone === "warn"
-      ? "border-amber-400/25 bg-amber-400/[0.05]"
+      ? "border-indigo-400/25 bg-indigo-400/[0.05]"
       : "border-red-400/25 bg-red-400/[0.05]";
   return (
     <div className={cn("rounded-xl border p-4", cls)}>

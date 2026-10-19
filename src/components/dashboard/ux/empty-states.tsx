@@ -55,16 +55,18 @@ export function EmptyState({
         {actionLabel && actionHref && (
           <button
             onClick={() => router.push(actionHref)}
-            className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-black transition-all hover:shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)]"
+            className="btn-sheen inline-flex items-center gap-1.5 rounded-lg bg-gold-gradient px-4 py-2 font-sans text-xs font-semibold text-white transition-all hover:shadow-[0_8px_30px_-8px_rgba(79,70,229,0.6)]"
+            aria-label={`${actionLabel} — primary action`}
           >
             {actionLabel}
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </button>
         )}
         {secondaryLabel && secondaryHref && (
           <button
             onClick={() => router.push(secondaryHref)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gold/20 px-4 py-2 font-sans text-xs font-medium text-foreground transition-colors hover:border-gold/40 hover:bg-gold/5"
+            aria-label={`${secondaryLabel} — secondary action`}
           >
             {secondaryLabel}
           </button>
@@ -78,34 +80,36 @@ export function EmptyState({
 // Quick Start Cards — shown on dashboard overview for new users
 // ═══════════════════════════════════════════════════════════════════
 
+// UX-AUDIT-3: theme compliance — all gradient stops use the indigo brand
+// token family (gold/gold-light/gold-soft). Amber/yellow removed.
 const QUICK_ACTIONS = [
   {
     icon: Wallet,
     title: "View Portfolio",
     desc: "Check your Equity Units, P&L, and dividend history",
     href: "/dashboard/portfolio",
-    color: "from-amber-500/10 to-amber-600/5",
+    color: "from-gold/12 to-gold-soft/5",
   },
   {
     icon: Compass,
     title: "Find Opportunities",
     desc: "Browse vetted enterprises raising capital",
     href: "/dashboard/opportunities",
-    color: "from-yellow-500/10 to-amber-500/5",
+    color: "from-gold-light/12 to-gold/5",
   },
   {
     icon: Scale,
     title: "Vote on Governance",
     desc: "Participate in active proposals + constitutional council",
     href: "/dashboard/governance",
-    color: "from-gold/10 to-amber-600/5",
+    color: "from-gold/10 to-gold-deep/5",
   },
   {
     icon: Rocket,
     title: "Found an Enterprise",
     desc: "Constitute your sovereign enterprise step by step",
     href: "/dashboard/founder",
-    color: "from-amber-600/10 to-yellow-500/5",
+    color: "from-gold-soft/12 to-gold-light/5",
   },
 ];
 
@@ -191,7 +195,7 @@ export function StarterBanner({ stsScore }: { stsScore: number }) {
       </div>
       <button
         onClick={() => router.push("/dashboard/profile")}
-        className="btn-sheen rounded-lg bg-gold-gradient px-3 py-1.5 font-sans text-[11px] font-semibold text-black transition-all hover:shadow-[0_6px_20px_-6px_rgba(79,70,229,0.5)]"
+        className="btn-sheen rounded-lg bg-gold-gradient px-3 py-1.5 font-sans text-[11px] font-semibold text-white transition-all hover:shadow-[0_6px_20px_-6px_rgba(79,70,229,0.5)]"
       >
         Complete Profile
       </button>

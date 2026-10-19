@@ -154,14 +154,14 @@ export function CloseCapitalFormationButton({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Progress</span>
-            <span className={cn(goalMet ? "text-emerald-300" : "text-amber-300")}>
+            <span className={cn(goalMet ? "text-emerald-300" : "text-indigo-300")}>
               {goalEgp > 0 ? `${((raisedEgp / goalEgp) * 100).toFixed(1)}%` : "—"}
             </span>
           </div>
         </div>
 
         {!goalMet && (
-          <div className="flex flex-col gap-3 rounded-lg border border-amber-400/30 bg-amber-400/[0.04] p-3">
+          <div className="flex flex-col gap-3 rounded-lg border border-indigo-400/30 bg-indigo-400/[0.04] p-3">
             <label className="flex items-start gap-2 font-sans text-xs text-foreground">
               <Checkbox
                 checked={earlyClose}

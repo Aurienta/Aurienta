@@ -434,7 +434,7 @@ export default async function TrustPage() {
                           "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-xs " +
                           (statusOk
                             ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                            : "border-amber-400/30 bg-amber-400/10 text-amber-300")
+                            : "border-indigo-400/30 bg-indigo-400/10 text-indigo-300")
                         }
                       >
                         <Dot className="h-3 w-3" />
@@ -621,7 +621,7 @@ export default async function TrustPage() {
                       (color === "emerald"
                         ? "border-emerald-400/25"
                         : color === "amber"
-                          ? "border-amber-400/25"
+                          ? "border-indigo-400/25"
                           : "border-red-400/25")
                     }
                   >
@@ -635,7 +635,7 @@ export default async function TrustPage() {
                           (color === "emerald"
                             ? "text-emerald-300"
                             : color === "amber"
-                              ? "text-amber-300"
+                              ? "text-indigo-300"
                               : "text-red-300")
                         }
                       />
@@ -646,7 +646,7 @@ export default async function TrustPage() {
                         (color === "emerald"
                           ? "text-emerald-300"
                           : color === "amber"
-                            ? "text-amber-300"
+                            ? "text-indigo-300"
                             : "text-red-300")
                       }
                     >

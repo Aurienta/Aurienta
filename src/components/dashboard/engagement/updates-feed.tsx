@@ -281,7 +281,7 @@ function SentimentBadge({ sentiment }: { sentiment: "positive" | "neutral" | "ne
     neutral: {
       label: "Neutral",
       icon: Minus,
-      className: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+      className: "border-indigo-400/30 bg-indigo-400/10 text-indigo-300",
     },
     negative: {
       label: "Negative",

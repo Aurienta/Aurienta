@@ -53,7 +53,7 @@ export async function AiInsights({
             key={idx}
             className={`rounded-xl border p-3.5 ${
               i.tone === "warn"
-                ? "border-amber-400/30 bg-amber-400/5"
+                ? "border-indigo-400/30 bg-indigo-400/5"
                 : i.tone === "ok"
                 ? "border-emerald-400/25 bg-emerald-400/5"
                 : "border-gold/15 bg-gold/[0.03]"
@@ -62,7 +62,7 @@ export async function AiInsights({
             <div className="flex items-center gap-2">
               <i.icon
                 className={`h-4 w-4 ${
-                  i.tone === "warn" ? "text-amber-400" : i.tone === "ok" ? "text-emerald-400" : "text-gold"
+                  i.tone === "warn" ? "text-indigo-400" : i.tone === "ok" ? "text-emerald-400" : "text-gold"
                 }`}
               />
               <p className="font-sans text-xs font-semibold text-foreground">{i.title}</p>

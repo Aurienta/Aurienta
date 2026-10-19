@@ -96,7 +96,7 @@ export default async function ExecutionWarRoomPage() {
         </CardHeader>
         <CardContent>
           <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Ranking formula:</span> {ACTION_RANKING_FORMULA.formula}</p>
-          <p className="font-sans text-[11px] text-amber-300">{ACTION_RANKING_FORMULA.rule}</p>
+          <p className="font-sans text-[11px] text-gold-bright">{ACTION_RANKING_FORMULA.rule}</p>
           <div className="mt-3">
             <p className="font-mono text-[10px] uppercase text-emerald-300">Current Top 5 (from 30-day plan)</p>
             <ol className="mt-1 flex flex-col gap-1">
@@ -199,11 +199,11 @@ export default async function ExecutionWarRoomPage() {
             <p className="font-mono text-[10px] uppercase text-gold-light">Severity Levels</p>
             {BLOCKER_SEVERITY.map(s => (
               <div key={s.level} className="flex items-center justify-between border-b border-gold/5 py-0.5">
-                <span className={`font-mono text-[10px] ${s.level === "P0" ? "text-rose-300" : s.level === "P1" ? "text-amber-300" : "text-sky-300"}`}>{s.level}</span>
+                <span className={`font-mono text-[10px] ${s.level === "P0" ? "text-rose-300" : s.level === "P1" ? "text-gold-bright" : "text-sky-300"}`}>{s.level}</span>
                 <span className="font-sans text-[10px] text-muted-foreground">{s.meaning}</span>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TOP_5_BLOCKERS_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TOP_5_BLOCKERS_RULE}</p>
           </CardContent>
         </Card>
 
@@ -244,7 +244,7 @@ export default async function ExecutionWarRoomPage() {
                 <span className={`font-sans text-[10px] ${f.occurrences === "5+" ? "text-rose-300" : "text-muted-foreground"}`}>{f.status}</span>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{OBJECTION_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{OBJECTION_RULE}</p>
             <div className="mt-2 rounded border border-gold/8 bg-background/30 p-2">
               <p className="font-mono text-[10px] uppercase text-gold-light">Product Change Control</p>
               <p className="font-sans text-[10px] text-muted-foreground">Flow: {PRODUCT_CHANGE_FLOW.join(" → ")}</p>
@@ -264,7 +264,7 @@ export default async function ExecutionWarRoomPage() {
                 <div key={s.target} className="flex items-center justify-between border-b border-gold/5 py-0.5">
                   <div>
                     <span className="font-sans text-[11px]">{s.target}</span>
-                    <span className={`ml-1 font-mono text-[9px] ${s.type === "Stretch" ? "text-amber-300" : "text-sky-300"}`}>[{s.type}]</span>
+                    <span className={`ml-1 font-mono text-[9px] ${s.type === "Stretch" ? "text-gold-bright" : "text-sky-300"}`}>[{s.type}]</span>
                   </div>
                   <Badge variant="outline" className="border-rose-400/30 font-mono text-[9px] text-rose-300">{s.status}</Badge>
                 </div>
@@ -285,7 +285,7 @@ export default async function ExecutionWarRoomPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{SCORE_RULE_FIEW}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{SCORE_RULE_FIEW}</p>
           </CardContent>
         </Card>
       </div>
@@ -304,7 +304,7 @@ export default async function ExecutionWarRoomPage() {
                 <p className="font-sans text-[10px] text-muted-foreground">{t.rule}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TIME_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TIME_RULE}</p>
           </CardContent>
         </Card>
 
@@ -319,7 +319,7 @@ export default async function ExecutionWarRoomPage() {
                 <span className="font-sans text-[10px] text-muted-foreground">{c.question}</span>
               </div>
             ))}
-            <p className="mt-2 font-mono text-[10px] uppercase text-amber-300">Identifies</p>
+            <p className="mt-2 font-mono text-[10px] uppercase text-gold-bright">Identifies</p>
             <p className="font-sans text-[10px] text-muted-foreground">{BRAIN_AI_EXECUTION_COS.identifies.join(" · ")}</p>
             <p className="mt-2 font-sans text-[10px] text-rose-300">{BRAIN_AI_EXECUTION_COS.neverInvents}</p>
           </CardContent>
@@ -349,7 +349,7 @@ export default async function ExecutionWarRoomPage() {
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase text-gold-light">Record Fields ({EVIDENCE_RECORD_FIELDS.length})</p>
             <p className="font-sans text-[10px] text-muted-foreground">{EVIDENCE_RECORD_FIELDS.join(" · ")}</p>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{EVIDENCE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{EVIDENCE_RULE}</p>
           </CardContent>
         </Card>
       </div>

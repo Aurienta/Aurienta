@@ -65,7 +65,7 @@ const STAGE_NAMES = ["AI Ruling", "Human Panel", "Final Binding"];
 const STATUS_META: Record<string, { label: string; cls: string; icon: React.ElementType }> = {
   filed: { label: "Filed", cls: "text-muted-foreground border-gold/20 bg-foreground/5", icon: Clock },
   ai_ruling: { label: "AI ruling", cls: "text-gold-light border-gold/30 bg-gold/10", icon: Sparkles },
-  human_panel: { label: "Human panel", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10", icon: Gavel },
+  human_panel: { label: "Human panel", cls: "text-indigo-300 border-indigo-400/30 bg-indigo-400/10", icon: Gavel },
   resolved: { label: "Resolved", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10", icon: CheckCircle2 },
   final_ruling: { label: "Final ruling", cls: "text-gold-light border-gold/40 bg-gold/12", icon: Gavel },
   dismissed: { label: "Dismissed", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10", icon: Scale },

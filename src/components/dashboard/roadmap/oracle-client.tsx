@@ -169,10 +169,10 @@ export function OracleClient({
         </div>
       </motion.div>
 
-      {/* Compliance banner (amber) */}
-      <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
-        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
-        <div className="font-sans text-sm leading-relaxed text-amber-900">
+      {/* Compliance banner (indigo — AUD-UX-2: was amber, brand violation) */}
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-3">
+        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
+        <div className="font-sans text-sm leading-relaxed text-indigo-900">
           <span className="font-semibold">Compliance:</span> {DISCLAIMER}
         </div>
       </div>
@@ -345,9 +345,9 @@ export function OracleClient({
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-start gap-1.5 rounded border border-amber-200 bg-amber-50 px-2.5 py-1.5">
-                  <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-amber-600" />
-                  <p className="font-sans text-[11px] leading-relaxed text-amber-800">
+                <div className="flex items-start gap-1.5 rounded border border-indigo-200 bg-indigo-50 px-2.5 py-1.5">
+                  <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-indigo-600" />
+                  <p className="font-sans text-[11px] leading-relaxed text-indigo-800">
                     {result.disclaimer}
                   </p>
                 </div>

@@ -234,7 +234,7 @@ export default async function StewardPage() {
             <Row k="Uptime (90d)" v={`${pct(creUptimePct, 2)} — ${creDecisionHours.size}/${totalHours90d}h active · SLA 99.9%`} />
             <Row k="Policy pack" v={`v2026.06.21 · ${CRE_POLICY_FUNCTION_COUNT} policy functions`} />
             <Row k="Decisions / day" v={`${decisionsPerDay.toLocaleString()} (last 24h, audit-tagged "cre")`} />
-            <Row k="Oracle Mirror" v={<span className={oracleMirrorArmed ? "text-emerald-300" : "text-amber-300"}>{oracleMirrorLabel}</span>} />
+            <Row k="Oracle Mirror" v={<span className={oracleMirrorArmed ? "text-emerald-300" : "text-gold-bright"}>{oracleMirrorLabel}</span>} />
             <Row k="Read-only fallback" v="armed" />
           </ul>
           <div className="mt-4 rounded-xl border border-gold/12 bg-foreground/[0.02] p-3">
@@ -251,9 +251,9 @@ export default async function StewardPage() {
           </div>
           <ul className="mt-4 space-y-2 font-sans text-xs">
             <Row k="Model" v="Gemma 2 7B oversight (fine-tuned)" />
-            <Row k="Hallucination rate" v={<span className={aiHallucinationPct < 1 ? "text-emerald-300" : "text-amber-300"}>{pct(aiHallucinationPct, 1)} — {aiFallbackCount}/{allAiArtifacts.length} fallbacks (target &lt;1%)</span>} />
-            <Row k="Bias ratio" v={<span className="text-amber-300">{aiBiasDisplay}</span>} />
-            <Row k="Drift score" v={<span className={aiDrift < 0.1 ? "text-emerald-300" : "text-amber-300"}>{aiDrift.toFixed(3)} — {driftPairs} consecutive pairs (target &lt;0.1)</span>} />
+            <Row k="Hallucination rate" v={<span className={aiHallucinationPct < 1 ? "text-emerald-300" : "text-gold-bright"}>{pct(aiHallucinationPct, 1)} — {aiFallbackCount}/{allAiArtifacts.length} fallbacks (target &lt;1%)</span>} />
+            <Row k="Bias ratio" v={<span className="text-gold-bright">{aiBiasDisplay}</span>} />
+            <Row k="Drift score" v={<span className={aiDrift < 0.1 ? "text-emerald-300" : "text-gold-bright"}>{aiDrift.toFixed(3)} — {driftPairs} consecutive pairs (target &lt;0.1)</span>} />
             <Row k="AI artifacts" v={`${aiArtifacts.toLocaleString()} persisted`} />
             <Row k="Human-in-loop" v="every >10% expense, every vote" />
           </ul>
@@ -301,7 +301,7 @@ export default async function StewardPage() {
                   inc.severity === "SEV-1"
                     ? "border-rose-400/40 bg-rose-400/15 text-rose-300"
                     : inc.severity === "SEV-2"
-                    ? "border-amber-400/40 bg-amber-400/15 text-amber-300"
+                    ? "border-gold-light/40 bg-gold-light/15 text-gold-bright"
                     : "border-gold/30 bg-gold/10 text-gold-light"
                 }`}>
                   {inc.severity}

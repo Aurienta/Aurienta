@@ -39,11 +39,11 @@ export const metadata = { title: "Strategic Partners · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const priorityColor = (p: string) =>
-  p === "P0" ? "text-rose-300" : p === "P1" ? "text-amber-300" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
+  p === "P0" ? "text-rose-300" : p === "P1" ? "text-gold-bright" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
 const statusColor = (s: string) =>
-  s === "APPROVED" ? "text-emerald-300" : s === "NOT RESEARCHED" || s === "NOT STARTED" ? "text-rose-300" : "text-amber-300";
+  s === "APPROVED" ? "text-emerald-300" : s === "NOT RESEARCHED" || s === "NOT STARTED" ? "text-rose-300" : "text-gold-bright";
 const briefColor = (c: string) =>
-  c === "FACT" ? "text-emerald-300" : c === "LEGAL QUESTION" ? "text-amber-300" : c === "ASSUMPTION" ? "text-sky-300" : c === "REQUIRES COUNSEL" ? "text-rose-300" : "text-rose-300";
+  c === "FACT" ? "text-emerald-300" : c === "LEGAL QUESTION" ? "text-gold-bright" : c === "ASSUMPTION" ? "text-sky-300" : c === "REQUIRES COUNSEL" ? "text-rose-300" : "text-rose-300";
 
 export default async function StrategicPartnersPage() {
   const user = await getCurrentUser();
@@ -103,7 +103,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PARTNER_CATEGORY_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PARTNER_CATEGORY_RULE}</p>
           </CardContent>
         </Card>
 
@@ -139,7 +139,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PARTNER_SCHEMA_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PARTNER_SCHEMA_RULE}</p>
           </CardContent>
         </Card>
 
@@ -162,7 +162,7 @@ export default async function StrategicPartnersPage() {
                 <span className="font-sans text-[10px] text-muted-foreground">{t.meaning}</span>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">Per score: {PARTNER_SCORING_MODEL.perScoreRequired.join(", ")}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">Per score: {PARTNER_SCORING_MODEL.perScoreRequired.join(", ")}</p>
           </CardContent>
         </Card>
       </div>
@@ -183,7 +183,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{REGULATORY_ENGINE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{REGULATORY_ENGINE_RULE}</p>
           </CardContent>
         </Card>
 
@@ -227,7 +227,7 @@ export default async function StrategicPartnersPage() {
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase text-gold-light">Relationships</p>
             <div className="flex flex-wrap gap-1">
-              {RELATIONSHIP_GRAPH_EDGES.map(e => <Badge key={e} variant="outline" className="border-amber-400/20 font-mono text-[9px] text-amber-300">{e}</Badge>)}
+              {RELATIONSHIP_GRAPH_EDGES.map(e => <Badge key={e} variant="outline" className="border-gold-light/20 font-mono text-[9px] text-gold-bright">{e}</Badge>)}
             </div>
             <p className="mt-2 font-mono text-[10px] text-rose-300">Current nodes: {RELATIONSHIP_GRAPH_RULE.currentNodes} · edges: {RELATIONSHIP_GRAPH_RULE.currentEdges}</p>
           </CardContent>
@@ -290,7 +290,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{FUNNEL_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{FUNNEL_RULE}</p>
           </CardContent>
         </Card>
 
@@ -304,11 +304,11 @@ export default async function StrategicPartnersPage() {
                     <span className="font-sans text-[11px]">{d.dimension}</span>
                     <p className="font-sans text-[9px] text-muted-foreground">{d.evidence}</p>
                   </div>
-                  <span className={`font-mono text-[10px] ${d.score >= 70 ? "text-emerald-300" : d.score >= 40 ? "text-amber-300" : "text-rose-300"}`}>{d.score}</span>
+                  <span className={`font-mono text-[10px] ${d.score >= 70 ? "text-emerald-300" : d.score >= 40 ? "text-gold-bright" : "text-rose-300"}`}>{d.score}</span>
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{SCORE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{SCORE_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -365,7 +365,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{CLAIM_CONTROL_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{CLAIM_CONTROL_RULE}</p>
           </CardContent>
         </Card>
 
@@ -382,7 +382,7 @@ export default async function StrategicPartnersPage() {
               ))}
             </div>
             <p className="mt-2 font-sans text-[10px] text-rose-300">Never fabricate: {BRAIN_AI_INSTITUTIONAL_AGENT.neverFabricate.join(", ")}</p>
-            <p className="mt-1 font-sans text-[10px] text-amber-300">{BRAIN_AI_INSTITUTIONAL_AGENT.unknownHandling}</p>
+            <p className="mt-1 font-sans text-[10px] text-gold-bright">{BRAIN_AI_INSTITUTIONAL_AGENT.unknownHandling}</p>
           </CardContent>
         </Card>
       </div>
@@ -393,7 +393,7 @@ export default async function StrategicPartnersPage() {
           <CardHeader><CardTitle className="flex items-center gap-2 font-serif text-base"><Network className="h-4 w-4 text-gold" /> Regulatory + Partner Dependency Map</CardTitle></CardHeader>
           <CardContent>
             <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Structure:</span> {DEPENDENCY_MAP.structure}</p>
-            <p className="mt-2 font-sans text-[11px] text-amber-300"><span className="text-gold-light">Blocker example:</span> {DEPENDENCY_MAP.blockerChainExample}</p>
+            <p className="mt-2 font-sans text-[11px] text-gold-bright"><span className="text-gold-light">Blocker example:</span> {DEPENDENCY_MAP.blockerChainExample}</p>
             <p className="mt-2 font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Rule:</span> {DEPENDENCY_MAP.rule}</p>
             <p className="mt-1 font-sans text-[11px] text-rose-300"><span className="text-gold-light">Current blockers:</span> {DEPENDENCY_MAP.currentBlockers}</p>
           </CardContent>
@@ -413,7 +413,7 @@ export default async function StrategicPartnersPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{WEEKLY_REVIEW_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{WEEKLY_REVIEW_RULE}</p>
           </CardContent>
         </Card>
       </div>

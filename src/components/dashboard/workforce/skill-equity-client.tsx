@@ -204,7 +204,7 @@ export function SkillEquityClient({
                         <CheckCircle2 className="mr-1 h-3 w-3" /> Eligible
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="border-amber-400/30 text-amber-400">
+                      <Badge variant="outline" className="border-indigo-400/30 text-indigo-400">
                         <Clock className="mr-1 h-3 w-3" /> {24 - emp.tenureMonths}mo to go
                       </Badge>
                     )}
@@ -272,7 +272,7 @@ export function SkillEquityClient({
                         <XCircle className="mr-1 h-3 w-3" /> Rejected
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="border-amber-400/30 text-amber-400">
+                      <Badge variant="outline" className="border-indigo-400/30 text-indigo-400">
                         <Clock className="mr-1 h-3 w-3" /> Pending
                       </Badge>
                     )}

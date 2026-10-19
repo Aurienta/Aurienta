@@ -208,10 +208,10 @@ export function LegalDisclaimerClient({
           </div>
 
           {/* Important notice */}
-          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="mt-4 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-4">
             <div className="flex gap-3">
-              <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
-              <p className="text-sm text-amber-200/90">
+              <AlertTriangle className="h-5 w-5 flex-shrink-0 text-indigo-500" />
+              <p className="text-sm text-indigo-200/90">
                 {language === "ar"
                   ? "يرجى قراءة هذه الشروط بعناية. بالنسبة للمستخدمين المصريين، تُعد النسخة العربية النص القانوني المتحكم. الأحكام الإلزامية للقانون المصري تسود على أي قاعدة داخلية."
                   : "Please read these terms carefully. For Egyptian users, the Arabic version is the controlling legal text. Mandatory provisions of Egyptian law prevail over any internal platform rule."}

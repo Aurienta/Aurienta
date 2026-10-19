@@ -204,17 +204,17 @@ export function EnterpriseProfileClient({
           <Badge variant="outline" className="border-gold/15 font-mono text-[10px]">{sectorLabel}</Badge>
           <Badge variant="outline" className="border-gold/15 font-mono text-[10px]">{stageMeta?.name ?? enterprise.stage}</Badge>
           <Badge variant="outline" className="border-gold/15 font-mono text-[10px]">{enterprise.legalForm}</Badge>
-          <Badge variant="outline" className={`font-mono text-[10px] ${enterprise.status === "active" ? "border-emerald-400/30 text-emerald-300" : "border-amber-400/30 text-amber-300"}`}>
+          <Badge variant="outline" className={`font-mono text-[10px] ${enterprise.status === "active" ? "border-emerald-400/30 text-emerald-300" : "border-indigo-400/30 text-indigo-300"}`}>
             {enterprise.status}
           </Badge>
         </div>
       </header>
 
-      {/* Evidence Warning */}
-      <div className="mb-6 rounded-lg border border-amber-400/20 bg-amber-400/5 p-3">
+      {/* Evidence Warning — AUD-UX-2: was amber-* (brand violation), remapped to indigo */}
+      <div className="mb-6 rounded-lg border border-indigo-400/20 bg-indigo-400/5 p-3">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-300" />
-          <p className="font-sans text-[11px] text-amber-300">
+          <AlertTriangle className="h-4 w-4 text-indigo-300" />
+          <p className="font-sans text-[11px] text-indigo-300">
             Evidence Level: <strong>{enterprise.evidenceLevel}</strong> — {EVIDENCE_LABELS[enterprise.evidenceLevel] ?? "Unknown"}.
             All claims are evidence-tagged. Unverified information is labeled <strong>FOUNDER-PROVIDED</strong>, not <strong>VERIFIED</strong>.
             No claims of customers, partners, regulatory approval, or revenue are made without evidence.
@@ -514,7 +514,8 @@ function HealthRow({ label, status }: { label: string; status: string }) {
       <span className="font-sans text-[11px] text-muted-foreground">{label}</span>
       <Badge variant="outline" className={`font-mono text-[10px] ${
         isGood ? "border-emerald-400/30 text-emerald-300" :
-        isNeutral ? "border-amber-400/30 text-amber-300" :
+        // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+        isNeutral ? "border-indigo-400/30 text-indigo-300" :
         "border-muted-foreground/30 text-muted-foreground"
       }`}>
         {status === "not_yet_established" ? "NOT YET ESTABLISHED" : status}

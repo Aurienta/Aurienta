@@ -144,7 +144,7 @@ export function IndustryModuleCard({ module, index }: Props) {
                 "rounded-lg border p-2.5",
                 v.healthy
                   ? "border-emerald-400/25 bg-emerald-400/[0.05]"
-                  : "border-amber-400/25 bg-amber-400/[0.05]"
+                  : "border-indigo-400/25 bg-indigo-400/[0.05]"
               )}
             >
               <div className="flex items-baseline justify-between gap-2">
@@ -152,7 +152,7 @@ export function IndustryModuleCard({ module, index }: Props) {
                 <span
                   className={cn(
                     "font-mono text-[12px] font-semibold",
-                    v.healthy ? "text-emerald-300" : "text-amber-300"
+                    v.healthy ? "text-emerald-300" : "text-indigo-300"
                   )}
                 >
                   {v.value}
@@ -207,7 +207,7 @@ export function IndustryModuleCard({ module, index }: Props) {
                 "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[10px]",
                 m.positive
                   ? "border-emerald-400/25 bg-emerald-400/[0.05] text-emerald-300"
-                  : "border-amber-400/25 bg-amber-400/[0.05] text-amber-300"
+                  : "border-indigo-400/25 bg-indigo-400/[0.05] text-indigo-300"
               )}
             >
               {m.positive ? (
@@ -290,13 +290,13 @@ export function IndustryModuleCard({ module, index }: Props) {
                   <div className="mt-1 flex items-center justify-between gap-2 font-mono text-[9px] text-muted-foreground/70">
                     <span>{e.stage.replace("_", " ")} · raised {egp(e.raisedEgp, { compact: true })}</span>
                     <span className="flex items-center gap-1.5">
-                      <span className={e.metricHealthy ? "text-emerald-300" : "text-amber-300"}>
+                      <span className={e.metricHealthy ? "text-emerald-300" : "text-indigo-300"}>
                         {e.metricLabel}: {e.metricValue}
                       </span>
                       <CheckCircle2
                         className={cn(
                           "h-3 w-3",
-                          e.metricHealthy ? "text-emerald-400" : "text-amber-400"
+                          e.metricHealthy ? "text-emerald-400" : "text-indigo-400"
                         )}
                       />
                     </span>

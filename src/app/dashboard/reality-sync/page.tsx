@@ -98,7 +98,7 @@ export default async function RealitySyncPage() {
                 <span className={`ml-auto inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${
                   b.status === "healthy"
                     ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                    : "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                    : "border-gold-light/30 bg-gold-light/10 text-gold-bright"
                 }`}>
                   {b.status === "healthy" ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                   {b.status}
@@ -132,7 +132,7 @@ export default async function RealitySyncPage() {
                   <span className="font-mono text-xs text-gold-light">{r.bank}</span>
                   <span className="font-sans text-xs text-muted-foreground/85">{new Date(r.ts).toLocaleString()}</span>
                   <span className={`ml-auto inline-flex items-center gap-1 font-mono text-xs ${
-                    r.unmatched === 0 ? "text-emerald-300" : "text-amber-300"
+                    r.unmatched === 0 ? "text-emerald-300" : "text-gold-bright"
                   }`}>
                     {r.unmatched === 0 ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                     drift {r.drift_pct.toFixed(3)}%
@@ -164,7 +164,7 @@ export default async function RealitySyncPage() {
                   <span className={`ml-auto inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${
                     w.status === "healthy"
                       ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                      : "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                      : "border-gold-light/30 bg-gold-light/10 text-gold-bright"
                   }`}>
                     {w.status === "healthy" ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                     {w.status}
@@ -195,7 +195,7 @@ function KPI({ label, value, icon: Icon, ok }: { label: string; value: string; i
     <div className="rounded-2xl border border-gold/15 glass p-4">
       <div className="flex items-center justify-between">
         <Icon className="h-4 w-4 text-gold" />
-        {ok !== undefined && (ok ? <CheckCircle2 className="h-3 w-3 text-emerald-400" /> : <AlertTriangle className="h-3 w-3 text-amber-400" />)}
+        {ok !== undefined && (ok ? <CheckCircle2 className="h-3 w-3 text-emerald-400" /> : <AlertTriangle className="h-3 w-3 text-gold-light" />)}
       </div>
       <div className="mt-2 font-serif text-xl font-semibold">{value}</div>
       <div className="font-sans text-xs uppercase tracking-wide text-muted-foreground">{label}</div>

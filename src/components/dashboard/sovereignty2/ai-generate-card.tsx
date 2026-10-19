@@ -70,7 +70,7 @@ export function AiGenerateCard({
         </header>
 
         {disabledReason && buttonDisabled && !hasContent && (
-          <p className="rounded-lg border border-amber-400/20 bg-amber-400/[0.05] px-3 py-2 font-mono text-xs leading-relaxed text-amber-200/80">
+          <p className="rounded-lg border border-indigo-400/20 bg-indigo-400/[0.05] px-3 py-2 font-mono text-xs leading-relaxed text-indigo-200/80">
             <AlertTriangle className="mr-1.5 inline h-3 w-3 align-text-bottom" />
             {disabledReason}
           </p>

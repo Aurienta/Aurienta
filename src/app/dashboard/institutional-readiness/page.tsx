@@ -36,7 +36,7 @@ export default async function ReadinessPage() {
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {Object.entries(cr.subScores).map(([k, v]) => (
                 <div key={k} className="rounded border border-gold/10 bg-background/30 p-2 text-center">
-                  <p className={`font-serif text-lg font-semibold ${v >= 70 ? "text-emerald-300" : v >= 50 ? "text-amber-300" : "text-rose-300"}`}>{v}</p>
+                  <p className={`font-serif text-lg font-semibold ${v >= 70 ? "text-emerald-300" : v >= 50 ? "text-gold-bright" : "text-rose-300"}`}>{v}</p>
                   <p className="font-mono text-[10px] text-muted-foreground">{k}</p>
                 </div>
               ))}

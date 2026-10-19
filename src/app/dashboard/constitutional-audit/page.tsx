@@ -23,10 +23,10 @@ export const metadata = { title: "Constitutional Audit · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number, threshold = 75) =>
-  s >= threshold ? "text-emerald-300" : s >= 60 ? "text-amber-300" : "text-rose-300";
+  s >= threshold ? "text-emerald-300" : s >= 60 ? "text-gold-bright" : "text-rose-300";
 const statusBadge = (s: string) => {
   const cls = s === "PASS" || s === "ALIGNED" || s === "IMPLEMENTED" ? "border-emerald-400/30 text-emerald-300" :
-    s === "PARTIAL" || s === "PARTIAL FAIL" || s === "PARTIALLY IMPLEMENTED" ? "border-amber-400/30 text-amber-300" :
+    s === "PARTIAL" || s === "PARTIAL FAIL" || s === "PARTIALLY IMPLEMENTED" ? "border-gold-light/30 text-gold-bright" :
     s === "DRIFT RISK" || s === "FAIL" || s === "NOT IMPLEMENTED" || s === "HIGH" ? "border-rose-400/30 text-rose-300" :
     s === "SUPPORTING" || s === "NEUTRAL" || s === "NOT YET ACTIVATED" || s === "DOCUMENTED ONLY" || s === "MEDIUM" ? "border-sky-400/30 text-sky-300" :
     "border-gold/20 text-muted-foreground";
@@ -92,7 +92,7 @@ export default async function ConstitutionalAuditPage() {
         <Card className="border-gold/12 glass">
           <CardContent className="p-4 text-center">
             <Scale className="mx-auto h-6 w-6 text-gold" />
-            <p className="mt-1 font-serif text-xl font-semibold text-amber-300">{CONSTITUTIONAL_INTEGRITY}</p>
+            <p className="mt-1 font-serif text-xl font-semibold text-gold-bright">{CONSTITUTIONAL_INTEGRITY}</p>
             <p className="font-mono text-[10px] text-muted-foreground">Constitutional Integrity</p>
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export default async function ConstitutionalAuditPage() {
               <div key={i} className="border-b border-gold/5 py-2">
                 <div className="flex items-center justify-between">
                   <span className="font-sans text-[11px] font-medium">{g.gap}</span>
-                  <Badge variant="outline" className={`font-mono text-[10px] ${g.rank === "P0" ? "border-rose-400/30 text-rose-300" : g.rank === "P1" ? "border-amber-400/30 text-amber-300" : "border-sky-400/30 text-sky-300"}`}>{g.rank}</Badge>
+                  <Badge variant="outline" className={`font-mono text-[10px] ${g.rank === "P0" ? "border-rose-400/30 text-rose-300" : g.rank === "P1" ? "border-gold-light/30 text-gold-bright" : "border-sky-400/30 text-sky-300"}`}>{g.rank}</Badge>
                 </div>
                 <p className="font-sans text-[10px] text-muted-foreground">Impact: {g.impact}</p>
                 <p className="font-sans text-[10px] text-emerald-300">Fix: {g.fix}</p>
@@ -171,7 +171,7 @@ export default async function ConstitutionalAuditPage() {
       <Card className="mb-6 border-gold/12 glass">
         <CardHeader><CardTitle className="flex items-center gap-2 font-serif text-base"><GitBranch className="h-4 w-4 text-gold" /> I. Commercialization Drift Assessment</CardTitle></CardHeader>
         <CardContent>
-          <p className="font-sans text-[11px] text-amber-300 mb-2">{COMMERCIALIZATION_DRIFT.assessment}</p>
+          <p className="font-sans text-[11px] text-gold-bright mb-2">{COMMERCIALIZATION_DRIFT.assessment}</p>
           <div className="max-h-48 overflow-y-auto">
             {COMMERCIALIZATION_DRIFT.perSystem.map(s => (
               <div key={s.system} className="flex items-center justify-between border-b border-gold/5 py-1">
@@ -207,7 +207,7 @@ export default async function ConstitutionalAuditPage() {
                     <td className="py-1 pr-2">{f.capability}</td>
                     <td className="py-1 pr-2">{statusBadge(f.status)}</td>
                     <td className="py-1 pr-2">{f.constitutionalEnforcement ? <CheckCircle2 className="h-3 w-3 text-emerald-300" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}</td>
-                    <td className="py-1"><span className={`font-mono text-[10px] ${f.risk === "HIGH" ? "text-rose-300" : f.risk === "MEDIUM" ? "text-amber-300" : "text-emerald-300"}`}>{f.risk}</span></td>
+                    <td className="py-1"><span className={`font-mono text-[10px] ${f.risk === "HIGH" ? "text-rose-300" : f.risk === "MEDIUM" ? "text-gold-bright" : "text-emerald-300"}`}>{f.risk}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -230,7 +230,7 @@ export default async function ConstitutionalAuditPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-1 font-sans text-[10px] text-amber-300">{ENTERPRISE_LIFECYCLE.assessment}</p>
+            <p className="mt-1 font-sans text-[10px] text-gold-bright">{ENTERPRISE_LIFECYCLE.assessment}</p>
           </CardContent>
         </Card>
 
@@ -242,7 +242,7 @@ export default async function ConstitutionalAuditPage() {
               <p key={i} className="font-sans text-[10px] text-muted-foreground">✓ {item}</p>
             ))}
             <p className="mt-1 font-sans text-[10px] text-emerald-300">No permanent lock-in: {GRADUATION_INTEGRITY.noPermanentLockIn}</p>
-            <p className="font-sans text-[10px] text-amber-300">Gap: {GRADUATION_INTEGRITY.gap}</p>
+            <p className="font-sans text-[10px] text-gold-bright">Gap: {GRADUATION_INTEGRITY.gap}</p>
           </CardContent>
         </Card>
       </div>
@@ -257,7 +257,7 @@ export default async function ConstitutionalAuditPage() {
             <div className="max-h-24 overflow-y-auto">{TERMINOLOGY_INTEGRITY.passAreas.map((a, i) => <p key={i} className="font-sans text-[10px] text-muted-foreground">✓ {a}</p>)}</div>
             <p className="mt-2 font-mono text-[10px] uppercase text-rose-300">Fail Areas</p>
             <div className="max-h-24 overflow-y-auto">{TERMINOLOGY_INTEGRITY.failAreas.map((a, i) => <p key={i} className="font-sans text-[10px] text-muted-foreground">✗ {a}</p>)}</div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TERMINOLOGY_INTEGRITY.assessment}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TERMINOLOGY_INTEGRITY.assessment}</p>
           </CardContent>
         </Card>
 

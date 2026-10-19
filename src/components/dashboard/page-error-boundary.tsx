@@ -29,7 +29,7 @@ export class PageErrorBoundary extends React.Component<
         <div className="flex min-h-[50vh] items-center justify-center p-6">
           <Card className="max-w-md border-gold/20 bg-background/80">
             <CardContent className="p-8 text-center">
-              <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-amber-500" />
+              <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-indigo-500" />
               <h2 className="mb-2 font-serif text-lg text-foreground">
                 Something went wrong
               </h2>

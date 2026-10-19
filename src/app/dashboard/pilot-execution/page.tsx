@@ -26,7 +26,7 @@ export const metadata = { title: "Pilot Execution · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const scoreColor = (s: number, t: number) =>
-  s >= t ? "text-emerald-300" : s >= t - 10 ? "text-amber-300" : "text-rose-300";
+  s >= t ? "text-emerald-300" : s >= t - 10 ? "text-gold-bright" : "text-rose-300";
 
 export default async function PilotExecutionPage() {
   const user = await getCurrentUser();
@@ -36,9 +36,9 @@ export default async function PilotExecutionPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -72,8 +72,8 @@ export default async function PilotExecutionPage() {
                 <p className="font-serif text-2xl font-semibold text-rose-300">{r.beforePilot}</p>
                 <p className="font-mono text-[10px] text-muted-foreground">Before pilot</p>
               </div>
-              <div className="rounded border border-amber-400/20 bg-background/30 p-2 text-center">
-                <p className="font-serif text-2xl font-semibold text-amber-300">{r.duringPilot}</p>
+              <div className="rounded border border-gold-light/20 bg-background/30 p-2 text-center">
+                <p className="font-serif text-2xl font-semibold text-gold-bright">{r.duringPilot}</p>
                 <p className="font-mono text-[10px] text-muted-foreground">During pilot</p>
               </div>
               <div className="rounded border border-emerald-400/20 bg-background/30 p-2 text-center">
@@ -223,7 +223,7 @@ export default async function PilotExecutionPage() {
                 <div key={g.engId} className="border-b border-gold/5 py-1">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{g.regulator}</span>
-                    <Badge variant="outline" className={`font-mono text-[10px] ${g.status === "PASS" ? "border-emerald-400/30 text-emerald-300" : g.status === "PARTIAL" ? "border-amber-400/30 text-amber-300" : "border-sky-400/30 text-sky-300"}`}>{g.status}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[10px] ${g.status === "PASS" ? "border-emerald-400/30 text-emerald-300" : g.status === "PARTIAL" ? "border-gold-light/30 text-gold-bright" : "border-sky-400/30 text-sky-300"}`}>{g.status}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{g.engagementType} · {g.nextStep}</p>
                 </div>
@@ -285,7 +285,7 @@ export default async function PilotExecutionPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[11px] text-amber-300">{PILOT_COMPLETION_RULE}</p>
+            <p className="mt-2 font-sans text-[11px] text-gold-bright">{PILOT_COMPLETION_RULE}</p>
           </CardContent>
         </Card>
 
@@ -303,7 +303,7 @@ export default async function PilotExecutionPage() {
                     <tr key={d.dimension} className="border-b border-gold/5">
                       <td className="py-1 pr-2 text-[10px]">{d.dimension}</td>
                       <td className="py-1 pr-2 font-mono text-[10px] text-rose-300">{d.beforePilot}</td>
-                      <td className="py-1 pr-2 font-mono text-[10px] text-amber-300">{d.duringPilot}</td>
+                      <td className="py-1 pr-2 font-mono text-[10px] text-gold-bright">{d.duringPilot}</td>
                       <td className="py-1 font-mono text-[10px] text-emerald-300">{d.afterPilot}</td>
                     </tr>
                   ))}

@@ -220,7 +220,7 @@ export function PriorityAllocationClient({
         className={
           ok
             ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-            : "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+            : "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400"
         }
       >
         {ok ? "Eligible" : "Below minimum"}
@@ -353,7 +353,7 @@ export function PriorityAllocationClient({
           </div>
 
           {enterprises.length === 0 ? (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800">
+            <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-indigo-800">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <p className="font-sans text-xs">
                 No enterprises are currently in fundraising_active status. Check
@@ -514,7 +514,7 @@ export function PriorityAllocationClient({
                             {egp(a.allocatedEgp)}
                           </span>
                         ) : (
-                          <span className="text-amber-700">pending</span>
+                          <span className="text-indigo-700">pending</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right font-mono text-xs text-indigo-900/60">
@@ -670,7 +670,7 @@ export function PriorityAllocationClient({
                                 {egp(r.allocatedEgp)}
                               </span>
                             ) : (
-                              <span className="text-amber-700">pending</span>
+                              <span className="text-indigo-700">pending</span>
                             )}
                           </TableCell>
                         </TableRow>

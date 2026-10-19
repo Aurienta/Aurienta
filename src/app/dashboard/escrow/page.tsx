@@ -34,7 +34,7 @@ function escrowHealthFlag(balanceEgp: number, monthlyBurnEgp: number): {
   if (balanceEgp === 0) return { level: 1, label: "Empty", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" };
   const runway = monthlyBurnEgp > 0 ? balanceEgp / monthlyBurnEgp : 99;
   if (runway < 3) return { level: 3, label: "Critical (L3)", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" };
-  if (runway < 6) return { level: 2, label: "Watch (L2)", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" };
+  if (runway < 6) return { level: 2, label: "Watch (L2)", cls: "text-gold-bright border-gold-light/30 bg-gold-light/10" };
   return { level: 1, label: "Healthy (L1)", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" };
 }
 
@@ -168,7 +168,7 @@ export default async function EscrowPage() {
               </div>
 
               {flag.level >= 2 && (
-                <div className="mt-3 rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-2 text-xs text-amber-200">
+                <div className="mt-3 rounded-lg border border-gold-light/30 bg-gold-light/30/[0.06] p-2 text-xs text-gold-bright/80">
                   <AlertTriangle className="mr-1 inline h-3 w-3" />
                   {flag.level === 3
                     ? "Critical runway — board notified, failover armed"

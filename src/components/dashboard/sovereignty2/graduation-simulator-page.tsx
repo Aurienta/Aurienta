@@ -139,8 +139,8 @@ export function GraduationSimulatorPage({ enterprises, initialEnterpriseId }: Si
         </div>
       )}
 
-      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3">
-        <p className="font-mono text-xs leading-relaxed text-amber-200/80">
+      <div className="rounded-xl border border-indigo-400/20 bg-indigo-400/[0.05] px-4 py-3">
+        <p className="font-mono text-xs leading-relaxed text-indigo-200/80">
           <AlertTriangle className="mr-1.5 inline h-3 w-3 align-text-bottom" />
           Simulation is advisory. The 75% Constitutional Partner vote is the constitutional climax — this tool
           prepares, not replaces, it.
@@ -339,7 +339,7 @@ function VerdictBanner({ readinessScore }: { readinessScore: number }) {
     readinessScore >= 90
       ? "border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-200"
       : readinessScore >= 70
-      ? "border-amber-400/30 bg-amber-400/[0.06] text-amber-200"
+      ? "border-indigo-400/30 bg-indigo-400/[0.06] text-indigo-200"
       : "border-red-400/30 bg-red-400/[0.06] text-red-200";
   return (
     <div className={cn("rounded-xl border px-4 py-3", tone)}>

@@ -16,7 +16,7 @@ const TIERS = [
     equity: "5% Founding Operator",
     fee: "5% + 2.5%",
     trait: "First-time Founding Operators",
-    accent: "from-amber-400/20",
+    accent: "from-indigo-400/20",
   },
   {
     tier: "B",
@@ -38,7 +38,7 @@ const TIERS = [
     equity: "10% + 25% vesting",
     fee: "5% + 2.5%",
     trait: "ERP mandatory",
-    accent: "from-amber-500/20",
+    accent: "from-indigo-500/20",
   },
   {
     tier: "D",
@@ -60,7 +60,7 @@ const TIERS = [
     equity: "0% Founding Operator",
     fee: "1%",
     trait: "Research spinouts",
-    accent: "from-amber-300/20",
+    accent: "from-indigo-300/20",
   },
   {
     tier: "F",

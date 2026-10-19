@@ -88,7 +88,7 @@ function badgeColor(rating: string | null | undefined) {
   if (!rating) return "text-muted-foreground border-muted-foreground/30";
   if (rating.startsWith("AAA") || rating.startsWith("AA")) return "text-emerald-300 border-emerald-400/40";
   if (rating.startsWith("A") || rating.startsWith("BBB")) return "text-gold-light border-gold/40";
-  if (rating.startsWith("BB") || rating.startsWith("B")) return "text-amber-300 border-amber-400/40";
+  if (rating.startsWith("BB") || rating.startsWith("B")) return "text-indigo-300 border-indigo-400/40";
   return "text-red-300 border-red-400/40";
 }
 

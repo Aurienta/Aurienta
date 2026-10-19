@@ -259,7 +259,7 @@ export default async function AccountingPage() {
                     ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
                     : d.daysLeft <= 14
                     ? "border-rose-400/30 bg-rose-400/10 text-rose-300"
-                    : "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                    : "border-gold-light/30 bg-gold-light/10 text-gold-bright"
                 }`}>
                   {d.status === "filed" ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                   {d.status === "filed" ? "filed" : `${d.daysLeft}d left`}

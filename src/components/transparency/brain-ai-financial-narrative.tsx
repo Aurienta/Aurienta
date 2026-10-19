@@ -113,7 +113,7 @@ export function BrainAiFinancialNarrative({
               {narrative}
             </p>
             {error && (
-              <p className="flex items-center gap-1.5 font-mono text-[11px] text-amber-300/80">
+              <p className="flex items-center gap-1.5 font-mono text-[11px] text-indigo-300/80">
                 <AlertCircle className="h-3 w-3" /> AI unavailable — showing constitutional summary. ({error})
               </p>
             )}

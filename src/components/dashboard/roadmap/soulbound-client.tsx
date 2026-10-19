@@ -488,7 +488,7 @@ function RequirementRow({
           {met ? (
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
           ) : (
-            <span className="rounded-full border border-amber-300 bg-amber-50 px-1.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+            <span className="rounded-full border border-indigo-300 bg-indigo-50 px-1.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wide text-indigo-700">
               Required
             </span>
           )}

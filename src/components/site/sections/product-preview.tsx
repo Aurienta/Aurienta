@@ -203,9 +203,9 @@ export function ProductPreview() {
         </div>
 
         {/* DEMO notice */}
-        <div className="mb-8 flex items-center justify-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-center">
-          <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-          <p className="text-xs text-amber-200/90 sm:text-sm">
+        <div className="mb-8 flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/5 px-4 py-3 text-center">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
+          <p className="text-xs text-indigo-200/90 sm:text-sm">
             <span className="font-semibold">DEMO:</span> This is a demo preview using example data. No real enterprises, partners, or transactions are shown.
           </p>
         </div>
@@ -332,7 +332,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
   const d = step.demo as any;
   return (
     <div className="rounded-lg border border-border/30 bg-muted/20 p-4">
-      <Badge variant="outline" className="mb-3 border-amber-500/30 text-amber-500 text-[10px]">
+      <Badge variant="outline" className="mb-3 border-indigo-500/30 text-indigo-500 text-[10px]">
         {d.label}
       </Badge>
       <div className="space-y-2 text-sm">
@@ -406,7 +406,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">{emp.band}</div>
-                  <Badge variant="outline" className={`text-[10px] ${emp.nosi === "Registered" ? "border-green-500/30 text-green-500" : "border-amber-500/30 text-amber-500"}`}>
+                  <Badge variant="outline" className={`text-[10px] ${emp.nosi === "Registered" ? "border-green-500/30 text-green-500" : "border-indigo-500/30 text-indigo-500"}`}>
                     NOSI: {emp.nosi}
                   </Badge>
                 </div>
@@ -439,7 +439,7 @@ function DemoData({ step }: { step: typeof STEPS[0] }) {
                   <span className="text-muted-foreground">{v.name}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-foreground">{v.value}</span>
-                    <span className={`h-2 w-2 rounded-full ${v.status === "healthy" ? "bg-green-500" : "bg-amber-500"}`} />
+                    <span className={`h-2 w-2 rounded-full ${v.status === "healthy" ? "bg-green-500" : "bg-indigo-500"}`} />
                   </div>
                 </div>
               ))}

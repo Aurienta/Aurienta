@@ -84,16 +84,16 @@ export function EvidenceStage() {
           </Card>
 
           {/* What is being validated */}
-          <Card className="border-amber-500/20 bg-amber-500/[0.02]">
+          <Card className="border-indigo-500/20 bg-indigo-500/[0.02]">
             <CardContent className="p-6">
               <div className="mb-4 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-amber-500" />
+                <Clock className="h-5 w-5 text-indigo-500" />
                 <h3 className="font-serif text-lg font-semibold text-foreground">What is being validated</h3>
               </div>
               <ul className="space-y-2">
                 {VALIDATING.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <span className="mt-1 h-1 w-1 flex-shrink-0 rounded-full bg-amber-500" />
+                    <span className="mt-1 h-1 w-1 flex-shrink-0 rounded-full bg-indigo-500" />
                     {item}
                   </li>
                 ))}

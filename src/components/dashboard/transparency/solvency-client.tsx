@@ -91,8 +91,8 @@ function getHealthMeta(level: number): HealthMeta {
     return {
       level: 2,
       label: "Level 2 · Warning",
-      cls: "text-amber-300 border-amber-400/30 bg-amber-400/10",
-      ringCls: "border-amber-400/40 bg-amber-400/8",
+      cls: "text-indigo-300 border-indigo-400/30 bg-indigo-400/10",
+      ringCls: "border-indigo-400/40 bg-indigo-400/8",
       icon: AlertTriangle,
     };
   }
@@ -552,7 +552,7 @@ export function SolvencyClient({
                           className={cn(
                             "font-mono text-xs",
                             Math.abs(a.variancePct) > 0.1
-                              ? "text-amber-300"
+                              ? "text-indigo-300"
                               : "text-emerald-300"
                           )}
                         >
@@ -589,7 +589,7 @@ export function SolvencyClient({
           desc="Variance ≤ 2% — internal reconciliation, no partner alert."
         />
         <LegendItem
-          cls="border-amber-400/30 bg-amber-400/10 text-amber-300"
+          cls="border-indigo-400/30 bg-indigo-400/10 text-indigo-300"
           label="Level 2 · Warning"
           desc="Variance 2–10% — all partners notified for review."
         />
@@ -621,7 +621,7 @@ function Stat({
       <div
         className={cn(
           "font-mono text-sm",
-          danger ? "text-amber-300" : "text-gold-light"
+          danger ? "text-indigo-300" : "text-gold-light"
         )}
       >
         {value}

@@ -135,7 +135,7 @@ function Stat({ label, value, sub, ok }: { label: string; value: string; sub: st
   return (
     <div className="rounded-lg border border-gold/10 bg-background/40 p-2.5">
       <p className="font-sans text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className={`font-serif text-sm font-semibold ${ok === undefined ? "text-foreground" : ok ? "text-emerald-300" : "text-amber-300"}`}>
+      <p className={`font-serif text-sm font-semibold ${ok === undefined ? "text-foreground" : ok ? "text-emerald-300" : "text-indigo-300"}`}>
         {value}
       </p>
       <p className="font-mono text-[11px] text-muted-foreground/85">{sub}</p>

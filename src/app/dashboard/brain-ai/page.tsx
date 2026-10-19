@@ -213,7 +213,7 @@ export default async function BrainAiPage() {
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="border-gold/20 font-mono text-[11px] text-gold-light">{a.kind}</Badge>
                     <span className="font-mono text-[11px] text-muted-foreground">{provider} / {model}</span>
-                    {fellBack && <Badge variant="outline" className="border-amber-400/30 font-mono text-[11px] text-amber-300">fallback</Badge>}
+                    {fellBack && <Badge variant="outline" className="border-indigo-400/30 font-mono text-[11px] text-indigo-300">fallback</Badge>}
                   </div>
                   <span className="font-sans text-[11px] text-muted-foreground">{new Date(a.createdAt).toLocaleString("en-GB")}</span>
                 </div>

@@ -301,7 +301,7 @@ function StatusBadge({ status }: { status: string }) {
     },
     dual_signature_pending: {
       label: "Dual signature",
-      cls: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+      cls: "border-indigo-400/30 bg-indigo-400/10 text-indigo-300",
     },
     flagged: {
       label: "Flagged",

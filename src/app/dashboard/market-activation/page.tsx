@@ -121,7 +121,7 @@ export default async function MarketActivationPage() {
               <p className="font-mono text-[9px] text-muted-foreground">Fields: {DAILY_COMMAND.top5Blockers.fields.join(", ")}</p>
             </div>
             <div className="rounded border border-gold/10 bg-background/30 p-2">
-              <p className="font-mono text-[10px] uppercase text-amber-300">Top 5 Opportunities</p>
+              <p className="font-mono text-[10px] uppercase text-gold-bright">Top 5 Opportunities</p>
               <p className="font-sans text-[11px] text-muted-foreground">{DAILY_COMMAND.top5Opportunities.current}</p>
               <p className="font-mono text-[9px] text-muted-foreground">Fields: {DAILY_COMMAND.top5Opportunities.fields.join(", ")}</p>
             </div>
@@ -131,7 +131,7 @@ export default async function MarketActivationPage() {
               <p className="font-mono text-[9px] text-muted-foreground">Fields: {DAILY_COMMAND.top5Relationships.fields.join(", ")}</p>
             </div>
           </div>
-          <p className="mt-2 font-sans text-[10px] text-amber-300">{DAILY_COMMAND.rule}</p>
+          <p className="mt-2 font-sans text-[10px] text-gold-bright">{DAILY_COMMAND.rule}</p>
         </CardContent>
       </Card>
 
@@ -153,7 +153,7 @@ export default async function MarketActivationPage() {
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[10px] text-amber-300">{EVIDENCE_HIERARCHY_RULE.rule}</p>
+          <p className="mt-2 font-sans text-[10px] text-gold-bright">{EVIDENCE_HIERARCHY_RULE.rule}</p>
           <p className="font-sans text-[10px] text-muted-foreground">{EVIDENCE_HIERARCHY_RULE.climbRule}</p>
         </CardContent>
       </Card>
@@ -178,7 +178,7 @@ export default async function MarketActivationPage() {
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[10px] text-amber-300">{FUNNEL_RULE}</p>
+          <p className="mt-2 font-sans text-[10px] text-gold-bright">{FUNNEL_RULE}</p>
         </CardContent>
       </Card>
 
@@ -195,7 +195,7 @@ export default async function MarketActivationPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TARGET_ENGINE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TARGET_ENGINE_RULE}</p>
           </CardContent>
         </Card>
 
@@ -212,7 +212,7 @@ export default async function MarketActivationPage() {
                 <p className="font-sans text-[10px] text-gold-light">Capacity: {t.capacityRule}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{CAPACITY_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{CAPACITY_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -229,11 +229,11 @@ export default async function MarketActivationPage() {
             <p className="mt-2 font-mono text-[10px] uppercase text-gold-light">Confidence Levels</p>
             {SOURCING_METHODOLOGY.confidenceLevels.map(c => (
               <div key={c.level} className="border-b border-gold/5 py-0.5">
-                <span className={`font-mono text-[10px] ${c.level === "HIGH" ? "text-emerald-300" : c.level === "MEDIUM" ? "text-amber-300" : "text-rose-300"}`}>{c.level}</span>
+                <span className={`font-mono text-[10px] ${c.level === "HIGH" ? "text-emerald-300" : c.level === "MEDIUM" ? "text-gold-bright" : "text-rose-300"}`}>{c.level}</span>
                 <span className="font-sans text-[10px] text-muted-foreground"> — {c.meaning} ({c.treatment})</span>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{SOURCING_METHODOLOGY.rule}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{SOURCING_METHODOLOGY.rule}</p>
           </CardContent>
         </Card>
 
@@ -245,7 +245,7 @@ export default async function MarketActivationPage() {
                 <p key={c} className="font-sans text-[11px] text-muted-foreground">• {c}</p>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{EGYPT_MARKET_FOCUS.rule}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{EGYPT_MARKET_FOCUS.rule}</p>
           </CardContent>
         </Card>
       </div>
@@ -263,7 +263,7 @@ export default async function MarketActivationPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{FIRST_25_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{FIRST_25_RULE}</p>
           </CardContent>
         </Card>
 
@@ -278,7 +278,7 @@ export default async function MarketActivationPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{OUTREACH_QUALITY.rule}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{OUTREACH_QUALITY.rule}</p>
           </CardContent>
         </Card>
       </div>
@@ -301,7 +301,7 @@ export default async function MarketActivationPage() {
           <CardHeader><CardTitle className="flex items-center gap-2 font-serif text-base"><AlertTriangle className="h-4 w-4 text-gold" /> Problem Validation (no premature pitching)</CardTitle></CardHeader>
           <CardContent>
             <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Sequence:</span> {PROBLEM_VALIDATION.sequence}</p>
-            <p className="mt-2 font-sans text-[11px] text-amber-300">{PROBLEM_VALIDATION.rule}</p>
+            <p className="mt-2 font-sans text-[11px] text-gold-bright">{PROBLEM_VALIDATION.rule}</p>
             <p className="mt-1 font-sans text-[11px] text-rose-300">{PROBLEM_VALIDATION.disqualificationRule}</p>
             <div className="mt-2 rounded border border-gold/8 bg-background/30 p-2">
               <p className="font-mono text-[10px] uppercase text-gold-light">First Customer Offer</p>
@@ -328,7 +328,7 @@ export default async function MarketActivationPage() {
                 <span className={`font-mono text-[11px] ${r.classification === "Collected" ? "text-rose-300" : "text-muted-foreground"}`}>{r.currentValue}</span>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{REVENUE_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{REVENUE_RULE}</p>
           </CardContent>
         </Card>
 
@@ -340,7 +340,7 @@ export default async function MarketActivationPage() {
                 <Badge key={s} variant="outline" className="border-gold/15 font-mono text-[9px]">{i + 1}. {s}</Badge>
               ))}
             </div>
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{PILOT_CONVERSION.rule}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{PILOT_CONVERSION.rule}</p>
             <p className="font-sans text-[10px] text-muted-foreground">{PILOT_CONVERSION.conversionGate}</p>
           </CardContent>
         </Card>
@@ -359,7 +359,7 @@ export default async function MarketActivationPage() {
                 <p className="font-sans text-[9px] text-muted-foreground">Evidence: {s.evidenceRequired}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{RELATIONSHIP_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{RELATIONSHIP_RULE}</p>
           </CardContent>
         </Card>
 
@@ -369,7 +369,7 @@ export default async function MarketActivationPage() {
             <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Question:</span> {INTRODUCTION_ENGINE.question}</p>
             <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Method:</span> {INTRODUCTION_ENGINE.method}</p>
             <p className="font-sans text-[11px] text-rose-300"><span className="text-gold-light">Rule:</span> {INTRODUCTION_ENGINE.rule}</p>
-            <p className="mt-2 font-sans text-[11px] text-amber-300">{INTRODUCTION_ENGINE.currentStatus}</p>
+            <p className="mt-2 font-sans text-[11px] text-gold-bright">{INTRODUCTION_ENGINE.currentStatus}</p>
           </CardContent>
         </Card>
       </div>
@@ -401,7 +401,7 @@ export default async function MarketActivationPage() {
                 <p className="font-sans text-[10px] text-muted-foreground">{r.content}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{WEEKLY_REVIEW_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{WEEKLY_REVIEW_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -415,12 +415,12 @@ export default async function MarketActivationPage() {
               <div key={t.activity} className="border-b border-gold/5 py-1">
                 <div className="flex items-center justify-between">
                   <span className="font-sans text-[11px] font-medium">{t.activity}</span>
-                  <Badge variant="outline" className={`font-mono text-[10px] ${t.priority === "P0" ? "border-rose-400/30 text-rose-300" : t.priority === "P1" ? "border-amber-400/30 text-amber-300" : "border-sky-400/30 text-sky-300"}`}>{t.priority}</Badge>
+                  <Badge variant="outline" className={`font-mono text-[10px] ${t.priority === "P0" ? "border-rose-400/30 text-rose-300" : t.priority === "P1" ? "border-gold-light/30 text-gold-bright" : "border-sky-400/30 text-sky-300"}`}>{t.priority}</Badge>
                 </div>
                 <p className="font-sans text-[10px] text-muted-foreground">{t.principle}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{TIME_ALLOCATION_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{TIME_ALLOCATION_RULE}</p>
           </CardContent>
         </Card>
 
@@ -434,7 +434,7 @@ export default async function MarketActivationPage() {
                 <p className="font-mono text-[9px] text-rose-300">Current: {s.currentWeek}</p>
               </div>
             ))}
-            <p className="mt-2 font-sans text-[10px] text-amber-300">{WEEKLY_TARGET_RULE}</p>
+            <p className="mt-2 font-sans text-[10px] text-gold-bright">{WEEKLY_TARGET_RULE}</p>
           </CardContent>
         </Card>
       </div>
@@ -447,7 +447,7 @@ export default async function MarketActivationPage() {
             <p className="font-sans text-[11px] text-muted-foreground"><span className="text-gold-light">Move:</span> {REGULATORY_ACTIVATION.moveFrom}</p>
             <p className="font-mono text-[10px] uppercase text-gold-light">Before Submission</p>
             <p className="font-sans text-[10px] text-muted-foreground">{REGULATORY_ACTIVATION.beforeSubmission.join(" · ")}</p>
-            <p className="mt-1 font-sans text-[10px] text-amber-300">{REGULATORY_ACTIVATION.rule}</p>
+            <p className="mt-1 font-sans text-[10px] text-gold-bright">{REGULATORY_ACTIVATION.rule}</p>
             <p className="mt-2 font-mono text-[10px] uppercase text-gold-light">Status Language ({REGULATORY_STATUS_LANGUAGE.length})</p>
             <div className="max-h-32 overflow-y-auto">
               {REGULATORY_STATUS_LANGUAGE.map(s => (
@@ -468,7 +468,7 @@ export default async function MarketActivationPage() {
               {LOST_DEAL_REASONS.map(r => <Badge key={r} variant="outline" className="border-gold/10 font-mono text-[9px]">{r}</Badge>)}
             </div>
             <p className="mt-2 font-sans text-[11px] text-muted-foreground">{LOST_DEAL_RULE.rule}</p>
-            <p className="font-sans text-[11px] text-amber-300">Escalation: {LOST_DEAL_RULE.escalationThreshold}+ same reason → REPEATED MARKET OBJECTION → Founder review</p>
+            <p className="font-sans text-[11px] text-gold-bright">Escalation: {LOST_DEAL_RULE.escalationThreshold}+ same reason → REPEATED MARKET OBJECTION → Founder review</p>
             <p className="font-sans text-[11px] text-rose-300">{LOST_DEAL_RULE.redesignRule}</p>
           </CardContent>
         </Card>
@@ -492,7 +492,7 @@ export default async function MarketActivationPage() {
           <CardContent>
             <p className="mb-1 font-mono text-[10px] uppercase text-rose-300">Blockers</p>
             <ul className="mb-2 flex flex-col gap-0.5">{HONEST_CERTIFICATION.actualBlockers.map(b => <li key={b} className="font-sans text-[10px] text-muted-foreground">• {b}</li>)}</ul>
-            <p className="mb-1 font-mono text-[10px] uppercase text-amber-300">Evidence Gaps</p>
+            <p className="mb-1 font-mono text-[10px] uppercase text-gold-bright">Evidence Gaps</p>
             <ul className="flex flex-col gap-0.5">{HONEST_CERTIFICATION.evidenceGaps.map(g => <li key={g} className="font-sans text-[10px] text-muted-foreground">• {g}</li>)}</ul>
           </CardContent>
         </Card>

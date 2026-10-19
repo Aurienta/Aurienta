@@ -101,7 +101,8 @@ export function AnomalyCard({
           "absolute inset-x-0 top-0 h-px",
           fm.tone === "red"
             ? "bg-gradient-to-r from-transparent via-red-400/80 to-transparent"
-            : "bg-gradient-to-r from-transparent via-amber-400/80 to-transparent"
+            // AUD-UX-2: previously indigo-400 — brand violation. Use indigo.
+            : "bg-gradient-to-r from-transparent via-indigo-400/80 to-transparent"
         )}
         aria-hidden
       />
@@ -116,7 +117,8 @@ export function AnomalyCard({
                 "border-0 font-mono text-xs",
                 fm.tone === "red"
                   ? "bg-red-400/12 text-red-300"
-                  : "bg-amber-400/12 text-amber-300"
+                  // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+                  : "bg-indigo-400/12 text-indigo-300"
               )}
             >
               <fm.icon className="mr-1 h-3 w-3" />

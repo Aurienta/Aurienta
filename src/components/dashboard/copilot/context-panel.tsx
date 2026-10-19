@@ -135,10 +135,10 @@ export function CopilotContextPanel({
       </div>
 
       {/* Guardrail */}
-      <div className="rounded-xl border border-amber-400/25 bg-amber-400/[0.05] p-3.5">
+      <div className="rounded-xl border border-indigo-400/25 bg-indigo-400/[0.05] p-3.5">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="h-3.5 w-3.5 text-amber-300" />
-          <p className="font-sans text-[11px] font-semibold text-amber-200">
+          <ShieldAlert className="h-3.5 w-3.5 text-indigo-300" />
+          <p className="font-sans text-[11px] font-semibold text-indigo-200">
             AI as Enforcer, Not Decider
           </p>
         </div>

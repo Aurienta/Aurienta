@@ -107,7 +107,7 @@ const OUTCOME_META: Record<
   pending: {
     label: "Pending",
     cls:
-      "border-amber-400/40 bg-amber-400/10 text-amber-600",
+      "border-indigo-400/40 bg-indigo-400/10 text-indigo-600",
     icon: Clock,
   },
   success: {
@@ -357,14 +357,14 @@ export function EndorsementsClient(props: {
               </p>
             </div>
           ) : availableSlots <= 0 ? (
-            <div className="mt-5 rounded-xl border border-amber-300/60 bg-amber-50 p-4">
+            <div className="mt-5 rounded-xl border border-indigo-300/60 bg-indigo-50 p-4">
               <div className="flex items-start gap-2">
-                <AlertCircle className="mt-0.5 h-4 w-4 text-amber-600" />
+                <AlertCircle className="mt-0.5 h-4 w-4 text-indigo-600" />
                 <div className="flex-1">
-                  <p className="font-sans text-sm font-medium text-amber-900">
+                  <p className="font-sans text-sm font-medium text-indigo-900">
                     Endorsement capacity reached
                   </p>
-                  <p className="mt-0.5 font-sans text-xs text-amber-700">
+                  <p className="mt-0.5 font-sans text-xs text-indigo-700">
                     You have {activeCount} of {constants.maxPerUser} active endorsements. Resolve an existing one to free up a slot.
                   </p>
                 </div>

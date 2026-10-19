@@ -24,11 +24,11 @@ export const metadata = { title: "AURIENTA Operating System · AOS v1.0" };
 export const dynamic = "force-dynamic";
 
 const maturityColor = (lvl: number) =>
-  lvl >= 4 ? "text-emerald-300" : lvl === 3 ? "text-amber-300" : "text-rose-300";
+  lvl >= 4 ? "text-emerald-300" : lvl === 3 ? "text-gold-bright" : "text-rose-300";
 const priorityColor = (p: string) =>
-  p === "P0" ? "text-rose-300" : p === "P1" ? "text-amber-300" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
+  p === "P0" ? "text-rose-300" : p === "P1" ? "text-gold-bright" : p === "P2" ? "text-sky-300" : "text-muted-foreground";
 const riskColor = (r: string) =>
-  r === "High" ? "text-rose-300" : r === "Medium" ? "text-amber-300" : "text-emerald-300";
+  r === "High" ? "text-rose-300" : r === "Medium" ? "text-gold-bright" : "text-emerald-300";
 
 export default async function OperatingSystemPage() {
   const user = await getCurrentUser();
@@ -41,9 +41,9 @@ export default async function OperatingSystemPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -295,7 +295,7 @@ export default async function OperatingSystemPage() {
                   <tr key={k.kpiId} className="border-b border-gold/5">
                     <td className="py-1.5 pr-3"><span className="font-mono text-[10px] text-gold-light">{k.kpiId}</span> {k.name}</td>
                     <td className="py-1.5 pr-3 text-muted-foreground">{k.category}</td>
-                    <td className="py-1.5 pr-3 font-mono text-[11px] text-amber-300">{k.current}</td>
+                    <td className="py-1.5 pr-3 font-mono text-[11px] text-gold-bright">{k.current}</td>
                     <td className="py-1.5 font-mono text-[11px] text-emerald-300">{k.target}</td>
                   </tr>
                 ))}
@@ -503,7 +503,7 @@ export default async function OperatingSystemPage() {
           <CardContent>
             <div className="mb-3 grid grid-cols-2 gap-2">
               <div className="rounded border border-gold/10 bg-background/30 p-2 text-center">
-                <p className="font-serif text-2xl font-semibold text-amber-300">{MATURITY_GAP_ANALYSIS.currentAverage}</p>
+                <p className="font-serif text-2xl font-semibold text-gold-bright">{MATURITY_GAP_ANALYSIS.currentAverage}</p>
                 <p className="font-mono text-[10px] text-muted-foreground">Current avg</p>
               </div>
               <div className="rounded border border-gold/10 bg-background/30 p-2 text-center">

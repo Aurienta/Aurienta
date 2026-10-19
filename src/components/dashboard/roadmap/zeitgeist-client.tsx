@@ -85,7 +85,7 @@ function SentimentGauge({ score, confidence }: { score: number; confidence: numb
         />
         <path
           d={arcPath(-0.3, 0.3)}
-          // AUD-036: previously #f59e0b (amber-500) — brand violation. Replaced
+          // AUD-036: previously #f59e0b (indigo-500) — brand violation. Replaced
           // with indigo-500 (#6366F1) to keep the gauge "neutral" segment in
           // the brand palette while still distinct from red (-1) and green (+1).
           stroke="#6366F1"

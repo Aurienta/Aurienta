@@ -24,7 +24,7 @@ export const metadata = {
 
 function riskBand(score: number): { label: string; cls: string } {
   if (score >= 70) return { label: "High", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" };
-  if (score >= 30) return { label: "Watch", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" };
+  if (score >= 30) return { label: "Watch", cls: "text-gold-bright border-gold-light/30 bg-gold-light/10" };
   return { label: "Low", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" };
 }
 
@@ -108,7 +108,7 @@ export default async function VendorPortalPage() {
                     <span className="font-sans text-[11px] text-muted-foreground">Top: {c.topVendor}</span>
                     <span className={`ml-auto inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${
                       danger ? "border-rose-400/30 bg-rose-400/10 text-rose-300"
-                      : watch ? "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                      : watch ? "border-gold-light/30 bg-gold-light/10 text-gold-bright"
                       : "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
                     }`}>
                       {pct(c.topShare, 1)} of spend
@@ -116,7 +116,7 @@ export default async function VendorPortalPage() {
                   </div>
                   <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-foreground/10">
                     <div
-                      className={`h-full rounded-full ${danger ? "bg-rose-400/60" : watch ? "bg-amber-400/60" : "bg-emerald-400/60"}`}
+                      className={`h-full rounded-full ${danger ? "bg-rose-400/60" : watch ? "bg-gold-light/60" : "bg-emerald-400/60"}`}
                       style={{ width: `${Math.min(c.topShare, 100)}%` }}
                     />
                   </div>

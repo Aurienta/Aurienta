@@ -518,7 +518,7 @@ function ValidationBadge({ result }: { result: SalaryResult }) {
     return (
       <Badge
         variant="outline"
-        className="border-amber-400/30 bg-amber-400/10 text-[11px] text-amber-300"
+        className="border-indigo-400/30 bg-indigo-400/10 text-[11px] text-indigo-300"
       >
         <AlertTriangle className="mr-1 h-3 w-3" /> AI adjusted · fallback to neutral
       </Badge>

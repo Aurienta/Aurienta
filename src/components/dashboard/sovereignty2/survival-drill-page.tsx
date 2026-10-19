@@ -272,7 +272,7 @@ function DrillVerdictBanner({ drill }: { drill: DrillRecord }) {
       ? {
           icon: ShieldAlert,
           label: "WARNING",
-          tone: "border-amber-400/30 bg-amber-400/[0.06] text-amber-200",
+          tone: "border-indigo-400/30 bg-indigo-400/[0.06] text-indigo-200",
           note: "Drill completed with warnings — certificate withheld until remediation.",
         }
       : {
@@ -312,7 +312,7 @@ function FindingRow({ finding }: { finding: Finding }) {
       ? { icon: Check, tone: "border-emerald-400/20 bg-emerald-400/[0.04]", color: "text-emerald-300" }
       : finding.verdict === "FAIL"
       ? { icon: X, tone: "border-red-400/20 bg-red-400/[0.04]", color: "text-red-300" }
-      : { icon: AlertTriangle, tone: "border-amber-400/20 bg-amber-400/[0.04]", color: "text-amber-300" };
+      : { icon: AlertTriangle, tone: "border-indigo-400/20 bg-indigo-400/[0.04]", color: "text-indigo-300" };
   const Icon = meta.icon;
   return (
     <li className={cn("flex items-start gap-2.5 rounded-lg border p-3", meta.tone)}>
@@ -342,7 +342,7 @@ function PastDrillRow({ drill }: { drill: PastDrill }) {
     drill.result === "passed"
       ? { icon: ShieldCheck, label: "Passed", tone: "text-emerald-300" }
       : drill.result === "warning"
-      ? { icon: ShieldAlert, label: "Warning", tone: "text-amber-300" }
+      ? { icon: ShieldAlert, label: "Warning", tone: "text-indigo-300" }
       : { icon: ShieldX, label: "Failed", tone: "text-red-300" };
   const Icon = meta.icon;
   let findings: Finding[] = [];

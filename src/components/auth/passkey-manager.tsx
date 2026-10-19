@@ -229,8 +229,8 @@ export function PasskeyManager({ initialPasskeys, userEmail }: PasskeyManagerPro
 
       {/* Browser support warning */}
       {webAuthnSupported === false && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/25 bg-amber-500/8 p-4">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
+        <div className="flex items-start gap-2.5 rounded-xl border border-indigo-500/25 bg-indigo-500/8 p-4">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" aria-hidden="true" />
           <div>
             <p className="font-sans text-sm font-medium text-foreground">
               Passkeys not supported on this browser.

@@ -16,11 +16,11 @@ export const metadata = { title: "First 25 Research · AURIENTA" };
 export const dynamic = "force-dynamic";
 
 const tierColor = (t: string) =>
-  t === "P0" ? "text-rose-300" : t === "P1" ? "text-amber-300" : t === "P2" ? "text-sky-300" : "text-muted-foreground";
+  t === "P0" ? "text-rose-300" : t === "P1" ? "text-gold-bright" : t === "P2" ? "text-sky-300" : "text-muted-foreground";
 const confidenceColor = (c: string) =>
-  c === "HIGH" ? "text-emerald-300" : c === "MEDIUM" ? "text-amber-300" : c === "LOW" ? "text-rose-300" : "text-muted-foreground";
+  c === "HIGH" ? "text-emerald-300" : c === "MEDIUM" ? "text-gold-bright" : c === "LOW" ? "text-rose-300" : "text-muted-foreground";
 const classificationColor = (c: string) =>
-  c === "FACT" ? "text-emerald-300" : c === "LEGAL QUESTION" ? "text-amber-300" : c === "ASSUMPTION" ? "text-sky-300" : "text-rose-300";
+  c === "FACT" ? "text-emerald-300" : c === "LEGAL QUESTION" ? "text-gold-bright" : c === "ASSUMPTION" ? "text-sky-300" : "text-rose-300";
 
 export default async function FirstResearchPage() {
   const user = await getCurrentUser();
@@ -44,8 +44,8 @@ export default async function FirstResearchPage() {
         <p className="font-sans text-sm text-muted-foreground">
           {FIRST_25_TARGETS.length} real Egyptian targets · {LAW_FIRM_CANDIDATES.length} law firms · {REGULATORY_RESEARCH_RESULTS.length} regulatory authorities · {FIRST_5_OUTREACH_DRAFTS.length} outreach drafts (awaiting Founder approval)
         </p>
-        <div className="mt-2 rounded border border-amber-400/20 bg-amber-400/5 p-2">
-          <p className="font-sans text-[11px] text-amber-300">⚠ {RESEARCH_DISCLAIMER}</p>
+        <div className="mt-2 rounded border border-gold-light/20 bg-gold-light/5 p-2">
+          <p className="font-sans text-[11px] text-gold-bright">⚠ {RESEARCH_DISCLAIMER}</p>
         </div>
       </header>
 
@@ -77,7 +77,7 @@ export default async function FirstResearchPage() {
         <CardContent>
           <div className="mb-3 grid grid-cols-4 gap-2">
             <div className="rounded border border-rose-400/20 bg-rose-400/5 p-2 text-center"><p className="font-serif text-2xl font-semibold text-rose-300">{p0.length}</p><p className="font-mono text-[10px] text-muted-foreground">P0 (anchor)</p></div>
-            <div className="rounded border border-amber-400/20 bg-amber-400/5 p-2 text-center"><p className="font-serif text-2xl font-semibold text-amber-300">{p1.length}</p><p className="font-mono text-[10px] text-muted-foreground">P1 (high)</p></div>
+            <div className="rounded border border-gold-light/20 bg-gold-light/5 p-2 text-center"><p className="font-serif text-2xl font-semibold text-gold-bright">{p1.length}</p><p className="font-mono text-[10px] text-muted-foreground">P1 (high)</p></div>
             <div className="rounded border border-sky-400/20 bg-sky-400/5 p-2 text-center"><p className="font-serif text-2xl font-semibold text-sky-300">{p2.length}</p><p className="font-mono text-[10px] text-muted-foreground">P2 (strategic)</p></div>
             <div className="rounded border border-muted/20 bg-muted/5 p-2 text-center"><p className="font-serif text-2xl font-semibold text-muted-foreground">{p3.length}</p><p className="font-mono text-[10px] text-muted-foreground">P3 (long-term)</p></div>
           </div>
@@ -123,7 +123,7 @@ export default async function FirstResearchPage() {
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{f.practiceAreas}</p>
                   <p className="font-sans text-[10px] text-muted-foreground">Source: {f.source} · Confidence: <span className={confidenceColor(f.sourceConfidence)}>{f.sourceConfidence}</span></p>
-                  <p className="font-sans text-[9px] text-amber-300">{f.notes}</p>
+                  <p className="font-sans text-[9px] text-gold-bright">{f.notes}</p>
                 </div>
               ))}
             </div>
@@ -138,7 +138,7 @@ export default async function FirstResearchPage() {
                 <div key={r.authority} className="border-b border-gold/5 py-1.5">
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-[11px] font-medium">{r.authority}</span>
-                    <Badge variant="outline" className={`font-mono text-[9px] ${r.status === "APPROVED" ? "border-emerald-400/30 text-emerald-300" : "border-amber-400/30 text-amber-300"}`}>{r.status}</Badge>
+                    <Badge variant="outline" className={`font-mono text-[9px] ${r.status === "APPROVED" ? "border-emerald-400/30 text-emerald-300" : "border-gold-light/30 text-gold-bright"}`}>{r.status}</Badge>
                   </div>
                   <p className="font-sans text-[10px] text-muted-foreground">{r.mandate}</p>
                   <p className={`font-mono text-[9px] ${classificationColor(r.classification)}`}>{r.classification}</p>
@@ -159,7 +159,7 @@ export default async function FirstResearchPage() {
               <div key={d.draftId} className="rounded border border-gold/10 bg-background/30 p-2">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] text-gold-light">{d.draftId}</span>
-                  <Badge variant="outline" className="border-amber-400/30 font-mono text-[9px] text-amber-300">{d.status}</Badge>
+                  <Badge variant="outline" className="border-gold-light/30 font-mono text-[9px] text-gold-bright">{d.status}</Badge>
                 </div>
                 <p className="font-sans text-[11px] font-medium">{d.target}</p>
                 <p className="font-sans text-[10px] text-muted-foreground">Recipient: {d.recipient}</p>
@@ -169,7 +169,7 @@ export default async function FirstResearchPage() {
               </div>
             ))}
           </div>
-          <p className="mt-2 font-sans text-[10px] text-amber-300">⚠ ALL drafts are DRAFT status. NONE have been Founder-approved. NONE have been sent. The Founder (Mohamed Eltonsy) must review and approve each draft before it can be sent.</p>
+          <p className="mt-2 font-sans text-[10px] text-gold-bright">⚠ ALL drafts are DRAFT status. NONE have been Founder-approved. NONE have been sent. The Founder (Mohamed Eltonsy) must review and approve each draft before it can be sent.</p>
         </CardContent>
       </Card>
 
@@ -190,8 +190,8 @@ export default async function FirstResearchPage() {
               <p className="font-mono text-[10px] uppercase text-gold-light">What We Did</p>
               <ul className="flex flex-col gap-0.5">{EXECUTION_REPORT.whatWeDid.map(k => <li key={k} className="font-sans text-[10px] text-muted-foreground">→ {k}</li>)}</ul>
             </div>
-            <div className="rounded border border-amber-400/10 bg-background/30 p-2">
-              <p className="font-mono text-[10px] uppercase text-amber-300">What Happened</p>
+            <div className="rounded border border-gold-light/10 bg-background/30 p-2">
+              <p className="font-mono text-[10px] uppercase text-gold-bright">What Happened</p>
               <ul className="flex flex-col gap-0.5">{EXECUTION_REPORT.whatHappened.map(k => <li key={k} className="font-sans text-[10px] text-muted-foreground">• {k}</li>)}</ul>
             </div>
             <div className="rounded border border-sky-400/10 bg-background/30 p-2">
@@ -229,7 +229,7 @@ export default async function FirstResearchPage() {
             <div className="rounded border border-emerald-400/10 bg-background/30 p-2"><p className="font-mono text-[10px] uppercase text-emerald-300">Evidence Ceiling</p><p className="font-sans text-[11px] text-muted-foreground">{FINAL_HONEST_STATEMENT.evidenceCeiling}</p></div>
             <div className="rounded border border-gold/10 bg-background/30 p-2"><p className="font-mono text-[10px] uppercase text-gold-light">What Changed</p><p className="font-sans text-[11px] text-muted-foreground">{FINAL_HONEST_STATEMENT.whatChanged}</p></div>
             <div className="rounded border border-rose-400/10 bg-background/30 p-2"><p className="font-mono text-[10px] uppercase text-rose-300">What Did NOT Change</p><p className="font-sans text-[11px] text-muted-foreground">{FINAL_HONEST_STATEMENT.whatDidNOTChange}</p></div>
-            <div className="rounded border border-amber-400/10 bg-background/30 p-2"><p className="font-mono text-[10px] uppercase text-amber-300">Next Milestone</p><p className="font-sans text-[11px] text-muted-foreground">{FINAL_HONEST_STATEMENT.nextMilestone}</p></div>
+            <div className="rounded border border-gold-light/10 bg-background/30 p-2"><p className="font-mono text-[10px] uppercase text-gold-bright">Next Milestone</p><p className="font-sans text-[11px] text-muted-foreground">{FINAL_HONEST_STATEMENT.nextMilestone}</p></div>
           </div>
           <p className="mt-3 font-sans text-sm italic text-gold-gradient">{FINAL_HONEST_STATEMENT.statement}</p>
         </CardContent>

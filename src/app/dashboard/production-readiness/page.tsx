@@ -25,7 +25,7 @@ export const dynamic = "force-dynamic";
 const statusBadge = (s: ReadinessStatus) => {
   const map = {
     PASS: { cls: "border-emerald-400/30 text-emerald-300", label: "PASS" },
-    PARTIAL: { cls: "border-amber-400/30 text-amber-300", label: "PARTIAL" },
+    PARTIAL: { cls: "border-gold-light/30 text-gold-bright", label: "PARTIAL" },
     PENDING: { cls: "border-sky-400/30 text-sky-300", label: "PENDING" },
     BLOCKED: { cls: "border-rose-400/30 text-rose-300", label: "BLOCKED" },
   } as const;
@@ -34,7 +34,7 @@ const statusBadge = (s: ReadinessStatus) => {
 };
 
 const scoreColor = (s: number, t: number) =>
-  s >= t ? "text-emerald-300" : s >= t - 15 ? "text-amber-300" : "text-rose-300";
+  s >= t ? "text-emerald-300" : s >= t - 15 ? "text-gold-bright" : "text-rose-300";
 
 const WS_META = [
   { icon: Database, items: WS1_DATABASE, title: "WS1 · Database Modernization" },
@@ -61,9 +61,9 @@ export default async function ProductionReadinessPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-500" />
-        <p className="text-xs text-amber-200/90">
+      <div className="mb-6 flex items-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3">
+        <AlertCircle className="h-4 w-4 flex-shrink-0 text-gold" />
+        <p className="text-xs text-gold-bright/80/90">
           <span className="font-semibold">DEMONSTRATION:</span> This dashboard displays architectural reference data, not live enterprise data. No real metrics are shown.
         </p>
       </div>
@@ -132,7 +132,7 @@ export default async function ProductionReadinessPage() {
                   <span className="font-mono text-[10px] text-muted-foreground">{w.pass}P · {w.partial}p · {w.pending}○</span>
                 </div>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-background/50">
-                  <div className={`h-full ${w.score >= w.target ? "bg-emerald-400" : w.score >= w.target - 15 ? "bg-amber-400" : "bg-rose-400"}`} style={{ width: `${w.score}%` }} />
+                  <div className={`h-full ${w.score >= w.target ? "bg-emerald-400" : w.score >= w.target - 15 ? "bg-gold-light/30" : "bg-rose-400"}`} style={{ width: `${w.score}%` }} />
                 </div>
               </div>
             ))}
@@ -181,7 +181,7 @@ export default async function ProductionReadinessPage() {
             <p className="font-sans text-[11px] text-muted-foreground">{PRODUCTION_READINESS_REPORT.summary}</p>
             <p className="mt-2 font-mono text-[10px] uppercase text-emerald-300">Strengths</p>
             <ul className="mb-2 flex flex-col gap-0.5">{PRODUCTION_READINESS_REPORT.strengths.map(s => <li key={s} className="font-sans text-[10px] text-muted-foreground">• {s}</li>)}</ul>
-            <p className="font-mono text-[10px] uppercase text-amber-300">Critical Gaps</p>
+            <p className="font-mono text-[10px] uppercase text-gold-bright">Critical Gaps</p>
             <ul className="flex flex-col gap-0.5">{PRODUCTION_READINESS_REPORT.criticalGaps.map(g => <li key={g} className="font-sans text-[10px] text-muted-foreground">• {g}</li>)}</ul>
           </CardContent>
         </Card>
@@ -193,7 +193,7 @@ export default async function ProductionReadinessPage() {
             <p className="font-sans text-[11px] text-muted-foreground">Posture: <span className="text-emerald-300">{ENTERPRISE_SECURITY_REPORT.posture}</span></p>
             <div className="mt-2 grid grid-cols-3 gap-2 text-center">
               <div className="rounded border border-rose-400/20 bg-background/30 p-1.5"><p className="font-serif text-lg font-semibold text-rose-300">{ENTERPRISE_SECURITY_REPORT.criticalFindings}</p><p className="font-mono text-[9px] text-muted-foreground">Critical</p></div>
-              <div className="rounded border border-amber-400/20 bg-background/30 p-1.5"><p className="font-serif text-lg font-semibold text-amber-300">{ENTERPRISE_SECURITY_REPORT.highFindings}</p><p className="font-mono text-[9px] text-muted-foreground">High</p></div>
+              <div className="rounded border border-gold-light/20 bg-background/30 p-1.5"><p className="font-serif text-lg font-semibold text-gold-bright">{ENTERPRISE_SECURITY_REPORT.highFindings}</p><p className="font-mono text-[9px] text-muted-foreground">High</p></div>
               <div className="rounded border border-sky-400/20 bg-background/30 p-1.5"><p className="font-serif text-lg font-semibold text-sky-300">{ENTERPRISE_SECURITY_REPORT.mediumFindings}</p><p className="font-mono text-[9px] text-muted-foreground">Medium</p></div>
             </div>
             <p className="mt-2 mb-1 font-mono text-[10px] uppercase text-gold-light">Control Domains</p>

@@ -52,7 +52,7 @@ type EntLite = {
 
 const NOSI_LABELS: Record<string, { label: string; tKey?: string; cls: string }> = {
   registered: { label: "Registered", tKey: "wf.nosi.registered", cls: "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" },
-  pending: { label: "Pending", tKey: "wf.nosi.pending", cls: "text-amber-300 border-amber-400/30 bg-amber-400/10" },
+  pending: { label: "Pending", tKey: "wf.nosi.pending", cls: "text-indigo-300 border-indigo-400/30 bg-indigo-400/10" },
   missing: { label: "Missing", tKey: "wf.nosi.missing", cls: "text-rose-300 border-rose-400/30 bg-rose-400/10" },
 };
 

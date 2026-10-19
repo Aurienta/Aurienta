@@ -74,22 +74,22 @@ export default async function OverviewPage() {
 
   // ── Big module cards (restaurant-style management system) ──
   const MODULES = [
-    { href: "/dashboard/portfolio", icon: Wallet, title: "Holdings", desc: "Your Equity Units, allocation & dividend history", stat: `${holdings.length} holding${holdings.length === 1 ? "" : "s"}`, color: "from-amber-500/10 to-amber-600/5" },
-    { href: "/dashboard/opportunities", icon: Compass, title: "Capital Participation", desc: "Browse vetted enterprises raising capital", stat: "Discover", color: "from-yellow-500/10 to-amber-500/5" },
-    { href: "/dashboard/governance", icon: Scale, title: "Governance", desc: "Active proposals, voting & constitutional council", stat: "Vote", color: "from-gold/10 to-amber-600/5" },
-    { href: "/dashboard/founder", icon: Building2, title: "Founding Studio", desc: "Constitute your sovereign enterprise", stat: "Build", color: "from-amber-600/10 to-yellow-500/5" },
-    { href: "/dashboard/copilot", icon: Bot, title: "Brain AI Copilot", desc: "Ask constitutional questions, get AI-grounded answers", stat: "Ask", color: "from-purple-500/10 to-amber-500/5" },
-    { href: "/dashboard/constitution", icon: Landmark, title: "Constitution", desc: "Every rule explained in your language", stat: "Learn", color: "from-amber-500/10 to-gold/5" },
-    { href: "/dashboard/graduation", icon: GraduationCap, title: "Graduation", desc: "Readiness gates & sovereign independence path", stat: "Graduate", color: "from-emerald-500/10 to-amber-500/5" },
-    { href: "/dashboard/vault", icon: Vault, title: "Insurance Vault", desc: "0.5% constitutional levy & non-recourse loans", stat: "Protect", color: "from-amber-600/10 to-amber-500/5" },
-    { href: "/dashboard/escrow", icon: Banknote, title: "Law Firm Accounts", desc: "Zero-custody fund flows & milestone releases", stat: "Audit", color: "from-yellow-500/10 to-amber-600/5" },
-    { href: "/dashboard/manager", icon: Briefcase, title: "Manager Console", desc: "Milestones, expenses, employees & operations", stat: "Manage", color: "from-amber-500/10 to-yellow-500/5" },
-    { href: "/dashboard/market", icon: TrendingUp, title: "Enterprise Registry", desc: "All constitutional enterprises & their health", stat: "Explore", color: "from-amber-600/10 to-gold/5" },
-    { href: "/dashboard/compliance", icon: ShieldCheck, title: "Compliance", desc: "Audit log, regulatory alignment & FRA readiness", stat: "Verify", color: "from-amber-500/10 to-amber-600/5" },
-    { href: "/dashboard/whistleblower", icon: ShieldAlert, title: "Whistleblower", desc: "Anonymous reports & constitutional protection", stat: "Report", color: "from-red-500/10 to-amber-500/5" },
-    { href: "/dashboard/notifications", icon: Bell, title: "Notifications", desc: "Recent alerts & constitutional updates", stat: `${recentNotifications.length} unread`, color: "from-amber-500/10 to-yellow-500/5" },
-    { href: "/dashboard/profile", icon: Users, title: "Profile & Identity", desc: "Ed25519 anchor, STS score & verification", stat: `STS ${user.sovereignTrustScore}`, color: "from-amber-600/10 to-gold/5" },
-    { href: "/dashboard/architecture", icon: Cpu, title: "Architecture", desc: "Egypt-Fortress v2.0 corporate structure", stat: "Inspect", color: "from-amber-500/10 to-purple-500/5" },
+    { href: "/dashboard/portfolio", icon: Wallet, title: "Holdings", desc: "Your Equity Units, allocation & dividend history", stat: `${holdings.length} holding${holdings.length === 1 ? "" : "s"}`, color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/opportunities", icon: Compass, title: "Capital Participation", desc: "Browse vetted enterprises raising capital", stat: "Discover", color: "from-indigo-400/10 to-purple-500/5" },
+    { href: "/dashboard/governance", icon: Scale, title: "Governance", desc: "Active proposals, voting & constitutional council", stat: "Vote", color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/founder", icon: Building2, title: "Founding Studio", desc: "Constitute your sovereign enterprise", stat: "Build", color: "from-purple-500/10 to-indigo-500/5" },
+    { href: "/dashboard/copilot", icon: Bot, title: "Brain AI Copilot", desc: "Ask constitutional questions, get AI-grounded answers", stat: "Ask", color: "from-purple-500/10 to-indigo-500/5" },
+    { href: "/dashboard/constitution", icon: Landmark, title: "Constitution", desc: "Every rule explained in your language", stat: "Learn", color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/graduation", icon: GraduationCap, title: "Graduation", desc: "Readiness gates & sovereign independence path", stat: "Graduate", color: "from-emerald-500/10 to-indigo-500/5" },
+    { href: "/dashboard/vault", icon: Vault, title: "Insurance Vault", desc: "0.5% constitutional levy & non-recourse loans", stat: "Protect", color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/escrow", icon: Banknote, title: "Law Firm Accounts", desc: "Zero-custody fund flows & milestone releases", stat: "Audit", color: "from-indigo-400/10 to-indigo-600/5" },
+    { href: "/dashboard/manager", icon: Briefcase, title: "Manager Console", desc: "Milestones, expenses, employees & operations", stat: "Manage", color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/market", icon: TrendingUp, title: "Enterprise Registry", desc: "All constitutional enterprises & their health", stat: "Explore", color: "from-indigo-500/10 to-purple-500/5" },
+    { href: "/dashboard/compliance", icon: ShieldCheck, title: "Compliance", desc: "Audit log, regulatory alignment & FRA readiness", stat: "Verify", color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/whistleblower", icon: ShieldAlert, title: "Whistleblower", desc: "Anonymous reports & constitutional protection", stat: "Report", color: "from-red-500/10 to-indigo-500/5" },
+    { href: "/dashboard/notifications", icon: Bell, title: "Notifications", desc: "Recent alerts & constitutional updates", stat: `${recentNotifications.length} unread`, color: "from-indigo-500/10 to-indigo-700/5" },
+    { href: "/dashboard/profile", icon: Users, title: "Profile & Identity", desc: "Ed25519 anchor, STS score & verification", stat: `STS ${user.sovereignTrustScore}`, color: "from-indigo-500/10 to-purple-500/5" },
+    { href: "/dashboard/architecture", icon: Cpu, title: "Architecture", desc: "Egypt-Fortress v2.0 corporate structure", stat: "Inspect", color: "from-indigo-500/10 to-purple-500/5" },
   ];
 
   return (
@@ -192,7 +192,7 @@ export default async function OverviewPage() {
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <Building2 className="h-7 w-7 text-gold/30" />
                 <p className="font-sans text-xs text-muted-foreground">You&apos;re not yet a member of any enterprise.</p>
-                <Link href="/dashboard/opportunities" className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-3 py-1.5 font-sans text-xs font-semibold text-black">
+                <Link href="/dashboard/opportunities" className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-3 py-1.5 font-sans text-xs font-semibold text-white">
                   Explore <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>

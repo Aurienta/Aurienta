@@ -55,7 +55,7 @@ function statusBadge(status: string) {
   const cls: Record<string, string> = {
     draft: "border-zinc-400/30 bg-zinc-400/10 text-zinc-300",
     fundraising_active: "border-gold/30 bg-gold/10 text-gold-light",
-    fundraising_closed: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+    fundraising_closed: "border-gold-light/30 bg-gold-light/10 text-gold-bright",
     active: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
     frozen: "border-rose-400/30 bg-rose-400/10 text-rose-300",
     graduation_pending: "border-violet-400/30 bg-violet-400/10 text-violet-300",
@@ -72,7 +72,7 @@ function healthColor(rating?: string | null, score?: number) {
   if (score === undefined || score === null) return "text-muted-foreground";
   if (score >= 85) return "text-emerald-300";
   if (score >= 70) return "text-gold-light";
-  if (score >= 50) return "text-amber-300";
+  if (score >= 50) return "text-gold-bright";
   return "text-rose-300";
 }
 

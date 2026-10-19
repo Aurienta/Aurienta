@@ -155,8 +155,8 @@ function policeClearanceBadge(valid: boolean) {
   return {
     label: "Action required",
     icon: ShieldAlert,
-    wrap: "border-amber-400/30 bg-amber-400/[0.06]",
-    iconCls: "text-amber-400",
-    text: "text-amber-300",
+    wrap: "border-indigo-400/30 bg-indigo-400/[0.06]",
+    iconCls: "text-indigo-400",
+    text: "text-indigo-300",
   };
 }

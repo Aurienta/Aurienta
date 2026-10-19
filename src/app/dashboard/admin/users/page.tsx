@@ -116,7 +116,7 @@ function verificationBadge(level: string) {
 function stsColor(score: number) {
   if (score >= 90) return "text-gold-light";
   if (score >= 65) return "text-gold";
-  if (score >= 50) return "text-amber-300";
+  if (score >= 50) return "text-gold-bright";
   return "text-rose-300";
 }
 

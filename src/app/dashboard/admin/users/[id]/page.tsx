@@ -41,7 +41,7 @@ export const metadata = {
 function stsColor(score: number) {
   if (score >= 90) return "text-gold-light";
   if (score >= 65) return "text-gold";
-  if (score >= 50) return "text-amber-300";
+  if (score >= 50) return "text-gold-bright";
   return "text-rose-300";
 }
 
@@ -298,7 +298,7 @@ export default async function AdminUserDetailPage({
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-foreground/10">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 to-gold"
+                className="h-full bg-gradient-to-r from-gold-light/500 to-gold"
                 style={{ width: stsBarWidth(user.sovereignTrustScore) }}
               />
             </div>

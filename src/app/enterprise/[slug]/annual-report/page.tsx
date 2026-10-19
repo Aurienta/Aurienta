@@ -345,7 +345,7 @@ function FinancialStat({
   tone?: "default" | "ok" | "alert";
 }) {
   const toneCls =
-    tone === "ok" ? "text-emerald-300" : tone === "alert" ? "text-amber-300" : "text-foreground";
+    tone === "ok" ? "text-emerald-300" : tone === "alert" ? "text-indigo-300" : "text-foreground";
   return (
     <div className="rounded-xl border border-gold/12 bg-foreground/[0.02] p-4">
       <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground/85">
@@ -358,7 +358,7 @@ function FinancialStat({
 
 function AuditStatusBadge({ status, compact }: { status: string; compact?: boolean }) {
   const map: Record<string, { tone: string; label: string; icon: React.ElementType }> = {
-    pending: { tone: "border-amber-400/30 text-amber-300 bg-amber-400/5", label: "Pending audit", icon: Clock },
+    pending: { tone: "border-indigo-400/30 text-indigo-300 bg-indigo-400/5", label: "Pending audit", icon: Clock },
     audited: { tone: "border-gold/30 text-gold-light bg-gold/8", label: "Audited", icon: FileCheck },
     published: { tone: "border-emerald-400/30 text-emerald-300 bg-emerald-400/5", label: "Published", icon: CheckCircle2 },
   };

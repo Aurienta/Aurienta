@@ -190,7 +190,7 @@ export function PublicTradeLog({
               const isVerified = t.crePriceBandVerification.result === "verified";
               const sideTone = isBuy
                 ? "border-emerald-400/25 bg-emerald-400/[0.04] text-emerald-300"
-                : "border-amber-400/25 bg-amber-400/[0.04] text-amber-300";
+                : "border-indigo-400/25 bg-indigo-400/[0.04] text-indigo-300";
               const VerifyIcon = isVerified ? ShieldCheck : ShieldAlert;
               const verifyTone = isVerified
                 ? "border-emerald-400/25 text-emerald-300"

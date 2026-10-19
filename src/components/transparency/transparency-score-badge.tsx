@@ -89,7 +89,7 @@ export function TransparencyScoreBadge({
     Platinum: "border-emerald-400/40 text-emerald-300 bg-emerald-400/5",
     Gold: "border-gold/40 text-gold-light bg-gold/8",
     Silver: "border-slate-300/30 text-slate-200 bg-slate-300/5",
-    Bronze: "border-amber-700/40 text-amber-600 bg-amber-700/5",
+    Bronze: "border-indigo-700/40 text-indigo-600 bg-indigo-700/5",
   };
 
   if (variant === "compact") {

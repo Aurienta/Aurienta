@@ -70,7 +70,7 @@ export function ReadinessHero({
           <p
             className={cn(
               "mt-3 font-serif text-sm font-semibold",
-              score >= 90 ? "text-emerald-300" : score >= 75 ? "text-amber-300" : "text-foreground"
+              score >= 90 ? "text-emerald-300" : score >= 75 ? "text-indigo-300" : "text-foreground"
             )}
           >
             {verdict}

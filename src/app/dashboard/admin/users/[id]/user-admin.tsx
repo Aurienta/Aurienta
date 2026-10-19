@@ -570,7 +570,7 @@ export function SuspendButton({
 
   if (isSelf) {
     return (
-      <div className="inline-flex items-center gap-1.5 rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 font-sans text-xs text-amber-300">
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-gold-light/30 bg-gold-light/10 px-3 py-1.5 font-sans text-xs text-gold-bright">
         <AlertTriangle className="h-3.5 w-3.5" />
         You cannot suspend your own account.
       </div>

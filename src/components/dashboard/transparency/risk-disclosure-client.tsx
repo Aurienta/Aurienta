@@ -314,7 +314,7 @@ export function RiskDisclosureClient({
                         Acknowledge
                       </Button>
                     ) : (
-                      <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-300">
+                      <Badge variant="outline" className="border-indigo-400/30 bg-indigo-400/10 text-indigo-300">
                         <Clock className="mr-1 h-3 w-3" /> Cooling-off active
                       </Badge>
                     )}

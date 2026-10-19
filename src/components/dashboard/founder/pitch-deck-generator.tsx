@@ -307,18 +307,20 @@ export function PitchDeckGenerator({
                   variant="ghost"
                   onClick={() => setCurrentSlide((i) => Math.max(0, i - 1))}
                   disabled={currentSlide === 0}
+                  aria-label="Previous slide"
                   className="h-8"
                 >
                   <ChevronLeft className="h-4 w-4" /> Prev
                 </Button>
-                <span className="font-mono text-xs text-muted-foreground">
-                  {currentSlide + 1} / {slides.length}
+                <span className="font-mono text-xs text-muted-foreground" aria-live="polite">
+                  Slide {currentSlide + 1} of {slides.length}
                 </span>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setCurrentSlide((i) => Math.min(slides.length - 1, i + 1))}
                   disabled={currentSlide === slides.length - 1}
+                  aria-label="Next slide"
                   className="h-8"
                 >
                   Next <ChevronRight className="h-4 w-4" />
@@ -327,11 +329,13 @@ export function PitchDeckGenerator({
             </div>
 
             {/* Slide thumbnails */}
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+            <div className="mt-4 flex gap-2 overflow-x-auto pb-2" aria-label="Slide thumbnails">
               {slides.map((s, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentSlide(i)}
+                  aria-label={`Slide ${s.number}: ${s.title}`}
+                  aria-current={i === currentSlide}
                   className={`shrink-0 rounded-lg border px-3 py-2 text-left transition-colors ${
                     i === currentSlide
                       ? "border-gold/40 bg-gold/10"
@@ -345,7 +349,7 @@ export function PitchDeckGenerator({
             </div>
 
             <div className="mt-3 flex justify-end">
-              <Button size="sm" variant="ghost" onClick={() => copySlide(slides[currentSlide])} className="h-8 text-xs">
+              <Button size="sm" variant="ghost" onClick={() => copySlide(slides[currentSlide])} className="h-8 text-xs" aria-label="Copy current slide to clipboard">
                 <Copy className="h-3.5 w-3.5" /> Copy slide
               </Button>
             </div>
@@ -362,7 +366,7 @@ export function PitchDeckGenerator({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/95 p-8 flex flex-col"
           >
-            <button onClick={() => setFullscreen(false)} className="absolute right-4 top-4 text-white/60 hover:text-white">
+            <button onClick={() => setFullscreen(false)} aria-label="Exit presentation mode" className="absolute right-4 top-4 text-white/60 hover:text-white">
               <X className="h-6 w-6" />
             </button>
             <div className="flex-1 flex items-center justify-center">

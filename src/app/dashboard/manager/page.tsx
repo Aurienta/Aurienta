@@ -203,9 +203,11 @@ export default async function ManagerPage({
           </div>
 
           {nosiPct < 100 && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-400/5 px-3 py-2">
+            // AUD-UX-2: previously amber-* — brand violation. Remap to indigo,
+            // the brand's caution palette.
+            <div className="mb-3 flex items-center gap-2 rounded-lg border border-indigo-400/30 bg-indigo-400/5 px-3 py-2">
               <span className="text-sm">⚠️</span>
-              <p className="font-sans text-xs text-amber-300/90">
+              <p className="font-sans text-xs text-indigo-300/90">
                 {employees.length - nosiRegistered} employee(s) not yet NOSI-registered. Law Firm Client Account
                 freezes new expenses after 60 days of non-compliance.
               </p>
@@ -242,7 +244,8 @@ export default async function ManagerPage({
                             emp.nosiStatus === "registered"
                               ? "bg-emerald-400/10 text-emerald-400"
                               : emp.nosiStatus === "pending"
-                              ? "bg-amber-400/10 text-amber-400"
+                              // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+                              ? "bg-indigo-400/10 text-indigo-400"
                               : "bg-red-400/10 text-red-400"
                           }`}
                         >
@@ -324,7 +327,8 @@ export default async function ManagerPage({
                     m.status === "released"
                       ? "border-emerald-400/30 bg-emerald-400/5 text-emerald-400"
                       : m.status === "evidence_submitted"
-                      ? "border-amber-400/30 bg-amber-400/5 text-amber-400"
+                      // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+                      ? "border-indigo-400/30 bg-indigo-400/5 text-indigo-400"
                       : m.status === "approved"
                       ? "border-gold/30 bg-gold/5 text-gold"
                       : "border-gold/15 text-muted-foreground"

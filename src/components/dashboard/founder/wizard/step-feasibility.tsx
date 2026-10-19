@@ -351,13 +351,13 @@ export function StepFeasibility({
 
             {/* Red flags */}
             {report.redFlags.length > 0 && (
-              <div className="mt-4 rounded-lg border border-amber-400/20 bg-amber-400/5 p-3">
-                <p className="flex items-center gap-1.5 font-sans text-xs font-medium text-amber-300">
+              <div className="mt-4 rounded-lg border border-indigo-400/20 bg-indigo-400/5 p-3">
+                <p className="flex items-center gap-1.5 font-sans text-xs font-medium text-indigo-300">
                   <AlertTriangle className="h-3.5 w-3.5" /> Red flags ({report.redFlags.length})
                 </p>
                 <ul className="mt-1.5 flex flex-col gap-1">
                   {report.redFlags.map((flag, i) => (
-                    <li key={i} className="font-sans text-[11px] text-amber-200/80">• {flag}</li>
+                    <li key={i} className="font-sans text-[11px] text-indigo-200/80">• {flag}</li>
                   ))}
                 </ul>
               </div>

@@ -60,7 +60,10 @@ const CATEGORY_META: Record<
   governance: { label: "Governance", icon: Scale, color: "#4F46E5" },
   treasury: { label: "Treasury", icon: Wallet, color: "#6366F1" },
   compliance: { label: "Compliance", icon: ShieldAlert, color: "#e0584b" },
-  milestone: { label: "Milestone", icon: FlagTriangleRight, color: "#fbbf24" },
+  // AUD-UX-2: previously the milestone category used #fbbf24 (indigo-400) —
+  // a brand theme violation. Remap to violet (#8B5CF6), keeping it distinct
+  // from indigo (governance) and emerald (dividend).
+  milestone: { label: "Milestone", icon: FlagTriangleRight, color: "#8B5CF6" },
   dividend: { label: "Dividend", icon: Coins, color: "#34d399" },
   system: { label: "System", icon: Server, color: "#a89f86" },
 };
@@ -71,7 +74,10 @@ const PRIORITY_META: Record<
 > = {
   urgent: { label: "Urgent", color: "#f87171", bg: "rgba(224,88,75,0.18)", ring: "rgba(224,88,75,0.55)", order: 0 },
   high: { label: "High", color: "#818CF8", bg: "rgba(79,70,229,0.18)", ring: "rgba(79,70,229,0.55)", order: 1 },
-  medium: { label: "Medium", color: "#6366F1", bg: "rgba(201,160,61,0.14)", ring: "rgba(201,160,61,0.45)", order: 2 },
+  // AUD-UX-2: previously medium priority used rgba(201,160,61,…) — gold-amber
+  // — which renders as amber. Remap to indigo (slightly lighter than the high
+  // band) so the brand palette is preserved.
+  medium: { label: "Medium", color: "#6366F1", bg: "rgba(99,102,241,0.14)", ring: "rgba(99,102,241,0.45)", order: 2 },
   low: { label: "Low", color: "#a89f86", bg: "rgba(168,159,134,0.12)", ring: "rgba(168,159,134,0.35)", order: 3 },
 };
 

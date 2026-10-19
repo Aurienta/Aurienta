@@ -86,7 +86,7 @@ function Card({
   const toneMap = {
     neutral: { dot: "bg-gold", text: "text-foreground", ring: "border-gold/15" },
     green: { dot: "bg-emerald-400", text: "text-emerald-300", ring: "border-emerald-400/25" },
-    amber: { dot: "bg-amber-400", text: "text-amber-300", ring: "border-amber-400/25" },
+    amber: { dot: "bg-indigo-400", text: "text-indigo-300", ring: "border-indigo-400/25" },
     red: { dot: "bg-red-400", text: "text-red-300", ring: "border-red-400/25" },
   }[tone];
 
@@ -106,7 +106,7 @@ function Card({
               : tone === "green"
               ? "border-emerald-400/25 bg-emerald-400/5"
               : tone === "amber"
-              ? "border-amber-400/25 bg-amber-400/5"
+              ? "border-indigo-400/25 bg-indigo-400/5"
               : "border-red-400/25 bg-red-400/5"
           )}
         >
@@ -118,7 +118,7 @@ function Card({
                 : tone === "green"
                 ? "text-emerald-400"
                 : tone === "amber"
-                ? "text-amber-400"
+                ? "text-indigo-400"
                 : "text-red-400"
             )}
           />
@@ -139,7 +139,7 @@ function Card({
               tone === "green"
                 ? "bg-emerald-400"
                 : tone === "amber"
-                ? "bg-amber-400"
+                ? "bg-indigo-400"
                 : tone === "red"
                 ? "bg-red-400"
                 : "bg-gold-gradient"

@@ -118,7 +118,7 @@ const STATUS_STYLES: Record<CaseStatus, { label: string; className: string }> = 
   executing: {
     label: "Executing",
     className:
-      "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800",
+      "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-amber-950/70 dark:text-indigo-300 dark:border-indigo-800",
   },
   completed: {
     label: "Completed",
@@ -278,10 +278,10 @@ export function StandaloneSuccessionClient({ user, cases, rounds }: Props) {
           </div>
 
           {/* Compliance banner */}
-          <div className="border-t border-amber-200 bg-amber-50 px-6 py-4 dark:border-amber-900 dark:bg-amber-950/40">
+          <div className="border-t border-indigo-200 bg-indigo-50 px-6 py-4 dark:border-indigo-900 dark:bg-amber-950/40">
             <div className="flex items-start gap-2.5">
-              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
-              <p className="font-sans text-[12px] leading-relaxed text-amber-900 dark:text-amber-100">
+              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-indigo-700 dark:text-indigo-300" />
+              <p className="font-sans text-[12px] leading-relaxed text-indigo-900 dark:text-indigo-100">
                 <strong className="font-semibold">This is a legal/governance service — not fund management.</strong>{" "}
                 No securities, no custody. Solves the 70% family business succession failure rate by
                 cryptographically preparing continuity BEFORE a crisis — not through probate months later.
@@ -534,9 +534,9 @@ export function StandaloneSuccessionClient({ user, cases, rounds }: Props) {
                         </div>
                       )}
                       {(c.status === "executing" || c.status === "completed") && (
-                        <div className="mt-1 flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 dark:border-amber-900 dark:bg-amber-950/40">
-                          <AlertTriangle className="h-3.5 w-3.5 text-amber-700 dark:text-amber-300" />
-                          <span className="font-sans text-[11px] text-amber-900 dark:text-amber-100">
+                        <div className="mt-1 flex items-center gap-1.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 dark:border-indigo-900 dark:bg-amber-950/40">
+                          <AlertTriangle className="h-3.5 w-3.5 text-indigo-700 dark:text-indigo-300" />
+                          <span className="font-sans text-[11px] text-indigo-900 dark:text-indigo-100">
                             Execution in progress — bank signatory transfer, customer notification,
                             ownership handover governed by CRE policies.
                           </span>

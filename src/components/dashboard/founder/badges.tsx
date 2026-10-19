@@ -21,10 +21,11 @@ const MILESTONE_STATUS: Record<
   },
   board_review: {
     label: "Board review",
-    dot: "bg-amber-400",
-    text: "text-amber-300",
-    ring: "border-amber-400/30",
-    bg: "bg-amber-400/10",
+    // AUD-UX-2: previously amber-* — brand violation. Use indigo.
+    dot: "bg-indigo-400",
+    text: "text-indigo-300",
+    ring: "border-indigo-400/30",
+    bg: "bg-indigo-400/10",
   },
   approved: {
     label: "Approved",
@@ -76,12 +77,14 @@ export function enterpriseStatus(s: string) {
 
 export function HealthPill({ rating }: { rating: string | null }) {
   if (!rating) return null;
+  // AUD-UX-2: previously the fallback tone used amber-* — brand violation.
+  // Remap to indigo so the brand palette is preserved across all health ratings.
   const tone =
     rating.startsWith("AA") || rating.startsWith("AAA")
       ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
       : rating.startsWith("A") || rating.startsWith("BBB")
         ? "border-gold/30 bg-gold/10 text-gold-light"
-        : "border-amber-400/30 bg-amber-400/10 text-amber-300";
+        : "border-indigo-400/30 bg-indigo-400/10 text-indigo-300";
   return (
     <span
       className={cn(

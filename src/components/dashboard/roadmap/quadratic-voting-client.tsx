@@ -140,9 +140,9 @@ function CastVoteControl({
       </div>
 
       {available <= 0 ? (
-        <div className="mt-3 flex items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3">
-          <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
-          <span className="font-sans text-xs text-amber-700 dark:text-amber-300">
+        <div className="mt-3 flex items-center gap-2 rounded-lg border border-indigo-400/30 bg-indigo-400/[0.06] p-3">
+          <AlertCircle className="h-3.5 w-3.5 text-indigo-500" />
+          <span className="font-sans text-xs text-indigo-700 dark:text-indigo-300">
             You have spent all your voice credits on this proposal.
           </span>
         </div>
@@ -535,11 +535,11 @@ export function QuadraticVotingClient({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Amber disclaimer */}
-      <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4">
-        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+      {/* Indigo disclaimer (AUD-UX-2: was amber, brand violation) */}
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-400/30 bg-indigo-400/[0.06] p-4">
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" />
         <div>
-          <p className="font-sans text-sm font-medium text-amber-700 dark:text-amber-300">
+          <p className="font-sans text-sm font-medium text-indigo-700 dark:text-indigo-300">
             Voice credits are governance units, NOT currency. No financial value.
           </p>
           <p className="mt-1 font-sans text-xs text-muted-foreground">

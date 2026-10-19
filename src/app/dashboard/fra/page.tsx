@@ -213,14 +213,14 @@ export default async function FraPage() {
                   <td className="px-4 py-2.5">{e.sector}</td>
                   <td className="px-4 py-2.5">{e.stage}</td>
                   <td className="px-4 py-2.5">
-                    <span className={e.healthScore >= 80 ? "text-emerald-300" : e.healthScore >= 60 ? "text-amber-300" : "text-rose-300"}>
+                    <span className={e.healthScore >= 80 ? "text-emerald-300" : e.healthScore >= 60 ? "text-gold-bright" : "text-rose-300"}>
                       {e.healthRating ?? "—"} ({e.healthScore})
                     </span>
                   </td>
                   <td className="px-4 py-2.5 font-mono">{egp(e.raisedEgp, { compact: true })}</td>
                   <td className="px-4 py-2.5 font-mono">{egp(e.lawFirmClientAccountBalanceEgp, { compact: true })}</td>
                   <td className="px-4 py-2.5">
-                    <span className={e.nosiCompliantPct >= 100 ? "text-emerald-300" : "text-amber-300"}>
+                    <span className={e.nosiCompliantPct >= 100 ? "text-emerald-300" : "text-gold-bright"}>
                       {pct(e.nosiCompliantPct, 0)}
                     </span>
                   </td>

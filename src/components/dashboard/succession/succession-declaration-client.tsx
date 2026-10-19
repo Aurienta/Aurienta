@@ -294,7 +294,7 @@ export function SuccessionDeclarationClient({
             declaration.status === "executed"
               ? "border-gold/30 bg-gold/[0.04]"
               : declaration.status === "activated"
-                ? "border-amber-500/30 bg-amber-500/[0.04]"
+                ? "border-indigo-500/30 bg-indigo-500/[0.04]"
                 : declaration.status === "filed"
                   ? "border-emerald-500/30 bg-emerald-500/[0.04]"
                   : "border-gold/15 bg-background/40"
@@ -304,7 +304,7 @@ export function SuccessionDeclarationClient({
             {declaration.status === "executed" ? (
               <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-gold-light" />
             ) : declaration.status === "activated" ? (
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-indigo-400" />
             ) : declaration.status === "filed" ? (
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
             ) : (
@@ -325,7 +325,7 @@ export function SuccessionDeclarationClient({
                   : ""}
               </p>
               {declaration.status === "activated" && (
-                <p className="font-sans text-xs text-amber-300">
+                <p className="font-sans text-xs text-indigo-300">
                   Voting proxy is ACTIVE. The declarant's normal operations are
                   blocked — the designated successor / emergency manager must
                   act on the declarant's behalf.
@@ -536,7 +536,7 @@ export function SuccessionDeclarationClient({
             ))}
           </div>
           <div className="mt-3 flex items-center gap-2 font-sans text-xs">
-            <span className={cn(pctValid ? "text-emerald-400" : "text-amber-400")}>
+            <span className={cn(pctValid ? "text-emerald-400" : "text-indigo-400")}>
               Total: {totalPct.toFixed(2)}%
             </span>
             <span className="text-muted-foreground">

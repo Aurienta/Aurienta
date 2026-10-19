@@ -12,9 +12,9 @@ const TONE: Record<ComplianceStatus, { ring: string; bg: string; fg: string; lab
     label: "Compliant",
   },
   amber: {
-    ring: "border-amber-400/30",
-    bg: "bg-amber-400/8",
-    fg: "text-amber-300",
+    ring: "border-indigo-400/30",
+    bg: "bg-indigo-400/8",
+    fg: "text-indigo-300",
     label: "Attention",
   },
   red: {
@@ -74,7 +74,7 @@ export function StatusDot({ status, className }: { status: ComplianceStatus; cla
         status === "green"
           ? "bg-emerald-400 shadow-[0_0_8px_2px_rgba(52,211,153,0.5)]"
           : status === "amber"
-          ? "bg-amber-400 shadow-[0_0_8px_2px_rgba(251,191,36,0.5)]"
+          ? "bg-indigo-400 shadow-[0_0_8px_2px_rgba(251,191,36,0.5)]"
           : status === "red"
           ? "bg-red-400 shadow-[0_0_8px_2px_rgba(248,113,113,0.5)]"
           : "bg-muted-foreground/40",

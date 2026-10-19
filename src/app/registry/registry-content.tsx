@@ -87,7 +87,7 @@ function badgeColor(rating: string | null | undefined) {
   if (!rating) return "text-muted-foreground border-muted-foreground/30";
   if (rating.startsWith("AAA") || rating.startsWith("AA")) return "text-emerald-300 border-emerald-400/40";
   if (rating.startsWith("A") || rating.startsWith("BBB")) return "text-gold-light border-gold/40";
-  if (rating.startsWith("BB") || rating.startsWith("B")) return "text-amber-300 border-amber-400/40";
+  if (rating.startsWith("BB") || rating.startsWith("B")) return "text-indigo-300 border-indigo-400/40";
   return "text-red-300 border-red-400/40";
 }
 
@@ -469,7 +469,7 @@ function RegistryCard({ entry: e }: { entry: RegistryEntry }) {
             <ShieldCheck className="h-2.5 w-2.5" /> Police
           </span>
         )}
-        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${e.nosiCompliantPct >= 100 ? "border-emerald-400/25 bg-emerald-400/5 text-emerald-300" : "border-amber-400/25 bg-amber-400/5 text-amber-300"}`}>
+        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${e.nosiCompliantPct >= 100 ? "border-emerald-400/25 bg-emerald-400/5 text-emerald-300" : "border-indigo-400/25 bg-indigo-400/5 text-indigo-300"}`}>
           NOSI {e.nosiCompliantPct.toFixed(0)}%
         </span>
         <span className="inline-flex items-center gap-1 rounded-full border border-gold/20 bg-gold/5 px-2 py-0.5 text-gold-light">

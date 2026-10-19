@@ -132,7 +132,7 @@ export default async function FederationPage() {
                   </td>
                   <td className="px-4 py-2.5 font-mono">{m.members.toLocaleString()}</td>
                   <td className="px-4 py-2.5">
-                    <span className={`font-mono ${m.healthShare >= 0.70 ? "text-emerald-300" : "text-amber-300"}`}>
+                    <span className={`font-mono ${m.healthShare >= 0.70 ? "text-emerald-300" : "text-gold-bright"}`}>
                       {m.healthShare.toFixed(3)}
                     </span>
                   </td>
@@ -161,7 +161,7 @@ export default async function FederationPage() {
                 <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${
                   p.status === "executed"
                     ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                    : "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                    : "border-gold-light/30 bg-gold-light/10 text-gold-bright"
                 }`}>
                   {p.status === "executed" ? <CheckCircle2 className="h-3 w-3" /> : <Vote className="h-3 w-3" />}
                   {p.status.replace("_", " ")}
