@@ -39,6 +39,7 @@ import {
   isPhaseEligible,
   type PriorityAllocation,
 } from "@/lib/aurienta/priority-allocation";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 // ── Types ──
 type User = {
@@ -467,11 +468,12 @@ export function PriorityAllocationClient({
           </div>
 
           {allocations.length === 0 ? (
-            <div className="py-10 text-center">
-              <ListOrdered className="mx-auto h-8 w-8 text-indigo-300" />
-              <p className="mt-2 font-sans text-sm text-indigo-950/60">
-                You have not registered interest in any priority windows yet.
-              </p>
+            <div className="py-2">
+              <EmptyState
+                icon={ListOrdered}
+                title="No Allocations Yet"
+                description="Register interest in capital formation rounds to get STS-weighted priority access."
+              />
             </div>
           ) : (
             <div className="priority-scroll max-h-[28rem] overflow-y-auto rounded-lg border border-indigo-100">

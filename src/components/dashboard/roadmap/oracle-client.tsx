@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { shortHash, timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 type HistoryEntry = {
   id: string;
@@ -370,15 +371,26 @@ export function OracleClient({
         <CardContent className="pt-0">
           <div className="max-h-[28rem] overflow-y-auto">
             {history.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
-                <Satellite className="h-10 w-10 text-indigo-300" />
-                <p className="mt-3 font-serif text-base font-semibold text-slate-700">
-                  No queries yet
-                </p>
-                <p className="mt-1 max-w-sm font-sans text-xs text-slate-500">
-                  Run your first consensus query above. Each query is signed
-                  with the platform Ed25519 key and persisted for audit.
-                </p>
+              <div className="px-4 py-6">
+                <EmptyState
+                  icon={Satellite}
+                  title="No Queries Yet"
+                  description="Generate an API key and run your first consensus query to see results here."
+                  action={
+                    <Button
+                      onClick={generateKey}
+                      disabled={generating}
+                      className="bg-indigo-600 text-white hover:bg-indigo-700"
+                    >
+                      {generating ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <KeyRound className="mr-2 h-4 w-4" />
+                      )}
+                      Generate API Key
+                    </Button>
+                  }
+                />
               </div>
             ) : (
               <table className="w-full text-left text-sm">

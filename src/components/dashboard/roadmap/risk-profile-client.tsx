@@ -31,6 +31,7 @@ import {
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { timeAgo } from "@/lib/aurienta/format";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 type Enterprise = {
   id: string;
@@ -399,17 +400,11 @@ export function RiskProfileClient({
           </CardHeader>
           <CardContent className="pt-5">
             {!profile ? (
-              <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
-                <Umbrella className="h-10 w-10 text-indigo-300" />
-                <p className="mt-3 font-serif text-base font-semibold text-slate-700">
-                  No profile generated yet
-                </p>
-                <p className="mt-1 max-w-sm font-sans text-xs text-slate-500">
-                  Select an enterprise, accept the disclaimer, then generate
-                  the risk profile. The 9 constitutional vital signs and an
-                  Ed25519-signed decision token will appear here.
-                </p>
-              </div>
+              <EmptyState
+                icon={Umbrella}
+                title="No Risk Profile"
+                description="Select an enterprise and generate a risk profile to see constitutional health data."
+              />
             ) : (
               <div className="space-y-4">
                 {/* Health score gauge */}

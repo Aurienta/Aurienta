@@ -36,6 +36,7 @@ import {
 import { AurientaMark } from "@/components/aurienta-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { shortHash } from "@/lib/aurienta/format";
 import { SoulboundRevokeButton } from "./soulbound-revoke-button";
@@ -389,21 +390,26 @@ function MintCard({
   const canMint = verificationMet && anchorExists;
   return (
     <section className="rounded-2xl border border-indigo-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8">
-      <div className="flex items-center gap-2.5">
-        <Sparkles className="h-4 w-4 text-indigo-600" />
-        <span className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700/80">
-          Mint Your Credential
-        </span>
-      </div>
-      <h2 className="mt-3 font-serif text-2xl font-semibold text-slate-900">
-        Your sovereign identity, anchored.
-      </h2>
-      <p className="mt-2 max-w-2xl font-sans text-sm leading-relaxed text-slate-600">
-        Minting creates a non-transferable credential that records your
-        verification level, Sovereign Trust Score, and Ed25519 identity anchor.
-        The credential is content-addressed (IPFS) and signed by the platform
-        key — so anyone can verify it without contacting AURIENTA.
-      </p>
+      <EmptyState
+        icon={Fingerprint}
+        title="No Credential Yet"
+        description="Mint your non-transferable constitutional credential. It proves your verified identity without holding funds."
+        action={
+          <Button
+            onClick={onMint}
+            disabled={minting || !canMint}
+            size="lg"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md hover:from-indigo-700 hover:to-violet-700"
+          >
+            {minting ? (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            ) : (
+              <Lock className="mr-1.5 h-4 w-4" />
+            )}
+            Mint Credential
+          </Button>
+        }
+      />
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <RequirementRow
@@ -428,26 +434,11 @@ function MintCard({
         />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <Button
-          onClick={onMint}
-          disabled={minting || !canMint}
-          size="lg"
-          className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md hover:from-indigo-700 hover:to-violet-700"
-        >
-          {minting ? (
-            <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-          ) : (
-            <Lock className="mr-1.5 h-4 w-4" />
-          )}
-          Mint Credential
-        </Button>
-        {!canMint && (
-          <span className="font-sans text-xs text-slate-500">
-            Complete the requirements above to enable minting.
-          </span>
-        )}
-      </div>
+      {!canMint && (
+        <p className="mt-4 text-center font-sans text-xs text-slate-500">
+          Complete the requirements above to enable minting.
+        </p>
+      )}
     </section>
   );
 }

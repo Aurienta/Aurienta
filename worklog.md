@@ -17826,3 +17826,75 @@ Stage Summary:
 - Theme: 100% indigo (0 amber, 0 gold)
 - UX: EmptyState component created for pages that need it
 - Production: LIVE and operational
+
+---
+Task ID: UX-EMPTY-STATES
+Agent: UX Empty States Agent (general-purpose)
+Task: Add reusable EmptyState to 9 roadmap dashboard components that were missing them.
+
+Work Log:
+- Read worklog.md (previous UX-AUDIT-3 created `EmptyState` at `src/components/dashboard/ux/empty-state.tsx`; indigo theme).
+- Read the EmptyState component (icon + title + description + action + className props; indigo palette).
+- Read each of the 9 target components to understand their existing empty-state / loading / error patterns:
+  - soulbound-client.tsx — had custom `MintCard` (header + h2 + p + requirements + button).
+  - genome-client.tsx — had inline `Dna` icon + text empty state.
+  - zeitgeist-client.tsx — had placeholder div ("Click refresh to compute…") inside gauge column.
+  - oracle-client.tsx — had inline `Satellite` icon + text empty state for query history.
+  - endorsements-client.tsx — had inline `ThumbsUp` icon + text empty state for "My endorsements".
+  - quadratic-voting-client.tsx — had inline `Vote` icon + text empty state for proposals list.
+  - priority-allocation-client.tsx — had inline `ListOrdered` icon + text empty state for "My Allocations".
+  - standalone-succession-client.tsx — had `Card` with `Layers` icon + text empty state for cases list.
+  - risk-profile-client.tsx — had inline `Umbrella` icon + text empty state for profile display.
+
+Per-component changes:
+1. `soulbound-client.tsx`
+   - Imported `EmptyState` from `@/components/dashboard/ux/empty-state`.
+   - Refactored `MintCard` to render `<EmptyState icon={Fingerprint} title="No Credential Yet" description="Mint your non-transferable constitutional credential. It proves your verified identity without holding funds." action={<Button onClick={onMint} disabled={minting || !canMint} …>Mint Credential</Button>} />` as the primary CTA, while preserving the L1+ verification + Ed25519 anchor requirement rows below (gating logic intact).
+2. `genome-client.tsx`
+   - Imported `EmptyState` + `Dna` (already imported).
+   - Replaced inline empty state with `<EmptyState icon={Dna} title="No Genome Data" description="Enterprise genome predictions will appear here once enterprises are active." />`.
+3. `zeitgeist-client.tsx`
+   - Imported `EmptyState` + `Waves` (already imported).
+   - Replaced the gauge column placeholder (when `!latestState`) with `<EmptyState icon={Waves} title="No Sentiment Data" description="Daily constitutional sentiment will appear here once the platform has activity." />`. Kept the disclaimer banner and Refresh button functional.
+4. `oracle-client.tsx`
+   - Imported `EmptyState` + `Satellite` (already imported), `KeyRound` (already imported), `Button` (already imported).
+   - Replaced the empty query history placeholder with `<EmptyState icon={Satellite} title="No Queries Yet" description="Generate an API key and run your first consensus query to see results here." action={<Button onClick={generateKey} disabled={generating} …>Generate API Key</Button>} />`.
+5. `endorsements-client.tsx`
+   - Imported `EmptyState` + `ThumbsUp` (already imported).
+   - Replaced the "My endorsements" empty placeholder with `<EmptyState icon={ThumbsUp} title="No Endorsements Yet" description="Endorse enterprises with your Sovereign Trust Score to build the constitutional trust network." />`.
+6. `quadratic-voting-client.tsx`
+   - Imported `EmptyState` + `Vote` (already imported).
+   - Replaced the proposals empty state with `<EmptyState icon={Vote} title="No Active Proposals" description="Quadratic voting proposals will appear here when enterprises create governance proposals." />`.
+7. `priority-allocation-client.tsx`
+   - Imported `EmptyState` + `ListOrdered` (already imported).
+   - Replaced the "My Allocations" empty placeholder with `<EmptyState icon={ListOrdered} title="No Allocations Yet" description="Register interest in capital formation rounds to get STS-weighted priority access." />`.
+8. `standalone-succession-client.tsx`
+   - Imported `EmptyState` + `HeartHandshake` (already imported).
+   - Removed unused `Layers` lucide-react import (was only used by the old empty state).
+   - Replaced the cases list empty `Card` with `<EmptyState icon={HeartHandshake} title="No Succession Cases" description="Create a cryptographic succession plan for your family business to get started." />`.
+9. `risk-profile-client.tsx`
+   - Imported `EmptyState` + `Umbrella` (already imported).
+   - Replaced the risk-profile display empty placeholder with `<EmptyState icon={Umbrella} title="No Risk Profile" description="Select an enterprise and generate a risk profile to see constitutional health data." />`.
+
+Verification:
+- `bun run lint` → 0 errors, 529 warnings (all pre-existing: mixed spaces/tabs, setState-in-effect, etc.). No new warnings in the 9 modified files.
+- `DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db bun run build` → exit code 0 (PASS). All dashboard routes still prerender / dynamically render as before.
+- All existing loading + error states preserved (no edits to those branches).
+- Indigo/purple theme preserved (EmptyState component itself is already indigo).
+
+Files Modified:
+1. src/components/dashboard/roadmap/soulbound-client.tsx
+2. src/components/dashboard/roadmap/genome-client.tsx
+3. src/components/dashboard/roadmap/zeitgeist-client.tsx
+4. src/components/dashboard/roadmap/oracle-client.tsx
+5. src/components/dashboard/roadmap/endorsements-client.tsx
+6. src/components/dashboard/roadmap/quadratic-voting-client.tsx
+7. src/components/dashboard/roadmap/priority-allocation-client.tsx
+8. src/components/dashboard/roadmap/standalone-succession-client.tsx
+9. src/components/dashboard/roadmap/risk-profile-client.tsx
+
+Stage Summary:
+- 9 roadmap dashboard components now use the reusable `EmptyState` (indigo theme) instead of bespoke inline placeholders.
+- Each empty state shows the appropriate lucide-react icon, copy text, and (where applicable) the existing primary action button (Mint Credential / Generate API Key).
+- Lint: 0 errors. Build: PASS.
+- No breaking changes; loading and error branches untouched.

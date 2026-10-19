@@ -42,6 +42,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 import { timeAgo } from "@/lib/aurienta/format";
 
 // ── Types (mirror server-side shapes; declared locally so the client bundle
@@ -549,14 +550,12 @@ export function EndorsementsClient(props: {
         </div>
 
         {myEndorsements.length === 0 ? (
-          <div className="mt-5 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-8 text-center">
-            <ThumbsUp className="mx-auto h-6 w-6 text-indigo-500" />
-            <p className="mt-2 font-sans text-sm font-medium text-slate-700">
-              No endorsements yet
-            </p>
-            <p className="mt-1 font-sans text-xs text-slate-500">
-              Endorse an active enterprise above to begin building your reputation footprint.
-            </p>
+          <div className="mt-5">
+            <EmptyState
+              icon={ThumbsUp}
+              title="No Endorsements Yet"
+              description="Endorse enterprises with your Sovereign Trust Score to build the constitutional trust network."
+            />
           </div>
         ) : (
           <div className="mt-5 max-h-[28rem] space-y-3 overflow-y-auto pr-1">

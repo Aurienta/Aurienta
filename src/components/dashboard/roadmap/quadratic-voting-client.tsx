@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 // ── Types ──
 type Proposal = {
@@ -604,16 +605,11 @@ export function QuadraticVotingClient({
 
       {/* Proposals */}
       {proposalsState.length === 0 ? (
-        <div className="rounded-2xl border border-gold/12 glass p-12 text-center">
-          <Vote className="mx-auto h-10 w-10 text-gold/40" />
-          <p className="mt-4 font-serif text-base font-semibold">
-            No active proposals to vote on
-          </p>
-          <p className="mx-auto mt-1 max-w-md font-sans text-xs text-muted-foreground">
-            When an enterprise you belong to opens a proposal for voting, it
-            will appear here with your voice credit allocation.
-          </p>
-        </div>
+        <EmptyState
+          icon={Vote}
+          title="No Active Proposals"
+          description="Quadratic voting proposals will appear here when enterprises create governance proposals."
+        />
       ) : (
         <div className="flex flex-col gap-4">
           {proposalsState.map((p, i) => (

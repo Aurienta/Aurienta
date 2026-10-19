@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 // ── Types ──
 type Snapshot = {
@@ -388,11 +389,11 @@ export function ZeitgeistClient({
                 confidence={latestState.confidencePct}
               />
             ) : (
-              <div className="flex h-full items-center justify-center rounded-xl border border-gold/10 bg-foreground/[0.02] p-6 text-center">
-                <p className="font-sans text-xs text-muted-foreground">
-                  Click &quot;Refresh&quot; to compute today&apos;s sentiment snapshot.
-                </p>
-              </div>
+              <EmptyState
+                icon={Waves}
+                title="No Sentiment Data"
+                description="Daily constitutional sentiment will appear here once the platform has activity."
+              />
             )}
           </div>
         </div>

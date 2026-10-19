@@ -12,7 +12,6 @@ import {
   Globe,
   HeartHandshake,
   KeyRound,
-  Layers,
   Loader2,
   Lock,
   Plus,
@@ -43,6 +42,7 @@ import {
 } from "@/components/ui/select";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
 import { egp, shortHash, timeRemaining } from "@/lib/aurienta/format";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Standalone Succession Protocol — dashboard client.
@@ -419,14 +419,11 @@ export function StandaloneSuccessionClient({ user, cases, rounds }: Props) {
           </div>
 
           {cases.length === 0 ? (
-            <Card className="border-dashed border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
-              <CardContent className="py-10 text-center">
-                <Layers className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-600" />
-                <p className="mt-3 font-sans text-sm text-slate-600 dark:text-slate-400">
-                  No succession cases filed yet. Use the form above to file your first case.
-                </p>
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={HeartHandshake}
+              title="No Succession Cases"
+              description="Create a cryptographic succession plan for your family business to get started."
+            />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {cases.map((c) => {

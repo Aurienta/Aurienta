@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { csrfFetch } from "@/lib/aurienta/csrf-client";
+import { EmptyState } from "@/components/dashboard/ux/empty-state";
 
 // ── Types ──
 export type GenomeCard = {
@@ -311,16 +312,11 @@ export function GenomeClient({ genomes }: { genomes: GenomeCard[] }) {
       </div>
 
       {genomes.length === 0 ? (
-        <div className="rounded-2xl border border-gold/12 glass p-12 text-center">
-          <Dna className="mx-auto h-10 w-10 text-gold/40" />
-          <p className="mt-4 font-serif text-base font-semibold">
-            No genomes computed yet
-          </p>
-          <p className="mx-auto mt-1 max-w-md font-sans text-xs text-muted-foreground">
-            Genomes are computed on demand when an enterprise is viewed. Open an
-            enterprise detail page to trigger the first computation.
-          </p>
-        </div>
+        <EmptyState
+          icon={Dna}
+          title="No Genome Data"
+          description="Enterprise genome predictions will appear here once enterprises are active."
+        />
       ) : (
         <>
           {/* Top performer banner */}
