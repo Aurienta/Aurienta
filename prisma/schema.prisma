@@ -1807,3 +1807,154 @@ model RateLimitEntry {
 
   @@index([windowStart])
 }
+
+// ════════════════════════════════════════════════════════════════
+// STRATEGIC ECONOMIC MODELS — 6 Creative Recommendations
+// All constitutionally compliant (Zero Custody, Real Economy, ±5% band)
+// ════════════════════════════════════════════════════════════════
+
+// REC-1: Constitutional Takaful Pool Claims
+model TakafulClaim {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  claimantId      String
+  claimType       String   // milestone_failure, supply_disruption, force_majeure, key_person_loss
+  description     String
+  evidenceCid     String?  // IPFS evidence hash
+  amountRequested Int      // EGP requested
+  amountApproved  Int      @default(0) // CRE-approved amount
+  status          String   @default("submitted") // submitted, cre_verified, voting, approved, rejected, paid
+  creDecisionToken String?
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@index([enterpriseId])
+  @@index([status])
+}
+
+// REC-3: Constitutional Supply Chain Finance (milestone-backed advances)
+model MilestoneAdvance {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  partnerId       String
+  milestoneId     String?
+  advanceAmountEgp Int
+  constitutionalRate Float  // annualized, capped at 8%
+  termDays        Int      // repayment period
+  status          String   @default("pending") // pending, cre_approved, funded, repaid, defaulted
+  creDecisionToken String?
+  fundedAt       DateTime?
+  repaidAt       DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([partnerId])
+  @@index([status])
+}
+
+// REC-4: Enterprise Cooperative Network (B2B transactions)
+model CooperativeTransaction {
+  id              String   @id @default(cuid())
+  buyerEnterpriseId   String
+  sellerEnterpriseId  String
+  description     String
+  amountEgp       Int
+  status          String   @default("pending") // pending, cre_verified, completed, disputed
+  creDecisionToken String?
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  @@index([buyerEnterpriseId])
+  @@index([sellerEnterpriseId])
+  @@index([status])
+}
+
+// REC-6: Graduation Bond (cryptographic certificate)
+model GraduationBond {
+  id              String   @id @default(cuid())
+  enterpriseId    String   @unique
+  bondHash        String   // SHA-256 of full constitutional history
+  graduationDate  DateTime @default(now())
+  creDecisionToken String?
+  constitutionHash String  // hash of enterprise's constitutional charter
+  healthScoreAtGraduation Int
+  vitalSignsSummary String  // JSON: 9 vital signs at graduation
+  partnerCount    Int      // number of capital partners at graduation
+  capitalRaisedTotal Int   // total EGP raised during lifecycle
+  creDecisionsCount Int    // total CRE decisions during lifecycle
+  isRevocable     Boolean  @default(false) // constitutional bonds are irrevocable
+  verificationUrl String?  // public verification URL
+
+  @@index([enterpriseId])
+}
+
+// REC-2: Productive EGP (dual-currency valuation snapshots)
+model ProductiveEgpSnapshot {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  equityUnitPriceEgp  Float
+  equityUnitPriceUsd  Float
+  fxRateUsdToEgp  Float
+  inflationRatePct Float   // monthly CPI
+  realReturnPct   Float   // nominal return - inflation
+  snapshotDate    String  // YYYY-MM-DD
+  createdAt       DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([snapshotDate])
+}
+
+// REC-5: Constitutional Wage Bands (salary transparency)
+model ConstitutionalWageBand {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  role            String   // founding_operator, manager, employee, board_member
+  tier            String   // A, B, C, D, E, F
+  sector          String
+  minSalaryEgp    Int
+  medianSalaryEgp Int
+  maxSalaryEgp    Int
+  regionalAdjustment Float @default(1.0) // Cairo=1.0, Alexandria=0.95, Upper Egypt=0.85
+  aiGenerated     Boolean  @default(true)
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([role])
+  @@index([tier])
+}
+
+// STAGE A: Secondary Market Trade (real matching engine records)
+model TradeMatch {
+  id              String   @id @default(cuid())
+  buyOrderId      String
+  sellOrderId     String
+  enterpriseId    String
+  matchedPriceEgp Float
+  matchedShares   Int
+  buyerFeeEgp     Int      @default(0)
+  sellerFeeEgp    Int      @default(0)
+  creDecisionToken String?
+  matchedAt       DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([matchedAt])
+}
+
+// STAGE A: Dividend Distribution Record
+model DividendDistribution {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  totalDividendEgp Int
+  perShareDividendEgp Float
+  partnerCount    Int
+  status          String   @default("declared") // declared, cre_approved, paid, completed
+  creDecisionToken String?
+  declaredAt      DateTime @default(now())
+  paidAt          DateTime?
+  recordDate      DateTime  // date for eligibility check
+
+  @@index([enterpriseId])
+  @@index([status])
+}

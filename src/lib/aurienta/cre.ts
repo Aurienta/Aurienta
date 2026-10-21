@@ -2004,3 +2004,226 @@ export function enforceRiskProfileQuery(params: {
     decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }),
   };
 }
+
+// ════════════════════════════════════════════════════════════════
+// STRATEGIC ECONOMIC MODELS — CRE Policies (6 Recommendations)
+// ════════════════════════════════════════════════════════════════
+
+// REC-1: Constitutional Takaful Pool Claim Gate
+export function enforceTakafulClaim(params: {
+  enterpriseId: string;
+  claimType: string;
+  amountRequested: number;
+  vaultBalance: number;
+  enterpriseHealthScore: number;
+}): CreVerdict {
+  const policy = "takaful_claim.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    type: params.claimType,
+    amount: params.amountRequested,
+    vault: params.vaultBalance,
+    health: params.enterpriseHealthScore,
+  });
+  if (!params.enterpriseId) {
+    return { allowed: false, reason: "Enterprise ID required for takaful claim", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  const VALID_TYPES = ["milestone_failure", "supply_disruption", "force_majeure", "key_person_loss"];
+  if (!VALID_TYPES.includes(params.claimType)) {
+    return { allowed: false, reason: `Invalid claim type. Valid: ${VALID_TYPES.join(", ")}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.amountRequested <= 0) {
+    return { allowed: false, reason: "Claim amount must be positive", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  const maxPayout = Math.min(params.vaultBalance * 0.3, 500000); // max 30% of vault or 500K EGP
+  if (params.amountRequested > maxPayout) {
+    return { allowed: false, reason: `Claim amount ${params.amountRequested} exceeds max payout ${maxPayout} (30% of vault or 500K EGP)`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// REC-2: Productive EGP Snapshot Validation
+export function enforceProductiveEgpSnapshot(params: {
+  equityUnitPriceEgp: number;
+  fxRateUsdToEgp: number;
+  inflationRatePct: number;
+}): CreVerdict {
+  const policy = "productive_egp.rego";
+  const payloadHash = hashPayload({ price: params.equityUnitPriceEgp, fx: params.fxRateUsdToEgp, inflation: params.inflationRatePct });
+  if (params.equityUnitPriceEgp <= 0) {
+    return { allowed: false, reason: "Equity unit price must be positive", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.fxRateUsdToEgp <= 0 || params.fxRateUsdToEgp > 100) {
+    return { allowed: false, reason: "FX rate must be between 0 and 100", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.inflationRatePct < 0 || params.inflationRatePct > 100) {
+    return { allowed: false, reason: "Inflation rate must be between 0 and 100", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// REC-3: Constitutional Supply Chain Finance (Milestone Advance)
+export function enforceMilestoneAdvance(params: {
+  enterpriseId: string;
+  advanceAmountEgp: number;
+  milestoneValueEgp: number;
+  constitutionalRate: number;
+  enterpriseRunwayMonths: number;
+}): CreVerdict {
+  const policy = "milestone_advance.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    amount: params.advanceAmountEgp,
+    milestone: params.milestoneValueEgp,
+    rate: params.constitutionalRate,
+    runway: params.enterpriseRunwayMonths,
+  });
+  if (params.constitutionalRate > 8) {
+    return { allowed: false, reason: `Constitutional rate ${params.constitutionalRate}% exceeds 8% cap`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.advanceAmountEgp > params.milestoneValueEgp * 0.8) {
+    return { allowed: false, reason: `Advance ${params.advanceAmountEgp} exceeds 80% of milestone value ${params.milestoneValueEgp}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.enterpriseRunwayMonths < 3) {
+    return { allowed: false, reason: `Enterprise runway ${params.enterpriseRunwayMonths} months is below 3-month minimum`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// REC-4: Enterprise Cooperative Network Transaction Gate
+export function enforceCooperativeTransaction(params: {
+  buyerEnterpriseId: string;
+  sellerEnterpriseId: string;
+  amountEgp: number;
+  buyerCapitalEgp: number;
+}): CreVerdict {
+  const policy = "cooperative_transaction.rego";
+  const payloadHash = hashPayload({
+    buyer: params.buyerEnterpriseId,
+    seller: params.sellerEnterpriseId,
+    amount: params.amountEgp,
+    capital: params.buyerCapitalEgp,
+  });
+  if (params.buyerEnterpriseId === params.sellerEnterpriseId) {
+    return { allowed: false, reason: "Buyer and seller cannot be the same enterprise", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  const pct = (params.amountEgp / Math.max(params.buyerCapitalEgp, 1)) * 100;
+  if (pct > 10) {
+    return { allowed: false, reason: `Transaction ${pct.toFixed(1)}% of buyer capital exceeds 10% cap`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// REC-6: Graduation Bond Issuance Gate
+export function enforceGraduationBond(params: {
+  enterpriseId: string;
+  enterpriseStatus: string;
+  healthScore: number;
+  stageMonths: number;
+  vitalSignsHealthy: number;
+  totalVitalSigns: number;
+}): CreVerdict {
+  const policy = "graduation_bond.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    status: params.enterpriseStatus,
+    health: params.healthScore,
+    months: params.stageMonths,
+    signs: params.vitalSignsHealthy,
+    total: params.totalVitalSigns,
+  });
+  if (params.enterpriseStatus !== "graduated") {
+    return { allowed: false, reason: "Enterprise must have 'graduated' status for graduation bond", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.healthScore < 90) {
+    return { allowed: false, reason: `Health score ${params.healthScore} below 90 (AAA) for graduation bond`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  const minSigns = Math.ceil(params.totalVitalSigns * 7 / 9); // 7 of 9
+  if (params.vitalSignsHealthy < minSigns) {
+    return { allowed: false, reason: `Only ${params.vitalSignsHealthy}/${params.totalVitalSigns} vital signs healthy (need ${minSigns})`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// STAGE A: Dividend Distribution Gate
+export function enforceDividendDistribution(params: {
+  enterpriseId: string;
+  totalDividendEgp: number;
+  enterpriseProfitEgp: number;
+  lawFirmAccountBalanceEgp: number;
+}): CreVerdict {
+  const policy = "dividend_distribution.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    dividend: params.totalDividendEgp,
+    profit: params.enterpriseProfitEgp,
+    balance: params.lawFirmAccountBalanceEgp,
+  });
+  if (params.totalDividendEgp <= 0) {
+    return { allowed: false, reason: "Dividend amount must be positive", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.enterpriseProfitEgp <= 0) {
+    return { allowed: false, reason: "Cannot distribute dividends when enterprise is not profitable", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.totalDividendEgp > params.enterpriseProfitEgp * 0.5) {
+    return { allowed: false, reason: `Dividend ${params.totalDividendEgp} exceeds 50% of profit ${params.enterpriseProfitEgp}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.totalDividendEgp > params.lawFirmAccountBalanceEgp) {
+    return { allowed: false, reason: `Dividend ${params.totalDividendEgp} exceeds Law Firm Client Account balance ${params.lawFirmAccountBalanceEgp}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// STAGE A: Secondary Market Trade Match Gate
+export function enforceTradeMatch(params: {
+  enterpriseId: string;
+  buyPrice: number;
+  sellPrice: number;
+  fundamentalPrice: number;
+}): CreVerdict {
+  const policy = "trade_match.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    buy: params.buyPrice,
+    sell: params.sellPrice,
+    fp: params.fundamentalPrice,
+  });
+  if (params.buyPrice < params.sellPrice) {
+    return { allowed: false, reason: `Buy price ${params.buyPrice} < sell price ${params.sellPrice} — no match possible`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  const matchedPrice = (params.buyPrice + params.sellPrice) / 2;
+  const deviation = Math.abs((matchedPrice - params.fundamentalPrice) / params.fundamentalPrice) * 100;
+  if (deviation > 5) {
+    return { allowed: false, reason: `Matched price deviation ${deviation.toFixed(1)}% exceeds ±5% band`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// REC-5: Constitutional Wage Band Validation
+export function enforceConstitutionalWageBand(params: {
+  enterpriseId: string;
+  role: string;
+  tier: string;
+  minSalaryEgp: number;
+  medianSalaryEgp: number;
+  maxSalaryEgp: number;
+  nationalMinimumWage: number;
+}): CreVerdict {
+  const policy = "constitutional_wage.rego";
+  const payloadHash = hashPayload({
+    ent: params.enterpriseId,
+    role: params.role,
+    tier: params.tier,
+    min: params.minSalaryEgp,
+    med: params.medianSalaryEgp,
+    max: params.maxSalaryEgp,
+    nmw: params.nationalMinimumWage,
+  });
+  if (params.minSalaryEgp < params.nationalMinimumWage) {
+    return { allowed: false, reason: `Minimum salary ${params.minSalaryEgp} below national minimum wage ${params.nationalMinimumWage}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (params.minSalaryEgp >= params.medianSalaryEgp || params.medianSalaryEgp >= params.maxSalaryEgp) {
+    return { allowed: false, reason: "Salary bands must be: min < median < max", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}

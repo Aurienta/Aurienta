@@ -391,3 +391,94 @@ export const priorityAllocationRankingsQuerySchema = z.object({
     .union([z.literal("1"), z.literal("2"), z.literal("3")])
     .transform((v) => Number.parseInt(v, 10) as 1 | 2 | 3),
 });
+
+// ─── REC-1: Constitutional Takaful Pool ──────────────────────────────
+// POST /api/takaful/claims — submit a new claim against the pool.
+export const takafulClaimSubmitSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  claimType: z.enum([
+    "milestone_failure",
+    "supply_disruption",
+    "force_majeure",
+    "key_person_loss",
+  ]),
+  description: z.string().min(10, "Description must be at least 10 characters").max(8000),
+  amountRequested: z
+    .number()
+    .int("Amount must be an integer")
+    .min(1, "Amount must be positive")
+    .max(500_000, "Amount exceeds 500,000 EGP cap"),
+  evidenceCid: z.string().max(200).optional(),
+});
+
+// PATCH /api/takaful/claims/[claimId]
+// action = "approve" (AURIENTA Rep sets amountApproved)
+// action = "pay"      (law firm disburses from escrow)
+export const takafulClaimPatchSchema = z.object({
+  action: z.enum(["approve", "pay"]),
+  amountApproved: z
+    .number()
+    .int("Approved amount must be an integer")
+    .min(1, "Approved amount must be positive")
+    .max(500_000, "Approved amount exceeds 500,000 EGP cap")
+    .optional(),
+}).refine(
+  (v) => v.action !== "approve" || (typeof v.amountApproved === "number"),
+  { message: "amountApproved is required when action is 'approve'" }
+);
+
+// ─── REC-3: Constitutional Supply Chain Finance ──────────────────────
+// POST /api/supply-chain/advances — request a new milestone advance.
+export const supplyChainAdvanceRequestSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  milestoneId: z.string().max(64).optional(),
+  advanceAmountEgp: z
+    .number()
+    .int("Amount must be an integer")
+    .min(1, "Amount must be positive")
+    .max(100_000_000, "Amount exceeds 100M EGP sanity cap"),
+  constitutionalRate: z
+    .number()
+    .min(0, "Rate cannot be negative")
+    .max(8, "Constitutional rate cannot exceed 8% APR"),
+  termDays: z.number().int().min(1, "Term must be at least 1 day").max(365, "Term cannot exceed 365 days"),
+});
+
+// PATCH /api/supply-chain/advances/[advanceId]
+// action = "fund"  (capital partner wires principal through escrow)
+// action = "repay" (enterprise repays principal + interest through escrow)
+export const supplyChainAdvancePatchSchema = z.object({
+  action: z.enum(["fund", "repay"]),
+});
+
+// ─── STAGE A: Dividend Distribution ──────────────────────────────────
+// POST /api/dividends — declare a new dividend distribution.
+export const dividendDeclareSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+  totalDividendEgp: z
+    .number()
+    .int("Total dividend must be an integer")
+    .min(1, "Total dividend must be positive")
+    .max(1_000_000_000, "Total dividend exceeds 1B EGP sanity cap"),
+  perShareDividendEgp: z
+    .number()
+    .min(0, "Per-share dividend cannot be negative")
+    .max(1_000_000, "Per-share dividend exceeds sanity cap"),
+  partnerCount: z
+    .number()
+    .int("Partner count must be an integer")
+    .min(1, "Partner count must be at least 1")
+    .max(1_000_000, "Partner count exceeds sanity cap"),
+});
+
+// PATCH /api/dividends/[distributionId]
+// action = "pay" (law firm disburses the dividend to capital partners)
+export const dividendPatchSchema = z.object({
+  action: z.enum(["pay"]),
+});
+
+// ─── STAGE A: Secondary Market Trade Matching ────────────────────────
+// POST /api/trades/match — trigger a matching pass for an enterprise.
+export const tradeMatchSchema = z.object({
+  enterpriseId: z.string().min(1, "Enterprise is required").max(64),
+});

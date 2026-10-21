@@ -181,6 +181,9 @@ export const NAV_I18N: Record<string, string> = {
   "Anti-Fragility Vault": "nav.antifragility",
   "Insurance Vault": "nav.vault",
   "Proof-of-Solvency": "nav.solvency",
+  "Takaful Pool": "nav.takaful",
+  "Supply Chain Finance": "nav.supplyChain",
+  "Dividends": "nav.dividends",
   "Oracle Mirror": "nav.oracleMirror",
   "Reality Sync": "nav.realitySync",
   "Institutional Memory": "nav.institutionalMemory",
@@ -256,6 +259,8 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/profile", label: "Profile & Identity", icon: "UserCircle", group: "Workspace" },
   // AUTH-UPGRADE: Passkeys & Security — passwordless WebAuthn / FIDO2 manager.
   { href: "/dashboard/passkeys", label: "Passkeys & Security", icon: "KeyRound", group: "Workspace" },
+  // REC-2: Productive EGP — dual-currency valuation snapshots.
+  { href: "/dashboard/productive-egp", label: "Productive EGP", icon: "Banknote", group: "Workspace" },
 
   // ── Capital & Workforce ──
   { href: "/dashboard/syndicates", label: "Syndicates", icon: "Users", group: "Capital & Workforce" },
@@ -264,6 +269,8 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/skill-equity", label: "Skill-to-Equity", icon: "Award", group: "Capital & Workforce" },
   { href: "/dashboard/salary", label: "AI Salary Engine", icon: "Calculator", group: "Capital & Workforce" },
   { href: "/dashboard/diaspora", label: "Diaspora Bridge", icon: "Globe", group: "Capital & Workforce" },
+  // REC-5: Constitutional Wages — AI-generated salary bands per role.
+  { href: "/dashboard/constitutional-wages", label: "Constitutional Wages", icon: "Banknote", group: "Capital & Workforce" },
 
   // ── Enterprise ──
   { href: "/dashboard/governance", label: "Governance", icon: "Scale", group: "Enterprise" },
@@ -276,6 +283,8 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/board-briefings", label: "Board Briefings", icon: "ClipboardList", group: "Enterprise" },
   { href: "/dashboard/succession", label: "Succession Planner", icon: "UserCheck", group: "Enterprise" },
   { href: "/dashboard/partner-crm", label: "Partner CRM", icon: "Contact", group: "Enterprise" },
+  // REC-4: Cooperative Network — constitutional B2B exchange between enterprises.
+  { href: "/dashboard/cooperative-network", label: "Cooperative Network", icon: "Network", group: "Enterprise" },
 
   // ── Intelligence ──
   { href: "/dashboard/brain-ai", label: "Brain AI Status", icon: "Brain", group: "Intelligence" },
@@ -301,6 +310,12 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/vault", label: "Insurance Vault", icon: "Database", group: "Treasury & Infrastructure" },
   // P3-005: ShieldCheck is reserved for Compliance; Proof-of-Solvency uses FileCheck to avoid icon duplication.
   { href: "/dashboard/solvency", label: "Proof-of-Solvency", icon: "FileCheck", group: "Treasury & Infrastructure" },
+  // REC-1: Constitutional Takaful Pool — cooperative risk pool backed by the
+  // Law Firm Client Account. CRE-verified claims, board-approved, law-firm disbursed.
+  { href: "/dashboard/takaful-pool", label: "Takaful Pool", icon: "Shield", group: "Treasury & Infrastructure" },
+  // REC-3: Constitutional Supply Chain Finance — milestone-backed working-capital
+  // advances with an 8% APR usury cap. Principal flows through the law firm escrow.
+  { href: "/dashboard/supply-chain-finance", label: "Supply Chain Finance", icon: "Truck", group: "Treasury & Infrastructure" },
   { href: "/dashboard/oracle-mirror", label: "Oracle Mirror", icon: "FileText", group: "Treasury & Infrastructure" },
   { href: "/dashboard/reality-sync", label: "Reality Sync", icon: "Activity", group: "Treasury & Infrastructure" },
   { href: "/dashboard/institutional-memory", label: "Institutional Memory", icon: "Layers", group: "Treasury & Infrastructure" },
@@ -313,6 +328,8 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/survival-drill", label: "Survival Drill", icon: "HeartPulse", group: "Graduation & Sovereignty" },
   { href: "/dashboard/alumni", label: "Alumni Hall", icon: "Award", group: "Graduation & Sovereignty" },
   { href: "/dashboard/succession-declaration", label: "Succession Declaration", icon: "FileText", group: "Graduation & Sovereignty" },
+  // REC-6: Graduation Bond — cryptographic certificate of constitutional compliance.
+  { href: "/dashboard/graduation-bond", label: "Graduation Bond", icon: "BadgeCheck", group: "Graduation & Sovereignty" },
 
   // ── Platform Admin ──
   { href: "/dashboard/admin/users", label: "Partner Management", icon: "Users", group: "Platform Admin" },
@@ -378,6 +395,9 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/gaas", label: "Governance-as-a-Service", icon: "Webhook", group: "Institutional Services" },
   { href: "/dashboard/standalone-succession", label: "Standalone Succession", icon: "HeartHandshake", group: "Institutional Services" },
   { href: "/dashboard/risk-profile", label: "Risk Profile API", icon: "Umbrella", group: "Institutional Services" },
+  // STAGE A: Dividend Distribution — declared from realized enterprise profit,
+  // disbursed by the law firm from the Law Firm Client Account (Zero Custody).
+  { href: "/dashboard/dividends", label: "Dividends", icon: "PieChart", group: "Workspace" },
 ];
 
 // ─── Groups ─────────────────────────────────────────────────────────────

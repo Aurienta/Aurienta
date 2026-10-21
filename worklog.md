@@ -18165,3 +18165,261 @@ Delivered: STRATEGIC_RECOMMENDATIONS.md (436 lines)
 - Revenue projections (Year 1: 5.85M EGP, Year 3: 110.5M EGP)
 - #1 recommendation: "Productive EGP" (inflation-resistant savings)
 - Key insight: "Code is ready. Next step is the first law firm, not another feature."
+
+---
+Task ID: ECON-MODELS-B
+Agent: Build Cooperative + Wages + Graduation + ProductiveEGP (general-purpose sub-agent)
+Task: Build lib modules + API routes + dashboard pages for 4 economic models (REC-4 Cooperative Network, REC-5 Constitutional Wages, REC-6 Graduation Bond, REC-2 Productive EGP). CRE policies and Prisma models were already created.
+
+Work Log:
+- Read worklog + CRE policies (enforceCooperativeTransaction, enforceConstitutionalWageBand, enforceGraduationBond, enforceProductiveEgpSnapshot in src/lib/aurienta/cre.ts) + Prisma models (CooperativeTransaction, ConstitutionalWageBand, GraduationBond, ProductiveEgpSnapshot in prisma/schema.prisma lines 1856-1926).
+- Patterned all 4 modules on existing lib files (diaspora-corridor.ts, salary-engine.ts, profit-sharing) + indigo-themed dashboard pages (risk-profile-client.tsx, profit-sharing-client.tsx).
+- Each lib function enforces the appropriate CRE policy BEFORE writing, audit-logs both allow and deny outcomes, and anchors a ledger event inside db.$transaction.
+- All API routes are auth-required (session cookie) + rate-limited via limiters.governance + wrapped in withErrorHandler, EXCEPT /api/wages/benchmarks (public — only aggregates published bands) and /api/graduation-bond/verify/[bondId] (public — anyone can verify any bond).
+- Indigo theme enforced everywhere (no gold/amber/blue) — gradient headers from-indigo-50 via-white to-purple-50, border-indigo-200, text-indigo-700, purple-600 primary buttons.
+- EmptyState (from @/components/dashboard/ux/empty-state) used on all 4 pages for missing-data views.
+
+Files Created (21 new + 1 edited):
+1. src/lib/aurienta/cooperative-network.ts — createTransaction / listTransactions / completeTransaction / getNetworkStats. CRE-enforced, ledger-anchored, 10% capital cap.
+2. src/lib/aurienta/constitutional-wages.ts — generateWageBands / publishWageBands / getWageBands / getSectorBenchmarks. Uses salary-engine's MARKET_RATES + TIER_MULTIPLIERS, Cairo regional adjustment, BAND_LOWER_FACTOR 0.85 / BAND_UPPER_FACTOR 1.30.
+3. src/lib/aurienta/graduation-bond.ts — issueBond / getBond / verifyBond / getBondHash. SHA-256 hash of (ledger events in sequence order + audit logs referencing enterprise). 9 vital signs (health_score, capital_raised, revenue_active, runway, workforce, nosi_compliance, police_clearance, transparency_score, graduation_status). Bond is irrevocable, publicly verifiable.
+4. src/lib/aurienta/productive-egp.ts — computeSnapshot / getLatestSnapshot / getHistory + getUsdToEgpRate helper. Real return = revenueGrowthPct (nominal) − inflation (default 30%). USD-equivalent = equityUnitPriceEgp / fxRateUsdToEgp. Bank deposit comparison: 27% nominal − 30% inflation = −3% real.
+
+5. src/app/api/cooperative/transactions/route.ts — GET (list + stats) + POST (create, CRE-validated, buyer-member auth).
+6. src/app/api/cooperative/transactions/[transactionId]/route.ts — PATCH action=complete (counterparty-member auth, ledger-anchored).
+7. src/app/api/wages/bands/route.ts — GET (list, default published only; includeUnpublished=true requires member) + POST action=generate|publish.
+8. src/app/api/wages/benchmarks/route.ts — GET (public, sector median-of-medians by role).
+9. src/app/api/graduation-bond/issue/route.ts — POST (member auth, CRE-enforced, returns bond with verificationUrl).
+10. src/app/api/graduation-bond/[enterpriseId]/route.ts — GET (returns bond OR enterprise eligibility context).
+11. src/app/api/graduation-bond/verify/[bondId]/route.ts — GET (PUBLIC, no auth — returns valid + bond + enterprise summary).
+12. src/app/api/productive-egp/snapshot/route.ts — GET (latest snapshot) + POST (compute new, CRE-validated).
+13. src/app/api/productive-egp/history/route.ts — GET (?enterpriseId=&days=N, default 30).
+
+14. src/app/dashboard/cooperative-network/page.tsx — server component.
+15. src/components/dashboard/enterprise/cooperative-network-client.tsx — enterprise selector, 3 stat cards (partners/volume/active), B2B form (buyer/seller/description/amount), transaction list with status badges + Complete button. EmptyState when no enterprises.
+16. src/app/dashboard/constitutional-wages/page.tsx — server component.
+17. src/components/dashboard/capital/constitutional-wages-client.tsx — wage band Table (role/min/median/max/sector-median/status), Generate AI Wage Bands button, Publish Bands button, sector benchmark comparison grid. EmptyState for no bands / no benchmarks.
+18. src/app/dashboard/graduation-bond/page.tsx — server component (queries bond for each member enterprise).
+19. src/components/dashboard/graduation/graduation-bond-client.tsx — certificate view (graduation date, health, partners, capital, CRE decisions count, bond hash, bond ID with copy button, public verification URL hint), eligibility view (9 vital signs grid with healthy/unhealthy icons), Issue Graduation Bond button, public Verify Bond input + result card. EmptyState when no enterprises OR not eligible.
+20. src/app/dashboard/productive-egp/page.tsx — server component.
+21. src/components/dashboard/capital/productive-egp-client.tsx — real return headline card (Aurienta vs bank deposit, advantage badge), 4 stat tiles (EGP price, USD equiv, FX rate, inflation), SVG real-return history chart with bank-deposit reference line + zero line + data points + axis labels, marketing header "Don't save EGP. Own EGP." (English) + "احفظ جنيهك. امتلك جنيهك." (Arabic, RTL).
+
+22. src/lib/aurienta/nav-config.ts — added 4 nav entries:
+    - { href: "/dashboard/productive-egp", label: "Productive EGP", icon: "Banknote", group: "Workspace" }
+    - { href: "/dashboard/constitutional-wages", label: "Constitutional Wages", icon: "Banknote", group: "Capital & Workforce" }
+    - { href: "/dashboard/cooperative-network", label: "Cooperative Network", icon: "Network", group: "Enterprise" }
+    - { href: "/dashboard/graduation-bond", label: "Graduation Bond", icon: "BadgeCheck", group: "Graduation & Sovereignty" }
+    All 4 icons (Network, Banknote, BadgeCheck) already exist in NavIconName union + dashboard-shell icon registry — no icon-registry changes needed.
+
+Side-effect (root-cause fix):
+- Initial build failed with TS2339 errors on CooperativeTransaction / ConstitutionalWageBand / GraduationBond / ProductiveEgpSnapshot — AND pre-existing failures on DividendDistribution / MilestoneAdvance / TakafulClaim / TradeMatch. Root cause: the local Prisma Client (node_modules/@prisma/client) was stale relative to schema.prisma. Ran `bunx prisma generate` (v7.10.0) → all model-not-found errors resolved. No schema changes made — schema.prisma was already correct.
+
+Verification:
+- `bun run lint` → 0 errors, 545 warnings (16 new from my 4 client components — all `react-hooks/set-state-in-effect` on the useEffect→refresh pattern, identical to the existing risk-profile-client.tsx / profit-sharing-client.tsx / diaspora-client.tsx style; baseline was 529).
+- `DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db bun run build` → EXIT CODE 0 (PASS). All 4 new dashboard routes appear in the build route list:
+    ├ ƒ /dashboard/constitutional-wages
+    ├ ƒ /dashboard/cooperative-network
+    ├ ƒ /dashboard/graduation-bond
+    ├ ƒ /dashboard/productive-egp
+  Plus the 9 new API routes compiled successfully.
+- One bug fixed mid-build: cooperative-network-client.tsx line 433 — `timeAgo(t.createdAt)` (string) failed TS check since `format.timeAgo` is typed `(d: Date)`. Wrapped with `new Date(t.createdAt)`.
+
+Stage Summary:
+- 4 economic models (REC-2/4/5/6) fully wired: lib → API → dashboard page → client component → nav entry.
+- CRE policies enforced before every state-changing write; allow + deny outcomes audit-logged; ledger-anchored inside db.$transaction.
+- Zero Custody honored — no money moves in any of these modules (cooperative transactions are recorded agreements; graduation bond is a certificate; productive EGP is a read-only snapshot; wage bands are declarations).
+- Public endpoints: /api/wages/benchmarks (sector transparency) + /api/graduation-bond/verify/[bondId] (bond verification, no auth).
+- Indigo theme + EmptyState + shadcn/ui components throughout. No gold/amber/blue.
+- Build PASS | Lint 0 errors.
+
+---
+Task ID: ECON-MODELS-A
+Agent: Build Agent (general-purpose)
+Task: Build 3 strategic economic models — Constitutional Takaful Pool (REC-1), Constitutional Supply Chain Finance (REC-3), Dividend Distribution + Secondary Market Trade Matching (STAGE A). CRE policies + Prisma models already existed; this task built the business logic, API routes, and UI.
+
+Work Log:
+
+1. READ CONTEXT (no edits):
+   - Read worklog.md tail (last 300 lines) to load prior state.
+   - Read src/lib/aurienta/cre.ts (lines 2000-2230) — confirmed `enforceTakafulClaim`, `enforceMilestoneAdvance`, `enforceDividendDistribution`, `enforceTradeMatch` are present and operate against the strategic economic model Prisma tables.
+   - Read prisma/schema.prisma (lines 1810-1960) — confirmed TakafulClaim, MilestoneAdvance, TradeMatch, DividendDistribution models already created. Also confirmed TradeOrder, Valuation, QuarterlyReport, Enterprise.lawFirmClientAccountBalanceEgp + monthlyBurnEgp + equityUnitPriceEgp + healthScore for the lib logic.
+   - Read existing patterns: priority-allocation-client.tsx (full), whistleblower route + [id]/resolve route, soulbound route, validation.ts parseBody helper, api-handler.ts withErrorHandler, csrf-client.ts, empty-state.tsx, format.ts (egp/timeAgo/pct).
+   - Read existing market page + matching-engine.ts (FIFO engine for Trade records) — confirmed my new trade-matching.ts uses the new TradeMatch model and is complementary, not a duplicate.
+
+2. LIB MODULES CREATED (4):
+
+   a. src/lib/aurienta/takaful-pool.ts (REC-1)
+      - submitClaim(params) — reads enterprise vault balance + health score, calls enforceTakafulClaim, persists claim + CRE decision + ledger event inside ONE transaction. Status starts as `submitted` (allowed) or `rejected` (denied) — denied claims still persist for the audit trail.
+      - listClaims(enterpriseId) — lists claims for an enterprise, ordered by createdAt desc, capped at 200.
+      - listClaimsForUser(userId) — lists claims submitted by a user.
+      - listClaimsVisibleToUser(userId, enterpriseIds) — own claims OR claims for any enterprise the user is a member of.
+      - approveClaim(claimId, amountApproved, approverId) — flips status `submitted` → `cre_verified`, sets amountApproved (must be ≤ amountRequested). Transactional ledger event.
+      - payClaim(claimId, disbursedBy) — flips status `cre_verified` → `paid`, sets resolvedAt. Law-firm-only action (RBAC enforced at API layer).
+      - getClaim(claimId) — single-fetch helper.
+      - getTakafulPoolStats(enterpriseId) — aggregates vault balance, total/active/paid claim counts, lifetime paid-out EGP. Used by dashboard header cards.
+
+   b. src/lib/aurienta/supply-chain-finance.ts (REC-3)
+      - requestAdvance(params) — reads milestone value (cross-enterprise ID injection guarded) + runway (law firm balance / monthly burn), calls enforceMilestoneAdvance. Persists advance + CRE decision + ledger event in one tx.
+      - listAdvances(enterpriseId) — lists advances for an enterprise.
+      - listAdvancesForPartner(partnerId) — lists advances a capital partner is lending on.
+      - listAdvancesVisibleToUser(userId, enterpriseIds) — operator + partner view union.
+      - fundAdvance(advanceId, funderId) — flips `pending` → `funded`, sets fundedAt.
+      - repayAdvance(advanceId, repayerId) — flips `funded` → `repaid`, sets repaidAt.
+      - getAdvance(advanceId) + getSupplyChainStats(enterpriseId) helpers.
+
+   c. src/lib/aurienta/dividend-distribution.ts (STAGE A)
+      - declareDividend(params) — reads latest QuarterlyReport.netProfitEgp + Law Firm Client Account balance, calls enforceDividendDistribution. Persists distribution + CRE decision + ledger event in one tx.
+      - listDividends(enterpriseId) — for one enterprise.
+      - listDividendsForUserEnterprises(enterpriseIds) — for every enterprise the user is a member of.
+      - payDividend(distributionId, paidBy) — flips `declared`/`cre_approved` → `paid`, sets paidAt.
+      - getDividend(distributionId) + getDividendStats(enterpriseId) helpers.
+
+   d. src/lib/aurienta/trade-matching.ts (STAGE A)
+      - getFundamentalPrice(enterpriseId) — latest Valuation.equityUnitPriceEgp, falling back to Enterprise.equityUnitPriceEgp.
+      - matchOrders(enterpriseId, triggeredBy, maxMatches=50) — runs ONE discrete matching pass: pulls highest-priced buy + lowest-priced sell, calls enforceTradeMatch (±5% band), records TradeMatch row + bumps filledEquityUnits on both orders + appends ledger event. Stops on band breach. Whole pass in ONE transaction.
+      - getTradeHistory(enterpriseId) — lists TradeMatch rows newest-first.
+      - getMatchedPrice(enterpriseId) — last matched price (for live ticker / market page integration).
+
+3. VALIDATION SCHEMAS ADDED to src/lib/aurienta/validation.ts (5 new schemas, +90 lines):
+   - takafulClaimSubmitSchema — enterpriseId + claimType enum + description(10-8000) + amountRequested(1-500_000) + optional evidenceCid.
+   - takafulClaimPatchSchema — action approve|pay, with refine() requiring amountApproved when action=approve.
+   - supplyChainAdvanceRequestSchema — enterpriseId + optional milestoneId + advanceAmountEgp(1-100M) + constitutionalRate(0-8) + termDays(1-365).
+   - supplyChainAdvancePatchSchema — action fund|repay.
+   - dividendDeclareSchema — enterpriseId + totalDividendEgp(1-1B) + perShareDividendEgp(0-1M) + partnerCount(1-1M).
+   - dividendPatchSchema — action pay.
+   - tradeMatchSchema — enterpriseId.
+
+4. API ROUTES CREATED (7 files, 9 handlers):
+
+   a. src/app/api/takaful/claims/route.ts
+      - GET — AURIENTA Reps see all; others see claims they submitted or claims against their enterprises. 100-row cap.
+      - POST — must be a member of the enterprise; calls submitClaim(); 201 on success, 400 on CRE denial (returns verdict + claim row for audit).
+
+   b. src/app/api/takaful/claims/[claimId]/route.ts
+      - GET — claimant / enterprise member / AURIENTA Rep only.
+      - PATCH — action=approve (aurienta_rep + board_member + company_owner); action=pay (law_firm_rep + aurienta_rep — Zero Custody). Returns 409 on invalid state transitions.
+
+   c. src/app/api/supply-chain/advances/route.ts
+      - GET — AURIENTA Reps see all; others see advances for their enterprises + advances they're the partner on.
+      - POST — must be an operator (founding_operator / manager / board_member / company_owner) or Rep; calls requestAdvance().
+
+   d. src/app/api/supply-chain/advances/[advanceId]/route.ts
+      - GET — partner / enterprise member / Rep.
+      - PATCH — action=fund (partner or Rep); action=repay (operator or Rep). 409 on invalid state.
+
+   e. src/app/api/dividends/route.ts
+      - GET — AURIENTA Reps see all; others see distributions for their enterprises.
+      - POST — operator / board_member / company_owner / Rep only; calls declareDividend().
+
+   f. src/app/api/dividends/[distributionId]/route.ts
+      - PATCH — action=pay (law_firm_rep + aurienta_rep — Zero Custody disbursement). 409 on invalid state.
+
+   g. src/app/api/trades/match/route.ts
+      - POST — must be a member of the enterprise (any seat) or Rep; calls matchOrders(). Returns the run summary (matchesCreated, totalMatchedShares, totalValueEgp, matchedPriceEgp, verdicts).
+
+5. DASHBOARD PAGES + CLIENT COMPONENTS CREATED (6 files):
+
+   a. src/app/dashboard/takaful-pool/page.tsx (server component)
+      - Auth-gated, redirects to /signin if no session.
+      - Fetches user's enterprises (all if Rep), visible claims, per-enterprise pool stats via getTakafulPoolStats().
+      - Computes canApprove (Rep + board_member + company_owner) + canPay (Rep + law_firm_rep) booleans for client-side RBAC gating of action buttons.
+
+   b. src/components/dashboard/roadmap/takaful-pool-client.tsx
+      - Indigo theme, full shadcn/ui (Button, Input, Label, Textarea, Badge, Select, Table).
+      - Header card + compliance banner + 4 stat cards (vault balance, active claims, paid claims, paid out).
+      - Submit-claim form: enterprise select, claim-type select (4 valid types), amount requested, optional evidence CID, description.
+      - Claims table: type, requested, approved, status badge, filed time, approve/pay action buttons (RBAC-gated, prompt-based amount input for approve).
+      - EmptyState component (Shield icon) when no claims.
+      - csrfFetch() for every state-changing call. toast() for feedback. router.refresh() after mutations.
+      - Verdict error display (rose theme) for CRE denials.
+
+   c. src/app/dashboard/supply-chain-finance/page.tsx (server component)
+      - Fetches enterprises + active milestones (status in board_review/approved/released/evidence_submitted) + visible advances + per-enterprise stats.
+      - Computes canFund (Rep + capital_partner) + canRepay (Rep + operator seats).
+
+   d. src/components/dashboard/roadmap/supply-chain-finance-client.tsx
+      - Same indigo theme + structure as takaful client.
+      - 4 stat cards: active advances, repaid, total funded, outstanding principal.
+      - Request-advance form: enterprise select, optional milestone select (filtered to the selected enterprise), amount, constitutional rate (0-8%), term days.
+      - Advances table: amount, rate, term, status badge, created time, fund/repay actions.
+      - EmptyState (Truck icon) when no advances.
+
+   e. src/app/dashboard/dividends/page.tsx (server component)
+      - Fetches enterprises + visible distributions + per-enterprise dividend stats.
+      - Computes canDeclare (Rep + operator seats) + canPay (Rep + law_firm_rep).
+
+   f. src/components/dashboard/roadmap/dividends-client.tsx
+      - Same indigo theme.
+      - 4 stat cards: pending distributions, paid, paid out, enterprises count.
+      - Declare-dividend form (gated by canDeclare): enterprise select, total dividend, per-share, partner count.
+      - Distributions table: total, per-share, partners, status badge, declared time, pay action.
+      - EmptyState (PieChart icon) when no distributions.
+
+6. NAV-CONFIG UPDATES — src/lib/aurienta/nav-config.ts:
+   - Added NAV_I18N entries: "Takaful Pool" → nav.takaful, "Supply Chain Finance" → nav.supplyChain, "Dividends" → nav.dividends.
+   - Added 3 NAV items:
+     • { href: "/dashboard/takaful-pool", label: "Takaful Pool", icon: "Shield", group: "Treasury & Infrastructure" }
+     • { href: "/dashboard/supply-chain-finance", label: "Supply Chain Finance", icon: "Truck", group: "Treasury & Infrastructure" }
+     • { href: "/dashboard/dividends", label: "Dividends", icon: "PieChart", group: "Workspace" }
+   - All icons (Shield, Truck, PieChart) already in the NavIconName union — no type changes needed.
+
+7. CONSTITUTIONAL COMPLIANCE:
+   - Zero Custody preserved — every disbursement action is RBAC-gated to law_firm_rep (or aurienta_rep); AURIENTA never moves funds.
+   - Every state-changing lib function:
+     • Calls the matching CRE policy and stores the decision token.
+     • Persists a CreDecision row via logCreDecision() inside the same transaction.
+     • Appends an immutable LedgerEvent via appendLedgerEvent() (per-enterprise monotonic sequence, SHA3-256 hash chain).
+     • Calls audit() for the non-ledger audit trail.
+   - Every API route uses withErrorHandler() for clean error translation + 401 on missing auth + 403 on RBAC denial + 409 on invalid state.
+   - Every client component uses csrfFetch() (double-submit CSRF token) + toast() feedback + router.refresh().
+
+8. VERIFICATION:
+   - `bun run lint` → 0 errors, 545 warnings (all pre-existing patterns: no-console, no-mixed-spaces-and-tabs, react-hooks/set-state-in-effect, no-non-null-assertion in legacy files). 0 warnings from any of the 17 new files I created.
+   - `DATABASE_URL=file:/home/z/my-project/prisma/.provider-placeholder.db bun run build` → exit code 0 (PASS). "Compiled successfully in 19.1s".
+   - All 10 new routes registered in the build output:
+     • /api/takaful/claims ✓
+     • /api/takaful/claims/[claimId] ✓
+     • /api/supply-chain/advances ✓
+     • /api/supply-chain/advances/[advanceId] ✓
+     • /api/dividends ✓
+     • /api/dividends/[distributionId] ✓
+     • /api/trades/match ✓
+     • /dashboard/takaful-pool ✓
+     • /dashboard/supply-chain-finance ✓
+     • /dashboard/dividends ✓
+
+Files Created (17):
+- src/lib/aurienta/takaful-pool.ts
+- src/lib/aurienta/supply-chain-finance.ts
+- src/lib/aurienta/dividend-distribution.ts
+- src/lib/aurienta/trade-matching.ts
+- src/app/api/takaful/claims/route.ts
+- src/app/api/takaful/claims/[claimId]/route.ts
+- src/app/api/supply-chain/advances/route.ts
+- src/app/api/supply-chain/advances/[advanceId]/route.ts
+- src/app/api/dividends/route.ts
+- src/app/api/dividends/[distributionId]/route.ts
+- src/app/api/trades/match/route.ts
+- src/app/dashboard/takaful-pool/page.tsx
+- src/app/dashboard/supply-chain-finance/page.tsx
+- src/app/dashboard/dividends/page.tsx
+- src/components/dashboard/roadmap/takaful-pool-client.tsx
+- src/components/dashboard/roadmap/supply-chain-finance-client.tsx
+- src/components/dashboard/roadmap/dividends-client.tsx
+
+Files Modified (2):
+- src/lib/aurienta/validation.ts — added 7 new Zod schemas
+- src/lib/aurienta/nav-config.ts — added 3 NAV items + 3 NAV_I18N entries
+
+Stage Summary:
+- 3 strategic economic models fully implemented end-to-end: lib logic → API routes → dashboard pages.
+- All Zero Custody rules preserved (law_firm_rep is the only role authorised to disburse funds).
+- Every state change recorded as CreDecision + LedgerEvent + AuditLog (triple-booked for tamper-evidence).
+- Trade-matching lib is complementary to the existing FIFO engine — uses the new TradeMatch model + enforceTradeMatch ±5% band gate. Triggered manually via POST /api/trades/match; integration into /dashboard/market page can be added in a follow-up task (the spec said no separate page for trade matching, but the API route + lib are ready).
+- Build PASS, Lint 0 errors.
+- Indigo theme, shadcn/ui, csrfFetch, EmptyState component — all consistent with the existing roadmap components.
+
+Next Actions (recommendations, not in scope of this task):
+- Wire the POST /api/trades/match trigger into the existing /dashboard/market page as a "Match Orders" button next to the order book (the API + lib are ready).
+- Consider a scheduled cron job to run matchOrders() periodically for enterprises with open order books.
+- Add seed data for TakafulClaim / MilestoneAdvance / DividendDistribution rows to populate the dashboards in the demo environments.
