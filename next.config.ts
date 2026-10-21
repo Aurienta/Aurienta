@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: wss:; frame-ancestors 'self'`,
+            value: `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://integrate.api.nvidia.com https://openrouter.ai https://api-inference.huggingface.co wss:; frame-ancestors 'self'`,
           },
           // Prevent Safari from caching 301 redirects (which caused the redirect loop)
           { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },

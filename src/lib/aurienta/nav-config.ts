@@ -312,6 +312,7 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/graduation-simulator", label: "Graduation Simulator", icon: "FlaskConical", group: "Graduation & Sovereignty" },
   { href: "/dashboard/survival-drill", label: "Survival Drill", icon: "HeartPulse", group: "Graduation & Sovereignty" },
   { href: "/dashboard/alumni", label: "Alumni Hall", icon: "Award", group: "Graduation & Sovereignty" },
+  { href: "/dashboard/succession-declaration", label: "Succession Declaration", icon: "FileText", group: "Graduation & Sovereignty" },
 
   // ── Platform Admin ──
   { href: "/dashboard/admin/users", label: "Partner Management", icon: "Users", group: "Platform Admin" },
