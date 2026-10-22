@@ -18629,3 +18629,30 @@ RECOMMENDATIONS (10):
 10. Recently visited in sidebar — P3
 
 DELIVERED: AUDIT_UX_FULL.md (comprehensive audit + recommendations)
+
+---
+Task ID: UX-RESTRUCTURE-IMPLEMENTED
+Agent: main (COO/CTO/PM)
+Task: Implement all UX audit recommendations — nav restructure + ERP group + Platform Admin sub-groups
+
+DELIVERED:
+1. Split "Workspace" (15 items) → "My Workspace" (6 personal tools) + "Capital" (9 investment tools)
+   - My Workspace: Overview, Profile, Passkeys, Calendar, Updates, Notifications
+   - Capital: Holdings, Participation, Registry, Priority Windows, Discovery, Profit-Sharing, Dividends, Productive EGP, Priority Allocation, Soulbound, Syndicates
+2. Moved 9 ERP items from "Enterprise" → "ERP" group (was mixed together)
+   - Added Tasks (WBS) + ERP Integration to nav (were orphaned pages)
+   - ERP group: Hub, Projects, Tasks, Inventory, Procurement, Assets, Manufacturing, Quality, Integration
+3. Restructured "Platform Admin" (31 items → 6 collapsible sub-groups):
+   - Users & Enterprises (3): Partner Mgmt, Enterprise Mgmt, Audit Log
+   - Platform Operations (7): Steward, Architecture, Governance, Readiness, AOS, Admin Panel, Settings, Constitutional Audit
+   - Go-to-Market (10): Commercialization, Production, Pilot, Global Launch, Market Exec, Market Activation, Customer Conversion, Strategic Partners, War Room, First 25
+   - Institutional (2): Founder Landmark, Institutional Trust
+   - Role Portals (5): Company Owner, Law Firm, Accounting, University, FRA
+   - Ecosystem (3): Industry, Federation, VC Wallet
+4. Moved Notifications → My Workspace (personal tool)
+5. Moved AI Copilot to top of Intelligence (most used)
+6. Added subGroup field to NavItem for collapsible rendering
+7. Added 7 new icons (FolderTree, History, Home, Smartphone, Clock, Cloud, Settings)
+8. Updated NAV_GROUPS (11 groups) + GROUP_I18N
+
+Build: PASS | Lint: 0 errors | Deployed: d700857 | Production: LIVE
