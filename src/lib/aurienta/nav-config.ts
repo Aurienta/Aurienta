@@ -126,7 +126,16 @@ export type NavIconName =
   | "ListOrdered"
   | "Satellite"
   | "Fingerprint"
-  | "Umbrella";
+  | "Umbrella"
+  | "FolderTree"
+  | "Rocket"
+  | "Handshake"
+  | "Settings"
+  | "Cloud"
+  | "Smartphone"
+  | "Home"
+  | "Clock"
+  | "History";
 
 export type NavItem = {
   href: string;
@@ -134,6 +143,8 @@ export type NavItem = {
   /** Lucide icon component name (string) — resolved by the consumer. */
   icon: NavIconName;
   group: string;
+  /** Optional sub-group for collapsible sections within a group (e.g. Platform Admin). */
+  subGroup?: string;
 };
 
 // ─── Translation maps ───────────────────────────────────────────────────
@@ -240,7 +251,8 @@ export const NAV_I18N: Record<string, string> = {
 
 /** Group translation map: group name → i18n key. */
 export const GROUP_I18N: Record<string, string> = {
-  "Workspace": "group.workspace",
+  "My Workspace": "group.myWorkspace",
+  "Capital": "group.capital",
   "Capital & Workforce": "group.capitalWorkforce",
   "Enterprise": "group.enterprise",
   "ERP": "group.erp",
@@ -255,33 +267,37 @@ export const GROUP_I18N: Record<string, string> = {
 // ─── NAV array ──────────────────────────────────────────────────────────
 
 export const NAV: NavItem[] = [
-  // ── Workspace ──
-  { href: "/dashboard", label: "Overview", icon: "LayoutDashboard", group: "Workspace" },
-  { href: "/dashboard/portfolio", label: "Constitutional Holdings", icon: "Wallet", group: "Workspace" },
-  { href: "/dashboard/opportunities", label: "Capital Participation", icon: "Compass", group: "Workspace" },
-  { href: "/dashboard/market", label: "Enterprise Registry", icon: "LineChart", group: "Workspace" },
-  { href: "/dashboard/priority-windows", label: "Priority Windows", icon: "Hourglass", group: "Workspace" },
-  { href: "/dashboard/calendar", label: "Constitutional Calendar", icon: "CalendarDays", group: "Workspace" },
-  { href: "/dashboard/updates", label: "Enterprise Updates", icon: "Newspaper", group: "Workspace" },
-  // P1-002: Profile entry in the sidebar so it is discoverable on mobile
-  // (previously only reachable via the avatar dropdown).
-  { href: "/dashboard/profile", label: "Profile & Identity", icon: "UserCircle", group: "Workspace" },
-  // AUTH-UPGRADE: Passkeys & Security — passwordless WebAuthn / FIDO2 manager.
-  { href: "/dashboard/passkeys", label: "Passkeys & Security", icon: "KeyRound", group: "Workspace" },
-  // REC-2: Productive EGP — dual-currency valuation snapshots.
-  { href: "/dashboard/productive-egp", label: "Productive EGP", icon: "Banknote", group: "Workspace" },
+  // ══ My Workspace (personal tools) ══
+  { href: "/dashboard", label: "Overview", icon: "LayoutDashboard", group: "My Workspace" },
+  { href: "/dashboard/profile", label: "Profile & Identity", icon: "UserCircle", group: "My Workspace" },
+  { href: "/dashboard/passkeys", label: "Passkeys & Security", icon: "KeyRound", group: "My Workspace" },
+  { href: "/dashboard/calendar", label: "Constitutional Calendar", icon: "CalendarDays", group: "My Workspace" },
+  { href: "/dashboard/updates", label: "Enterprise Updates", icon: "Newspaper", group: "My Workspace" },
+  { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", group: "My Workspace" },
 
-  // ── Capital & Workforce ──
-  { href: "/dashboard/syndicates", label: "Syndicates", icon: "Users", group: "Capital & Workforce" },
+  // ══ Capital (investment + ownership tools) ══
+  { href: "/dashboard/portfolio", label: "Constitutional Holdings", icon: "Wallet", group: "Capital" },
+  { href: "/dashboard/opportunities", label: "Capital Participation", icon: "Compass", group: "Capital" },
+  { href: "/dashboard/market", label: "Enterprise Registry", icon: "LineChart", group: "Capital" },
+  { href: "/dashboard/priority-windows", label: "Priority Windows", icon: "Hourglass", group: "Capital" },
+  { href: "/dashboard/enterprise-discovery", label: "Enterprise Discovery", icon: "Telescope", group: "Capital" },
+  { href: "/dashboard/profit-sharing", label: "Profit-Sharing Agreements", icon: "HandCoins", group: "Capital" },
+  { href: "/dashboard/dividends", label: "Dividends", icon: "PieChart", group: "Capital" },
+  { href: "/dashboard/productive-egp", label: "Productive EGP", icon: "Banknote", group: "Capital" },
+  { href: "/dashboard/priority-allocation", label: "STS Priority Allocation", icon: "ListOrdered", group: "Capital" },
+  { href: "/dashboard/soulbound", label: "Soulbound Credential", icon: "Fingerprint", group: "Capital" },
+  { href: "/dashboard/syndicates", label: "Syndicates", icon: "Users", group: "Capital" },
+
+  // ══ Capital & Workforce ══
   { href: "/dashboard/career-ledger", label: "Career Ledger", icon: "HardHat", group: "Capital & Workforce" },
   { href: "/dashboard/mentorship", label: "Mentorship", icon: "UserCheck", group: "Capital & Workforce" },
   { href: "/dashboard/skill-equity", label: "Skill-to-Equity", icon: "Award", group: "Capital & Workforce" },
   { href: "/dashboard/salary", label: "AI Salary Engine", icon: "Calculator", group: "Capital & Workforce" },
   { href: "/dashboard/diaspora", label: "Diaspora Bridge", icon: "Globe", group: "Capital & Workforce" },
-  // REC-5: Constitutional Wages — AI-generated salary bands per role.
   { href: "/dashboard/constitutional-wages", label: "Constitutional Wages", icon: "Banknote", group: "Capital & Workforce" },
+  { href: "/dashboard/endorsements", label: "Constitutional Endorsement", icon: "ThumbsUp", group: "Capital & Workforce" },
 
-  // ── Enterprise ──
+  // ══ Enterprise (governance + operations) ══
   { href: "/dashboard/governance", label: "Governance", icon: "Scale", group: "Enterprise" },
   { href: "/dashboard/manager", label: "Manager Console", icon: "Settings2", group: "Enterprise" },
   { href: "/dashboard/founder", label: "Founding Operator Studio", icon: "Rocket", group: "Enterprise" },
@@ -292,30 +308,34 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/board-briefings", label: "Board Briefings", icon: "ClipboardList", group: "Enterprise" },
   { href: "/dashboard/succession", label: "Succession Planner", icon: "UserCheck", group: "Enterprise" },
   { href: "/dashboard/partner-crm", label: "Partner CRM", icon: "Contact", group: "Enterprise" },
-  // REC-4: Cooperative Network — constitutional B2B exchange between enterprises.
   { href: "/dashboard/cooperative-network", label: "Cooperative Network", icon: "Network", group: "Enterprise" },
 
-  // ── ERP (Constitutional Enterprise Resource Planning) ──
-  // Outperforms Oracle NetSuite + Odoo by binding every action to the CRE.
-  { href: "/dashboard/erp", label: "ERP Hub", icon: "Workflow", group: "Enterprise" },
-  { href: "/dashboard/erp/projects", label: "Projects", icon: "Target", group: "Enterprise" },
-  { href: "/dashboard/erp/inventory", label: "Inventory", icon: "Database", group: "Enterprise" },
-  { href: "/dashboard/erp/procurement", label: "Procurement", icon: "Truck", group: "Enterprise" },
-  { href: "/dashboard/erp/assets", label: "Fixed Assets", icon: "Factory", group: "Enterprise" },
-  { href: "/dashboard/erp/production", label: "Manufacturing", icon: "Cpu", group: "Enterprise" },
-  { href: "/dashboard/erp/quality", label: "Quality Control", icon: "CheckCircle2", group: "Enterprise" },
+  // ══ ERP (Constitutional Enterprise Resource Planning) ══
+  { href: "/dashboard/erp", label: "ERP Hub", icon: "Workflow", group: "ERP" },
+  { href: "/dashboard/erp/projects", label: "Projects", icon: "Target", group: "ERP" },
+  { href: "/dashboard/erp/tasks", label: "Tasks (WBS)", icon: "ClipboardCheck", group: "ERP" },
+  { href: "/dashboard/erp/inventory", label: "Inventory", icon: "Database", group: "ERP" },
+  { href: "/dashboard/erp/procurement", label: "Procurement", icon: "Truck", group: "ERP" },
+  { href: "/dashboard/erp/assets", label: "Fixed Assets", icon: "Factory", group: "ERP" },
+  { href: "/dashboard/erp/production", label: "Manufacturing", icon: "Cpu", group: "ERP" },
+  { href: "/dashboard/erp/quality", label: "Quality Control", icon: "CheckCircle2", group: "ERP" },
+  { href: "/dashboard/erp/integration", label: "ERP Integration", icon: "Webhook", group: "ERP" },
 
-  // ── Intelligence ──
+  // ══ Intelligence ══
   { href: "/dashboard/brain-ai", label: "Brain AI Status", icon: "Brain", group: "Intelligence" },
+  { href: "/dashboard/copilot", label: "AI Copilot", icon: "Bot", group: "Intelligence" },
   { href: "/dashboard/precedents", label: "Precedent Engine", icon: "FileSearch", group: "Intelligence" },
   { href: "/dashboard/drift", label: "Drift Detector", icon: "TrendingUp", group: "Intelligence" },
   { href: "/dashboard/anomalies", label: "Anomaly Narration", icon: "AlertTriangle", group: "Intelligence" },
   { href: "/dashboard/charter-diff", label: "Charter Diff", icon: "GitCompare", group: "Intelligence" },
   { href: "/dashboard/constitution", label: "Constitution Guide", icon: "Languages", group: "Intelligence" },
-  { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", group: "Intelligence" },
-  { href: "/dashboard/copilot", label: "AI Copilot", icon: "Bot", group: "Intelligence" },
+  { href: "/dashboard/genome", label: "Enterprise Genome", icon: "Dna", group: "Intelligence" },
+  { href: "/dashboard/arei", label: "Real-Economy Index", icon: "ChartColumn", group: "Intelligence" },
+  { href: "/dashboard/quadratic-voting", label: "Quadratic Voting", icon: "Vote", group: "Intelligence" },
+  { href: "/dashboard/zeitgeist", label: "Constitutional Zeitgeist", icon: "Waves", group: "Intelligence" },
+  { href: "/dashboard/oracle", label: "AI Consensus Oracle", icon: "Satellite", group: "Intelligence" },
 
-  // ── Compliance & Transparency ──
+  // ══ Compliance & Transparency ══
   { href: "/dashboard/compliance", label: "Compliance", icon: "ShieldCheck", group: "Compliance & Transparency" },
   { href: "/dashboard/workforce", label: "Workforce Registry", icon: "Users", group: "Compliance & Transparency" },
   { href: "/dashboard/whistleblower", label: "Whistleblower", icon: "ShieldAlert", group: "Compliance & Transparency" },
@@ -323,100 +343,72 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/risk-disclosure", label: "Risk Disclosure", icon: "AlertTriangle", group: "Compliance & Transparency" },
   { href: "/dashboard/vendor-portal", label: "Vendor Portal", icon: "Truck", group: "Compliance & Transparency" },
 
-  // ── Treasury & Infrastructure ──
+  // ══ Treasury & Infrastructure ══
   { href: "/dashboard/escrow", label: "Law Firm Client Accounts", icon: "Vault", group: "Treasury & Infrastructure" },
   { href: "/dashboard/antifragility", label: "Anti-Fragility Vault", icon: "Database", group: "Treasury & Infrastructure" },
   { href: "/dashboard/vault", label: "Insurance Vault", icon: "Database", group: "Treasury & Infrastructure" },
-  // P3-005: ShieldCheck is reserved for Compliance; Proof-of-Solvency uses FileCheck to avoid icon duplication.
   { href: "/dashboard/solvency", label: "Proof-of-Solvency", icon: "FileCheck", group: "Treasury & Infrastructure" },
-  // REC-1: Constitutional Takaful Pool — cooperative risk pool backed by the
-  // Law Firm Client Account. CRE-verified claims, board-approved, law-firm disbursed.
   { href: "/dashboard/takaful-pool", label: "Takaful Pool", icon: "Shield", group: "Treasury & Infrastructure" },
-  // REC-3: Constitutional Supply Chain Finance — milestone-backed working-capital
-  // advances with an 8% APR usury cap. Principal flows through the law firm escrow.
   { href: "/dashboard/supply-chain-finance", label: "Supply Chain Finance", icon: "Truck", group: "Treasury & Infrastructure" },
   { href: "/dashboard/oracle-mirror", label: "Oracle Mirror", icon: "FileText", group: "Treasury & Infrastructure" },
   { href: "/dashboard/reality-sync", label: "Reality Sync", icon: "Activity", group: "Treasury & Infrastructure" },
   { href: "/dashboard/institutional-memory", label: "Institutional Memory", icon: "Layers", group: "Treasury & Infrastructure" },
 
-  // ── Graduation & Sovereignty ──
+  // ══ Graduation & Sovereignty ══
   { href: "/dashboard/graduation", label: "Graduation", icon: "GraduationCap", group: "Graduation & Sovereignty" },
-  // P3-005: TrendingUp is reserved for Drift Detector; Graduation Coach uses BarChart3.
   { href: "/dashboard/graduation-coach", label: "Graduation Coach", icon: "BarChart3", group: "Graduation & Sovereignty" },
   { href: "/dashboard/graduation-simulator", label: "Graduation Simulator", icon: "FlaskConical", group: "Graduation & Sovereignty" },
   { href: "/dashboard/survival-drill", label: "Survival Drill", icon: "HeartPulse", group: "Graduation & Sovereignty" },
   { href: "/dashboard/alumni", label: "Alumni Hall", icon: "Award", group: "Graduation & Sovereignty" },
   { href: "/dashboard/succession-declaration", label: "Succession Declaration", icon: "FileText", group: "Graduation & Sovereignty" },
-  // REC-6: Graduation Bond — cryptographic certificate of constitutional compliance.
   { href: "/dashboard/graduation-bond", label: "Graduation Bond", icon: "BadgeCheck", group: "Graduation & Sovereignty" },
 
-  // ── Platform Admin ──
-  { href: "/dashboard/admin/users", label: "Partner Management", icon: "Users", group: "Platform Admin" },
-  // P3-005: Building2 is reserved for Enterprise Profile; Enterprise Management uses Building.
-  { href: "/dashboard/admin/enterprises", label: "Enterprise Management", icon: "Building", group: "Platform Admin" },
-  { href: "/dashboard/steward", label: "Steward Dashboard", icon: "Cpu", group: "Platform Admin" },
-  // P3-005: Institutional Architecture uses Landmark (distinct from Building2/Building/Landmark).
-  { href: "/dashboard/architecture", label: "Institutional Architecture", icon: "Landmark", group: "Platform Admin" },
-  { href: "/dashboard/governance-model", label: "Governance System", icon: "ScrollText", group: "Platform Admin" },
-  { href: "/dashboard/institutional-readiness", label: "Institutional Readiness", icon: "Shield", group: "Platform Admin" },
-  { href: "/dashboard/operating-system", label: "Operating System (AOS)", icon: "Workflow", group: "Platform Admin" },
-  // P3-005: Commercialization uses Gauge (progress dial) instead of TrendingUp.
-  { href: "/dashboard/commercialization", label: "Commercialization (ACS)", icon: "Gauge", group: "Platform Admin" },
-  // P3-005: Production Readiness uses Factory (semantic match) instead of ShieldCheck.
-  { href: "/dashboard/production-readiness", label: "Production Readiness", icon: "Factory", group: "Platform Admin" },
-  { href: "/dashboard/pilot-execution", label: "Pilot Execution", icon: "ClipboardCheck", group: "Platform Admin" },
-  { href: "/dashboard/global-launch", label: "Global Launch (GLS)", icon: "Flag", group: "Platform Admin" },
-  { href: "/dashboard/founder-office", label: "Founder Landmark (FOCC)", icon: "Crown", group: "Platform Admin" },
-  { href: "/dashboard/institutional-trust", label: "Institutional Trust (ITDB)", icon: "BadgeCheck", group: "Platform Admin" },
-  { href: "/dashboard/market-execution", label: "Market Execution (MES)", icon: "Zap", group: "Platform Admin" },
-  { href: "/dashboard/market-activation", label: "Market Activation", icon: "Megaphone", group: "Platform Admin" },
-  { href: "/dashboard/customer-conversion", label: "Customer Conversion", icon: "GitBranch", group: "Platform Admin" },
-  { href: "/dashboard/strategic-partners", label: "Strategic Partners", icon: "Handshake", group: "Platform Admin" },
-  { href: "/dashboard/execution-war-room", label: "Execution War Room", icon: "Crosshair", group: "Platform Admin" },
-  { href: "/dashboard/first-research", label: "First 25 Research", icon: "Target", group: "Platform Admin" },
-  // P3-005: Scale is reserved for Governance; Constitutional Audit uses CheckCircle2.
-  { href: "/dashboard/constitutional-audit", label: "Constitutional Audit", icon: "CheckCircle2", group: "Platform Admin" },
-  { href: "/dashboard/admin/audit", label: "Audit Log Viewer", icon: "ScrollText", group: "Platform Admin" },
-  { href: "/dashboard/admin/settings", label: "Institutional Settings", icon: "SlidersHorizontal", group: "Platform Admin" },
-  { href: "/dashboard/admin-panel", label: "Platform Admin Panel", icon: "ShieldAlert", group: "Platform Admin" },
-  { href: "/dashboard/fra", label: "FRA Regulatory", icon: "Landmark", group: "Platform Admin" },
-  // P3-005: Company Owner uses Castle (distinct sovereign-enterprise metaphor) instead of Building2.
-  { href: "/dashboard/company-owner", label: "Company Owner", icon: "Castle", group: "Platform Admin" },
-  // P3-005: Scale is reserved for Governance; Law Firm Rep uses Briefcase (professional services).
-  { href: "/dashboard/law-firm", label: "Law Firm Rep", icon: "Briefcase", group: "Platform Admin" },
-  // P3-005: Calculator is reserved for AI Salary Engine; Accounting Firm uses Banknote.
-  { href: "/dashboard/accounting", label: "Accounting Firm", icon: "Banknote", group: "Platform Admin" },
-  { href: "/dashboard/industry", label: "Industry Modules", icon: "FlaskConical", group: "Platform Admin" },
-  { href: "/dashboard/federation", label: "Federation", icon: "Network", group: "Platform Admin" },
-  { href: "/dashboard/credentials", label: "VC Wallet", icon: "KeyRound", group: "Platform Admin" },
-  { href: "/dashboard/university", label: "University Rep Console", icon: "GraduationCap", group: "Platform Admin" },
-
-  // ── Institutional Services ──
-  // P3-005: Calculator is reserved for AI Salary Engine; Tax Optimizer uses Receipt (tax-receipt metaphor).
+  // ══ Institutional Services ══
   { href: "/dashboard/tax", label: "Tax Optimizer", icon: "Receipt", group: "Institutional Services" },
   { href: "/dashboard/ir", label: "Capital Partner Relations", icon: "MessageSquare", group: "Institutional Services" },
-  // P3-005: TrendingUp is reserved for Drift Detector; DRIP uses PieChart (dividend share of holdings).
   { href: "/dashboard/drip", label: "DRIP (Dividend Reinvest)", icon: "PieChart", group: "Institutional Services" },
-
-  // ── Modified Implementation Roadmap (15 compliance-cleared features) ──
-  // See LEGAL_COMPLIANCE_AUDIT.md §297. All features preserve Zero Custody,
-  // real-economy-only, and uniform-fee constitutional rules.
-  { href: "/dashboard/enterprise-discovery", label: "Enterprise Discovery", icon: "Telescope", group: "Workspace" },
-  { href: "/dashboard/profit-sharing", label: "Profit-Sharing Agreements", icon: "HandCoins", group: "Workspace" },
-  { href: "/dashboard/priority-allocation", label: "STS Priority Allocation", icon: "ListOrdered", group: "Workspace" },
-  { href: "/dashboard/soulbound", label: "Soulbound Credential", icon: "Fingerprint", group: "Workspace" },
-  { href: "/dashboard/endorsements", label: "Constitutional Endorsement", icon: "ThumbsUp", group: "Capital & Workforce" },
-  { href: "/dashboard/genome", label: "Enterprise Genome", icon: "Dna", group: "Intelligence" },
-  { href: "/dashboard/arei", label: "Real-Economy Index", icon: "ChartColumn", group: "Intelligence" },
-  { href: "/dashboard/quadratic-voting", label: "Quadratic Voting", icon: "Vote", group: "Intelligence" },
-  { href: "/dashboard/zeitgeist", label: "Constitutional Zeitgeist", icon: "Waves", group: "Intelligence" },
-  { href: "/dashboard/oracle", label: "AI Consensus Oracle", icon: "Satellite", group: "Intelligence" },
   { href: "/dashboard/gaas", label: "Governance-as-a-Service", icon: "Webhook", group: "Institutional Services" },
   { href: "/dashboard/standalone-succession", label: "Standalone Succession", icon: "HeartHandshake", group: "Institutional Services" },
   { href: "/dashboard/risk-profile", label: "Risk Profile API", icon: "Umbrella", group: "Institutional Services" },
-  // STAGE A: Dividend Distribution — declared from realized enterprise profit,
-  // disbursed by the law firm from the Law Firm Client Account (Zero Custody).
-  { href: "/dashboard/dividends", label: "Dividends", icon: "PieChart", group: "Workspace" },
+
+  // ══ Platform Admin (6 collapsible sub-groups) ══
+  // ── Admin → Users & Enterprises ──
+  { href: "/dashboard/admin/users", label: "Partner Management", icon: "Users", group: "Platform Admin", subGroup: "Users & Enterprises" },
+  { href: "/dashboard/admin/enterprises", label: "Enterprise Management", icon: "Building", group: "Platform Admin", subGroup: "Users & Enterprises" },
+  { href: "/dashboard/admin/audit", label: "Audit Log Viewer", icon: "ScrollText", group: "Platform Admin", subGroup: "Users & Enterprises" },
+  // ── Admin → Platform Operations ──
+  { href: "/dashboard/steward", label: "Steward Dashboard", icon: "Cpu", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/architecture", label: "Institutional Architecture", icon: "Landmark", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/governance-model", label: "Governance System", icon: "ScrollText", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/institutional-readiness", label: "Institutional Readiness", icon: "Shield", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/operating-system", label: "Operating System (AOS)", icon: "Workflow", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/admin-panel", label: "Platform Admin Panel", icon: "ShieldAlert", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/admin/settings", label: "Institutional Settings", icon: "SlidersHorizontal", group: "Platform Admin", subGroup: "Platform Operations" },
+  { href: "/dashboard/constitutional-audit", label: "Constitutional Audit", icon: "CheckCircle2", group: "Platform Admin", subGroup: "Platform Operations" },
+  // ── Admin → Go-to-Market ──
+  { href: "/dashboard/commercialization", label: "Commercialization (ACS)", icon: "Gauge", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/production-readiness", label: "Production Readiness", icon: "Factory", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/pilot-execution", label: "Pilot Execution", icon: "ClipboardCheck", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/global-launch", label: "Global Launch (GLS)", icon: "Flag", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/market-execution", label: "Market Execution (MES)", icon: "Zap", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/market-activation", label: "Market Activation", icon: "Megaphone", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/customer-conversion", label: "Customer Conversion", icon: "GitBranch", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/strategic-partners", label: "Strategic Partners", icon: "Handshake", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/execution-war-room", label: "Execution War Room", icon: "Crosshair", group: "Platform Admin", subGroup: "Go-to-Market" },
+  { href: "/dashboard/first-research", label: "First 25 Research", icon: "Target", group: "Platform Admin", subGroup: "Go-to-Market" },
+  // ── Admin → Institutional ──
+  { href: "/dashboard/founder-office", label: "Founder Landmark (FOCC)", icon: "Crown", group: "Platform Admin", subGroup: "Institutional" },
+  { href: "/dashboard/institutional-trust", label: "Institutional Trust (ITDB)", icon: "BadgeCheck", group: "Platform Admin", subGroup: "Institutional" },
+  // ── Admin → Role Portals ──
+  { href: "/dashboard/company-owner", label: "Company Owner", icon: "Castle", group: "Platform Admin", subGroup: "Role Portals" },
+  { href: "/dashboard/law-firm", label: "Law Firm Rep", icon: "Briefcase", group: "Platform Admin", subGroup: "Role Portals" },
+  { href: "/dashboard/accounting", label: "Accounting Firm", icon: "Banknote", group: "Platform Admin", subGroup: "Role Portals" },
+  { href: "/dashboard/university", label: "University Rep Console", icon: "GraduationCap", group: "Platform Admin", subGroup: "Role Portals" },
+  { href: "/dashboard/fra", label: "FRA Regulatory", icon: "Landmark", group: "Platform Admin", subGroup: "Role Portals" },
+  // ── Admin → Ecosystem ──
+  { href: "/dashboard/industry", label: "Industry Modules", icon: "FlaskConical", group: "Platform Admin", subGroup: "Ecosystem" },
+  { href: "/dashboard/federation", label: "Federation", icon: "Network", group: "Platform Admin", subGroup: "Ecosystem" },
+  { href: "/dashboard/credentials", label: "VC Wallet", icon: "KeyRound", group: "Platform Admin", subGroup: "Ecosystem" },
 ];
 
 // ─── Groups ─────────────────────────────────────────────────────────────
@@ -426,7 +418,8 @@ export const NAV: NavItem[] = [
  * Used by the sidebar, command palette, and onboarding copy.
  */
 export const NAV_GROUPS: string[] = [
-  "Workspace",
+  "My Workspace",
+  "Capital",
   "Capital & Workforce",
   "Enterprise",
   "ERP",

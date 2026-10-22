@@ -18,6 +18,13 @@ import {
   // P3-005: Diversified icons to eliminate duplicates across NAV items.
   Building, Castle, FileCheck, Factory,
   Banknote, Receipt, BarChart3, Gauge, PieChart, CheckCircle2, Briefcase,
+  Settings,
+  FolderTree,
+  History,
+  Home,
+  Smartphone,
+  Clock,
+  Cloud,
   // Modified Implementation Roadmap — new feature icons.
   Telescope, HandCoins, Webhook, HeartHandshake, ChartColumn, ThumbsUp,
   Dna, Vote, Waves, ListOrdered, Satellite, Fingerprint, Umbrella,
@@ -147,6 +154,13 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ElementType> = {
   PieChart,
   CheckCircle2,
   Briefcase,
+  Settings,
+  FolderTree,
+  History,
+  Home,
+  Smartphone,
+  Clock,
+  Cloud,
   // Modified Implementation Roadmap — register new feature icons.
   Telescope,
   HandCoins,

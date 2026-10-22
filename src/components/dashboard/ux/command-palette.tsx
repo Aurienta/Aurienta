@@ -85,6 +85,13 @@ import {
   PieChart,
   CheckCircle2,
   Briefcase,
+  FolderTree,
+  History,
+  Home,
+  Smartphone,
+  Clock,
+  Cloud,
+  Settings,
   // Static action/query icons (kept for the non-nav command groups).
   Vote,
   HandCoins,
@@ -204,6 +211,13 @@ const NAV_ICON_REGISTRY: Record<NavIconName, React.ComponentType<{ className?: s
   PieChart,
   CheckCircle2,
   Briefcase,
+  FolderTree,
+  History,
+  Home,
+  Smartphone,
+  Clock,
+  Cloud,
+  Settings,
   // Modified Implementation Roadmap — register new feature icons so NAV
   // items that reference them by name resolve correctly via resolveNavIcon().
   Telescope,
