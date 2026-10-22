@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { OverviewHero } from "@/components/dashboard/overview-hero";
 import { TaskList } from "@/components/dashboard/task-list";
 import { QuickStartCards, StarterBanner } from "@/components/dashboard/ux/empty-states";
+import { QuickActions } from "@/components/dashboard/ux/quick-actions";
 import { LiveLedgerTicker } from "@/components/dashboard/live-ticker";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -96,6 +97,7 @@ export default async function OverviewPage() {
     <div className="flex flex-col gap-6 sm:gap-8">
       {/* Welcome hero */}
       <OverviewHero user={user} portfolioValue={portfolioValue} />
+      <QuickActions />
 
       {/* Starter banner for new users (STS < 70) */}
       <StarterBanner stsScore={user.sovereignTrustScore} />

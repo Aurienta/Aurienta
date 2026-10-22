@@ -53,6 +53,8 @@ import {
   type NavIconName,
 } from "@/lib/aurienta/nav-config";
 import { CommandPalette } from "@/components/dashboard/ux/command-palette";
+import { MobileBottomNav } from "@/components/dashboard/ux/mobile-bottom-nav";
+import { RecentlyVisited } from "@/components/dashboard/ux/recently-visited";
 import { Breadcrumbs, EnterpriseSwitcher, OnboardingTour, HelpButton, QuickActions } from "@/components/dashboard/ux/enhancements";
 import { FirstTimeUserExperience } from "@/components/dashboard/ux/first-time-user-experience";
 import { RoleContextBar } from "@/components/dashboard/role-context-bar";
@@ -545,6 +547,7 @@ export function DashboardShell({
             </EnterpriseProvider>
           </div>
         </main>
+      <MobileBottomNav />
       </div>
 
       {/* I4: Onboarding Tour */}
