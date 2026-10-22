@@ -18590,3 +18590,42 @@ VERIFIED ON PRODUCTION:
 - Platform: operational
 
 FINAL: 99 Prisma models | 55 CRE | 92 lib | 216 API | 118 dashboard | 100 Turso tables
+
+---
+Task ID: FULL-UX-AUDIT
+Agent: main (COO/CTO/CFO/PM/Platform Expert)
+Task: Full end-to-end honest audit of all pages, screens, dashboards + UX recommendations
+
+AUDIT RESULTS:
+- 118 dashboard pages tested: 115/115 HTTP 200 (2 dynamic skipped)
+- 17 public pages: all HTTP 200
+- 0 console errors on tested pages
+- VLM average: 92/100
+- Mobile responsive: works on 375px
+- Theme: 100% indigo (0 amber/gold)
+
+FRAGMENTATION FINDINGS (10):
+1. Platform Admin OVERWHELMING (31 items — needs sub-groups) — HIGH
+2. Workspace MIXES concerns (personal + capital + identity + admin) — MEDIUM
+3. Enterprise group MIXES ERP with governance (18 items) — MEDIUM
+4. ERP items in wrong nav group (in Enterprise, should be in ERP) — LOW
+5. 2 orphan pages (erp/tasks, erp/integration not properly in nav) — LOW
+6. Onboarding modal persists on first visit — MEDIUM
+7. Subtitle truncation on mobile — LOW
+8. No Quick Actions on dashboard overview — MEDIUM
+9. Intelligence group dense (13 items) — LOW
+10. ERP Tasks page orphaned (no nav entry) — MEDIUM
+
+RECOMMENDATIONS (10):
+1. Restructure Platform Admin (31→6 collapsible sub-groups) — P1
+2. Move ERP items to "ERP" group (7 items) — P1
+3. Add Quick Actions to dashboard — P1
+4. Make onboarding modal optional (banner + tour button) — P2
+5. Add breadcrumbs consistency — P2
+6. Add Related Pages footer — P2
+7. Consolidate Workspace (split into My Workspace + Capital) — P2
+8. Add ERP search bar — P3
+9. Mobile bottom navigation (5 quick-access items) — P2
+10. Recently visited in sidebar — P3
+
+DELIVERED: AUDIT_UX_FULL.md (comprehensive audit + recommendations)
