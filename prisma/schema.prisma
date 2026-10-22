@@ -2274,3 +2274,68 @@ model ErpQualityCheck {
   @@index([status])
   @@index([checkType])
 }
+
+// ════════════════════════════════════════════════════════════════
+// ERP INTEGRATION MANAGER — Connect external ERPs or use native AURIENTA ERP
+// Supports: Native (built-in), Oracle NetSuite, Odoo, SAP, Custom REST API
+// Enterprises can choose: use AURIENTA's built-in ERP OR connect their own.
+// ════════════════════════════════════════════════════════════════
+
+model ErpIntegration {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  provider        String   @default("native") // native, netsuite, odoo, sap, custom_rest, custom_graphql
+  name            String   @default("AURIENTA Native ERP")
+  status          String   @default("active") // active, paused, error, disconnected
+  isPrimary       Boolean  @default(true) // primary ERP for this enterprise
+
+  // Connection config (encrypted at app layer, stored as JSON)
+  configJson      String   @default("{}") // { apiKey, apiUrl, accountId, clientId, clientSecret, etc. }
+  configHash      String?  // SHA-256 of config for tamper detection
+
+  // Sync settings
+  syncDirection   String   @default("bidirectional") // one_way_in, one_way_out, bidirectional
+  syncInterval    String   @default("hourly") // realtime, hourly, daily, manual
+  lastSyncAt      DateTime?
+  lastSyncStatus  String?  // success, partial, failed
+  lastSyncError   String?
+  recordsSynced   Int      @default(0)
+
+  // Module mapping (which modules to sync)
+  modulesJson     String   @default("[\"projects\",\"tasks\",\"inventory\",\"procurement\",\"assets\",\"production\",\"quality\",\"timesheets\"]")
+
+  // Field mapping (maps external field names to AURIENTA field names)
+  fieldMappingJson String  @default("{}")
+
+  // CRE enforcement: even with external ERP, CRE policies still apply
+  creEnforcementEnabled Boolean @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([provider])
+  @@index([status])
+}
+
+model ErpSyncLog {
+  id              String   @id @default(cuid())
+  integrationId   String
+  enterpriseId    String
+  syncType        String   // full, incremental, module_specific
+  module          String?  // projects, inventory, etc.
+  direction       String   // in, out, bidirectional
+  status          String   @default("started") // started, success, partial, failed
+  recordsIn       Int      @default(0)
+  recordsOut      Int      @default(0)
+  errors          String   @default("[]") // JSON array of error messages
+  durationMs      Int      @default(0)
+  creDecisions    Int      @default(0) // number of CRE policy checks during sync
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  @@index([integrationId])
+  @@index([enterpriseId])
+  @@index([status])
+  @@index([startedAt])
+}
