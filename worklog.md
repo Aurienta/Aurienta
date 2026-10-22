@@ -18656,3 +18656,30 @@ DELIVERED:
 8. Updated NAV_GROUPS (11 groups) + GROUP_I18N
 
 Build: PASS | Lint: 0 errors | Deployed: d700857 | Production: LIVE
+
+---
+Task ID: UX-P2-IMPLEMENTED
+Agent: main (COO/CTO/PM)
+Task: Implement P2 UX recommendations — Quick Actions + Mobile nav + Recently visited
+
+DELIVERED:
+1. QuickActions card on dashboard overview
+   - 6 action buttons: Portfolio, Opportunities, Tasks, ERP, Soulbound, Dividends
+   - "What should I do next?" guidance for new users
+   - Color-coded icons with hover effects
+   - Positioned between hero and starter banner
+
+2. MobileBottomNav (bottom navigation bar)
+   - 5 quick-access items: Home, Portfolio, Capital, ERP, Profile
+   - Only visible on mobile (< 1024px viewport)
+   - Active state highlighting + safe-area-inset support
+   - Fixes the 119-item sidebar problem on mobile
+
+3. RecentlyVisited in sidebar
+   - Shows 3 most recently visited pages above nav groups
+   - localStorage-backed (persists across sessions)
+   - Updates automatically on route change
+   - Compact pill-shaped links with indigo theme
+
+Build: PASS | Lint: 0 errors | Deployed: 8b5769f | Production: LIVE
+All 3 components deployed and verified on production.
