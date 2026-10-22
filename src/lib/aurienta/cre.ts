@@ -2227,3 +2227,151 @@ export function enforceConstitutionalWageBand(params: {
   }
   return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
 }
+
+// ════════════════════════════════════════════════════════════════
+// AURIENTA ERP — Constitutional CRE Policies
+// Every ERP action is CRE-enforced: project budget, resource allocation,
+// purchase orders, inventory adjustments, production orders, quality checks.
+// ════════════════════════════════════════════════════════════════
+
+// ERP-1: Project Budget Enforcement
+export function enforceProjectBudget(params: {
+  projectId: string;
+  budgetEgp: number;
+  spentEgp: number;
+  newExpenseEgp: number;
+}): CreVerdict {
+  const policy = "erp_project_budget.rego";
+  const payloadHash = hashPayload({ proj: params.projectId, budget: params.budgetEgp, spent: params.spentEgp, new: params.newExpenseEgp });
+  const newTotal = params.spentEgp + params.newExpenseEgp;
+  if (newTotal > params.budgetEgp) {
+    const overPct = ((newTotal - params.budgetEgp) / params.budgetEgp) * 100;
+    return { allowed: false, reason: `Project budget exceeded: ${newTotal} > ${params.budgetEgp} (${overPct.toFixed(1)}% over)`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (newTotal > params.budgetEgp * 0.9) {
+    const warnPct = (newTotal / params.budgetEgp) * 100;
+    return { allowed: true, reason: `Warning: project at ${warnPct.toFixed(0)}% of budget`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-2: Purchase Order Authority
+export function enforcePurchaseAuthority(params: {
+  totalEgp: number;
+  enterpriseCapitalEgp: number;
+  approverRole: string;
+}): CreVerdict {
+  const policy = "erp_purchase_authority.rego";
+  const payloadHash = hashPayload({ total: params.totalEgp, capital: params.enterpriseCapitalEgp, role: params.approverRole });
+  const pct = (params.totalEgp / Math.max(params.enterpriseCapitalEgp, 1)) * 100;
+  if (pct > 10 && !["manager", "founding_operator", "board_member", "company_owner"].includes(params.approverRole)) {
+    return { allowed: false, reason: `Purchase ${pct.toFixed(1)}% of capital requires manager+ approval`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (pct > 25 && params.approverRole !== "board_member" && params.approverRole !== "company_owner") {
+    return { allowed: false, reason: `Purchase ${pct.toFixed(1)}% of capital requires board/company_owner approval`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-3: Resource Allocation Check
+export function enforceResourceAllocation(params: {
+  resourceId: string;
+  requestedQty: number;
+  availableQty: number;
+}): CreVerdict {
+  const policy = "erp_resource_allocation.rego";
+  const payloadHash = hashPayload({ res: params.resourceId, req: params.requestedQty, avail: params.availableQty });
+  if (params.requestedQty > params.availableQty) {
+    return { allowed: false, reason: `Requested ${params.requestedQty} exceeds available ${params.availableQty}`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-4: Inventory Adjustment Gate
+export function enforceInventoryAdjustment(params: {
+  inventoryId: string;
+  adjustmentType: string;
+  quantity: number;
+  currentStock: number;
+  approverRole: string;
+}): CreVerdict {
+  const policy = "erp_inventory_adjustment.rego";
+  const payloadHash = hashPayload({ inv: params.inventoryId, type: params.adjustmentType, qty: params.quantity, stock: params.currentStock, role: params.approverRole });
+  if (params.adjustmentType === "out" && params.quantity > params.currentStock) {
+    return { allowed: false, reason: `Cannot remove ${params.quantity} — only ${params.currentStock} in stock`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (Math.abs(params.quantity) > 1000 && !["manager", "founding_operator", "board_member", "company_owner"].includes(params.approverRole)) {
+    return { allowed: false, reason: `Large adjustment (${params.quantity}) requires manager+ approval`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-5: Production Order Release Gate
+export function enforceProductionRelease(params: {
+  enterpriseId: string;
+  productName: string;
+  quantity: number;
+  bomVerified: boolean;
+  materialsAvailable: boolean;
+}): CreVerdict {
+  const policy = "erp_production_release.rego";
+  const payloadHash = hashPayload({ ent: params.enterpriseId, product: params.productName, qty: params.quantity, bom: params.bomVerified, mats: params.materialsAvailable });
+  if (!params.bomVerified) {
+    return { allowed: false, reason: "BOM not verified — cannot release production order", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (!params.materialsAvailable) {
+    return { allowed: false, reason: "Insufficient materials — BOM items not in stock", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-6: Quality Check Gate
+export function enforceQualityCheck(params: {
+  enterpriseId: string;
+  checkType: string;
+  productionOrderId: string;
+  passRate: number;
+  minPassRate: number;
+}): CreVerdict {
+  const policy = "erp_quality_check.rego";
+  const payloadHash = hashPayload({ ent: params.enterpriseId, type: params.checkType, prod: params.productionOrderId, pass: params.passRate, min: params.minPassRate });
+  if (params.passRate < params.minPassRate) {
+    return { allowed: false, reason: `Quality check FAILED: pass rate ${params.passRate}% < minimum ${params.minPassRate}%`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-7: Timesheet Approval Gate
+export function enforceTimesheetApproval(params: {
+  enterpriseId: string;
+  userId: string;
+  hours: number;
+  date: string;
+  approverRole: string;
+  maxDailyHours: number;
+}): CreVerdict {
+  const policy = "erp_timesheet_approval.rego";
+  const payloadHash = hashPayload({ ent: params.enterpriseId, user: params.userId, hours: params.hours, approver: params.approverRole, max: params.maxDailyHours });
+  if (params.hours > params.maxDailyHours) {
+    return { allowed: false, reason: `Timesheet ${params.hours}h exceeds max daily ${params.maxDailyHours}h`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  if (!["manager", "founding_operator", "board_member", "company_owner"].includes(params.approverRole)) {
+    return { allowed: false, reason: "Timesheet approval requires manager+ role", policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}
+
+// ERP-8: Asset Disposal Gate
+export function enforceAssetDisposal(params: {
+  assetId: string;
+  assetName: string;
+  netBookValueEgp: number;
+  approverRole: string;
+}): CreVerdict {
+  const policy = "erp_asset_disposal.rego";
+  const payloadHash = hashPayload({ asset: params.assetId, name: params.assetName, nbv: params.netBookValueEgp, role: params.approverRole });
+  if (params.netBookValueEgp > 100000 && params.approverRole !== "board_member" && params.approverRole !== "company_owner") {
+    return { allowed: false, reason: `Asset disposal (${params.netBookValueEgp} EGP NBV) requires board/company_owner approval`, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: false }) };
+  }
+  return { allowed: true, policy, decisionToken: issueCreDecisionToken({ policy, payloadHash, allowed: true }) };
+}

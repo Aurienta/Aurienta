@@ -482,3 +482,200 @@ export const dividendPatchSchema = z.object({
 export const tradeMatchSchema = z.object({
   enterpriseId: z.string().min(1, "Enterprise is required").max(64),
 });
+
+// ════════════════════════════════════════════════════════════════════
+// AURIENTA ERP — Zod schemas
+// ════════════════════════════════════════════════════════════════════
+
+// ── Projects ──
+export const erpProjectCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  name: z.string().min(2, "Name must be at least 2 characters").max(200),
+  description: z.string().min(3).max(8000),
+  type: z.enum(["internal", "client", "r_and_d", "construction", "manufacturing"]).default("internal"),
+  priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  budgetEgp: z.number().int().min(0).max(1_000_000_000).default(0),
+  managerId: z.string().max(64).optional(),
+  clientId: z.string().max(64).optional(),
+});
+
+export const erpProjectListSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  status: z.string().max(40).optional(),
+  priority: z.string().max(40).optional(),
+});
+
+export const erpProjectPatchSchema = z.object({
+  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]),
+});
+
+// ── Tasks ──
+export const erpTaskCreateSchema = z.object({
+  projectId: z.string().min(1).max(64),
+  parentId: z.string().max(64).optional(),
+  title: z.string().min(2).max(200),
+  description: z.string().max(4000).optional(),
+  priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+  assigneeId: z.string().max(64).optional(),
+  estimatedHours: z.number().min(0).max(10000).default(0),
+  startDate: z.string().datetime().optional(),
+  dueDate: z.string().datetime().optional(),
+  tags: z.string().max(500).optional(),
+});
+
+export const erpTaskPatchSchema = z.object({
+  status: z.enum(["todo", "in_progress", "review", "done", "blocked"]),
+});
+
+// ── Resources ──
+export const erpResourceCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  name: z.string().min(2).max(200),
+  type: z.enum(["human", "equipment", "material", "facility", "financial"]),
+  category: z.string().min(1).max(120),
+  capacity: z.number().min(0).max(1_000_000).default(1),
+  costPerUnitEgp: z.number().min(0).max(1_000_000).default(0),
+  unit: z.string().max(40).default("hour"),
+  location: z.string().max(200).optional(),
+  skills: z.string().max(500).optional(),
+});
+
+export const erpResourceAllocateSchema = z.object({
+  projectId: z.string().max(64).optional(),
+  taskId: z.string().max(64).optional(),
+  quantity: z.number().min(0.01).max(1_000_000),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().optional(),
+  notes: z.string().max(1000).optional(),
+});
+
+// ── Timesheets ──
+export const erpTimesheetCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  projectId: z.string().max(64).optional(),
+  taskId: z.string().max(64).optional(),
+  date: z.string().datetime(),
+  hours: z.number().min(0.1).max(24),
+  description: z.string().min(2).max(2000),
+  billable: z.boolean().default(false),
+  hourlyRateEgp: z.number().min(0).max(100000).default(0),
+});
+
+export const erpTimesheetPatchSchema = z.object({
+  action: z.enum(["approve", "reject"]),
+});
+
+// ── Inventory ──
+export const erpInventoryCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  sku: z.string().min(1).max(80),
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  category: z.string().min(1).max(80),
+  unit: z.string().max(40).default("piece"),
+  reorderPoint: z.number().min(0).max(1_000_000).default(0),
+  maxStock: z.number().min(0).max(1_000_000).default(0),
+  costPerUnitEgp: z.number().min(0).max(1_000_000).default(0),
+  sellPriceEgp: z.number().min(0).max(1_000_000).default(0),
+  warehouseLocation: z.string().max(200).optional(),
+  barcode: z.string().max(100).optional(),
+  supplierId: z.string().max(64).optional(),
+});
+
+export const erpInventoryMovementSchema = z.object({
+  type: z.enum(["in", "out"]),
+  quantity: z.number().min(0.01).max(1_000_000),
+  reference: z.string().min(1).max(200),
+});
+
+// ── Purchase Orders ──
+export const erpPurchaseOrderCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  vendorId: z.string().max(64).optional(),
+  vendorName: z.string().min(1).max(200),
+  expectedDate: z.string().datetime().optional(),
+  projectId: z.string().max(64).optional(),
+  notes: z.string().max(2000).optional(),
+  lines: z.array(
+    z.object({
+      description: z.string().min(1).max(500),
+      inventoryId: z.string().max(64).optional(),
+      quantity: z.number().min(0.01).max(1_000_000),
+      unit: z.string().max(40).default("piece"),
+      unitPriceEgp: z.number().min(0).max(1_000_000),
+    })
+  ).min(1, "At least one line item is required").max(100),
+});
+
+export const erpPurchaseOrderPatchSchema = z.object({
+  action: z.enum(["approve", "receive"]),
+});
+
+// ── Assets ──
+export const erpAssetCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  name: z.string().min(2).max(200),
+  category: z.enum(["equipment", "vehicle", "property", "software", "furniture"]),
+  acquisitionDate: z.string().datetime(),
+  acquisitionCostEgp: z.number().int().min(0).max(1_000_000_000),
+  depreciationMethod: z.enum(["straight_line", "declining_balance", "none"]).default("straight_line"),
+  depreciationRate: z.number().min(0).max(1).default(0.1),
+  location: z.string().max(200).optional(),
+  assignedTo: z.string().max(64).optional(),
+  warrantyExpiry: z.string().datetime().optional(),
+  insuranceExpiry: z.string().datetime().optional(),
+});
+
+export const erpAssetPatchSchema = z.object({
+  action: z.enum(["dispose", "depreciate"]),
+});
+
+// ── Production Orders ──
+export const erpProductionOrderCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  productId: z.string().max(64).optional(),
+  productName: z.string().min(1).max(200),
+  quantity: z.number().min(0.01).max(1_000_000),
+  unit: z.string().max(40).default("piece"),
+  priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  projectId: z.string().max(64).optional(),
+});
+
+export const erpProductionOrderPatchSchema = z.object({
+  action: z.enum(["release", "complete"]),
+  completedQty: z.number().min(0).max(1_000_000).optional(),
+  bom: z.array(
+    z.object({
+      inventoryId: z.string().min(1).max(64),
+      description: z.string().min(1).max(500),
+      quantityRequired: z.number().min(0.01).max(1_000_000),
+      unit: z.string().max(40).default("piece"),
+      costPerUnitEgp: z.number().min(0).max(1_000_000).optional(),
+    })
+  ).max(100).optional(),
+}).refine(
+  (v) => v.action !== "complete" || (typeof v.completedQty === "number"),
+  { message: "completedQty is required when action is 'complete'" }
+);
+
+// ── Quality Checks ──
+export const erpQualityCheckCreateSchema = z.object({
+  enterpriseId: z.string().min(1).max(64),
+  productionOrderId: z.string().max(64).optional(),
+  projectId: z.string().max(64).optional(),
+  inventoryId: z.string().max(64).optional(),
+  checkType: z.enum(["incoming", "in_process", "final", "audit"]),
+  description: z.string().min(2).max(2000),
+  inspectorId: z.string().max(64).optional(),
+  minPassRate: z.number().min(0).max(100).default(90),
+});
+
+export const erpQualityCheckResultSchema = z.object({
+  passRate: z.number().min(0).max(100),
+  defects: z.number().int().min(0).max(1_000_000),
+  notes: z.string().max(4000),
+});

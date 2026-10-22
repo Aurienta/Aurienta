@@ -1958,3 +1958,319 @@ model DividendDistribution {
   @@index([enterpriseId])
   @@index([status])
 }
+
+// ════════════════════════════════════════════════════════════════
+// AURIENTA ERP — Constitutional Enterprise Resource Planning
+// Outsmarts Oracle NetSuite + Odoo with CRE-enforced governance,
+// real-time financial control, and constitutional project management.
+// Every transaction is CRE-verified + ledger-anchored.
+// ════════════════════════════════════════════════════════════════
+
+// ── CORE: Project (the central ERP entity) ──
+model ErpProject {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  name            String
+  code            String   @unique // e.g. "PRJ-2026-001"
+  description     String
+  type            String   @default("internal") // internal, client, r_and_d, construction, manufacturing
+  status          String   @default("planning") // planning, active, on_hold, completed, cancelled
+  priority        String   @default("medium") // low, medium, high, critical
+  startDate       DateTime?
+  endDate         DateTime?
+  budgetEgp       Int      @default(0)
+  spentEgp        Int      @default(0)
+  progressPct     Int      @default(0)
+  managerId       String?  // userId of project manager
+  clientId        String?  // vendor/partner id if client project
+  healthScore     Int      @default(75)
+  riskLevel       String   @default("low") // low, medium, high, critical
+  creDecisionToken String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([status])
+  @@index([managerId])
+}
+
+// ── Work Breakdown Structure (WBS) — hierarchical task tree ──
+model ErpTask {
+  id              String   @id @default(cuid())
+  projectId       String
+  parentId        String?  // null = top-level task; set = subtask
+  title           String
+  description     String?
+  wbsCode         String   // e.g. "1.2.3"
+  status          String   @default("todo") // todo, in_progress, review, done, blocked
+  priority        String   @default("medium")
+  assigneeId      String?  // userId
+  estimatedHours  Float    @default(0)
+  actualHours     Float    @default(0)
+  startDate       DateTime?
+  dueDate         DateTime?
+  completedAt     DateTime?
+  progressPct     Int      @default(0)
+  blockedReason   String?
+  tags            String   @default("") // comma-separated
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([parentId])
+}
+
+// ── Resource Management ──
+model ErpResource {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  name            String
+  type            String   // human, equipment, material, facility, financial
+  category        String   // e.g. "software_engineer", "forklift", "steel", "warehouse_a"
+  capacity        Float    @default(1) // max units (1 for person, 100 for kg, etc.)
+  allocated       Float    @default(0) // currently allocated
+  available       Float    @default(1) // capacity - allocated
+  costPerUnitEgp  Float    @default(0) // hourly rate or per-unit cost
+  unit            String   @default("hour") // hour, day, kg, unit, month
+  status          String   @default("active") // active, maintenance, retired
+  location        String?
+  skills          String   @default("") // comma-separated for human resources
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([type])
+  @@index([status])
+}
+
+// ── Resource Allocation (links resources to projects/tasks) ──
+model ErpAllocation {
+  id              String   @id @default(cuid())
+  resourceId      String
+  projectId       String?
+  taskId          String?
+  enterpriseId    String
+  allocatedQty    Float
+  startDate       DateTime
+  endDate         DateTime?
+  status          String   @default("active") // active, released, completed
+  costEgp         Int      @default(0)
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([resourceId])
+  @@index([projectId])
+  @@index([enterpriseId])
+}
+
+// ── Timesheet (time tracking with CRE enforcement) ──
+model ErpTimesheet {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  userId          String
+  projectId       String?
+  taskId          String?
+  date            DateTime
+  hours           Float
+  description     String
+  billable        Boolean  @default(false)
+  hourlyRateEgp   Float    @default(0)
+  totalCostEgp     Int      @default(0)
+  status          String   @default("draft") // draft, submitted, approved, rejected
+  approvedById    String?
+  approvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([date])
+  @@index([status])
+}
+
+// ── Inventory (warehouse + stock management) ──
+model ErpInventory {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  sku             String   @unique
+  name            String
+  description     String?
+  category        String
+  unit            String   @default("piece") // piece, kg, liter, meter, box
+  quantityOnHand  Float    @default(0)
+  quantityReserved Float    @default(0)
+  quantityAvailable Float   @default(0) // onHand - reserved
+  reorderPoint    Float    @default(0)
+  maxStock        Float    @default(0)
+  costPerUnitEgp  Float    @default(0)
+  sellPriceEgp    Float    @default(0)
+  warehouseLocation String?
+  barcode         String?
+  supplierId      String?  // vendor id
+  lastStockIn     DateTime?
+  lastStockOut    DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([sku])
+  @@index([category])
+}
+
+// ── Inventory Movement (stock in/out tracking) ──
+model ErpInventoryMovement {
+  id              String   @id @default(cuid())
+  inventoryId     String
+  enterpriseId    String
+  type            String   // in, out, transfer, adjustment, reservation, release
+  quantity        Float
+  fromLocation    String?
+  toLocation      String?
+  referenceType   String?  // purchase_order, sales_order, project_allocation, adjustment
+  referenceId     String?
+  notes           String?
+  userId          String?
+  createdAt       DateTime @default(now())
+
+  @@index([inventoryId])
+  @@index([enterpriseId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ── Procurement (Purchase Orders) ──
+model ErpPurchaseOrder {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  poNumber        String   @unique
+  vendorId        String?  // vendor id
+  vendorName      String
+  status          String   @default("draft") // draft, submitted, approved, sent, partial, received, cancelled
+  totalEgp        Int      @default(0)
+  currency        String   @default("EGP")
+  expectedDate    DateTime?
+  approvedById    String?
+  approvedAt      DateTime?
+  projectId       String?  // linked to project if for a specific project
+  creDecisionToken String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([status])
+  @@index([vendorId])
+  @@index([projectId])
+}
+
+// ── Purchase Order Line Items ──
+model ErpPurchaseOrderLine {
+  id              String   @id @default(cuid())
+  purchaseOrderId String
+  inventoryId     String?
+  description     String
+  quantity        Float
+  unit            String   @default("piece")
+  unitPriceEgp    Float
+  totalPriceEgp   Float
+  receivedQty     Float    @default(0)
+  status          String   @default("pending") // pending, partial, received, cancelled
+  createdAt       DateTime @default(now())
+
+  @@index([purchaseOrderId])
+  @@index([inventoryId])
+}
+
+// ── Fixed Assets (equipment, vehicles, property) ──
+model ErpAsset {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  assetCode       String   @unique
+  name            String
+  category        String   // equipment, vehicle, property, software, furniture
+  acquisitionDate DateTime
+  acquisitionCostEgp Int
+  currentValueEgp Int
+  depreciationMethod String @default("straight_line") // straight_line, declining_balance, none
+  depreciationRate Float   @default(0.1) // annual rate
+  accumulatedDepreciationEgp Int @default(0)
+  netBookValueEgp Int      @default(0)
+  status          String   @default("active") // active, maintenance, disposed, retired
+  location        String?
+  assignedTo      String?  // userId or department
+  warrantyExpiry  DateTime?
+  insuranceExpiry DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([category])
+  @@index([status])
+}
+
+// ── Manufacturing / Production Orders ──
+model ErpProductionOrder {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  orderNumber     String   @unique
+  productId       String?  // inventory item being produced
+  productName     String
+  quantity        Float
+  unit            String   @default("piece")
+  status          String   @default("planned") // planned, released, in_progress, completed, cancelled
+  priority        String   @default("medium")
+  startDate       DateTime?
+  endDate         DateTime?
+  completedQty    Float    @default(0)
+  projectId       String?  // linked to project
+  costEgp         Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enterpriseId])
+  @@index([status])
+  @@index([projectId])
+}
+
+// ── Production BOM (Bill of Materials) ──
+model ErpBom {
+  id              String   @id @default(cuid())
+  productionOrderId String
+  inventoryId     String
+  description     String
+  quantityRequired Float
+  unit            String   @default("piece")
+  quantityIssued  Float    @default(0)
+  costPerUnitEgp  Float    @default(0)
+  totalCostEgp    Float    @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([productionOrderId])
+  @@index([inventoryId])
+}
+
+// ── Quality Control ──
+model ErpQualityCheck {
+  id              String   @id @default(cuid())
+  enterpriseId    String
+  productionOrderId String?
+  projectId       String?
+  inventoryId     String?
+  checkType       String   // incoming, in_process, final, audit
+  description     String
+  inspectorId     String?
+  status          String   @default("pending") // pending, passed, failed, rework
+  defectsFound    Int      @default(0)
+  passRate        Float    @default(0)
+  notes           String?
+  checkedAt       DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([enterpriseId])
+  @@index([status])
+  @@index([checkType])
+}

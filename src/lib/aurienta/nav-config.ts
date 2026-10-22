@@ -228,6 +228,14 @@ export const NAV_I18N: Record<string, string> = {
   "University Rep Console": "nav.university",
   "Profile & Identity": "nav.profile",
   "Passkeys & Security": "nav.passkeys",
+  // ERP module labels
+  "ERP Hub": "nav.erpHub",
+  "Projects": "nav.erpProjects",
+  "Inventory": "nav.erpInventory",
+  "Procurement": "nav.erpProcurement",
+  "Fixed Assets": "nav.erpAssets",
+  "Manufacturing": "nav.erpProduction",
+  "Quality Control": "nav.erpQuality",
 };
 
 /** Group translation map: group name → i18n key. */
@@ -235,6 +243,7 @@ export const GROUP_I18N: Record<string, string> = {
   "Workspace": "group.workspace",
   "Capital & Workforce": "group.capitalWorkforce",
   "Enterprise": "group.enterprise",
+  "ERP": "group.erp",
   "Intelligence": "group.intelligence",
   "Compliance & Transparency": "group.compliance",
   "Treasury & Infrastructure": "group.treasury",
@@ -285,6 +294,16 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/partner-crm", label: "Partner CRM", icon: "Contact", group: "Enterprise" },
   // REC-4: Cooperative Network — constitutional B2B exchange between enterprises.
   { href: "/dashboard/cooperative-network", label: "Cooperative Network", icon: "Network", group: "Enterprise" },
+
+  // ── ERP (Constitutional Enterprise Resource Planning) ──
+  // Outperforms Oracle NetSuite + Odoo by binding every action to the CRE.
+  { href: "/dashboard/erp", label: "ERP Hub", icon: "Workflow", group: "Enterprise" },
+  { href: "/dashboard/erp/projects", label: "Projects", icon: "Target", group: "Enterprise" },
+  { href: "/dashboard/erp/inventory", label: "Inventory", icon: "Database", group: "Enterprise" },
+  { href: "/dashboard/erp/procurement", label: "Procurement", icon: "Truck", group: "Enterprise" },
+  { href: "/dashboard/erp/assets", label: "Fixed Assets", icon: "Factory", group: "Enterprise" },
+  { href: "/dashboard/erp/production", label: "Manufacturing", icon: "Cpu", group: "Enterprise" },
+  { href: "/dashboard/erp/quality", label: "Quality Control", icon: "CheckCircle2", group: "Enterprise" },
 
   // ── Intelligence ──
   { href: "/dashboard/brain-ai", label: "Brain AI Status", icon: "Brain", group: "Intelligence" },
@@ -410,6 +429,7 @@ export const NAV_GROUPS: string[] = [
   "Workspace",
   "Capital & Workforce",
   "Enterprise",
+  "ERP",
   "Intelligence",
   "Compliance & Transparency",
   "Treasury & Infrastructure",
@@ -432,6 +452,7 @@ export function groupOrderForRoles(roles: Set<string>): string[] {
   if (isOperator) {
     return [
       "Enterprise",
+      "ERP",
       "Workspace",
       "Intelligence",
       "Capital & Workforce",
@@ -484,6 +505,7 @@ export function visibleGroupsForRoles(roles: Set<string>): Set<string> {
     has("accounting_firm_rep")
   ) {
     visible.add("Enterprise");
+    visible.add("ERP");
   }
 
   // Treasury & Infrastructure — operator + law-firm seats.
