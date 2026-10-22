@@ -74,6 +74,7 @@
     "gcp-metadata": "^9.2.1",
     "google-logging-utils": "^2.1.0",
     "groq-sdk": "^1.6.0",
+    "inngest": "^4.25.0",
     "input-otp": "^1.5.0",
     "lucide-react": "^0.525.0",
     "next": "^16.4.2",
