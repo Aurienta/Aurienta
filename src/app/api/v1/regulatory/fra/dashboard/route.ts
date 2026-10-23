@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
+import { requireFraToken } from "@/lib/aurienta/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,11 +12,8 @@ export const dynamic = "force-dynamic";
 // Returns aggregate platform metrics for FRA regulators.
 // Requires FRA_ACCESS_TOKEN (different from CRON_SECRET).
 export const GET = withErrorHandler(async (req: NextRequest) => {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.replace("Bearer ", "");
-  if (token !== process.env.FRA_ACCESS_TOKEN) {
-    return NextResponse.json({ error: "Unauthorized — FRA access required" }, { status: 401 });
-  }
+  const unauthorized = requireFraToken(req);
+  if (unauthorized) return unauthorized;
 
   // Aggregate metrics — NO PII, only counts and amounts
   // Use audit log counts for entities that may not have their own model.

@@ -31,17 +31,22 @@ function read(): EnvShape {
   const cookieSecure = true;
   const allowDemoSignIn = process.env.ALLOW_DEMO_SIGNIN === "true";
   let fieldEncryptionKey = process.env.FIELD_ENCRYPTION_KEY ?? "";
+  // SECURITY FIX (PLATFORM-FULL-AUDIT-AND-REMEDIATION-001 / P0-3):
+  // Previously this branch fell back to a hardcoded dev key
+  // (`aurienta-dev-field-key-32bytes!!`) which actually decoded to 32 bytes
+  // and SILENTLY passed encryption.ts's length check — meaning production
+  // PII was being encrypted with a publicly-known key whenever the env var
+  // was missing. We now leave it empty; encryption.ts getKey() throws
+  // loudly on first use ("must decode to 32 bytes, got 0"). This is the
+  // correct lazy-fail behavior — module load (and therefore `next build`)
+  // stays green, but any code path that actually encrypts/decrypts PII
+  // refuses to run without a real key.
   if (!fieldEncryptionKey) {
-    // Do NOT throw at module-evaluation time: this module is imported by route
-    // handlers whose page data is collected during `next build` (and on
-    // Vercel), where env vars may not be present. A missing key is logged
-    // loudly here and enforced lazily by `encryption.ts` (`getKey()` throws
-    // when first used). This keeps builds green while still failing loudly at
-    // runtime if unset.
     if (nodeEnv === "production") {
       console.error("[env] FATAL: FIELD_ENCRYPTION_KEY is not set — encryption will fail at runtime.");
+    } else {
+      console.warn("[env] WARNING: FIELD_ENCRYPTION_KEY is not set — field encryption is disabled until set.");
     }
-    fieldEncryptionKey = Buffer.from("aurienta-dev-field-key-32bytes!!", "utf8").toString("base64").slice(0, 44);
   }
   if (!databaseUrl) console.error("[env] FATAL: DATABASE_URL is not set");
   if (nodeEnv === "production" && allowDemoSignIn) console.warn("[env] WARNING: ALLOW_DEMO_SIGNIN=true in production — sandbox/pilot mode.");

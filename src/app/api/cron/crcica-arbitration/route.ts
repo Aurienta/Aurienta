@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
+import { requireCronToken } from "@/lib/aurienta/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,11 +20,8 @@ export const dynamic = "force-dynamic";
 //
 // Token-auth via CRON_SECRET.
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.replace("Bearer ", "");
-  if (token !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const unauthorized = requireCronToken(req);
+  if (unauthorized) return unauthorized;
 
   const now = new Date();
 

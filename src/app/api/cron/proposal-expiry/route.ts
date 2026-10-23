@@ -19,38 +19,19 @@ import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { logger } from "@/lib/aurienta/logger";
+import { requireCronToken } from "@/lib/aurienta/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Dev fallback so the endpoint still works locally when CRON_SECRET is unset.
-// In production Vercel Cron sets CRON_SECRET — a non-matching token yields 401.
-const DEV_FALLBACK_SECRET = "dev-cron-secret";
+// SECURITY FIX (PLATFORM-FULL-AUDIT-AND-REMEDIATION-001 / P1-2):
+// Removed DEV_FALLBACK_SECRET = "dev-cron-secret" (live-exploitable).
+// CRON_SECRET MUST be set in the environment; helper returns 503 otherwise.
 
 export const GET = withErrorHandler(
   async (req: NextRequest) => {
-    // ── Token auth (NOT session auth) ──
-    // Vercel Cron automatically sends the CRON_SECRET env var as an
-    // Authorization: Bearer header. We also accept ?token= for manual
-    // testing or external schedulers.
-    const url = new URL(req.url);
-    const queryToken = url.searchParams.get("token") ?? "";
-    const authHeader = req.headers.get("authorization") ?? "";
-    const bearerToken = authHeader.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : "";
-    const token = queryToken || bearerToken;
-    const expected =
-      process.env.CRON_SECRET && process.env.CRON_SECRET.length > 0
-        ? process.env.CRON_SECRET
-        : DEV_FALLBACK_SECRET;
-
-    if (!token || token !== expected) {
-      return NextResponse.json(
-        { error: "Unauthorized — invalid or missing cron token" },
-        { status: 401 }
-      );
-    }
+    const unauthorized = requireCronToken(req);
+    if (unauthorized) return unauthorized;
 
     const now = new Date();
 
