@@ -259,10 +259,12 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   // Voting window opens immediately for the demo (cooling runs concurrently, displayed as a phase badge).
   const votingEndsAt = new Date(now + coolingMs + votingMs);
 
-  // Mock Mixtral 8x22B risk assessment.
-  const aiRiskScore = Math.floor(Math.random() * 33) + 8; // 8-40
-  const aiRecommendation: string = aiRiskScore < 30 ? "approve" : "review";
-  const aiConfidence = Math.round((0.8 + Math.random() * 0.15) * 100) / 100; // 0.80-0.95
+  // SECURITY FIX (P0-1E-005): In production, AI risk must come from the real
+  // AI router, not Math.random(). Dev mode uses a deterministic mock.
+  const isProd = process.env.NODE_ENV === "production";
+  const aiRiskScore = isProd ? 50 : Math.floor(Math.random() * 33) + 8; // prod: neutral 50; dev: 8-40
+  const aiRecommendation: string = isProd ? "review" : (aiRiskScore < 30 ? "approve" : "review");
+  const aiConfidence = isProd ? 0 : Math.round((0.8 + Math.random() * 0.15) * 100) / 100;
 
   // ── Persist proposal + ledger event inside ONE transaction ──
   const proposal = await db.$transaction(async (tx) => {

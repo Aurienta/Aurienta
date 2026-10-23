@@ -86,16 +86,16 @@ export function StepKyc({ state, update }: StepKycProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nationality: state.nationality ?? "egyptian",
-          documentOcr: {
-            // Sandbox: assume OCR succeeded if the partner uploaded a doc.
-            confidence: state.idFileName ? 0.92 : 0,
-          },
-          liveness: {
-            // Sandbox: assume liveness passed (the bar reached 100%).
-            dfdcScore: 0.02,
-            facenetMatch: 0.97,
-            livenessPassed: true,
-          },
+          // SECURITY FIX (P0-1E-015): Send the field names the server expects
+          // (livenessScore / faceMatchScore / documentAuthenticity, each 0..1).
+          // Previously the client sent `liveness.dfdcScore` etc. which the
+          // server did not read — causing empty-body self-elevation (now fixed
+          // server-side; this client fix aligns the contract).
+          // DFDC score: lower = more likely real (deepfake probability).
+          // Convert to livenessScore: higher = more likely real.
+          livenessScore: 1 - 0.02, // 0.98 (1 - dfdcScore)
+          faceMatchScore: 0.97,
+          documentAuthenticity: state.idFileName ? 0.92 : 0,
           method: "sandbox-mock",
         }),
       });

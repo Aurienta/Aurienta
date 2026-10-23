@@ -15,6 +15,7 @@
 //   ETA:  https://api.eta.gov.eg/ (OAuth2.0 + JWT)
 
 import { audit } from "./audit";
+import { MOCKS_DISABLED, isProviderConfigured } from "./mock-gate";
 
 export type GovApiProvider = "gafi" | "nosi" | "eta";
 
@@ -36,12 +37,28 @@ export async function verifyGafiEnterprise(params: {
   enterpriseName: string;
 }): Promise<GovApiResult> {
   const { commercialRegistrationNumber, enterpriseName } = params;
-
-  // SANDBOX MOCK: deterministic verification based on the CR number.
-  // Production: call the real GAFI API with OAuth2.0 token.
-  const isValid = /^\d{6,}$/.test(commercialRegistrationNumber) && commercialRegistrationNumber.length >= 6;
   const reference = `GAFI-${commercialRegistrationNumber.slice(0, 8)}-${Date.now().toString(36).toUpperCase()}`;
 
+  // SECURITY FIX (P0-1E-002): In production without real GAFI API credentials,
+  // return verified: false (fail-safe). Mocks only allowed in dev.
+  if (MOCKS_DISABLED || !isProviderConfigured("gafi")) {
+    const result: GovApiResult = {
+      provider: "gafi",
+      verified: false,
+      reference: MOCKS_DISABLED ? "NOT_CONFIGURED" : reference,
+      data: {
+        commercialRegistrationNumber,
+        enterpriseName,
+        reason: MOCKS_DISABLED ? "Production mode — GAFI API key not set, verification pending" : "Dev mode without GAFI_API_KEY — verification skipped",
+      },
+      timestamp: new Date(),
+    };
+    await audit({ actorId: "system", action: "gov_api.gafi_verify", target: `enterprise:${commercialRegistrationNumber}`, result: "denied", metadata: { reference, verified: false, provider: "gafi", reason: "not_configured" } });
+    return result;
+  }
+
+  // SANDBOX MOCK (dev mode with GAFI_API_KEY set): deterministic verification.
+  const isValid = /^\d{6,}$/.test(commercialRegistrationNumber) && commercialRegistrationNumber.length >= 6;
   const result: GovApiResult = {
     provider: "gafi",
     verified: isValid,
@@ -56,15 +73,7 @@ export async function verifyGafiEnterprise(params: {
     },
     timestamp: new Date(),
   };
-
-  await audit({
-    actorId: "system",
-    action: "gov_api.gafi_verify",
-    target: `enterprise:${commercialRegistrationNumber}`,
-    result: isValid ? "allowed" : "denied",
-    metadata: { reference, verified: isValid, provider: "gafi" },
-  });
-
+  await audit({ actorId: "system", action: "gov_api.gafi_verify", target: `enterprise:${commercialRegistrationNumber}`, result: isValid ? "allowed" : "denied", metadata: { reference, verified: isValid, provider: "gafi" } });
   return result;
 }
 
@@ -77,12 +86,28 @@ export async function verifyNosiEmployee(params: {
   employeeName: string;
 }): Promise<GovApiResult> {
   const { nationalId, employeeName } = params;
-
-  // SANDBOX MOCK: deterministic verification based on the national ID format.
-  // Egyptian national IDs are 14 digits.
-  const isValid = /^\d{14}$/.test(nationalId);
   const reference = `NOSI-${nationalId.slice(0, 6)}-${Date.now().toString(36).toUpperCase()}`;
 
+  // SECURITY FIX (P0-1E-002): In production without real NOSI API credentials,
+  // return verified: false (fail-safe). Mocks only allowed in dev.
+  if (MOCKS_DISABLED || !isProviderConfigured("nosi")) {
+    const result: GovApiResult = {
+      provider: "nosi",
+      verified: false,
+      reference: MOCKS_DISABLED ? "NOT_CONFIGURED" : reference,
+      data: {
+        nationalId: nationalId,
+        employeeName,
+        reason: MOCKS_DISABLED ? "Production mode — NOSI API key not set, verification pending" : "Dev mode without NOSI_API_KEY — verification skipped",
+      },
+      timestamp: new Date(),
+    };
+    await audit({ actorId: "system", action: "gov_api.nosi_verify", target: `employee:${nationalId.slice(0, 4)}****`, result: "denied", metadata: { reference, verified: false, provider: "nosi", reason: "not_configured" } });
+    return result;
+  }
+
+  // SANDBOX MOCK (dev mode with NOSI_API_KEY set).
+  const isValid = /^\d{14}$/.test(nationalId);
   const result: GovApiResult = {
     provider: "nosi",
     verified: isValid,
@@ -99,15 +124,7 @@ export async function verifyNosiEmployee(params: {
     },
     timestamp: new Date(),
   };
-
-  await audit({
-    actorId: "system",
-    action: "gov_api.nosi_verify",
-    target: `employee:${nationalId.slice(0, 4)}****`,
-    result: isValid ? "allowed" : "denied",
-    metadata: { reference, verified: isValid, provider: "nosi" },
-  });
-
+  await audit({ actorId: "system", action: "gov_api.nosi_verify", target: `employee:${nationalId.slice(0, 4)}****`, result: isValid ? "allowed" : "denied", metadata: { reference, verified: isValid, provider: "nosi" } });
   return result;
 }
 
@@ -121,12 +138,29 @@ export async function verifyEtaTaxClearance(params: {
   period?: string; // YYYY-Qn format, e.g. "2026-Q1"
 }): Promise<GovApiResult> {
   const { taxId, enterpriseName, period } = params;
-
-  // SANDBOX MOCK: deterministic verification based on the tax ID format.
-  // Egyptian tax IDs are 9 digits.
-  const isValid = /^\d{9}$/.test(taxId);
   const reference = `ETA-${taxId}-${period ?? "all"}-${Date.now().toString(36).toUpperCase()}`;
 
+  // SECURITY FIX (P0-1E-002): In production without real ETA API credentials,
+  // return verified: false (fail-safe). Mocks only allowed in dev.
+  if (MOCKS_DISABLED || !isProviderConfigured("eta")) {
+    const result: GovApiResult = {
+      provider: "eta",
+      verified: false,
+      reference: MOCKS_DISABLED ? "NOT_CONFIGURED" : reference,
+      data: {
+        taxId,
+        enterpriseName,
+        period: period ?? "all",
+        reason: MOCKS_DISABLED ? "Production mode — ETA API key not set, verification pending" : "Dev mode without ETA_API_KEY — verification skipped",
+      },
+      timestamp: new Date(),
+    };
+    await audit({ actorId: "system", action: "gov_api.eta_verify", target: `taxpayer:${taxId}`, result: "denied", metadata: { reference, verified: false, provider: "eta", reason: "not_configured" } });
+    return result;
+  }
+
+  // SANDBOX MOCK (dev mode with ETA_API_KEY set).
+  const isValid = /^\d{9}$/.test(taxId);
   const result: GovApiResult = {
     provider: "eta",
     verified: isValid,
@@ -143,15 +177,7 @@ export async function verifyEtaTaxClearance(params: {
     },
     timestamp: new Date(),
   };
-
-  await audit({
-    actorId: "system",
-    action: "gov_api.eta_verify",
-    target: `taxpayer:${taxId}`,
-    result: isValid ? "allowed" : "denied",
-    metadata: { reference, verified: isValid, provider: "eta", period },
-  });
-
+  await audit({ actorId: "system", action: "gov_api.eta_verify", target: `taxpayer:${taxId}`, result: isValid ? "allowed" : "denied", metadata: { reference, verified: isValid, provider: "eta", period } });
   return result;
 }
 

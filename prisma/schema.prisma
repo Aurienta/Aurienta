@@ -289,7 +289,7 @@ model OwnershipRecord {
   enterpriseId  String
   userId        String
   equityUnits   Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
-  avgPriceEgp   Float
+  avgPriceEgp   Decimal
   restrictedUntil DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -500,11 +500,11 @@ model TradeOrder {
   userId        String
   side          String   // buy, sell
   equityUnits   Int      @map("shares") // CONSTITUTIONAL: Equity Units. Legacy DB column: shares
-  priceEgp      Float
+  priceEgp      Decimal
   phase         String   @default("phase_3") // phase_1 pro-rata, phase_2 employee/founder, phase_3 general
   status        String   @default("open") // open, partially_filled, filled, cancelled
   filledEquityUnits  Int      @default(0) @map("filledShares") // CONSTITUTIONAL: filled Equity Units. Legacy: filledShares
-  feesEgp       Float    @default(0)
+  feesEgp       Decimal    @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -518,8 +518,8 @@ model Valuation {
   id            String   @id @default(cuid())
   enterpriseId  String
   preMoneyEgp   Int
-  equityUnitPriceEgp Float @map("sharePriceEgp") // CONSTITUTIONAL: Equity Unit Price. Legacy DB column: sharePriceEgp
-  cppEgp        Float    // per 1% ownership
+  equityUnitPriceEgp Decimal @map("sharePriceEgp") // CONSTITUTIONAL: Equity Unit Price. Legacy DB column: sharePriceEgp
+  cppEgp        Decimal    // per 1% ownership
   growthMultiplier Float
   founderPremium Float
   aiConfidence  Float    @default(0.85)
@@ -802,7 +802,7 @@ model DiasporaProfile {
   userId              String   @unique
   countryOfResidence  String
   remittanceIntentEgp Int      @default(0)
-  fxLockedRate        Float?
+  fxLockedRate        Decimal?
   fxLockedUntil       DateTime?
   documentsVerified   Boolean  @default(false)
   preferredLanguage   String   @default("en") // en, ar, fr, sw
@@ -1142,11 +1142,11 @@ model Trade {
   buyerId       String
   sellerId      String
   equityUnits   Int
-  priceEgp      Float
-  grossEgp      Float
-  platformFeeEgp Float
-  cgtEgp        Float   // capital gains tax (seller only)
-  totalEgp      Float   // buyer pays gross + platformFee; seller receives gross - platformFee - cgt
+  priceEgp      Decimal
+  grossEgp      Decimal
+  platformFeeEgp Decimal
+  cgtEgp        Decimal   // capital gains tax (seller only)
+  totalEgp      Decimal   // buyer pays gross + platformFee; seller receives gross - platformFee - cgt
   phase         String
   matchedAt     DateTime @default(now())
 
@@ -1169,10 +1169,10 @@ model Trade {
 model InsuranceVault {
   id              String   @id @default(cuid())
   enterpriseId    String   @unique // one vault balance per enterprise
-  totalContributedEgp Float @default(0) // cumulative 0.5% deductions
-  currentBalanceEgp   Float @default(0) // current available balance
-  totalLoanedEgp      Float @default(0) // cumulative loans issued
-  totalRepaidEgp      Float @default(0) // cumulative loans repaid
+  totalContributedEgp Decimal @default(0) // cumulative 0.5% deductions
+  currentBalanceEgp   Decimal @default(0) // current available balance
+  totalLoanedEgp      Decimal @default(0) // cumulative loans issued
+  totalRepaidEgp      Decimal @default(0) // cumulative loans repaid
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -1189,13 +1189,13 @@ model InsuranceVault {
 model VaultLoan {
   id              String   @id @default(cuid())
   enterpriseId    String
-  amountEgp       Float
+  amountEgp       Decimal
   reason          String   // pandemic, currency_devaluation, war, natural_disaster
   boardVotePct    Float    // must be >= 50 (simple majority)
   requestedAt     DateTime @default(now())
   approvedAt      DateTime?
   status          String   @default("pending") // pending, approved, repaid, forgiven
-  repaidEgp       Float    @default(0)
+  repaidEgp       Decimal    @default(0)
   repaymentDueAt  DateTime? // 24 months from approval
 
   enterprise      Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
@@ -1213,9 +1213,9 @@ model VaultLoan {
 model SolvencyAssertion {
   id              String   @id @default(cuid())
   enterpriseId    String
-  lawFirmBalanceEgp  Float  // balance reported by law firm
-  internalBalanceEgp  Float  // balance in AURIENTA's internal ledger
-  varianceEgp     Float    // lawFirmBalance - internalBalance
+  lawFirmBalanceEgp  Decimal  // balance reported by law firm
+  internalBalanceEgp  Decimal  // balance in AURIENTA's internal ledger
+  varianceEgp     Decimal    // lawFirmBalance - internalBalance
   variancePct     Float    // variance / internalBalance * 100
   healthLevel     Int      @default(1) // 1=ok, 2=warning, 3=freeze
   assertionHash   String   // SHA-256 of the signed balance assertion
@@ -1365,7 +1365,7 @@ model LawFirmWebhookEvent {
   lawFirmId       String
   enterpriseId    String?
   eventType       String   // escrow_received, escrow_released, escrow_refunded, balance_assertion
-  amountEgp       Float?
+  amountEgp       Decimal?
   reference       String?  @unique // AUD-018: idempotency key — law-firm-side reference. NULL allowed (multiple), but non-NULL values must be unique.
   rawPayload      String   // JSON
   signatureValid  Boolean
@@ -1385,8 +1385,8 @@ model CircuitBreakerHalt {
   id                String   @id @default(cuid())
   enterpriseId      String
   level             Int      // 1 = ±8% (15min), 2 = ±12% (30min), 3 = ±20% (24h)
-  triggeredByPrice  Float?
-  referencePrice    Float?
+  triggeredByPrice  Decimal?
+  referencePrice    Decimal?
   deviationPct      Float?
   reason            String
   triggeredAt       DateTime @default(now())
@@ -1564,7 +1564,7 @@ model DiasporaCorridorRound {
   enterpriseId     String
   totalPledgedEgp  Int      @default(0)
   participantCount Int      @default(0)
-  fxRateLocked     Float
+  fxRateLocked     Decimal
   status           String   @default("open") // open, closed, settled
   closesAt         DateTime
   createdAt        DateTime @default(now())
@@ -1892,9 +1892,9 @@ model GraduationBond {
 model ProductiveEgpSnapshot {
   id              String   @id @default(cuid())
   enterpriseId    String
-  equityUnitPriceEgp  Float
-  equityUnitPriceUsd  Float
-  fxRateUsdToEgp  Float
+  equityUnitPriceEgp  Decimal
+  equityUnitPriceUsd  Decimal
+  fxRateUsdToEgp  Decimal
   inflationRatePct Float   // monthly CPI
   realReturnPct   Float   // nominal return - inflation
   snapshotDate    String  // YYYY-MM-DD
@@ -1931,7 +1931,7 @@ model TradeMatch {
   buyOrderId      String
   sellOrderId     String
   enterpriseId    String
-  matchedPriceEgp Float
+  matchedPriceEgp Decimal
   matchedShares   Int
   buyerFeeEgp     Int      @default(0)
   sellerFeeEgp    Int      @default(0)
@@ -1947,7 +1947,7 @@ model DividendDistribution {
   id              String   @id @default(cuid())
   enterpriseId    String
   totalDividendEgp Int
-  perShareDividendEgp Float
+  perShareDividendEgp Decimal
   partnerCount    Int
   status          String   @default("declared") // declared, cre_approved, paid, completed
   creDecisionToken String?
@@ -2033,7 +2033,7 @@ model ErpResource {
   capacity        Float    @default(1) // max units (1 for person, 100 for kg, etc.)
   allocated       Float    @default(0) // currently allocated
   available       Float    @default(1) // capacity - allocated
-  costPerUnitEgp  Float    @default(0) // hourly rate or per-unit cost
+  costPerUnitEgp  Decimal    @default(0) // hourly rate or per-unit cost
   unit            String   @default("hour") // hour, day, kg, unit, month
   status          String   @default("active") // active, maintenance, retired
   location        String?
@@ -2077,7 +2077,7 @@ model ErpTimesheet {
   hours           Float
   description     String
   billable        Boolean  @default(false)
-  hourlyRateEgp   Float    @default(0)
+  hourlyRateEgp   Decimal    @default(0)
   totalCostEgp     Int      @default(0)
   status          String   @default("draft") // draft, submitted, approved, rejected
   approvedById    String?
@@ -2106,8 +2106,8 @@ model ErpInventory {
   quantityAvailable Float   @default(0) // onHand - reserved
   reorderPoint    Float    @default(0)
   maxStock        Float    @default(0)
-  costPerUnitEgp  Float    @default(0)
-  sellPriceEgp    Float    @default(0)
+  costPerUnitEgp  Decimal    @default(0)
+  sellPriceEgp    Decimal    @default(0)
   warehouseLocation String?
   barcode         String?
   supplierId      String?  // vendor id
@@ -2175,8 +2175,8 @@ model ErpPurchaseOrderLine {
   description     String
   quantity        Float
   unit            String   @default("piece")
-  unitPriceEgp    Float
-  totalPriceEgp   Float
+  unitPriceEgp    Decimal
+  totalPriceEgp   Decimal
   receivedQty     Float    @default(0)
   status          String   @default("pending") // pending, partial, received, cancelled
   createdAt       DateTime @default(now())
@@ -2245,8 +2245,8 @@ model ErpBom {
   quantityRequired Float
   unit            String   @default("piece")
   quantityIssued  Float    @default(0)
-  costPerUnitEgp  Float    @default(0)
-  totalCostEgp    Float    @default(0)
+  costPerUnitEgp  Decimal    @default(0)
+  totalCostEgp    Decimal    @default(0)
   createdAt       DateTime @default(now())
 
   @@index([productionOrderId])

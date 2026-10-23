@@ -1,6 +1,22 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 
+// Decimal → number serialization override.
+// Prisma.Decimal serializes as string by default (e.g., "123.45"). This makes
+// all Decimal fields serialize as numbers in JSON responses, preserving the
+// pre-Decimal API contract. Arithmetic on Decimal objects still requires
+// .toNumber() but JSON responses (the 95% case) work unchanged.
+// (PLATFORM-FULL-AUDIT-AND-REMEDIATION-001 / P1-C: float-for-money fix.)
+if (!Prisma.Decimal.prototype.toJSON.__aurientaPatched) {
+  const originalToJSON = Prisma.Decimal.prototype.toJSON
+  Prisma.Decimal.prototype.toJSON = function () {
+    const n = this.toNumber()
+    return Number.isFinite(n) ? n : (originalToJSON ? originalToJSON.call(this) : this.toString())
+  }
+  // Mark patched so HMR doesn't re-wrap
+  ;(Prisma.Decimal.prototype.toJSON as unknown as { __aurientaPatched: boolean }).__aurientaPatched = true
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
   prismaFallback: boolean | undefined

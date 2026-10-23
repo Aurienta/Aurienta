@@ -103,7 +103,8 @@ export async function pinToIpfs(
 /**
  * Verify that a CID is pinned and retrievable.
  *
- * SANDBOX MOCK: Always returns true if the CID format is valid.
+ * SECURITY FIX (P0-1E-006): In production without real Pinata/IPFS credentials,
+ * returns pinned: false (fail-safe). Mocks only allowed in dev.
  * Production: HEAD request to https://gateway.pinata.cloud/ipfs/{cid}
  */
 export async function verifyPin(cid: string): Promise<{
@@ -113,11 +114,20 @@ export async function verifyPin(cid: string): Promise<{
   gateway: string | null;
 }> {
   const isValidCid = cid.startsWith("bafyrei") && cid.length >= 50;
+  if (!isValidCid) {
+    return { cid, pinned: false, retrievable: false, gateway: null };
+  }
+  // Import mock-gate lazily to avoid circular deps
+  const { MOCKS_DISABLED, isProviderConfigured } = await import("@/lib/aurienta/mock-gate");
+  if (MOCKS_DISABLED || !isProviderConfigured("ipfs")) {
+    return { cid, pinned: false, retrievable: false, gateway: null };
+  }
+  // Dev-mode mock
   return {
     cid,
-    pinned: isValidCid,
-    retrievable: isValidCid,
-    gateway: isValidCid ? `https://gateway.pinata.cloud/ipfs/${cid}` : null,
+    pinned: true,
+    retrievable: true,
+    gateway: `https://gateway.pinata.cloud/ipfs/${cid}`,
   };
 }
 

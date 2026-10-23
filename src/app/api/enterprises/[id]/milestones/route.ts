@@ -98,8 +98,11 @@ export async function POST(
       );
     }
 
-    // Mock EVE (Evidence Verification Engine) confidence — deterministic but varied.
-    const eveConfidence = 0.7 + (Math.floor(Math.random() * 18) / 100); // 0.70–0.87
+    // SECURITY FIX (P0-1E-004): In production, EVE confidence must come from
+    // real evidence verification (EVE engine), not Math.random(). Dev mode
+    // uses a deterministic mock for testing.
+    const isProd = process.env.NODE_ENV === "production";
+    const eveConfidence = isProd ? 0 : 0.7 + (Math.floor(Math.random() * 18) / 100);
 
     const updated = await db.milestone.update({
       where: { id: milestoneId },

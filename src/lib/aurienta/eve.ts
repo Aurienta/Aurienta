@@ -20,6 +20,7 @@
 
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
+import { MOCKS_DISABLED, isProviderConfigured } from "@/lib/aurienta/mock-gate";
 
 export type VerificationResult = {
   verified: boolean;
@@ -43,9 +44,13 @@ async function mockBankApiLookup(
   invoiceRef: string,
   expectedAmount: number
 ): Promise<MockBankTransaction> {
-  // Deterministic "transaction" — seed the ref so the mock always returns
-  // the same value for the same invoice. 70% of refs "found"; amount is the
-  // expected amount ± a small deterministic delta to simulate matching.
+  // SECURITY FIX (P0-1E-003): In production without real bank API credentials,
+  // return found: false (fail-safe). Do NOT fabricate transactions.
+  if (MOCKS_DISABLED || !isProviderConfigured("bank")) {
+    return { found: false, amountEgp: 0, beneficiaryName: null, valueDate: null };
+  }
+  // Dev-mode mock: deterministic "transaction" — seed the ref so the mock
+  // always returns the same value for the same invoice. 70% of refs "found".
   let hash = 0;
   for (let i = 0; i < invoiceRef.length; i++) {
     hash = (hash * 31 + invoiceRef.charCodeAt(i)) >>> 0;
@@ -54,7 +59,6 @@ async function mockBankApiLookup(
   if (!found) {
     return { found: false, amountEgp: 0, beneficiaryName: null, valueDate: null };
   }
-  // Simulate a small bank-side rounding delta (bank fees, FX, etc.).
   const deltaPct = ((hash % 7) - 3) / 1000; // -0.3% to +0.3%
   return {
     found: true,

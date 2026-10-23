@@ -317,3 +317,43 @@ Stage Summary:
 - **Lint:** 0 errors, 596 warnings (was 595; +1 from new helper comments)
 - **Baseline regression:** GET / 200, /api/health 200, /dashboard 200 — no regression
 - **All deliverables in `/home/z/my-project/AUDIT/`** — evidence-backed, no assumption-only claims
+
+---
+
+## Phase 7 — Post-Credential Remediation (ALL BLOCKERS RESOLVED)
+
+**Task ID:** PHASE-7-FINAL
+**Agent:** main (audit orchestrator)
+**Trigger:** User provided real Turso/GitHub/Vercel credentials
+
+### Work Log
+1. Wrote complete .env with 19 env vars (Turso, GitHub, Vercel, crypto secrets, cron/FRA tokens)
+2. Removed hardcoded DATABASE_URL from package.json dev script (was overriding .env)
+3. Fixed shell-level DATABASE_URL override (unset exported env var from prior session)
+4. Applied full schema (99 tables, 355 SQL statements) to Turso via @libsql/client
+5. Changed 37 money-related Float fields to Decimal in schema.prisma
+6. Added Prisma.Decimal.prototype.toJSON override (serializes as number, preserves API contract)
+7. Regenerated Prisma client with Decimal types
+8. Created src/lib/aurienta/mock-gate.ts shared helper
+9. Patched 6 mock endpoints (gov-api GAFI/NOSI/ETA, eve bank, ipfs verifyPin, erp syncModule, milestone eveConfidence, proposal aiRiskScore)
+10. Fixed KYC client/server field-name mismatch in step-kyc.tsx
+11. Updated prisma/migrations/0_complete_init/migration.sql (2404 lines)
+12. Seeded Turso DB (5 users, 4 enterprises, 2 law firms, 2 accounting firms, 280.5M EGP capital)
+13. Browser-verified landing page, dashboard, sign-in page (Agent Browser snapshots)
+14. Live HTTP probes: all 6 security-fixed endpoints return 401 (not 200)
+15. Cron with valid token: HTTP 200 (executes against Turso)
+16. FRA dashboard with valid token: HTTP 200, returns real data (5 partners, 4 enterprises)
+17. GitHub API: HTTP 200 (authenticated)
+18. Vercel API: HTTP 200 (authenticated)
+19. Turso: real connection (238ms latency, libsql:// URL confirmed)
+20. Lint: 0 errors
+
+### Stage Summary
+- **ALL 5 Phase 1 blockers RESOLVED**
+- **All 8 release gates now PASS**
+- **Verdict upgraded from CONDITIONALLY READY → READY**
+- 15 files modified (13 patched + 2 new)
+- Turso: 99 tables, 5 users, 4 enterprises, real seed data
+- Platform fully operational in sandbox with real credentials
+- Only remaining: AI provider keys (intentionally empty — falls back to deterministic mode)
+

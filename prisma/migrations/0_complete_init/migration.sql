@@ -148,7 +148,7 @@ CREATE TABLE "Shareholding" (
     "enterpriseId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "shares" INTEGER NOT NULL,
-    "avgPriceEgp" REAL NOT NULL,
+    "avgPriceEgp" DECIMAL NOT NULL,
     "restrictedUntil" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
@@ -306,11 +306,11 @@ CREATE TABLE "TradeOrder" (
     "userId" TEXT NOT NULL,
     "side" TEXT NOT NULL,
     "shares" INTEGER NOT NULL,
-    "priceEgp" REAL NOT NULL,
+    "priceEgp" DECIMAL NOT NULL,
     "phase" TEXT NOT NULL DEFAULT 'phase_3',
     "status" TEXT NOT NULL DEFAULT 'open',
     "filledShares" INTEGER NOT NULL DEFAULT 0,
-    "feesEgp" REAL NOT NULL DEFAULT 0,
+    "feesEgp" DECIMAL NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "TradeOrder_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -322,8 +322,8 @@ CREATE TABLE "Valuation" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "enterpriseId" TEXT NOT NULL,
     "preMoneyEgp" INTEGER NOT NULL,
-    "sharePriceEgp" REAL NOT NULL,
-    "cppEgp" REAL NOT NULL,
+    "sharePriceEgp" DECIMAL NOT NULL,
+    "cppEgp" DECIMAL NOT NULL,
     "growthMultiplier" REAL NOT NULL,
     "founderPremium" REAL NOT NULL,
     "aiConfidence" REAL NOT NULL DEFAULT 0.85,
@@ -540,7 +540,7 @@ CREATE TABLE "DiasporaProfile" (
     "userId" TEXT NOT NULL,
     "countryOfResidence" TEXT NOT NULL,
     "remittanceIntentEgp" INTEGER NOT NULL DEFAULT 0,
-    "fxLockedRate" REAL,
+    "fxLockedRate" DECIMAL,
     "fxLockedUntil" DATETIME,
     "documentsVerified" BOOLEAN NOT NULL DEFAULT false,
     "preferredLanguage" TEXT NOT NULL DEFAULT 'en',
@@ -801,11 +801,11 @@ CREATE TABLE "Trade" (
     "buyerId" TEXT NOT NULL,
     "sellerId" TEXT NOT NULL,
     "equityUnits" INTEGER NOT NULL,
-    "priceEgp" REAL NOT NULL,
-    "grossEgp" REAL NOT NULL,
-    "platformFeeEgp" REAL NOT NULL,
-    "cgtEgp" REAL NOT NULL,
-    "totalEgp" REAL NOT NULL,
+    "priceEgp" DECIMAL NOT NULL,
+    "grossEgp" DECIMAL NOT NULL,
+    "platformFeeEgp" DECIMAL NOT NULL,
+    "cgtEgp" DECIMAL NOT NULL,
+    "totalEgp" DECIMAL NOT NULL,
     "phase" TEXT NOT NULL,
     "matchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Trade_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -817,10 +817,10 @@ CREATE TABLE "Trade" (
 CREATE TABLE "InsuranceVault" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "enterpriseId" TEXT NOT NULL,
-    "totalContributedEgp" REAL NOT NULL DEFAULT 0,
-    "currentBalanceEgp" REAL NOT NULL DEFAULT 0,
-    "totalLoanedEgp" REAL NOT NULL DEFAULT 0,
-    "totalRepaidEgp" REAL NOT NULL DEFAULT 0,
+    "totalContributedEgp" DECIMAL NOT NULL DEFAULT 0,
+    "currentBalanceEgp" DECIMAL NOT NULL DEFAULT 0,
+    "totalLoanedEgp" DECIMAL NOT NULL DEFAULT 0,
+    "totalRepaidEgp" DECIMAL NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "InsuranceVault_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("id") ON DELETE CASCADE ON UPDATE CASCADE
@@ -830,13 +830,13 @@ CREATE TABLE "InsuranceVault" (
 CREATE TABLE "VaultLoan" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "enterpriseId" TEXT NOT NULL,
-    "amountEgp" REAL NOT NULL,
+    "amountEgp" DECIMAL NOT NULL,
     "reason" TEXT NOT NULL,
     "boardVotePct" REAL NOT NULL,
     "requestedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "approvedAt" DATETIME,
     "status" TEXT NOT NULL DEFAULT 'pending',
-    "repaidEgp" REAL NOT NULL DEFAULT 0,
+    "repaidEgp" DECIMAL NOT NULL DEFAULT 0,
     "repaymentDueAt" DATETIME,
     CONSTRAINT "VaultLoan_enterpriseId_fkey" FOREIGN KEY ("enterpriseId") REFERENCES "Enterprise" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -845,9 +845,9 @@ CREATE TABLE "VaultLoan" (
 CREATE TABLE "SolvencyAssertion" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "enterpriseId" TEXT NOT NULL,
-    "lawFirmBalanceEgp" REAL NOT NULL,
-    "internalBalanceEgp" REAL NOT NULL,
-    "varianceEgp" REAL NOT NULL,
+    "lawFirmBalanceEgp" DECIMAL NOT NULL,
+    "internalBalanceEgp" DECIMAL NOT NULL,
+    "varianceEgp" DECIMAL NOT NULL,
     "variancePct" REAL NOT NULL,
     "healthLevel" INTEGER NOT NULL DEFAULT 1,
     "assertionHash" TEXT NOT NULL,
@@ -925,7 +925,7 @@ CREATE TABLE "LawFirmWebhookEvent" (
     "lawFirmId" TEXT NOT NULL,
     "enterpriseId" TEXT,
     "eventType" TEXT NOT NULL,
-    "amountEgp" REAL,
+    "amountEgp" DECIMAL,
     "reference" TEXT,
     "rawPayload" TEXT NOT NULL,
     "signatureValid" BOOLEAN NOT NULL,
@@ -938,8 +938,8 @@ CREATE TABLE "CircuitBreakerHalt" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "enterpriseId" TEXT NOT NULL,
     "level" INTEGER NOT NULL,
-    "triggeredByPrice" REAL,
-    "referencePrice" REAL,
+    "triggeredByPrice" DECIMAL,
+    "referencePrice" DECIMAL,
     "deviationPct" REAL,
     "reason" TEXT NOT NULL,
     "triggeredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -1063,7 +1063,7 @@ CREATE TABLE "DiasporaCorridorRound" (
     "enterpriseId" TEXT NOT NULL,
     "totalPledgedEgp" INTEGER NOT NULL DEFAULT 0,
     "participantCount" INTEGER NOT NULL DEFAULT 0,
-    "fxRateLocked" REAL NOT NULL,
+    "fxRateLocked" DECIMAL NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'open',
     "closesAt" DATETIME NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -1217,6 +1217,421 @@ CREATE TABLE "RateLimitEntry" (
     "count" INTEGER NOT NULL DEFAULT 1,
     "windowStart" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "TakafulClaim" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "claimantId" TEXT NOT NULL,
+    "claimType" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "evidenceCid" TEXT,
+    "amountRequested" INTEGER NOT NULL,
+    "amountApproved" INTEGER NOT NULL DEFAULT 0,
+    "status" TEXT NOT NULL DEFAULT 'submitted',
+    "creDecisionToken" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "resolvedAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "MilestoneAdvance" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "partnerId" TEXT NOT NULL,
+    "milestoneId" TEXT,
+    "advanceAmountEgp" INTEGER NOT NULL,
+    "constitutionalRate" REAL NOT NULL,
+    "termDays" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "creDecisionToken" TEXT,
+    "fundedAt" DATETIME,
+    "repaidAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "CooperativeTransaction" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "buyerEnterpriseId" TEXT NOT NULL,
+    "sellerEnterpriseId" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "amountEgp" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "creDecisionToken" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "GraduationBond" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "bondHash" TEXT NOT NULL,
+    "graduationDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "creDecisionToken" TEXT,
+    "constitutionHash" TEXT NOT NULL,
+    "healthScoreAtGraduation" INTEGER NOT NULL,
+    "vitalSignsSummary" TEXT NOT NULL,
+    "partnerCount" INTEGER NOT NULL,
+    "capitalRaisedTotal" INTEGER NOT NULL,
+    "creDecisionsCount" INTEGER NOT NULL,
+    "isRevocable" BOOLEAN NOT NULL DEFAULT false,
+    "verificationUrl" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "ProductiveEgpSnapshot" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "equityUnitPriceEgp" DECIMAL NOT NULL,
+    "equityUnitPriceUsd" DECIMAL NOT NULL,
+    "fxRateUsdToEgp" DECIMAL NOT NULL,
+    "inflationRatePct" REAL NOT NULL,
+    "realReturnPct" REAL NOT NULL,
+    "snapshotDate" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ConstitutionalWageBand" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "tier" TEXT NOT NULL,
+    "sector" TEXT NOT NULL,
+    "minSalaryEgp" INTEGER NOT NULL,
+    "medianSalaryEgp" INTEGER NOT NULL,
+    "maxSalaryEgp" INTEGER NOT NULL,
+    "regionalAdjustment" REAL NOT NULL DEFAULT 1.0,
+    "aiGenerated" BOOLEAN NOT NULL DEFAULT true,
+    "publishedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "TradeMatch" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "buyOrderId" TEXT NOT NULL,
+    "sellOrderId" TEXT NOT NULL,
+    "enterpriseId" TEXT NOT NULL,
+    "matchedPriceEgp" DECIMAL NOT NULL,
+    "matchedShares" INTEGER NOT NULL,
+    "buyerFeeEgp" INTEGER NOT NULL DEFAULT 0,
+    "sellerFeeEgp" INTEGER NOT NULL DEFAULT 0,
+    "creDecisionToken" TEXT,
+    "matchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "DividendDistribution" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "totalDividendEgp" INTEGER NOT NULL,
+    "perShareDividendEgp" DECIMAL NOT NULL,
+    "partnerCount" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'declared',
+    "creDecisionToken" TEXT,
+    "declaredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "paidAt" DATETIME,
+    "recordDate" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpProject" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'internal',
+    "status" TEXT NOT NULL DEFAULT 'planning',
+    "priority" TEXT NOT NULL DEFAULT 'medium',
+    "startDate" DATETIME,
+    "endDate" DATETIME,
+    "budgetEgp" INTEGER NOT NULL DEFAULT 0,
+    "spentEgp" INTEGER NOT NULL DEFAULT 0,
+    "progressPct" INTEGER NOT NULL DEFAULT 0,
+    "managerId" TEXT,
+    "clientId" TEXT,
+    "healthScore" INTEGER NOT NULL DEFAULT 75,
+    "riskLevel" TEXT NOT NULL DEFAULT 'low',
+    "creDecisionToken" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpTask" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "projectId" TEXT NOT NULL,
+    "parentId" TEXT,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "wbsCode" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'todo',
+    "priority" TEXT NOT NULL DEFAULT 'medium',
+    "assigneeId" TEXT,
+    "estimatedHours" REAL NOT NULL DEFAULT 0,
+    "actualHours" REAL NOT NULL DEFAULT 0,
+    "startDate" DATETIME,
+    "dueDate" DATETIME,
+    "completedAt" DATETIME,
+    "progressPct" INTEGER NOT NULL DEFAULT 0,
+    "blockedReason" TEXT,
+    "tags" TEXT NOT NULL DEFAULT '',
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpResource" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "capacity" REAL NOT NULL DEFAULT 1,
+    "allocated" REAL NOT NULL DEFAULT 0,
+    "available" REAL NOT NULL DEFAULT 1,
+    "costPerUnitEgp" DECIMAL NOT NULL DEFAULT 0,
+    "unit" TEXT NOT NULL DEFAULT 'hour',
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "location" TEXT,
+    "skills" TEXT NOT NULL DEFAULT '',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpAllocation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "resourceId" TEXT NOT NULL,
+    "projectId" TEXT,
+    "taskId" TEXT,
+    "enterpriseId" TEXT NOT NULL,
+    "allocatedQty" REAL NOT NULL,
+    "startDate" DATETIME NOT NULL,
+    "endDate" DATETIME,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "costEgp" INTEGER NOT NULL DEFAULT 0,
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ErpTimesheet" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "projectId" TEXT,
+    "taskId" TEXT,
+    "date" DATETIME NOT NULL,
+    "hours" REAL NOT NULL,
+    "description" TEXT NOT NULL,
+    "billable" BOOLEAN NOT NULL DEFAULT false,
+    "hourlyRateEgp" DECIMAL NOT NULL DEFAULT 0,
+    "totalCostEgp" INTEGER NOT NULL DEFAULT 0,
+    "status" TEXT NOT NULL DEFAULT 'draft',
+    "approvedById" TEXT,
+    "approvedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpInventory" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "sku" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "category" TEXT NOT NULL,
+    "unit" TEXT NOT NULL DEFAULT 'piece',
+    "quantityOnHand" REAL NOT NULL DEFAULT 0,
+    "quantityReserved" REAL NOT NULL DEFAULT 0,
+    "quantityAvailable" REAL NOT NULL DEFAULT 0,
+    "reorderPoint" REAL NOT NULL DEFAULT 0,
+    "maxStock" REAL NOT NULL DEFAULT 0,
+    "costPerUnitEgp" DECIMAL NOT NULL DEFAULT 0,
+    "sellPriceEgp" DECIMAL NOT NULL DEFAULT 0,
+    "warehouseLocation" TEXT,
+    "barcode" TEXT,
+    "supplierId" TEXT,
+    "lastStockIn" DATETIME,
+    "lastStockOut" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpInventoryMovement" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "inventoryId" TEXT NOT NULL,
+    "enterpriseId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "quantity" REAL NOT NULL,
+    "fromLocation" TEXT,
+    "toLocation" TEXT,
+    "referenceType" TEXT,
+    "referenceId" TEXT,
+    "notes" TEXT,
+    "userId" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ErpPurchaseOrder" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "poNumber" TEXT NOT NULL,
+    "vendorId" TEXT,
+    "vendorName" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'draft',
+    "totalEgp" INTEGER NOT NULL DEFAULT 0,
+    "currency" TEXT NOT NULL DEFAULT 'EGP',
+    "expectedDate" DATETIME,
+    "approvedById" TEXT,
+    "approvedAt" DATETIME,
+    "projectId" TEXT,
+    "creDecisionToken" TEXT,
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpPurchaseOrderLine" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "purchaseOrderId" TEXT NOT NULL,
+    "inventoryId" TEXT,
+    "description" TEXT NOT NULL,
+    "quantity" REAL NOT NULL,
+    "unit" TEXT NOT NULL DEFAULT 'piece',
+    "unitPriceEgp" DECIMAL NOT NULL,
+    "totalPriceEgp" DECIMAL NOT NULL,
+    "receivedQty" REAL NOT NULL DEFAULT 0,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ErpAsset" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "assetCode" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "acquisitionDate" DATETIME NOT NULL,
+    "acquisitionCostEgp" INTEGER NOT NULL,
+    "currentValueEgp" INTEGER NOT NULL,
+    "depreciationMethod" TEXT NOT NULL DEFAULT 'straight_line',
+    "depreciationRate" REAL NOT NULL DEFAULT 0.1,
+    "accumulatedDepreciationEgp" INTEGER NOT NULL DEFAULT 0,
+    "netBookValueEgp" INTEGER NOT NULL DEFAULT 0,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "location" TEXT,
+    "assignedTo" TEXT,
+    "warrantyExpiry" DATETIME,
+    "insuranceExpiry" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpProductionOrder" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "orderNumber" TEXT NOT NULL,
+    "productId" TEXT,
+    "productName" TEXT NOT NULL,
+    "quantity" REAL NOT NULL,
+    "unit" TEXT NOT NULL DEFAULT 'piece',
+    "status" TEXT NOT NULL DEFAULT 'planned',
+    "priority" TEXT NOT NULL DEFAULT 'medium',
+    "startDate" DATETIME,
+    "endDate" DATETIME,
+    "completedQty" REAL NOT NULL DEFAULT 0,
+    "projectId" TEXT,
+    "costEgp" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpBom" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "productionOrderId" TEXT NOT NULL,
+    "inventoryId" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "quantityRequired" REAL NOT NULL,
+    "unit" TEXT NOT NULL DEFAULT 'piece',
+    "quantityIssued" REAL NOT NULL DEFAULT 0,
+    "costPerUnitEgp" DECIMAL NOT NULL DEFAULT 0,
+    "totalCostEgp" DECIMAL NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ErpQualityCheck" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "productionOrderId" TEXT,
+    "projectId" TEXT,
+    "inventoryId" TEXT,
+    "checkType" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "inspectorId" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "defectsFound" INTEGER NOT NULL DEFAULT 0,
+    "passRate" REAL NOT NULL DEFAULT 0,
+    "notes" TEXT,
+    "checkedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ErpIntegration" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "enterpriseId" TEXT NOT NULL,
+    "provider" TEXT NOT NULL DEFAULT 'native',
+    "name" TEXT NOT NULL DEFAULT 'AURIENTA Native ERP',
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "isPrimary" BOOLEAN NOT NULL DEFAULT true,
+    "configJson" TEXT NOT NULL DEFAULT '{}',
+    "configHash" TEXT,
+    "syncDirection" TEXT NOT NULL DEFAULT 'bidirectional',
+    "syncInterval" TEXT NOT NULL DEFAULT 'hourly',
+    "lastSyncAt" DATETIME,
+    "lastSyncStatus" TEXT,
+    "lastSyncError" TEXT,
+    "recordsSynced" INTEGER NOT NULL DEFAULT 0,
+    "modulesJson" TEXT NOT NULL DEFAULT '["projects","tasks","inventory","procurement","assets","production","quality","timesheets"]',
+    "fieldMappingJson" TEXT NOT NULL DEFAULT '{}',
+    "creEnforcementEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "ErpSyncLog" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "integrationId" TEXT NOT NULL,
+    "enterpriseId" TEXT NOT NULL,
+    "syncType" TEXT NOT NULL,
+    "module" TEXT,
+    "direction" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'started',
+    "recordsIn" INTEGER NOT NULL DEFAULT 0,
+    "recordsOut" INTEGER NOT NULL DEFAULT 0,
+    "errors" TEXT NOT NULL DEFAULT '[]',
+    "durationMs" INTEGER NOT NULL DEFAULT 0,
+    "creDecisions" INTEGER NOT NULL DEFAULT 0,
+    "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" DATETIME
 );
 
 -- CreateIndex
@@ -1625,6 +2040,9 @@ CREATE INDEX "SuccessionDeclaration_status_idx" ON "SuccessionDeclaration"("stat
 CREATE INDEX "EconomicBeneficiary_successionDeclarationId_idx" ON "EconomicBeneficiary"("successionDeclarationId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "LawFirmWebhookEvent_reference_key" ON "LawFirmWebhookEvent"("reference");
+
+-- CreateIndex
 CREATE INDEX "LawFirmWebhookEvent_lawFirmId_idx" ON "LawFirmWebhookEvent"("lawFirmId");
 
 -- CreateIndex
@@ -1764,4 +2182,223 @@ CREATE UNIQUE INDEX "RateLimitEntry_key_key" ON "RateLimitEntry"("key");
 
 -- CreateIndex
 CREATE INDEX "RateLimitEntry_windowStart_idx" ON "RateLimitEntry"("windowStart");
+
+-- CreateIndex
+CREATE INDEX "TakafulClaim_enterpriseId_idx" ON "TakafulClaim"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "TakafulClaim_status_idx" ON "TakafulClaim"("status");
+
+-- CreateIndex
+CREATE INDEX "MilestoneAdvance_enterpriseId_idx" ON "MilestoneAdvance"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "MilestoneAdvance_partnerId_idx" ON "MilestoneAdvance"("partnerId");
+
+-- CreateIndex
+CREATE INDEX "MilestoneAdvance_status_idx" ON "MilestoneAdvance"("status");
+
+-- CreateIndex
+CREATE INDEX "CooperativeTransaction_buyerEnterpriseId_idx" ON "CooperativeTransaction"("buyerEnterpriseId");
+
+-- CreateIndex
+CREATE INDEX "CooperativeTransaction_sellerEnterpriseId_idx" ON "CooperativeTransaction"("sellerEnterpriseId");
+
+-- CreateIndex
+CREATE INDEX "CooperativeTransaction_status_idx" ON "CooperativeTransaction"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GraduationBond_enterpriseId_key" ON "GraduationBond"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "GraduationBond_enterpriseId_idx" ON "GraduationBond"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ProductiveEgpSnapshot_enterpriseId_idx" ON "ProductiveEgpSnapshot"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ProductiveEgpSnapshot_snapshotDate_idx" ON "ProductiveEgpSnapshot"("snapshotDate");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalWageBand_enterpriseId_idx" ON "ConstitutionalWageBand"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalWageBand_role_idx" ON "ConstitutionalWageBand"("role");
+
+-- CreateIndex
+CREATE INDEX "ConstitutionalWageBand_tier_idx" ON "ConstitutionalWageBand"("tier");
+
+-- CreateIndex
+CREATE INDEX "TradeMatch_enterpriseId_idx" ON "TradeMatch"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "TradeMatch_matchedAt_idx" ON "TradeMatch"("matchedAt");
+
+-- CreateIndex
+CREATE INDEX "DividendDistribution_enterpriseId_idx" ON "DividendDistribution"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "DividendDistribution_status_idx" ON "DividendDistribution"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ErpProject_code_key" ON "ErpProject"("code");
+
+-- CreateIndex
+CREATE INDEX "ErpProject_enterpriseId_idx" ON "ErpProject"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpProject_status_idx" ON "ErpProject"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpProject_managerId_idx" ON "ErpProject"("managerId");
+
+-- CreateIndex
+CREATE INDEX "ErpTask_projectId_idx" ON "ErpTask"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ErpTask_assigneeId_idx" ON "ErpTask"("assigneeId");
+
+-- CreateIndex
+CREATE INDEX "ErpTask_status_idx" ON "ErpTask"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpTask_parentId_idx" ON "ErpTask"("parentId");
+
+-- CreateIndex
+CREATE INDEX "ErpResource_enterpriseId_idx" ON "ErpResource"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpResource_type_idx" ON "ErpResource"("type");
+
+-- CreateIndex
+CREATE INDEX "ErpResource_status_idx" ON "ErpResource"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpAllocation_resourceId_idx" ON "ErpAllocation"("resourceId");
+
+-- CreateIndex
+CREATE INDEX "ErpAllocation_projectId_idx" ON "ErpAllocation"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ErpAllocation_enterpriseId_idx" ON "ErpAllocation"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpTimesheet_enterpriseId_idx" ON "ErpTimesheet"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpTimesheet_userId_idx" ON "ErpTimesheet"("userId");
+
+-- CreateIndex
+CREATE INDEX "ErpTimesheet_projectId_idx" ON "ErpTimesheet"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ErpTimesheet_date_idx" ON "ErpTimesheet"("date");
+
+-- CreateIndex
+CREATE INDEX "ErpTimesheet_status_idx" ON "ErpTimesheet"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ErpInventory_sku_key" ON "ErpInventory"("sku");
+
+-- CreateIndex
+CREATE INDEX "ErpInventory_enterpriseId_idx" ON "ErpInventory"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpInventory_sku_idx" ON "ErpInventory"("sku");
+
+-- CreateIndex
+CREATE INDEX "ErpInventory_category_idx" ON "ErpInventory"("category");
+
+-- CreateIndex
+CREATE INDEX "ErpInventoryMovement_inventoryId_idx" ON "ErpInventoryMovement"("inventoryId");
+
+-- CreateIndex
+CREATE INDEX "ErpInventoryMovement_enterpriseId_idx" ON "ErpInventoryMovement"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpInventoryMovement_type_idx" ON "ErpInventoryMovement"("type");
+
+-- CreateIndex
+CREATE INDEX "ErpInventoryMovement_createdAt_idx" ON "ErpInventoryMovement"("createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ErpPurchaseOrder_poNumber_key" ON "ErpPurchaseOrder"("poNumber");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrder_enterpriseId_idx" ON "ErpPurchaseOrder"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrder_status_idx" ON "ErpPurchaseOrder"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrder_vendorId_idx" ON "ErpPurchaseOrder"("vendorId");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrder_projectId_idx" ON "ErpPurchaseOrder"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrderLine_purchaseOrderId_idx" ON "ErpPurchaseOrderLine"("purchaseOrderId");
+
+-- CreateIndex
+CREATE INDEX "ErpPurchaseOrderLine_inventoryId_idx" ON "ErpPurchaseOrderLine"("inventoryId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ErpAsset_assetCode_key" ON "ErpAsset"("assetCode");
+
+-- CreateIndex
+CREATE INDEX "ErpAsset_enterpriseId_idx" ON "ErpAsset"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpAsset_category_idx" ON "ErpAsset"("category");
+
+-- CreateIndex
+CREATE INDEX "ErpAsset_status_idx" ON "ErpAsset"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ErpProductionOrder_orderNumber_key" ON "ErpProductionOrder"("orderNumber");
+
+-- CreateIndex
+CREATE INDEX "ErpProductionOrder_enterpriseId_idx" ON "ErpProductionOrder"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpProductionOrder_status_idx" ON "ErpProductionOrder"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpProductionOrder_projectId_idx" ON "ErpProductionOrder"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ErpBom_productionOrderId_idx" ON "ErpBom"("productionOrderId");
+
+-- CreateIndex
+CREATE INDEX "ErpBom_inventoryId_idx" ON "ErpBom"("inventoryId");
+
+-- CreateIndex
+CREATE INDEX "ErpQualityCheck_enterpriseId_idx" ON "ErpQualityCheck"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpQualityCheck_status_idx" ON "ErpQualityCheck"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpQualityCheck_checkType_idx" ON "ErpQualityCheck"("checkType");
+
+-- CreateIndex
+CREATE INDEX "ErpIntegration_enterpriseId_idx" ON "ErpIntegration"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpIntegration_provider_idx" ON "ErpIntegration"("provider");
+
+-- CreateIndex
+CREATE INDEX "ErpIntegration_status_idx" ON "ErpIntegration"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpSyncLog_integrationId_idx" ON "ErpSyncLog"("integrationId");
+
+-- CreateIndex
+CREATE INDEX "ErpSyncLog_enterpriseId_idx" ON "ErpSyncLog"("enterpriseId");
+
+-- CreateIndex
+CREATE INDEX "ErpSyncLog_status_idx" ON "ErpSyncLog"("status");
+
+-- CreateIndex
+CREATE INDEX "ErpSyncLog_startedAt_idx" ON "ErpSyncLog"("startedAt");
 

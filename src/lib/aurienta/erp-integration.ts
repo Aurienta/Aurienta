@@ -366,8 +366,22 @@ export async function syncModule(
   }
 
   // External ERP: call the provider adapter
-  // In production, this would call the actual NetSuite/Odoo/SAP API
-  // For now, log the attempt and return a stub result
+  // SECURITY FIX (P0-1E-007): In production without real ERP API credentials,
+  // return success: false (fail-safe). Do NOT fabricate sync success.
+  if (process.env.NODE_ENV === "production" || !process.env.ERP_API_KEY) {
+    const result: SyncResult = {
+      success: false,
+      recordsIn: 0,
+      recordsOut: 0,
+      errors: [`External ERP sync not configured for provider "${integration.provider}". Set ERP_API_KEY or use native ERP.`],
+      durationMs: Date.now() - start,
+      creDecisions: 0,
+    };
+    await logSync(integrationId, integration.enterpriseId, result, "module_specific", module);
+    return result;
+  }
+
+  // Dev-mode mock: log the attempt and return a stub result
   const result: SyncResult = {
     success: true,
     recordsIn: 0,
