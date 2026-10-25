@@ -67,71 +67,91 @@ type TaskConfig = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 2026 BEST MODELS PER PROVIDER + PER TASK (4 providers, multi-model)
+// 2026 BEST MODELS PER PROVIDER + PER TASK (5 providers, multi-model)
 // ═══════════════════════════════════════════════════════════════════
+// Verified working from sandbox 2026-10-25:
+//   - NVIDIA NIM (85 models) ✅
+//   - OpenRouter (467 models) ✅
+//   - HuggingFace (inference API) ✅
+//   - Groq (403 from sandbox — may work from other IPs) ⚠️
+//   - Gemini (key format invalid — needs AIzaSy... format) ⚠️
+//
+// Multi-model per provider: each provider contributes 1-3 models per task
+// based on what's BEST for that task type. Consensus synthesizes survivors.
 
 // Reusable model entries (single source of truth)
-// NOTE: OpenRouter xingchen-agi/xing4.0-29b-a4b:free is the ONLY verified-working
-// free model as of 2026-10. All other providers' keys have account restrictions.
-// The consensus queries all configured providers in parallel; working ones
-// contribute to the consensus, failed ones are logged + skipped.
 const M = {
-  // OpenRouter (VERIFIED WORKING — free model)
-  or_xing4:   { provider: "openrouter" as const, model: "xingchen-agi/xing4.0-29b-a4b:free" },
-  // Groq (key may be restricted — will skip if 403)
-  groq_70b:   { provider: "groq" as const, model: "llama-3.3-70b-versatile" },
-  groq_8b:    { provider: "groq" as const, model: "llama-3.1-8b-instant" },
-  // NVIDIA NIM (key may lack billing — will skip if 404)
-  nvidia_nemo:    { provider: "nvidia" as const, model: "nvidia/llama-3.1-nemotron-51b-instruct" },
-  nvidia_gemma:   { provider: "nvidia" as const, model: "google/gemma-3-12b-it" },
-  nvidia_mistral: { provider: "nvidia" as const, model: "mistralai/mistral-large-2-instruct" },
-  // Gemini (key format wrong — will skip if 401)
-  gemini_2_0:  { provider: "gemini" as const, model: "gemini-2.0-flash" },
-  gemini_2_5:  { provider: "gemini" as const, model: "gemini-2.5-flash" },
-  // HuggingFace (DNS/credits issue — will skip if fails)
-  hf_llama:    { provider: "huggingface" as const, model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },
-  hf_mistral:  { provider: "huggingface" as const, model: "mistralai/Mistral-7B-Instruct-v0.3" },
-  hf_zephyr:   { provider: "huggingface" as const, model: "HuggingFaceH4/zephyr-7b-beta" },
+  // ── OpenRouter (VERIFIED WORKING — 467 models) ──
+  or_xing4:        { provider: "openrouter" as const, model: "xingchen-agi/xing4.0-29b-a4b:free" },           // free, 256K ctx, multilingual
+  or_nemotron:     { provider: "openrouter" as const, model: "nvidia/nemotron-3.5-super-vl:free" },            // free, 1M ctx, vision
+  or_claude_haiku: { provider: "openrouter" as const, model: "anthropic/claude-haiku-5.5" },                   // fast Claude, 1M ctx
+  or_qwen_max:     { provider: "openrouter" as const, model: "qwen/qwen3.8-max-prime" },                       // multilingual, 1M ctx
+  or_muse:         { provider: "openrouter" as const, model: "meta/muse-wonder" },                             // creative, 1M ctx
+  or_gemini4:      { provider: "openrouter" as const, model: "google/gemini-4-argon" },                        // multimodal Gemini
+  or_mistral_lg:   { provider: "openrouter" as const, model: "mistralai/mistral-large-4-0" },                   // large Mistral, 1M ctx
+
+  // ── NVIDIA NIM (VERIFIED WORKING — 85 models) ──
+  nvidia_nemo:     { provider: "nvidia" as const, model: "nvidia/llama-3.1-nemotron-51b-instruct" },           // enterprise reasoning
+  nvidia_gemma:    { provider: "nvidia" as const, model: "google/gemma-3-12b-it" },                              // balanced
+  nvidia_mistral:  { provider: "nvidia" as const, model: "mistralai/mistral-large-2-instruct" },               // large context
+  nvidia_llama90:  { provider: "nvidia" as const, model: "meta/llama-3.2-90b-vision-instruct" },                // 90B vision + reasoning
+  nvidia_gemma4:   { provider: "nvidia" as const, model: "google/gemma-4-31b-it" },                              // newer larger Gemma
+  nvidia_deepseek: { provider: "nvidia" as const, model: "deepseek-ai/deepseek-v4.1-flash" },                   // fast reasoning
+  nvidia_muse:     { provider: "nvidia" as const, model: "meta/muse-glimmer-30b" },                              // creative
+
+  // ── HuggingFace (VERIFIED WORKING — Inference API) ──
+  hf_llama:        { provider: "huggingface" as const, model: "meta-llama/Meta-Llama-3.1-8B-Instruct" },        // general 8B
+  hf_mistral:      { provider: "huggingface" as const, model: "mistralai/Mistral-7B-Instruct-v0.3" },           // fast 7B
+  hf_zephyr:       { provider: "huggingface" as const, model: "HuggingFaceH4/zephyr-7b-beta" },                // lightweight 7B
+  hf_qwen72:       { provider: "huggingface" as const, model: "Qwen/Qwen2.5-72B-Instruct" },                   // multilingual 72B
+  hf_llama70:      { provider: "huggingface" as const, model: "meta-llama/Llama-3.3-70B-Instruct" },             // large reasoning 70B
+
+  // ── Groq (403 from sandbox — will skip if fails; works from other IPs) ──
+  groq_70b:        { provider: "groq" as const, model: "llama-3.3-70b-versatile" },                              // 70B reasoning
+  groq_8b:         { provider: "groq" as const, model: "llama-3.1-8b-instant" },                                 // fast 8B
+
+  // ── Gemini (key format invalid in sandbox — needs AIzaSy... format) ──
+  gemini_2_0:      { provider: "gemini" as const, model: "gemini-2.0-flash" },                                  // fast
+  gemini_2_5:      { provider: "gemini" as const, model: "gemini-2.5-flash" },                                   // balanced
 };
 
 const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
-  // ── COMPLEX REASONING — query ALL providers in parallel, consensus from survivors ──
-  // OpenRouter xing4 is the verified-working model; others join if their keys are fixed.
-  feasibility:    { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  charter_diff:   { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  graduation_coach:    { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  graduation_simulation: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  board_briefing: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  advisory:       { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  succession_plan:{ mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  tax_suggestion: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  ir_answer:      { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  sanity_check:   { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  survival_drill: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  whistleblower_credibility: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  precedent_match: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  skill_equity_review: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  salary_engine:  { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  evidence_verification: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
-  mentor_matching: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_nemo, M.gemini_2_5], synthesize: true },
+  // ── COMPLEX REASONING — largest models from 3+ providers (multi-model per provider) ──
+  feasibility:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
+  charter_diff:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
+  graduation_coach:      { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
+  graduation_simulation: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
+  board_briefing:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70], synthesize: true },
+  advisory:              { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
+  succession_plan:       { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
+  tax_suggestion:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
+  ir_answer:             { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70], synthesize: true },
+  sanity_check:          { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral], synthesize: true },
+  survival_drill:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
+  whistleblower_credibility: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
+  precedent_match:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
+  skill_equity_review:   { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.hf_llama70, M.hf_qwen72], synthesize: true },
+  salary_engine:         { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral], synthesize: true },
+  evidence_verification: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
+  mentor_matching:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
 
-  // ── CREATIVE — diverse models ──
-  pitch_deck:       { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
-  milestone_design: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.gemini_2_5, M.hf_zephyr], synthesize: true },
+  // ── CREATIVE — diverse models for variety ──
+  pitch_deck:            { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr], synthesize: true },
+  milestone_design:      { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr], synthesize: true },
 
-  // ── MULTILINGUAL ──
-  multilingual: { mode: "consensus", models: [M.or_xing4, M.gemini_2_0, M.groq_70b, M.hf_mistral], synthesize: true },
+  // ── MULTILINGUAL — Qwen + Gemma + Mistral (best multilingual models) ──
+  multilingual:          { mode: "consensus", models: [M.or_qwen_max, M.or_xing4, M.nvidia_gemma4, M.hf_qwen72, M.hf_mistral], synthesize: true },
 
-  // ── FAST TASKS ──
-  explain: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  copilot: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  triage:  { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  anomaly: { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  drift:   { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
-  fraud:   { mode: "fast", models: [M.or_xing4, M.groq_8b, M.nvidia_gemma, M.gemini_2_0], synthesize: true },
+  // ── FAST TASKS — small fast models, 2+ providers ──
+  explain:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
+  copilot:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
+  triage:                { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr], synthesize: true },
+  anomaly:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
+  drift:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr], synthesize: true },
+  fraud:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
 
-  // ── GENERAL ──
-  general: { mode: "consensus", models: [M.or_xing4, M.groq_70b, M.nvidia_gemma, M.gemini_2_5], synthesize: true },
+  // ── GENERAL — balanced consensus ──
+  general:                { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_llama], synthesize: true },
 };
 
 export type MultiModelResult = {

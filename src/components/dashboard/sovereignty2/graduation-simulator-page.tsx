@@ -105,7 +105,7 @@ export function GraduationSimulatorPage({ enterprises, initialEnterpriseId }: Si
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/20 bg-gold/8 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-wider text-gold/80">
-                <Sparkles className="h-3 w-3" /> Graduation Simulator · glm-4.6
+                <Sparkles className="h-3 w-3" /> Graduation Simulator · multi-model consensus
               </span>
               <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/85">
                 <Clock className="h-3 w-3" /> {timeAgo(new Date(data.generatedAt))}

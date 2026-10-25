@@ -289,7 +289,7 @@ export function ConstitutionAssistant() {
                 <ShieldCheck className="h-3 w-3" /> Ledger-immutable · AiArtifact
               </span>
               <span className="font-mono text-[11px] text-muted-foreground/80">
-                model · glm-4.6 · multilingual_explain
+                model · multi-model consensus · multilingual_explain
               </span>
             </div>
           </motion.section>

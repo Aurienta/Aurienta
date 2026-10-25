@@ -125,7 +125,7 @@ export function BoardBriefingsPage({
             <div className="relative flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/20 bg-gold/8 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-wider text-gold/80">
-                  <FileText className="h-3 w-3" /> Board Briefing · glm-4.6
+                  <FileText className="h-3 w-3" /> Board Briefing · multi-model consensus
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/85">
                   <Clock className="h-3 w-3" /> {timeAgo(new Date(data.generatedAt))}

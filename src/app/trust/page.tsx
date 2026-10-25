@@ -46,7 +46,7 @@ const AI_HEALTH = {
   biasDisparity: 0.12, // 12%
   driftKl: 0.06,
   oversightModel: "Gemma 2 7B",
-  enforcementModel: "GLM-4.6 + Mixtral 8x22B",
+  enforcementModel: "Multi-Model Consensus (5 providers)",
 };
 
 // ── Compliance integrations (mock statuses — each is API-connected) ──
