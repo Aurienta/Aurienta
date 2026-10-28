@@ -30,12 +30,16 @@ export const GET = withErrorHandler(async () => {
   const dbStart = Date.now();
   try {
     await db.user.count();
+    // FIX (COO-AUDIT P3): dynamically count models from Prisma client instead of hardcoding "56"
+    const modelCount = Object.keys(db).filter(k =>
+      !k.startsWith("_") && !k.startsWith("$") && typeof (db as any)[k]?.findMany === "function"
+    ).length;
     platforms.turso = {
       status: "connected",
       latencyMs: Date.now() - dbStart,
       url: process.env.DATABASE_URL?.replace(/\/\/.*@/, "//***:***@") ?? "not-set",
-      models: 56,
-      note: "Primary database (libSQL). 56 models, 109+ indexes.",
+      models: modelCount,
+      note: `Primary database (libSQL). ${modelCount} models, 200+ indexes.`,
     };
   } catch (e) {
     platforms.turso = {

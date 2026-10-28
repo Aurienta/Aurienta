@@ -19,7 +19,14 @@ export const dynamic = "force-dynamic";
 // This exposes the CRE as a runtime engine endpoint — external systems can
 // ask "would this action be constitutional?" and get a signed verdict.
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const body = await req.json();
+  // FIX (COO-AUDIT P2): safe body parse — return 400 on malformed JSON instead of 500
+  const body = await req.json().catch(() => null);
+  if (!body || typeof body !== "object") {
+    return NextResponse.json(
+      { error: "Bad request — JSON body required: { policy: string, params: object }" },
+      { status: 400 }
+    );
+  }
   const { policy, params } = body;
 
   if (!policy || !params) {

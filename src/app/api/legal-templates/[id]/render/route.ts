@@ -12,7 +12,14 @@ export const POST = withErrorHandler(async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const { id } = await params;
-  const body = await req.json();
+  // FIX (COO-AUDIT P2): safe body parse — return 400 on malformed JSON instead of 500
+  const body = await req.json().catch(() => null);
+  if (!body || typeof body !== "object") {
+    return NextResponse.json(
+      { error: "Bad request — JSON body required with { variables: {...} }" },
+      { status: 400 }
+    );
+  }
   const variables = body.variables ?? {};
 
   const { renderTemplate } = await import("@/lib/aurienta/legal-templates");

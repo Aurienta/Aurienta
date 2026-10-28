@@ -47,10 +47,19 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    parsed = bodySchema.parse(await req.json());
-  } catch {
+  // FIX (COO-AUDIT P2): distinguish empty body (valid) from malformed JSON (invalid)
+  const rawBody = await req.text();
+  if (rawBody.trim() === "") {
     parsed = {};
+  } else {
+    try {
+      parsed = bodySchema.parse(JSON.parse(rawBody));
+    } catch {
+      return NextResponse.json(
+        { error: "Bad request — invalid JSON body. Expected: { email?: string }" },
+        { status: 400 }
+      );
+    }
   }
 
   // If email provided, scope allowCredentials to that user. If the email
