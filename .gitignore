@@ -71,3 +71,10 @@ agent-ctx/
 blueprint-src/
 backups/
 cloudflare-config.md
+
+# ── Local-only tooling (not part of the app repo) ──
+/skills/
+/.zscripts/
+/mini-services/
+/audit-screenshots/
+/screenshots/

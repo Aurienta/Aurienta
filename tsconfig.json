@@ -38,6 +38,7 @@
   ],
   "exclude": [
     "node_modules",
+    "docs",
     "examples",
     "mini-services",
     "scripts",
@@ -45,6 +46,8 @@
     "upload",
     "tool-results",
     "skills",
+    "agent-ctx",
+    ".zscripts",
     "src/lib/__tests__"
   ]
 }

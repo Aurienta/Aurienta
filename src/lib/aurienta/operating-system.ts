@@ -12,7 +12,7 @@
 //   - Institutional Architecture (institutional-architecture.ts)
 //   - Governance v1.0 (institutional-governance.ts)
 //   - Enterprise Risk & Compliance (enterprise-risk-security.ts)
-//   - Blueprint (download/AURIENTA_Blueprint_Modified.docx)
+//   - Blueprint (docs/blueprint/AURIENTA_Blueprint_Modified.docx)
 //
 // No contradictions permitted. Every process, SOP, and workflow uses
 // approved constitutional terminology and respects the 3-entity

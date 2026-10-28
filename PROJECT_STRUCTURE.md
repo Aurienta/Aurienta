@@ -1,75 +1,94 @@
-# AURIENTA — Project Structure Snapshot
-## Date: October 2026 (Modified Implementation Roadmap Complete)
+# AURIENTA — Project Structure
 
-## Inventory (Final)
-| Metric | Count |
-|--------|-------|
-| TSX files | 393 |
-| TS files | 267 |
-| Total TS/TSX | 660 |
-| API routes | 171 |
-| Dashboard pages | 101 |
-| Prisma models | 73 |
-| Lib modules | 77 |
-| CRE functions | 39 |
-| AI providers | 5 (11 models) |
-| Platforms | 5 (GitHub, Vercel, Turso, Inngest, Neon) |
+**Last reorganized:** 2026-10-28 (COO/CTO/PM full-platform reorganization)
+**Purpose:** Single source of truth for where everything lives. No fragmentation.
 
-## Modified Implementation Roadmap (15 features — all compliance-cleared)
+---
 
-### Phase 1: Safe Revenue-Generating
-1. Enterprise Discovery Engine — `/dashboard/enterprise-discovery`
-2. Profit-Sharing Agreements — `/dashboard/profit-sharing`
-3. Governance-as-a-Service — `/dashboard/gaas`
+## Root layout
 
-### Phase 2: Market Expansion
-4. Standalone Succession Protocol — `/dashboard/standalone-succession`
-5. Diaspora Corridor (embedded in standalone-succession)
-6. Real-Economy Index (AREI) — `/dashboard/arei`
+```
+/ (root)
+├── src/                        # Application code (Next.js 16 App Router)
+│   ├── app/                    # Routes: 135 pages + 215 API endpoints
+│   │   ├── (public)/           # Landing, signin, register, legal, trust
+│   │   ├── dashboard/          # 118 authenticated dashboard pages
+│   │   └── api/                # 215 API route handlers
+│   ├── components/             # 289 React components (shadcn/ui + custom)
+│   │   ├── ui/                 # shadcn/ui primitives (do not edit)
+│   │   ├── dashboard/          # Dashboard feature components
+│   │   ├── landing/            # Landing page components
+│   │   └── ultra/              # GPU-accelerated Three.js components
+│   ├── lib/                    # 100 modules
+│   │   ├── db.ts               # Prisma client (Turso adapter)
+│   │   └── aurienta/           # 94 platform modules (CRE, ERP, AI router…)
+│   └── hooks/                  # React hooks
+│
+├── prisma/                     # Database
+│   ├── schema.prisma           # 99 models
+│   ├── migrations/             # Migration history
+│   └── seed.ts                 # Demo data seeder
+│
+├── public/                     # Static assets (favicon, images)
+│
+├── docs/                       # ALL documentation (single home)
+│   ├── blueprint/              # Authoritative platform blueprint + amendments
+│   ├── legal/                  # Legal agreement documents (.docx)
+│   ├── audit/
+│   │   ├── 2026-10-master/     # Master audit cycle (Phases 1–8 + COO audit)
+│   │   │   ├── registers/      # Phase 1 registers (routes/API/DB/AI/mocks)
+│   │   │   ├── coo-audit/      # COO end-to-end audit + stress test data
+│   │   │   └── screenshots/    # Current-cycle evidence screenshots
+│   │   ├── reports/            # 21 historical audit reports (Oct 12–22)
+│   │   └── registers/          # 7 CSV registers (wiring, roles, screens…)
+│   ├── guides/                 # DEPLOYMENT.md, PLATFORM_HARMONY.md
+│   ├── examples/               # websocket demo code
+│   └── worklog.md              # Cumulative engineering worklog (2.2 MB)
+│
+├── scripts/                    # Operational scripts (all executable via bun)
+│   ├── db/                     # DB ops (apply-schema, turso-setup, seed…)
+│   ├── audit/                  # DB audit scanners
+│   ├── ops/                    # Backup, restore, keepalive, prewarm, CI checks
+│   └── blueprint/              # Historical blueprint generators
+│
+├── .github/                    # CI (lint + typecheck + build + security scans)
+│
+└── (config files)              # package.json, tsconfig, eslint, tailwind,
+                                # next.config, prisma.config, vercel.json,
+                                # components.json, Caddyfile, .env.example
+```
 
-### Phase 3: Creative Innovations
-7. Constitutional Endorsement — `/dashboard/endorsements`
-8. Predictive Enterprise Genome — `/dashboard/genome`
-9. Quadratic Voting — `/dashboard/quadratic-voting`
-10. Constitutional Zeitgeist — `/dashboard/zeitgeist`
-11. STS Priority Allocation — `/dashboard/priority-allocation`
+## What was reorganized (2026-10-28)
 
-### Phase 4: Infrastructure
-12. AI Consensus Oracle — `/dashboard/oracle`
-13. Risk Profile API — `/dashboard/risk-profile`
-14. Soulbound Credentials — `/dashboard/soulbound`
-15. Offline CRE / PWA — lib + manifest + service worker
+| Before | After | Why |
+|---|---|---|
+| 30 audit/report files in root | `docs/audit/reports/` + `docs/audit/registers/` | Root was unreadable; reports now grouped |
+| `AUDIT/` (46 files, mixed cycles) | `docs/audit/2026-10-master/` | Current audit cycle, clearly dated |
+| `screenshots/` (189 files, 67 MB) | Removed (backed up to `.backups/`) | Stale evidence; repo leaner by 67 MB |
+| `audit-screenshots/` (53 files, 18 MB) | Removed (backed up to `.backups/`) | Stale evidence |
+| `skills/` (1075 files) | Untracked (local-only) | Dev tooling, not app code — 42% of repo weight |
+| `agent-ctx/`, `.zscripts/` | Untracked (local-only) | Sandbox-local working files |
+| `download/*.docx` | `docs/blueprint/` + `docs/legal/` | Documents belong in docs |
+| `scripts/` (26 flat files) | `scripts/{db,audit,ops,blueprint}/` | Grouped by purpose |
+| `worklog.md` (root, 2.2 MB) | `docs/worklog.md` | Documentation home |
+| `Dockerfile` | Deleted | Unused — Vercel is the deploy target |
+| `examples/` | `docs/examples/` | Reference code belongs in docs |
+| `keepalive.sh` (root) | `scripts/ops/` | Ops script grouping |
 
-## Constitutional Rules Preserved (ALL features)
-- Zero Custody (I-1.1): No fund holding
-- No Speculation (I-1.3): No derivatives
-- Uniform Fee (I-1.4): 5% + 2.5% only
-- Real Economy (I-1.8): No financial speculation
-- Anti-Capture: No shareholder ≥50%
+## Rules going forward
 
-## NEVER-BUILT (would breach Egyptian law)
-- ❌ Auto-diversification (fund management)
-- ❌ Auto-debit (deposit-taking)
-- ❌ Bond issuance (securities CML 95/1992)
-- ❌ Insurance underwriting (FRA Law 10/1981)
-- ❌ Lottery allocation (Gambling Law 10/1956)
-- ❌ Tradeable NFTs (securities classification)
+1. **No new files in root.** New reports → `docs/audit/reports/`. New ops scripts → `scripts/ops/`.
+2. **`src/` is route-driven.** Next.js App Router conventions apply — page.tsx/route.ts placement is non-negotiable.
+3. **Screenshots are evidence, not repo content.** Store in `.backups/` or the current audit cycle folder only; never commit 100+ MB of images.
+4. **The blueprint is authoritative.** `docs/blueprint/BLUEPRINT_VERSION.json` tracks the canonical version. All implementation references cite volume/section.
+5. **Local-only tooling stays local.** `skills/`, `.zscripts/`, `agent-ctx/` are gitignored — never commit them.
 
-## Platform Status
-- GitHub: ✅ connected (github.com/Aurienta/Aurienta, main branch)
-- Vercel: ✅ connected (aurienta.vercel.app, HTTP 200)
-- Turso: ⚠️ token expired (needs refresh at app.turso.app)
-- Inngest: ⚠️ sandbox mode (5 workflows defined)
-- Neon: configured (auto-failover to Turso)
+## Cloud topology
 
-## Demo Users (password: aurienta2026)
-- layla@streetbites.eg — Capital Partner + Founding Operator
-- ahmed@ecopack.eg — Founding Operator + Manager
-- sarah@investor.eg — Capital Partner
-- mohamed@smartfarm.eg — Founding Operator (graduated)
-- khalil@holding.eg — Company Owner + Board
+```
+GitHub (Aurienta/Aurienta)  →  source of truth; push triggers CI
+Vercel (aurienta.vercel.app) →  auto-deploy from main; env vars managed in dashboard
+Turso (aurienta-fortleem)    →  primary DB (libsql, 99 tables)
+```
 
-## Git State
-- Latest commit: aebf1bb (on origin/main)
-- Canonical tag: v-modified-roadmap-complete
-- Old tags deleted (rollback prevention)
+All three verified in harmony — see `docs/audit/2026-10-master/PHASE-7-REMEDIATION-REPORT.md`.

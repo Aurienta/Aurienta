@@ -11,7 +11,7 @@
 //   - Governance v1.0 (institutional-governance.ts)
 //   - Enterprise Risk & Compliance (enterprise-risk-security.ts)
 //   - AURIENTA Operating System v1.0 (operating-system.ts)
-//   - Blueprint (download/AURIENTA_Blueprint_Modified.docx)
+//   - Blueprint (docs/blueprint/AURIENTA_Blueprint_Modified.docx)
 //
 // CONSTITUTIONAL COMMERCIAL CONSTRAINTS (non-negotiable):
 //   - Zero Custody: AURIENTA never holds partner funds (Amendment IX).
