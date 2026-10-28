@@ -1,0 +1,3640 @@
+[
+  {
+    "path": "/api/admin/audit/export",
+    "file": "admin/audit/export/route.ts",
+    "domain": "admin",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 172
+  },
+  {
+    "path": "/api/admin/audit",
+    "file": "admin/audit/route.ts",
+    "domain": "admin",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 190
+  },
+  {
+    "path": "/api/admin/enterprises/[id]/freeze",
+    "file": "admin/enterprises/[id]/freeze/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['reason']",
+    "lines": 131
+  },
+  {
+    "path": "/api/admin/enterprises/[id]",
+    "file": "admin/enterprises/[id]/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 298
+  },
+  {
+    "path": "/api/admin/enterprises/[id]/unfreeze",
+    "file": "admin/enterprises/[id]/unfreeze/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['reason']",
+    "lines": 103
+  },
+  {
+    "path": "/api/admin/enterprises",
+    "file": "admin/enterprises/route.ts",
+    "domain": "admin",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 121
+  },
+  {
+    "path": "/api/admin/settings",
+    "file": "admin/settings/route.ts",
+    "domain": "admin",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 196
+  },
+  {
+    "path": "/api/admin/users/[id]/role",
+    "file": "admin/users/[id]/role/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['action', 'enterpriseId', 'reason', 'role', 'boardSeat']",
+    "lines": 248
+  },
+  {
+    "path": "/api/admin/users/[id]",
+    "file": "admin/users/[id]/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 368
+  },
+  {
+    "path": "/api/admin/users/[id]/suspend",
+    "file": "admin/users/[id]/suspend/route.ts",
+    "domain": "admin",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['reason']",
+    "lines": 124
+  },
+  {
+    "path": "/api/admin/users",
+    "file": "admin/users/route.ts",
+    "domain": "admin",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 169
+  },
+  {
+    "path": "/api/ai/annual-report",
+    "file": "ai/annual-report/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 379
+  },
+  {
+    "path": "/api/ai/anomaly",
+    "file": "ai/anomaly/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId', 'flag', 'expenseId']",
+    "lines": 188
+  },
+  {
+    "path": "/api/ai/board-briefing",
+    "file": "ai/board-briefing/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 164
+  },
+  {
+    "path": "/api/ai/brain-status",
+    "file": "ai/brain-status/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 59
+  },
+  {
+    "path": "/api/ai/charter-diff",
+    "file": "ai/charter-diff/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['proposalId', 'afterText', 'beforeText']",
+    "lines": 181
+  },
+  {
+    "path": "/api/ai/drift",
+    "file": "ai/drift/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId']",
+    "lines": 293
+  },
+  {
+    "path": "/api/ai/eve",
+    "file": "ai/eve/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> BodySchema fields: ['milestoneId', 'evidenceDescription', 'evidenceUrls']",
+    "lines": 439
+  },
+  {
+    "path": "/api/ai/evidence-verification",
+    "file": "ai/evidence-verification/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 64
+  },
+  {
+    "path": "/api/ai/explain",
+    "file": "ai/explain/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId', 'label']",
+    "lines": 116
+  },
+  {
+    "path": "/api/ai/feasibility",
+    "file": "ai/feasibility/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 601
+  },
+  {
+    "path": "/api/ai/graduation-coach",
+    "file": "ai/graduation-coach/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 123
+  },
+  {
+    "path": "/api/ai/graduation-simulator",
+    "file": "ai/graduation-simulator/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 161
+  },
+  {
+    "path": "/api/ai/ir",
+    "file": "ai/ir/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 211
+  },
+  {
+    "path": "/api/ai/mentor-matching",
+    "file": "ai/mentor-matching/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 79
+  },
+  {
+    "path": "/api/ai/milestone-designer",
+    "file": "ai/milestone-designer/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 176
+  },
+  {
+    "path": "/api/ai/multilingual",
+    "file": "ai/multilingual/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['concept', 'language']",
+    "lines": 107
+  },
+  {
+    "path": "/api/ai/partner-insights",
+    "file": "ai/partner-insights/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 349
+  },
+  {
+    "path": "/api/ai/pitch-deck",
+    "file": "ai/pitch-deck/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 263
+  },
+  {
+    "path": "/api/ai/precedent",
+    "file": "ai/precedent/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['query', 'enterpriseId']",
+    "lines": 255
+  },
+  {
+    "path": "/api/ai/salary/override",
+    "file": "ai/salary/override/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 129
+  },
+  {
+    "path": "/api/ai/salary",
+    "file": "ai/salary/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 126
+  },
+  {
+    "path": "/api/ai/salary-engine",
+    "file": "ai/salary-engine/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 58
+  },
+  {
+    "path": "/api/ai/share-message",
+    "file": "ai/share-message/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 146
+  },
+  {
+    "path": "/api/ai/succession",
+    "file": "ai/succession/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 207
+  },
+  {
+    "path": "/api/ai/survival-drill",
+    "file": "ai/survival-drill/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 229
+  },
+  {
+    "path": "/api/ai/tax",
+    "file": "ai/tax/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 146
+  },
+  {
+    "path": "/api/ai/triage",
+    "file": "ai/triage/route.ts",
+    "domain": "ai",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['ids']",
+    "lines": 211
+  },
+  {
+    "path": "/api/api-keys/[id]",
+    "file": "api-keys/[id]/route.ts",
+    "domain": "api-keys",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "DELETE"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 180
+  },
+  {
+    "path": "/api/api-keys",
+    "file": "api-keys/route.ts",
+    "domain": "api-keys",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> CreateSchema fields: ['enterpriseId', 'name']",
+    "lines": 376
+  },
+  {
+    "path": "/api/appeals",
+    "file": "appeals/route.ts",
+    "domain": "appeals",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 191
+  },
+  {
+    "path": "/api/arei/compute",
+    "file": "arei/compute/route.ts",
+    "domain": "arei",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 87
+  },
+  {
+    "path": "/api/arei",
+    "file": "arei/route.ts",
+    "domain": "arei",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 88
+  },
+  {
+    "path": "/api/auth/passkey/authenticate/finish",
+    "file": "auth/passkey/authenticate/finish/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body -> bodySchema fields: ['response']",
+    "lines": 152
+  },
+  {
+    "path": "/api/auth/passkey/authenticate/start",
+    "file": "auth/passkey/authenticate/start/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body -> bodySchema fields: ['email']",
+    "lines": 79
+  },
+  {
+    "path": "/api/auth/passkey/delete",
+    "file": "auth/passkey/delete/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> bodySchema fields: ['credentialId']",
+    "lines": 83
+  },
+  {
+    "path": "/api/auth/passkey/list",
+    "file": "auth/passkey/list/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 32
+  },
+  {
+    "path": "/api/auth/passkey/register/finish",
+    "file": "auth/passkey/register/finish/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body -> bodySchema fields: ['response', 'name']",
+    "lines": 140
+  },
+  {
+    "path": "/api/auth/passkey/register/start",
+    "file": "auth/passkey/register/start/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body -> bodySchema fields: ['name']",
+    "lines": 98
+  },
+  {
+    "path": "/api/auth/register",
+    "file": "auth/register/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 155
+  },
+  {
+    "path": "/api/auth",
+    "file": "auth/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 287
+  },
+  {
+    "path": "/api/auth/signout",
+    "file": "auth/signout/route.ts",
+    "domain": "auth",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 36
+  },
+  {
+    "path": "/api/benchmark",
+    "file": "benchmark/route.ts",
+    "domain": "benchmark",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 294
+  },
+  {
+    "path": "/api/circuit-breaker/[enterpriseId]",
+    "file": "circuit-breaker/[enterpriseId]/route.ts",
+    "domain": "circuit-breaker",
+    "path_params": [
+      "enterpriseId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 44
+  },
+  {
+    "path": "/api/cooperative/transactions/[transactionId]",
+    "file": "cooperative/transactions/[transactionId]/route.ts",
+    "domain": "cooperative",
+    "path_params": [
+      "transactionId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['action']",
+    "lines": 105
+  },
+  {
+    "path": "/api/cooperative/transactions",
+    "file": "cooperative/transactions/route.ts",
+    "domain": "cooperative",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['amo', 'description', 'sellerEnterpriseId', 'buyerEnterpriseId']",
+    "lines": 177
+  },
+  {
+    "path": "/api/copilot",
+    "file": "copilot/route.ts",
+    "domain": "copilot",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 216
+  },
+  {
+    "path": "/api/cron/crcica-arbitration",
+    "file": "cron/crcica-arbitration/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 131
+  },
+  {
+    "path": "/api/cron/health-rating",
+    "file": "cron/health-rating/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 25
+  },
+  {
+    "path": "/api/cron/proposal-expiry",
+    "file": "cron/proposal-expiry/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": true,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 111
+  },
+  {
+    "path": "/api/cron/reservation-expiry",
+    "file": "cron/reservation-expiry/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": true,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 111
+  },
+  {
+    "path": "/api/cron/stage-transition",
+    "file": "cron/stage-transition/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 128
+  },
+  {
+    "path": "/api/cron/verification-sla",
+    "file": "cron/verification-sla/route.ts",
+    "domain": "cron",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 56
+  },
+  {
+    "path": "/api/diaspora",
+    "file": "diaspora/route.ts",
+    "domain": "diaspora",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 177
+  },
+  {
+    "path": "/api/diaspora-corridor",
+    "file": "diaspora-corridor/route.ts",
+    "domain": "diaspora-corridor",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> createRoundSchema fields: ['enterpriseId', 'fxRateLocked', 'closesAt']",
+    "lines": 173
+  },
+  {
+    "path": "/api/discovery/[matchId]",
+    "file": "discovery/[matchId]/route.ts",
+    "domain": "discovery",
+    "path_params": [
+      "matchId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 143
+  },
+  {
+    "path": "/api/discovery",
+    "file": "discovery/route.ts",
+    "domain": "discovery",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 232
+  },
+  {
+    "path": "/api/dividends/[distributionId]",
+    "file": "dividends/[distributionId]/route.ts",
+    "domain": "dividends",
+    "path_params": [
+      "distributionId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 91
+  },
+  {
+    "path": "/api/dividends",
+    "file": "dividends/route.ts",
+    "domain": "dividends",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 118
+  },
+  {
+    "path": "/api/documents/[id]/sign",
+    "file": "documents/[id]/sign/route.ts",
+    "domain": "documents",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> BodySchema fields: ['signatureType']",
+    "lines": 350
+  },
+  {
+    "path": "/api/drip",
+    "file": "drip/route.ts",
+    "domain": "drip",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 271
+  },
+  {
+    "path": "/api/employees",
+    "file": "employees/route.ts",
+    "domain": "employees",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 319
+  },
+  {
+    "path": "/api/endorsements/[endorsementId]",
+    "file": "endorsements/[endorsementId]/route.ts",
+    "domain": "endorsements",
+    "path_params": [
+      "endorsementId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> resolveSchema fields: ['outcome']",
+    "lines": 136
+  },
+  {
+    "path": "/api/endorsements/enterprise/[enterpriseId]",
+    "file": "endorsements/enterprise/[enterpriseId]/route.ts",
+    "domain": "endorsements",
+    "path_params": [
+      "enterpriseId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 39
+  },
+  {
+    "path": "/api/endorsements",
+    "file": "endorsements/route.ts",
+    "domain": "endorsements",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> createSchema fields: ['enterpriseId', 'stakeSts']",
+    "lines": 112
+  },
+  {
+    "path": "/api/enterprise-updates",
+    "file": "enterprise-updates/route.ts",
+    "domain": "enterprise-updates",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['attachmentsCid']",
+    "lines": 380
+  },
+  {
+    "path": "/api/enterprises/[id]/close-capital-formation",
+    "file": "enterprises/[id]/close-capital-formation/route.ts",
+    "domain": "enterprises",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 165
+  },
+  {
+    "path": "/api/enterprises/[id]/health",
+    "file": "enterprises/[id]/health/route.ts",
+    "domain": "enterprises",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 59
+  },
+  {
+    "path": "/api/enterprises/[id]/list",
+    "file": "enterprises/[id]/list/route.ts",
+    "domain": "enterprises",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 150
+  },
+  {
+    "path": "/api/enterprises/[id]/milestones",
+    "file": "enterprises/[id]/milestones/route.ts",
+    "domain": "enterprises",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 190
+  },
+  {
+    "path": "/api/enterprises/[id]/profile",
+    "file": "enterprises/[id]/profile/route.ts",
+    "domain": "enterprises",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "PATCH",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 272
+  },
+  {
+    "path": "/api/enterprises",
+    "file": "enterprises/route.ts",
+    "domain": "enterprises",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 360
+  },
+  {
+    "path": "/api/erp/assets/[assetId]",
+    "file": "erp/assets/[assetId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "assetId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/assets",
+    "file": "erp/assets/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 89
+  },
+  {
+    "path": "/api/erp/integration/logs",
+    "file": "erp/integration/logs/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 19
+  },
+  {
+    "path": "/api/erp/integration",
+    "file": "erp/integration/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 75
+  },
+  {
+    "path": "/api/erp/integration/sync",
+    "file": "erp/integration/sync/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 24
+  },
+  {
+    "path": "/api/erp/inventory/[inventoryId]/movement",
+    "file": "erp/inventory/[inventoryId]/movement/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "inventoryId"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 90
+  },
+  {
+    "path": "/api/erp/inventory",
+    "file": "erp/inventory/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 91
+  },
+  {
+    "path": "/api/erp/production-orders/[orderId]",
+    "file": "erp/production-orders/[orderId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "orderId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 88
+  },
+  {
+    "path": "/api/erp/production-orders",
+    "file": "erp/production-orders/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/projects/[projectId]",
+    "file": "erp/projects/[projectId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "projectId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 98
+  },
+  {
+    "path": "/api/erp/projects",
+    "file": "erp/projects/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 109
+  },
+  {
+    "path": "/api/erp/purchase-orders/[poId]",
+    "file": "erp/purchase-orders/[poId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "poId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 126
+  },
+  {
+    "path": "/api/erp/purchase-orders",
+    "file": "erp/purchase-orders/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 93
+  },
+  {
+    "path": "/api/erp/quality-checks/[checkId]",
+    "file": "erp/quality-checks/[checkId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "checkId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 82
+  },
+  {
+    "path": "/api/erp/quality-checks",
+    "file": "erp/quality-checks/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 86
+  },
+  {
+    "path": "/api/erp/resources/[resourceId]/allocate",
+    "file": "erp/resources/[resourceId]/allocate/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "resourceId"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 77
+  },
+  {
+    "path": "/api/erp/resources",
+    "file": "erp/resources/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/tasks/[taskId]",
+    "file": "erp/tasks/[taskId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "taskId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 70
+  },
+  {
+    "path": "/api/erp/tasks",
+    "file": "erp/tasks/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 110
+  },
+  {
+    "path": "/api/erp/timesheets/[timesheetId]",
+    "file": "erp/timesheets/[timesheetId]/route.ts",
+    "domain": "erp",
+    "path_params": [
+      "timesheetId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 103
+  },
+  {
+    "path": "/api/erp/timesheets",
+    "file": "erp/timesheets/route.ts",
+    "domain": "erp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 88
+  },
+  {
+    "path": "/api/evidence/[cid]",
+    "file": "evidence/[cid]/route.ts",
+    "domain": "evidence",
+    "path_params": [
+      "cid"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 86
+  },
+  {
+    "path": "/api/evidence",
+    "file": "evidence/route.ts",
+    "domain": "evidence",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 195
+  },
+  {
+    "path": "/api/expenses/[id]/approve",
+    "file": "expenses/[id]/approve/route.ts",
+    "domain": "expenses",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 310
+  },
+  {
+    "path": "/api/expenses/[id]/reject",
+    "file": "expenses/[id]/reject/route.ts",
+    "domain": "expenses",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['reason']",
+    "lines": 229
+  },
+  {
+    "path": "/api/expenses/budget",
+    "file": "expenses/budget/route.ts",
+    "domain": "expenses",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 171
+  },
+  {
+    "path": "/api/expenses",
+    "file": "expenses/route.ts",
+    "domain": "expenses",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 355
+  },
+  {
+    "path": "/api/export-readiness",
+    "file": "export-readiness/route.ts",
+    "domain": "export-readiness",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 168
+  },
+  {
+    "path": "/api/fx/consensus",
+    "file": "fx/consensus/route.ts",
+    "domain": "fx",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 59
+  },
+  {
+    "path": "/api/fx/refresh",
+    "file": "fx/refresh/route.ts",
+    "domain": "fx",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 130
+  },
+  {
+    "path": "/api/fx",
+    "file": "fx/route.ts",
+    "domain": "fx",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 61
+  },
+  {
+    "path": "/api/gaas/organizations/[orgId]/decisions",
+    "file": "gaas/organizations/[orgId]/decisions/route.ts",
+    "domain": "gaas",
+    "path_params": [
+      "orgId"
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['decisionText', 'policyId', 'actorEmail']",
+    "lines": 185
+  },
+  {
+    "path": "/api/gaas/organizations/[orgId]/policies",
+    "file": "gaas/organizations/[orgId]/policies/route.ts",
+    "domain": "gaas",
+    "path_params": [
+      "orgId"
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['ruleText', 'enforcementLogic', 'name']",
+    "lines": 174
+  },
+  {
+    "path": "/api/gaas/organizations",
+    "file": "gaas/organizations/route.ts",
+    "domain": "gaas",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['contactEmail', 'type', 'name']",
+    "lines": 157
+  },
+  {
+    "path": "/api/genome/[enterpriseId]",
+    "file": "genome/[enterpriseId]/route.ts",
+    "domain": "genome",
+    "path_params": [
+      "enterpriseId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 73
+  },
+  {
+    "path": "/api/genome",
+    "file": "genome/route.ts",
+    "domain": "genome",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 60
+  },
+  {
+    "path": "/api/graduation/execute",
+    "file": "graduation/execute/route.ts",
+    "domain": "graduation",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> BodySchema fields: ['enterpriseId']",
+    "lines": 311
+  },
+  {
+    "path": "/api/graduation/export",
+    "file": "graduation/export/route.ts",
+    "domain": "graduation",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> BodySchema fields: ['enterpriseId']",
+    "lines": 446
+  },
+  {
+    "path": "/api/graduation",
+    "file": "graduation/route.ts",
+    "domain": "graduation",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 160
+  },
+  {
+    "path": "/api/graduation-bond/[enterpriseId]",
+    "file": "graduation-bond/[enterpriseId]/route.ts",
+    "domain": "graduation-bond",
+    "path_params": [
+      "enterpriseId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 100
+  },
+  {
+    "path": "/api/graduation-bond/issue",
+    "file": "graduation-bond/issue/route.ts",
+    "domain": "graduation-bond",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId']",
+    "lines": 87
+  },
+  {
+    "path": "/api/graduation-bond/verify/[bondId]",
+    "file": "graduation-bond/verify/[bondId]/route.ts",
+    "domain": "graduation-bond",
+    "path_params": [
+      "bondId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 57
+  },
+  {
+    "path": "/api/health",
+    "file": "health/route.ts",
+    "domain": "health",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 45
+  },
+  {
+    "path": "/api/inngest",
+    "file": "inngest/route.ts",
+    "domain": "inngest",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 107
+  },
+  {
+    "path": "/api/ledger/sync",
+    "file": "ledger/sync/route.ts",
+    "domain": "ledger",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 72
+  },
+  {
+    "path": "/api/ledger/ticker",
+    "file": "ledger/ticker/route.ts",
+    "domain": "ledger",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 167
+  },
+  {
+    "path": "/api/ledger/verify",
+    "file": "ledger/verify/route.ts",
+    "domain": "ledger",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 106
+  },
+  {
+    "path": "/api/legal-templates/[id]/render",
+    "file": "legal-templates/[id]/render/route.ts",
+    "domain": "legal-templates",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['variables']",
+    "lines": 34
+  },
+  {
+    "path": "/api/legal-templates/[id]",
+    "file": "legal-templates/[id]/route.ts",
+    "domain": "legal-templates",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 23
+  },
+  {
+    "path": "/api/legal-templates",
+    "file": "legal-templates/route.ts",
+    "domain": "legal-templates",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 17
+  },
+  {
+    "path": "/api/matching",
+    "file": "matching/route.ts",
+    "domain": "matching",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 482
+  },
+  {
+    "path": "/api/mentorship",
+    "file": "mentorship/route.ts",
+    "domain": "mentorship",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 220
+  },
+  {
+    "path": "/api/metrics",
+    "file": "metrics/route.ts",
+    "domain": "metrics",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 81
+  },
+  {
+    "path": "/api/milestones/[id]/accountant-release",
+    "file": "milestones/[id]/accountant-release/route.ts",
+    "domain": "milestones",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 226
+  },
+  {
+    "path": "/api/notifications/[id]/read",
+    "file": "notifications/[id]/read/route.ts",
+    "domain": "notifications",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 49
+  },
+  {
+    "path": "/api/oracle/consensus",
+    "file": "oracle/consensus/route.ts",
+    "domain": "oracle",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body -> BodySchema fields: ['query', 'apiKey']",
+    "lines": 125
+  },
+  {
+    "path": "/api/oracle/keys",
+    "file": "oracle/keys/route.ts",
+    "domain": "oracle",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 64
+  },
+  {
+    "path": "/api/orders",
+    "file": "orders/route.ts",
+    "domain": "orders",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 554
+  },
+  {
+    "path": "/api/platform-health",
+    "file": "platform-health/route.ts",
+    "domain": "platform-health",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 118
+  },
+  {
+    "path": "/api/priority-allocation/[allocationId]",
+    "file": "priority-allocation/[allocationId]/route.ts",
+    "domain": "priority-allocation",
+    "path_params": [
+      "allocationId"
+    ],
+    "methods": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 114
+  },
+  {
+    "path": "/api/priority-allocation/rankings",
+    "file": "priority-allocation/rankings/route.ts",
+    "domain": "priority-allocation",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 59
+  },
+  {
+    "path": "/api/priority-allocation",
+    "file": "priority-allocation/route.ts",
+    "domain": "priority-allocation",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 106
+  },
+  {
+    "path": "/api/productive-egp/history",
+    "file": "productive-egp/history/route.ts",
+    "domain": "productive-egp",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 39
+  },
+  {
+    "path": "/api/productive-egp/snapshot",
+    "file": "productive-egp/snapshot/route.ts",
+    "domain": "productive-egp",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId', 'inflati']",
+    "lines": 94
+  },
+  {
+    "path": "/api/profit-sharing/[agreementId]",
+    "file": "profit-sharing/[agreementId]/route.ts",
+    "domain": "profit-sharing",
+    "path_params": [
+      "agreementId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 197
+  },
+  {
+    "path": "/api/profit-sharing",
+    "file": "profit-sharing/route.ts",
+    "domain": "profit-sharing",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 153
+  },
+  {
+    "path": "/api/proposals/[id]/vote",
+    "file": "proposals/[id]/vote/route.ts",
+    "domain": "proposals",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 297
+  },
+  {
+    "path": "/api/proposals",
+    "file": "proposals/route.ts",
+    "domain": "proposals",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 441
+  },
+  {
+    "path": "/api/proxies/[id]/revoke",
+    "file": "proxies/[id]/revoke/route.ts",
+    "domain": "proxies",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 79
+  },
+  {
+    "path": "/api/proxies",
+    "file": "proxies/route.ts",
+    "domain": "proxies",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> proxySchema fields: ['enterpriseId', 'delegateeId', 'scope', 'proposalId', 'proposalType', 'endsAt']",
+    "lines": 205
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/cre-decisions",
+    "file": "public/enterprise/[slug]/cre-decisions/route.ts",
+    "domain": "public",
+    "path_params": [
+      "slug"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 139
+  },
+  {
+    "path": "/api/public/enterprise/[slug]",
+    "file": "public/enterprise/[slug]/route.ts",
+    "domain": "public",
+    "path_params": [
+      "slug"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 79
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/trades",
+    "file": "public/enterprise/[slug]/trades/route.ts",
+    "domain": "public",
+    "path_params": [
+      "slug"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 145
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/transparency",
+    "file": "public/enterprise/[slug]/transparency/route.ts",
+    "domain": "public",
+    "path_params": [
+      "slug"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 180
+  },
+  {
+    "path": "/api/public/registry",
+    "file": "public/registry/route.ts",
+    "domain": "public",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 159
+  },
+  {
+    "path": "/api/public/stats",
+    "file": "public/stats/route.ts",
+    "domain": "public",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 140
+  },
+  {
+    "path": "/api/qa/[id]/answer",
+    "file": "qa/[id]/answer/route.ts",
+    "domain": "qa",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> AnswerSchema fields: ['answer', 'evidenceClassification']",
+    "lines": 244
+  },
+  {
+    "path": "/api/qa",
+    "file": "qa/route.ts",
+    "domain": "qa",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> AskSchema fields: ['enterpriseId', 'question']",
+    "lines": 364
+  },
+  {
+    "path": "/api/quadratic-voting/[proposalId]",
+    "file": "quadratic-voting/[proposalId]/route.ts",
+    "domain": "quadratic-voting",
+    "path_params": [
+      "proposalId"
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> castVoteSchema fields: ['creditsSpent']",
+    "lines": 206
+  },
+  {
+    "path": "/api/quadratic-voting",
+    "file": "quadratic-voting/route.ts",
+    "domain": "quadratic-voting",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 62
+  },
+  {
+    "path": "/api/ready",
+    "file": "ready/route.ts",
+    "domain": "ready",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 130
+  },
+  {
+    "path": "/api/reality-sync",
+    "file": "reality-sync/route.ts",
+    "domain": "reality-sync",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> BodySchema fields: ['enterpriseId']",
+    "lines": 480
+  },
+  {
+    "path": "/api/reservations/[id]/confirm",
+    "file": "reservations/[id]/confirm/route.ts",
+    "domain": "reservations",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 295
+  },
+  {
+    "path": "/api/reservations",
+    "file": "reservations/route.ts",
+    "domain": "reservations",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 510
+  },
+  {
+    "path": "/api/risk-disclosure",
+    "file": "risk-disclosure/route.ts",
+    "domain": "risk-disclosure",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 133
+  },
+  {
+    "path": "/api/risk-profile/[enterpriseId]",
+    "file": "risk-profile/[enterpriseId]/route.ts",
+    "domain": "risk-profile",
+    "path_params": [
+      "enterpriseId"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 138
+  },
+  {
+    "path": "/api/risk-profile/keys",
+    "file": "risk-profile/keys/route.ts",
+    "domain": "risk-profile",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 80
+  },
+  {
+    "path": "/api",
+    "file": "route.ts",
+    "domain": "route.ts",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 6
+  },
+  {
+    "path": "/api/salary-to-equity",
+    "file": "salary-to-equity/route.ts",
+    "domain": "salary-to-equity",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> bodySchema fields: ['employeeId', 'equityConversionPct']",
+    "lines": 438
+  },
+  {
+    "path": "/api/screening",
+    "file": "screening/route.ts",
+    "domain": "screening",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 215
+  },
+  {
+    "path": "/api/skill-equity/[id]/review",
+    "file": "skill-equity/[id]/review/route.ts",
+    "domain": "skill-equity",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 335
+  },
+  {
+    "path": "/api/skill-equity",
+    "file": "skill-equity/route.ts",
+    "domain": "skill-equity",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 211
+  },
+  {
+    "path": "/api/solvency",
+    "file": "solvency/route.ts",
+    "domain": "solvency",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 305
+  },
+  {
+    "path": "/api/soulbound/revoke",
+    "file": "soulbound/revoke/route.ts",
+    "domain": "soulbound",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['reason', 'userId']",
+    "lines": 75
+  },
+  {
+    "path": "/api/soulbound",
+    "file": "soulbound/route.ts",
+    "domain": "soulbound",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 67
+  },
+  {
+    "path": "/api/soulbound/verify",
+    "file": "soulbound/verify/route.ts",
+    "domain": "soulbound",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body fields used: ['credentialId']",
+    "lines": 39
+  },
+  {
+    "path": "/api/standalone-succession/[caseId]",
+    "file": "standalone-succession/[caseId]/route.ts",
+    "domain": "standalone-succession",
+    "path_params": [
+      "caseId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 151
+  },
+  {
+    "path": "/api/standalone-succession",
+    "file": "standalone-succession/route.ts",
+    "domain": "standalone-succession",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> createCaseSchema fields: ['businessName', 'businessType', 'shamirThreshold', 'shamirShares']",
+    "lines": 140
+  },
+  {
+    "path": "/api/succession/[id]/activate",
+    "file": "succession/[id]/activate/route.ts",
+    "domain": "succession",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 263
+  },
+  {
+    "path": "/api/succession/[id]/execute",
+    "file": "succession/[id]/execute/route.ts",
+    "domain": "succession",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 332
+  },
+  {
+    "path": "/api/succession",
+    "file": "succession/route.ts",
+    "domain": "succession",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> beneficiarySchema fields: ['name', 'relationship', 'percentage', 'nationalIdLast4']",
+    "lines": 333
+  },
+  {
+    "path": "/api/supply-chain/advances/[advanceId]",
+    "file": "supply-chain/advances/[advanceId]/route.ts",
+    "domain": "supply-chain",
+    "path_params": [
+      "advanceId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 165
+  },
+  {
+    "path": "/api/supply-chain/advances",
+    "file": "supply-chain/advances/route.ts",
+    "domain": "supply-chain",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 124
+  },
+  {
+    "path": "/api/syndicates/[id]/join",
+    "file": "syndicates/[id]/join/route.ts",
+    "domain": "syndicates",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 187
+  },
+  {
+    "path": "/api/syndicates",
+    "file": "syndicates/route.ts",
+    "domain": "syndicates",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 179
+  },
+  {
+    "path": "/api/takaful/claims/[claimId]",
+    "file": "takaful/claims/[claimId]/route.ts",
+    "domain": "takaful",
+    "path_params": [
+      "claimId"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 170
+  },
+  {
+    "path": "/api/takaful/claims",
+    "file": "takaful/claims/route.ts",
+    "domain": "takaful",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 116
+  },
+  {
+    "path": "/api/terms/acceptance",
+    "file": "terms/acceptance/route.ts",
+    "domain": "terms",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> acceptSchema fields: ['documentVersion', 'language']",
+    "lines": 180
+  },
+  {
+    "path": "/api/trade-documents",
+    "file": "trade-documents/route.ts",
+    "domain": "trade-documents",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 177
+  },
+  {
+    "path": "/api/trade-instruments/[id]",
+    "file": "trade-instruments/[id]/route.ts",
+    "domain": "trade-instruments",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 56
+  },
+  {
+    "path": "/api/trade-instruments",
+    "file": "trade-instruments/route.ts",
+    "domain": "trade-instruments",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 247
+  },
+  {
+    "path": "/api/trades/match",
+    "file": "trades/match/route.ts",
+    "domain": "trades",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 55
+  },
+  {
+    "path": "/api/v1/cre/policies",
+    "file": "v1/cre/policies/route.ts",
+    "domain": "v1/cre",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 129
+  },
+  {
+    "path": "/api/v1/cre/validate",
+    "file": "v1/cre/validate/route.ts",
+    "domain": "v1/cre",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 177
+  },
+  {
+    "path": "/api/v1/enterprise/[slug]/data",
+    "file": "v1/enterprise/[slug]/data/route.ts",
+    "domain": "v1/enterprise",
+    "path_params": [
+      "slug"
+    ],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 424
+  },
+  {
+    "path": "/api/v1/gov/eta",
+    "file": "v1/gov/eta/route.ts",
+    "domain": "v1/gov",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 31
+  },
+  {
+    "path": "/api/v1/gov/gafi",
+    "file": "v1/gov/gafi/route.ts",
+    "domain": "v1/gov",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 29
+  },
+  {
+    "path": "/api/v1/gov/nosi",
+    "file": "v1/gov/nosi/route.ts",
+    "domain": "v1/gov",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 29
+  },
+  {
+    "path": "/api/v1/intelligence/conflicts",
+    "file": "v1/intelligence/conflicts/route.ts",
+    "domain": "v1/intelligence",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 44
+  },
+  {
+    "path": "/api/v1/ipfs/pin",
+    "file": "v1/ipfs/pin/route.ts",
+    "domain": "v1/ipfs",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": true,
+    "body_hint": "JSON body fields used: ['metadata']",
+    "lines": 33
+  },
+  {
+    "path": "/api/v1/regulatory/fra/dashboard",
+    "file": "v1/regulatory/fra/dashboard/route.ts",
+    "domain": "v1/regulatory",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 106
+  },
+  {
+    "path": "/api/v1/webhook/payment",
+    "file": "v1/webhook/payment/route.ts",
+    "domain": "v1/webhook",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "signature",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": true,
+    "public_by_design": true,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 178
+  },
+  {
+    "path": "/api/vault/loan/[id]",
+    "file": "vault/loan/[id]/route.ts",
+    "domain": "vault",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 484
+  },
+  {
+    "path": "/api/vault/loan",
+    "file": "vault/loan/route.ts",
+    "domain": "vault",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 206
+  },
+  {
+    "path": "/api/vault",
+    "file": "vault/route.ts",
+    "domain": "vault",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 200
+  },
+  {
+    "path": "/api/verification/[id]",
+    "file": "verification/[id]/route.ts",
+    "domain": "verification",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> reviewSchema fields: ['status', 'reviewNote']",
+    "lines": 383
+  },
+  {
+    "path": "/api/verification/kyc",
+    "file": "verification/kyc/route.ts",
+    "domain": "verification",
+    "path_params": [],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['livenessScore']",
+    "lines": 109
+  },
+  {
+    "path": "/api/verification",
+    "file": "verification/route.ts",
+    "domain": "verification",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body -> submitSchema fields: ['enterpriseId', 'userId', 'verificationType', 'documentUrl', 'documentHash', 'note']",
+    "lines": 371
+  },
+  {
+    "path": "/api/wages/bands",
+    "file": "wages/bands/route.ts",
+    "domain": "wages",
+    "path_params": [],
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body fields used: ['enterpriseId', 'action']",
+    "lines": 148
+  },
+  {
+    "path": "/api/wages/benchmarks",
+    "file": "wages/benchmarks/route.ts",
+    "domain": "wages",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 30
+  },
+  {
+    "path": "/api/whistleblower/[id]/resolve",
+    "file": "whistleblower/[id]/resolve/route.ts",
+    "domain": "whistleblower",
+    "path_params": [
+      "id"
+    ],
+    "methods": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "JSON body parsed (var: body) \u2014 fields unclear",
+    "lines": 211
+  },
+  {
+    "path": "/api/whistleblower",
+    "file": "whistleblower/route.ts",
+    "domain": "whistleblower",
+    "path_params": [],
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 193
+  },
+  {
+    "path": "/api/zeitgeist",
+    "file": "zeitgeist/route.ts",
+    "domain": "zeitgeist",
+    "path_params": [],
+    "methods": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "has_dev_fallback_secret": false,
+    "has_signature": false,
+    "public_by_design": false,
+    "body_hint": "(no body parsing \u2014 likely no body)",
+    "lines": 74
+  }
+]

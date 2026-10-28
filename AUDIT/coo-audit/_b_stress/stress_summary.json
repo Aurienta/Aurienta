@@ -1,0 +1,3723 @@
+[
+  {
+    "path": "/api/health",
+    "domain": "health",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 54,
+        "body": "{\"status\":\"ok\",\"uptime\":11,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-10-28T12:10:33.811Z\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 50,
+        "body": "{\"status\":\"ok\",\"uptime\":69,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-10-28T12:10:33.869Z\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/metrics",
+    "domain": "metrics",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 3927,
+        "body": "# HELP aurenta_uptime_seconds Time since process start\\n# TYPE aurenta_uptime_seconds counter\\naurenta_uptime_seconds 0.077\\n\\n# HELP aurenta_users_total Total number of registered users\\n# TYPE aurenta_users_total gauge\\naurenta_users_total 5\\n\\n# HELP aurenta_enterprises_total Total number of enterprises\\n# TYPE aurenta_enterprises_total gauge\\naurenta_enterprises_total 4\\n\\n# HELP aurenta_ledger_events_tot",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 350,
+        "body": "# HELP aurenta_uptime_seconds Time since process start\\n# TYPE aurenta_uptime_seconds counter\\naurenta_uptime_seconds 0.403\\n\\n# HELP aurenta_users_total Total number of registered users\\n# TYPE aurenta_users_total gauge\\naurenta_users_total 5\\n\\n# HELP aurenta_enterprises_total Total number of enterprises\\n# TYPE aurenta_enterprises_total gauge\\naurenta_enterprises_total 4\\n\\n# HELP aurenta_ledger_events_tot",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api",
+    "domain": "route.ts",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 2359,
+        "body": "{\"message\":\"Hello, world!\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 200,
+        "body": "{\"message\":\"Hello, world!\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/platform-health",
+    "domain": "platform-health",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 6341,
+        "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:10:47.022Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"Source of truth. Push triggers CI/CD.\"},\"vercel\":{\"status\":\"local-dev\",\"url\":\"localhost:3000\",\"note\":\"Next.js host. Auto-deploys from GitHub main.\"},\"turso\":{\"status\":\"connected\",\"latencyMs\":2,\"url\":\"file:/home/z/my-project/db/custom.db\",\"mo",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 139,
+        "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:10:47.193Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"Source of truth. Push triggers CI/CD.\"},\"vercel\":{\"status\":\"local-dev\",\"url\":\"localhost:3000\",\"note\":\"Next.js host. Auto-deploys from GitHub main.\"},\"turso\":{\"status\":\"connected\",\"latencyMs\":1,\"url\":\"file:/home/z/my-project/db/custom.db\",\"mo",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/auth",
+    "domain": "auth",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 7599,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 16,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 96,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"}]}",
+        "err": ""
+      },
+      "T4_malformed_body": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 93,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T5_wrong_ct": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 14,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T6_huge_payload": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 41,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"}]}",
+        "err": ""
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/auth/register",
+    "domain": "auth",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 2131,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 16,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 48,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"mobile\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"legalName\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"password\",\"message\":\"Invalid input: expected string, received undefin",
+        "err": ""
+      },
+      "T4_malformed_body": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 151,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T5_wrong_ct": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 12,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+        "err": ""
+      },
+      "T6_huge_payload": {
+        "code": 400,
+        "status": "Bad Request",
+        "ms": 41,
+        "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"mobile\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"legalName\",\"message\":\"Invalid input: expected string, received undefined\"},{\"path\":\"password\",\"message\":\"Invalid input: expected string, received undefin",
+        "err": ""
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/auth/signout",
+    "domain": "auth",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 1907,
+        "body": "",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 16,
+        "body": "",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 118,
+        "body": "",
+        "err": ""
+      },
+      "T4_malformed_body": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 12,
+        "body": "",
+        "err": ""
+      },
+      "T5_wrong_ct": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 40,
+        "body": "",
+        "err": ""
+      },
+      "T6_huge_payload": {
+        "code": 307,
+        "status": "Temporary Redirect",
+        "ms": 14,
+        "body": "",
+        "err": ""
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/auth/passkey/authenticate/start",
+    "domain": "auth",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 5414,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"TZGw9fYqpRjI7SqDyHWR8AzzQoRif-MB8hNwKXtdzTc\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 200,
+        "status": "OK",
+        "ms": 384,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"iqGnew4LmLn95Yz99vhAKTpNkL1aypXpqZyn_ZaoaA4\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "code": 200,
+        "status": "OK",
+        "ms": 1442,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"Qn02n_skdW9MZJF7KSZDdzbnjD8ZVBfmiiCtJiORCQk\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T4_malformed_body": {
+        "code": 200,
+        "status": "OK",
+        "ms": 195,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"f1XpFiEdH_31VrF06dTssUAQHOKb6Lbvrsww6lMav1Y\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T5_wrong_ct": {
+        "code": 200,
+        "status": "OK",
+        "ms": 39,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"Yl0QuVTrUvX1LS922-8QrKyvBJ8YOJs2B13_equzaqo\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T6_huge_payload": {
+        "code": 200,
+        "status": "OK",
+        "ms": 14,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"bndAhbczY34KA_3dmF7NxnOMFQaa8JUHBUc2_BsUn3g\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+        "err": ""
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/auth/passkey/list",
+    "domain": "auth",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 11688,
+        "body": "{\"error\":\"unauthorized\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 198,
+        "body": "{\"error\":\"unauthorized\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/enterprises",
+    "domain": "enterprises",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 403,
+        "status": "Forbidden",
+        "ms": 105,
+        "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+        "err": ""
+      },
+      "T2_invalid_auth": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 2471,
+        "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+        "err": ""
+      },
+      "T3_empty_body": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 25,
+        "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+        "err": ""
+      },
+      "T4_malformed_body": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 14,
+        "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+        "err": ""
+      },
+      "T5_wrong_ct": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 18,
+        "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+        "err": ""
+      },
+      "T6_huge_payload": {
+        "code": 401,
+        "status": "Unauthorized",
+        "ms": 15,
+        "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+        "err": ""
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/enterprises/[id]/profile",
+    "domain": "enterprises",
+    "methods_declared": [
+      "PATCH",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ReadError: [Errno 104] Connection reset by peer"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/enterprises/[id]/health",
+    "domain": "enterprises",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/enterprises/[id]/milestones",
+    "domain": "enterprises",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/admin/users",
+    "domain": "admin",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/admin/audit",
+    "domain": "admin",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/admin/settings",
+    "domain": "admin",
+    "methods_declared": [
+      "GET",
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/vault",
+    "domain": "vault",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/dividends",
+    "domain": "dividends",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/proposals",
+    "domain": "proposals",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/expenses",
+    "domain": "expenses",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/erp/inventory",
+    "domain": "erp",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/erp/integration",
+    "domain": "erp",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/erp/integration/sync",
+    "domain": "erp",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/ai/explain",
+    "domain": "ai",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/ai/feasibility",
+    "domain": "ai",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/ai/graduation-coach",
+    "domain": "ai",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/ai/brain-status",
+    "domain": "ai",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/graduation-bond/issue",
+    "domain": "graduation-bond",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/graduation-bond/verify/[bondId]",
+    "domain": "graduation-bond",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/verification/kyc",
+    "domain": "verification",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/verification",
+    "domain": "verification",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/oracle/consensus",
+    "domain": "oracle",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/oracle/keys",
+    "domain": "oracle",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/fx",
+    "domain": "fx",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/fx/consensus",
+    "domain": "fx",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/fx/refresh",
+    "domain": "fx",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/soulbound",
+    "domain": "soulbound",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/soulbound/verify",
+    "domain": "soulbound",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/legal-templates",
+    "domain": "legal-templates",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/legal-templates/[id]",
+    "domain": "legal-templates",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/legal-templates/[id]/render",
+    "domain": "legal-templates",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/health-rating",
+    "domain": "cron",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/verification-sla",
+    "domain": "cron",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/crcica-arbitration",
+    "domain": "cron",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/stage-transition",
+    "domain": "cron",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/proposal-expiry",
+    "domain": "cron",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cron/reservation-expiry",
+    "domain": "cron",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/regulatory/fra/dashboard",
+    "domain": "v1/regulatory",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/cre/policies",
+    "domain": "v1/cre",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/cre/validate",
+    "domain": "v1/cre",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/ipfs/pin",
+    "domain": "v1/ipfs",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/webhook/payment",
+    "domain": "v1/webhook",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "signature",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/gov/gafi",
+    "domain": "v1/gov",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/gov/nosi",
+    "domain": "v1/gov",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/v1/gov/eta",
+    "domain": "v1/gov",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/cooperative/transactions",
+    "domain": "cooperative",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/wages/bands",
+    "domain": "wages",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/wages/benchmarks",
+    "domain": "wages",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "none",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/gaas/organizations",
+    "domain": "gaas",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/graduation",
+    "domain": "graduation",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/graduation/execute",
+    "domain": "graduation",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/takaful/claims",
+    "domain": "takaful",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/syndicates",
+    "domain": "syndicates",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/discovery",
+    "domain": "discovery",
+    "methods_declared": [
+      "GET",
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/discovery/[matchId]",
+    "domain": "discovery",
+    "methods_declared": [
+      "PATCH"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/whistleblower",
+    "domain": "whistleblower",
+    "methods_declared": [
+      "POST",
+      "GET"
+    ],
+    "auth_kind": "session",
+    "validation": "zod",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "skipped": "no path param"
+      },
+      "T8_path_traversal": {
+        "skipped": "no path param"
+      }
+    }
+  },
+  {
+    "path": "/api/notifications/[id]/read",
+    "domain": "notifications",
+    "methods_declared": [
+      "POST"
+    ],
+    "auth_kind": "session",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T4_malformed_body": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T5_wrong_ct": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T6_huge_payload": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  },
+  {
+    "path": "/api/risk-profile/[enterpriseId]",
+    "domain": "risk-profile",
+    "methods_declared": [
+      "GET"
+    ],
+    "auth_kind": "none",
+    "validation": "manual",
+    "cases": {
+      "T1_no_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T2_invalid_auth": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T3_empty_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T4_malformed_body": {
+        "skipped": "GET-only endpoint"
+      },
+      "T5_wrong_ct": {
+        "skipped": "GET-only endpoint"
+      },
+      "T6_huge_payload": {
+        "skipped": "GET-only endpoint"
+      },
+      "T7_sql_injection": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      },
+      "T8_path_traversal": {
+        "code": 0,
+        "status": "exception",
+        "ms": 0,
+        "body": "",
+        "err": "ConnectError: [Errno 111] Connection refused"
+      }
+    }
+  }
+]
