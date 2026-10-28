@@ -106,9 +106,11 @@ const M = {
   hf_qwen72:       { provider: "huggingface" as const, model: "Qwen/Qwen2.5-72B-Instruct" },                   // multilingual 72B
   hf_llama70:      { provider: "huggingface" as const, model: "meta-llama/Llama-3.3-70B-Instruct" },             // large reasoning 70B
 
-  // ── Groq (403 from sandbox — will skip if fails; works from other IPs) ──
-  groq_70b:        { provider: "groq" as const, model: "llama-3.3-70b-versatile" },                              // 70B reasoning
-  groq_8b:         { provider: "groq" as const, model: "llama-3.1-8b-instant" },                                 // fast 8B
+  // ── Groq (VERIFIED WORKING from Vercel — 11 models available) ──
+  groq_gpt_oss_120b: { provider: "groq" as const, model: "openai/gpt-oss-120b" },     // large reasoning 120B
+  groq_gpt_oss_20b:  { provider: "groq" as const, model: "openai/gpt-oss-20b" },     // fast 20B
+  groq_qwen27b:      { provider: "groq" as const, model: "qwen/qwen3.8-27b" },        // multilingual 27B
+  groq_allam:        { provider: "groq" as const, model: "allam-2-7b" },              // Arabic-optimized 7B
 
   // ── Gemini (key format invalid in sandbox — needs AIzaSy... format) ──
   gemini_2_0:      { provider: "gemini" as const, model: "gemini-2.0-flash" },                                  // fast
@@ -197,7 +199,7 @@ function getOrKey()      { return process.env.OPENROUTER_API_KEY ?? null; }
 
 // Groq — OpenAI-compatible chat completions via fetch.
 // Endpoint: https://api.groq.com/openai/v1/chat/completions
-async function callGroq(system: string, user: string, model: string = "llama-3.3-70b-versatile"): Promise<MultiModelResult> {
+async function callGroq(system: string, user: string, model: string = "openai/gpt-oss-20b"): Promise<MultiModelResult> {
   const key = getGroqKey();
   if (!key) throw new Error("Groq API key not configured");
   const start = Date.now();
@@ -564,7 +566,7 @@ Produce the final consensus answer:`;
   // Try Groq llama-3.3-70b for synthesis (fast + capable) — fall back to
   // NVIDIA nemotron, then Gemini, then return the base response as-is.
   const synthesizers: Array<{ provider: AiProvider; fn: () => Promise<MultiModelResult> }> = [
-    { provider: "groq",   fn: () => callGroq("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "llama-3.3-70b-versatile") },
+    { provider: "groq",   fn: () => callGroq("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "openai/gpt-oss-20b") },
     { provider: "nvidia", fn: () => callNvidia("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "nvidia/llama-3.1-nemotron-51b-instruct") },
     { provider: "gemini", fn: () => callGemini("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "gemini-2.5-flash") },
   ];
@@ -688,7 +690,7 @@ export async function askMultiModel(opts: { systemPrompt: string; userMessage: s
 
   // ── LAST RESORT: try every remaining provider's "default" model ──
   const lastResort: ModelEntry[] = [
-    M.groq_8b,
+    M.groq_gpt_oss_20b,
     M.nvidia_gemma,
     M.gemini_2_0,
     M.hf_llama,
@@ -763,12 +765,13 @@ export type AiProviderStatus = {
 };
 
 // Fastest / smallest model per provider for cheap ping probes.
+// Updated 2026-10-28 based on /api/ai/diagnose output from Vercel production.
 const PING_MODELS: ModelEntry[] = [
   { provider: "openrouter", model: "xingchen-agi/xing4.0-29b-a4b:free" }, // VERIFIED WORKING
-  { provider: "groq",        model: "llama-3.1-8b-instant" },
-  { provider: "nvidia",      model: "google/gemma-3-12b-it" },
-  { provider: "gemini",      model: "gemini-2.0-flash" },
-  { provider: "huggingface", model: "mistralai/Mistral-7B-Instruct-v0.3" },
+  { provider: "groq",        model: "openai/gpt-oss-20b" },               // VERIFIED WORKING from Vercel
+  { provider: "nvidia",      model: "google/gemma-3-12b-it" },             // VERIFIED listed
+  { provider: "gemini",      model: "gemini-2.0-flash" },                 // key format invalid — will skip
+  { provider: "huggingface", model: "mistralai/Mistral-7B-Instruct-v0.3" }, // VERIFIED authenticated
 ];
 
 export async function getAiProviderStatus(): Promise<AiProviderStatus[]> {
