@@ -529,3 +529,44 @@ Stage Summary:
 - **Verdict**: CONDITIONALLY READY for pilot use; ~3 weeks to full production readiness
 - **Files produced**: COO-FINAL-AUDIT-REPORT.md + 4 phase reports in coo-audit/
 
+
+---
+
+## Phase 9 — Full Platform Reorganization (COO/CTO/PM initiative)
+
+**Task ID:** REORG-2026-10-28
+**Agent:** main (COO + CTO + PM)
+**Task:** Full file/folder reorganization, alignment, cleanup, harden, backup, push to all clouds
+
+### Work Log
+1. Verified git sync FIRST (local 3d9cc15 pushed to remote — full sync before any change)
+2. Full inventory: 2479 tracked files mapped — identified fragmentation:
+   - 30 root-level audit/report files
+   - 3 overlapping screenshot dirs (screenshots/ 189 files 67MB, audit-screenshots/ 53 files 18MB, AUDIT/screenshots/)
+   - skills/ = 1075 files (42% of repo) — dev tooling, not app code
+   - scripts/ flat with 26 mixed files
+   - download/ with blueprint + legal docx scattered
+3. Executed reorganization (git mv — history preserved):
+   - docs/audit/reports/ ← 21 root audit reports
+   - docs/audit/registers/ ← 7 CSV registers
+   - docs/audit/2026-10-master/ ← AUDIT/ content (current cycle)
+   - docs/blueprint/ + docs/legal/ ← download/*.docx
+   - docs/guides/ ← DEPLOYMENT.md, PLATFORM_HARMONY.md
+   - docs/examples/websocket/ ← examples/
+   - docs/worklog.md ← root worklog.md (2.2MB)
+   - scripts/{db,audit,ops,blueprint}/ ← 26 scripts grouped by purpose
+4. Removed: screenshots + audit-screenshots (85MB → .backups tar), Dockerfile, skills/agent-ctx/.zscripts/mini-services untracked
+5. Fixed: tsconfig excludes docs/; stale blueprint path comments in 2 lib files; PROJECT_STRUCTURE.md rewritten
+6. Verified: lint 0 errors | build passes | dev server 200 | /dashboard 200
+7. Hardened: .env 444 (restored after sandbox reset)
+8. Backed up: Turso export (99 tables, 94 rows), git bundle (129MB), legacy screenshots tar (86MB)
+9. Pushed: commit 9329d06 → GitHub → Vercel auto-deploy verified HTTP 200
+10. Tagged: v-2026-10-reorganized
+11. Cleaned: 7 stale dependabot remote branches deleted (old git cleanup)
+
+### Stage Summary
+- Repo: 2479 → 1114 tracked files (55% leaner, -85MB screenshots)
+- Root: 30 files → 0 report files (all in docs/)
+- Git: local = remote = 9329d06, tag v-2026-10-reorganized
+- Clouds: GitHub ✅ | Vercel ✅ (200) | Turso ✅ (99 tables)
+- Structure documented in PROJECT_STRUCTURE.md
