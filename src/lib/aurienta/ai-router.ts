@@ -6,7 +6,7 @@
 //   2. NVIDIA NIM   — nvidia/llama-3.1-nemotron-51b-instruct (enterprise)
 //                     google/gemma-3-12b-it (balanced)
 //                     mistralai/mistral-large-2-instruct (large)
-//   3. Google Gemini— gemini-3.8-flash (fast)
+//   3. Google Gemini— gemini-3.5-flash (fast)
 //                     gemini-3.8-pro (balanced)
 //   4. HuggingFace  — meta-llama/Meta-Llama-3.1-8B-Instruct (general)
 //                     mistralai/Mistral-7B-Instruct-v0.3 (fast)
@@ -113,8 +113,8 @@ const M = {
   groq_allam:        { provider: "groq" as const, model: "allam-2-7b" },              // Arabic-optimized 7B
 
   // ── Gemini (key valid; sandbox IP geo-blocked by Google) ──
-  gemini_2_0:      { provider: "gemini" as const, model: "gemini-3.8-flash" },                                  // fast
-  gemini_2_5:      { provider: "gemini" as const, model: "gemini-3.8-flash" },                                   // balanced
+  gemini_2_0:      { provider: "gemini" as const, model: "gemini-3.5-flash" },                                  // fast
+  gemini_2_5:      { provider: "gemini" as const, model: "gemini-3.5-flash" },                                   // balanced
 };
 
 const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
@@ -285,7 +285,7 @@ async function callNvidia(system: string, user: string, model: string = "nvidia/
 // The old @google/generative-ai SDK misinterprets AQ.-prefixed keys as OAuth tokens.
 // This native fetch uses x-goog-api-key header which is the correct auth method for AQ. keys.
 // Endpoint: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
-async function callGemini(system: string, user: string, model: string = "gemini-3.8-flash"): Promise<MultiModelResult> {
+async function callGemini(system: string, user: string, model: string = "gemini-3.5-flash"): Promise<MultiModelResult> {
   const key = getGeminiKey();
   if (!key) throw new Error("Gemini API key not configured");
   const start = Date.now();
@@ -568,7 +568,7 @@ Produce the final consensus answer:`;
   const synthesizers: Array<{ provider: AiProvider; fn: () => Promise<MultiModelResult> }> = [
     { provider: "groq",   fn: () => callGroq("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "openai/gpt-oss-20b") },
     { provider: "nvidia", fn: () => callNvidia("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "nvidia/llama-3.1-nemotron-51b-instruct") },
-    { provider: "gemini", fn: () => callGemini("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "gemini-3.8-flash") },
+    { provider: "gemini", fn: () => callGemini("You are the AURIENTA Brain AI synthesis engine.", synthesisPrompt, "gemini-3.5-flash") },
   ];
 
   for (const synth of synthesizers) {
@@ -770,7 +770,7 @@ const PING_MODELS: ModelEntry[] = [
   { provider: "openrouter", model: "xingchen-agi/xing4.0-29b-a4b:free" }, // VERIFIED WORKING
   { provider: "groq",        model: "openai/gpt-oss-20b" },               // VERIFIED WORKING from Vercel
   { provider: "nvidia",      model: "google/gemma-3-12b-it" },             // VERIFIED listed
-  { provider: "gemini",      model: "gemini-3.8-flash" },                 // key format invalid — will skip
+  { provider: "gemini",      model: "gemini-3.5-flash" },                 // key format invalid — will skip
   { provider: "huggingface", model: "mistralai/Mistral-7B-Instruct-v0.3" }, // VERIFIED authenticated
 ];
 
