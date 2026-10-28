@@ -17,7 +17,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   const contentType = req.headers.get("content-type") ?? "";
-  let content: string | Buffer;
+  let contentStr: string;
   let metadata: Record<string, unknown> = {};
 
   if (contentType.includes("application/json")) {
@@ -29,10 +29,10 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
         { status: 400 }
       );
     }
-    content = JSON.stringify(body);
-    metadata = body.metadata ?? {};
+    contentStr = JSON.stringify(body);
+    metadata = ((body as Record<string, unknown>).metadata as Record<string, unknown>) ?? {};
   } else if (contentType.includes("text/")) {
-    content = await req.text();
+    contentStr = await req.text();
   } else {
     // FIX P1: reject unsupported content types instead of silently treating as text
     return NextResponse.json(
@@ -42,7 +42,6 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   }
 
   // FIX P1: size limit — reject payloads > 1MB (prevents abuse)
-  const contentStr = typeof content === "string" ? content : content.toString();
   if (contentStr.length > 1_000_000) {
     return NextResponse.json(
       { error: "Bad request — content exceeds 1MB limit" },
