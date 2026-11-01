@@ -1,0 +1,140 @@
+[
+  {
+    "category": "auth",
+    "name": "Sign in Layla (layla@streetbites.eg)",
+    "pass": "fPAVPRcfBcwBE038UI3B7q3XviUfZkQP-31KEh9AliI",
+    "detail": "HTTP 200 + session cookie"
+  },
+  {
+    "category": "auth",
+    "name": "Sign in Ahmed (ahmed@ecopack.eg)",
+    "pass": "ytm02RTmH9HhFGNS8y3LCdyropUosMbMWvplyJSBxUM",
+    "detail": "HTTP 200 + session cookie"
+  },
+  {
+    "category": "auth",
+    "name": "Sign in Sarah (sarah@investor.eg)",
+    "pass": "6cAcxDtlcxnI-vGJ-4-WnqGgjG0JYPyd5R_rxqPvwXw",
+    "detail": "HTTP 200 + session cookie"
+  },
+  {
+    "category": "auth",
+    "name": "Sign in Mohamed (mohamed@smartfarm.eg)",
+    "pass": "yDKmnDq5lxOJCDd-6SKQ7Kkhrb1jhcgZ1tHYmyNYfL4",
+    "detail": "HTTP 200 + session cookie"
+  },
+  {
+    "category": "auth",
+    "name": "Sign in Khalil (khalil@holding.eg)",
+    "pass": "JnwMKNmxhrgfzXjuOacRXzvV9GpwKespun5ZrzEg2kw",
+    "detail": "HTTP 200 + session cookie"
+  },
+  {
+    "category": "auth",
+    "name": "Wrong password rejected",
+    "pass": true,
+    "detail": "HTTP 401"
+  },
+  {
+    "category": "auth",
+    "name": "Nonexistent user rejected",
+    "pass": true,
+    "detail": "HTTP 401"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla (member) → GET /api/admin/users",
+    "pass": true,
+    "detail": "HTTP 403 (expect 403)"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla (member) → GET /api/admin/enterprises",
+    "pass": true,
+    "detail": "HTTP 403 (expect 403)"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla (member) → GET /api/admin/settings",
+    "pass": true,
+    "detail": "HTTP 403 (expect 403)"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla (member) → GET /api/admin/audit",
+    "pass": true,
+    "detail": "HTTP 403 (expect 403)"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla (member) → GET /api/v1/regulatory/fra/dashboard",
+    "pass": true,
+    "detail": "HTTP 401 (expect 401)"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla → GET /api/proposals (own data)",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla → GET /api/notifications",
+    "pass": false,
+    "detail": "HTTP 404"
+  },
+  {
+    "category": "rbac",
+    "name": "Layla → GET /api/portfolio",
+    "pass": 404,
+    "detail": "HTTP 404"
+  },
+  {
+    "category": "workflow",
+    "name": "GET /api/proposals shape",
+    "pass": false,
+    "detail": "HTTP 200 {\"proposals\":[{\"id\":\"cmvlgz89f001lj6q9zm78knwl\",\"title\":\"Appoint Independent Man"
+  },
+  {
+    "category": "capital",
+    "name": "Sarah → GET /api/opportunities",
+    "pass": false,
+    "detail": "HTTP 404"
+  },
+  {
+    "category": "capital",
+    "name": "Sarah → GET /api/market",
+    "pass": false,
+    "detail": "HTTP 404"
+  },
+  {
+    "category": "capital",
+    "name": "Sarah → GET /api/syndicates",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "category": "capital",
+    "name": "Sarah → GET /api/dividends",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "category": "capital",
+    "name": "Sarah → GET /api/drip",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "category": "auth",
+    "name": "Sign out (Layla)",
+    "pass": true,
+    "detail": "HTTP 200"
+  },
+  {
+    "category": "auth",
+    "name": "Session revoked after signout",
+    "pass": true,
+    "detail": "HTTP 401 (expect 401)"
+  }
+]

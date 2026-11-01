@@ -1,0 +1,159 @@
+{
+  "total": 216,
+  "byStatus": {
+    "200": 15,
+    "400": 7,
+    "401": 84,
+    "403": 54,
+    "404": 4,
+    "405": 50,
+    "500": 1,
+    "503": 1
+  },
+  "open": [
+    {
+      "route": "/api/fx/consensus",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 443,
+      "body": "{\"from\":\"USD\",\"to\":\"EGP\",\"rate\":48.7696,\"sources\":[{\"source\":\"cbe\",\"rate\":48.6755,\"timestamp\":\"2026-11-01T19:32:08.141Z\"},{\"source\":\"ecb\",\"rate\":48.9114,\"timestamp\":\"2026-11-01T19:32:08.141Z\"}],\"media"
+    },
+    {
+      "route": "/api/health",
+      "method": "GET",
+      "methods": "GET",
+      "status": 200,
+      "ms": 983,
+      "body": "{\"status\":\"ok\",\"uptime\":972,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-11-01T20:01:49.353Z\"}"
+    },
+    {
+      "route": "/api/platform-health",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 2453,
+      "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-11-01T20:02:09.619Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"Source of truth. Push triggers CI/CD.\"},\""
+    },
+    {
+      "route": "/api/v1/cre/policies",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 508,
+      "body": "{\"engineVersion\":\"CRE-TS-1.0\",\"totalPolicies\":18,\"policies\":[{\"name\":\"zero_custody\",\"regoFile\":\"zero_custody.rego\",\"description\":\"Blocks any transfer to an AURIENTA-owned account (Non-amendable Rule I"
+    },
+    {
+      "route": "/api/legal-templates",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 749,
+      "body": "{\"total\":18,\"templates\":[{\"id\":\"tpl-constitutional-pledge\",\"appendix\":\"N\",\"title\":\"Constitutional Pledge\",\"jurisdiction\":\"Egypt\",\"category\":\"constitutional\",\"variables\":[\"founderName\",\"nationalId\",\"en"
+    },
+    {
+      "route": "/api/metrics",
+      "method": "GET",
+      "methods": "GET",
+      "status": 200,
+      "ms": 2348,
+      "body": "(non-json)"
+    },
+    {
+      "route": "/api/terms/acceptance",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 358,
+      "body": "{\"accepted\":false,\"authenticated\":false}"
+    },
+    {
+      "route": "/api/ai/diagnose",
+      "method": "GET",
+      "methods": "GET",
+      "status": 200,
+      "ms": 333,
+      "body": "{\"timestamp\":\"2026-11-01T20:11:44.088Z\",\"providers\":{\"groq\":{\"status\":\"not_configured\"},\"nvidia\":{\"status\":\"not_configured\"},\"huggingface\":{\"status\":\"not_configured\"},\"openrouter\":{\"status\":\"not_confi"
+    },
+    {
+      "route": "/api/evidence",
+      "method": "GET",
+      "methods": "OPTIONS",
+      "status": 200,
+      "ms": 1254,
+      "body": "{\"count\":0,\"items\":[]}"
+    },
+    {
+      "route": "/api/public/registry",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 2639,
+      "body": "{\"enterprises\":[{\"slug\":\"smartfarm-egypt\",\"name\":\"SmartFarm Egypt\",\"tagline\":\"AI-irrigated agriculture — from Tier C to a sovereign EGX listing\",\"sector\":\"agriculture\",\"tier\":\"F\",\"stage\":\"graduated\",\""
+    },
+    {
+      "route": "/api/public/stats",
+      "method": "GET",
+      "methods": "OPTIONS",
+      "status": 200,
+      "ms": 1295,
+      "body": "{\"constitutionalHash\":\"0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A\",\"zeroCustody\":{\"aurientaHeldEgp\":0,\"escrowTotalEgp\":16780000,\"firms\":[{\"id\":\"cmvlgz40x0000j6q9pn76nn4t\",\"name\":\"Nile Legal — Const"
+    },
+    {
+      "route": "/api/public/enterprise/street-bites",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 1412,
+      "body": "{\"id\":\"cmvlgz6fy0009j6q9n1i1ndhi\",\"slug\":\"street-bites\",\"name\":\"Street Bites\",\"tagline\":\"Constitutional street food — Cairo's first token-free food network\",\"description\":\"A Tier A microenterprise ser"
+    },
+    {
+      "route": "/api/public/enterprise/street-bites/transparency",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 2129,
+      "body": "{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\"},\"score\":20,\"tier\":\"Bronze\",\"storedScore\":0,\"breakdown\":[{\"key\":\"quarterly_reports\",\"label\":\"Quarterly reports filed (last 12 months)\",\"point"
+    },
+    {
+      "route": "/api/public/enterprise/street-bites/trades",
+      "method": "GET",
+      "methods": "",
+      "status": 200,
+      "ms": 2190,
+      "body": "{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\",\"equityUnitPriceEgp\":50},\"trades\":[],\"pagination\":{\"count\":0,\"hasMore\":false,\"nextCursor\":null,\"limit\":50},\"totalTrades\":0,\"uniquePartners\":0"
+    },
+    {
+      "route": "/api/public/enterprise/street-bites/cre-decisions",
+      "method": "GET",
+      "methods": "GET",
+      "status": 200,
+      "ms": 1289,
+      "body": "{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\"},\"decisions\":[],\"pagination\":{\"count\":0,\"hasMore\":false,\"nextCursor\":null,\"limit\":50},\"constitutionalHash\":\"0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A"
+    }
+  ],
+  "dead": [],
+  "err5": [
+    {
+      "route": "/api/inngest",
+      "method": "GET",
+      "methods": "",
+      "status": 500,
+      "ms": 1278,
+      "body": "null"
+    },
+    {
+      "route": "/api/ready",
+      "method": "GET",
+      "methods": "GET",
+      "status": 503,
+      "ms": 2514,
+      "body": "{\"status\":\"down\",\"uptimeMs\":1828,\"checks\":[{\"name\":\"database\",\"status\":\"ok\",\"latencyMs\":1196},{\"name\":\"cre_config\",\"status\":\"ok\",\"latencyMs\":0},{\"name\":\"ai_providers\",\"status\":\"down\",\"latencyMs\":1,\"de"
+    }
+  ],
+  "latency": {
+    "p50": 443,
+    "p90": 1207,
+    "max": 6459
+  }
+}

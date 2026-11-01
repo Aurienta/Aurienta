@@ -1,0 +1,216 @@
+{"route":"/api/zeitgeist","method":"GET","methods":"","status":401,"ms":572,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/trade-instruments/test-id-000","method":"GET","methods":"","status":401,"ms":567,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/trade-instruments","method":"GET","methods":"","status":401,"ms":667,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/supply-chain/advances/av1","method":"GET","methods":"","status":401,"ms":782,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/supply-chain/advances","method":"GET","methods":"","status":401,"ms":254,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/wages/benchmarks","method":"GET","methods":"","status":400,"ms":273,"body":"{\"error\":\"sector query param is required\"}"}
+{"route":"/api/wages/bands","method":"GET","methods":"","status":401,"ms":198,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/graduation-bond/ent-known","method":"GET","methods":"","status":401,"ms":561,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/graduation-bond/verify/b1","method":"GET","methods":"","status":404,"ms":2193,"body":"{\"valid\":false,\"reason\":\"Bond not found\"}"}
+{"route":"/api/graduation-bond/issue","method":"GET","methods":"","status":405,"ms":202,"body":"null"}
+{"route":"/api/fx","method":"GET","methods":"","status":400,"ms":179,"body":"{\"error\":\"missing_param\",\"message\":\"'from' query parameter is required\"}"}
+{"route":"/api/fx/refresh","method":"GET","methods":"","status":405,"ms":206,"body":"null"}
+{"route":"/api/fx/consensus","method":"GET","methods":"","status":200,"ms":443,"body":"{\"from\":\"USD\",\"to\":\"EGP\",\"rate\":48.7696,\"sources\":[{\"source\":\"cbe\",\"rate\":48.6755,\"timestamp\":\"2026-11-01T19:32:08.141Z\"},{\"source\":\"ecb\",\"rate\":48.9114,\"timestamp\":\"2026-11-01T19:32:08.141Z\"}],\"media"}
+{"route":"/api/succession/test-id-000/activate","method":"GET","methods":"OPTIONS","status":405,"ms":574,"body":"null"}
+{"route":"/api/succession/test-id-000/execute","method":"GET","methods":"OPTIONS","status":405,"ms":589,"body":"null"}
+{"route":"/api/succession","method":"GET","methods":"OPTIONS","status":401,"ms":228,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/cron/reservation-expiry","method":"GET","methods":"","status":401,"ms":217,"body":"{\"error\":\"Unauthorized — invalid or missing cron token\"}"}
+{"route":"/api/cron/stage-transition","method":"GET","methods":"","status":405,"ms":226,"body":"null"}
+{"route":"/api/cron/crcica-arbitration","method":"GET","methods":"","status":405,"ms":214,"body":"null"}
+{"route":"/api/cron/health-rating","method":"GET","methods":"","status":405,"ms":230,"body":"null"}
+{"route":"/api/cron/verification-sla","method":"GET","methods":"","status":405,"ms":224,"body":"null"}
+{"route":"/api/cron/proposal-expiry","method":"GET","methods":"","status":401,"ms":236,"body":"{\"error\":\"Unauthorized — invalid or missing cron token\"}"}
+{"route":"/api/skill-equity/test-id-000/review","method":"GET","methods":"","status":405,"ms":649,"body":"null"}
+{"route":"/api/skill-equity","method":"GET","methods":"","status":405,"ms":303,"body":"null"}
+{"route":"/api/proposals/test-id-000/vote","method":"POST","methods":"POST","status":403,"ms":10,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/proposals","method":"GET","methods":"","status":401,"ms":319,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/orders","method":"POST","methods":"POST,GET","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/vault","method":"GET","methods":"","status":401,"ms":306,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/vault/loan/test-id-000","method":"GET","methods":"","status":401,"ms":722,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/vault/loan","method":"GET","methods":"","status":405,"ms":315,"body":"null"}
+{"route":"/api/ledger/ticker","method":"GET","methods":"GET","status":401,"ms":331,"body":"{\"error\":\"not_authenticated\"}"}
+{"route":"/api/ledger/verify","method":"GET","methods":"","status":401,"ms":293,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/ledger/sync","method":"GET","methods":"","status":405,"ms":298,"body":"null"}
+{"route":"/api/circuit-breaker/ent-known","method":"GET","methods":"","status":401,"ms":1156,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/diaspora-corridor","method":"GET","methods":"OPTIONS","status":401,"ms":368,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/health","method":"GET","methods":"GET","status":200,"ms":983,"body":"{\"status\":\"ok\",\"uptime\":972,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-11-01T20:01:49.353Z\"}"}
+{"route":"/api/endorsements/e1","method":"GET","methods":"","status":405,"ms":755,"body":"null"}
+{"route":"/api/endorsements/enterprise/ent-known","method":"GET","methods":"","status":401,"ms":720,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/endorsements","method":"GET","methods":"","status":401,"ms":340,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/genome/ent-known","method":"GET","methods":"","status":401,"ms":693,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/genome","method":"GET","methods":"","status":401,"ms":341,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/dividends","method":"GET","methods":"","status":401,"ms":376,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/dividends/d1","method":"GET","methods":"","status":405,"ms":767,"body":"null"}
+{"route":"/api/notifications/test-id-000/read","method":"GET","methods":"","status":405,"ms":710,"body":"null"}
+{"route":"/api/admin/users/test-id-000/suspend","method":"POST","methods":"POST","status":403,"ms":9,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/admin/users/test-id-000","method":"GET","methods":"GET,PATCH","status":401,"ms":709,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/admin/users/test-id-000/role","method":"POST","methods":"POST","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/admin/users","method":"GET","methods":"GET","status":401,"ms":367,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/admin/audit","method":"GET","methods":"GET","status":401,"ms":361,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/admin/audit/export","method":"GET","methods":"GET","status":401,"ms":378,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/admin/settings","method":"GET","methods":"GET,PATCH","status":401,"ms":366,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/admin/enterprises/test-id-000/unfreeze","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/admin/enterprises/test-id-000/freeze","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/admin/enterprises/test-id-000","method":"GET","methods":"GET,PATCH","status":401,"ms":752,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/admin/enterprises","method":"GET","methods":"GET","status":401,"ms":395,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/diaspora","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/milestones/test-id-000/accountant-release","method":"GET","methods":"","status":405,"ms":776,"body":"null"}
+{"route":"/api/oracle/keys","method":"POST","methods":"POST","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/oracle/consensus","method":"POST","methods":"POST,GET","status":400,"ms":439,"body":"{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"query\":[\"Invalid input: expected string, received undefined\"],\"apiKey\":[\"Invalid input: expected string, received undefined\"]"}
+{"route":"/api/mentorship","method":"GET","methods":"","status":401,"ms":460,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/graduation/execute","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/graduation","method":"GET","methods":"GET","status":401,"ms":447,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/graduation/export","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/productive-egp/snapshot","method":"GET","methods":"","status":401,"ms":439,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/productive-egp/history","method":"GET","methods":"","status":401,"ms":424,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/screening","method":"GET","methods":"","status":401,"ms":1207,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/standalone-succession/cs1","method":"GET","methods":"OPTIONS","status":401,"ms":872,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/standalone-succession","method":"GET","methods":"OPTIONS","status":401,"ms":485,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/risk-profile/keys","method":"POST","methods":"POST","status":403,"ms":9,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/risk-profile/ent-known","method":"GET","methods":"GET","status":401,"ms":908,"body":"{\"error\":\"X-Risk-Profile-Api-Key header is required (issue a key via POST /api/risk-profile/keys)\",\"disclaimer\":\"AURIENTA does NOT underwrite insurance. This API provides enterprise risk data only. In"}
+{"route":"/api/takaful/claims","method":"GET","methods":"","status":401,"ms":540,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/takaful/claims/c1","method":"GET","methods":"","status":401,"ms":893,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/matching","method":"GET","methods":"GET","status":401,"ms":551,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/inngest","method":"GET","methods":"","status":500,"ms":1278,"body":"null"}
+{"route":"/api/platform-health","method":"GET","methods":"","status":200,"ms":2453,"body":"{\"overall\":\"operational\",\"checkedAt\":\"2026-11-01T20:02:09.619Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"Source of truth. Push triggers CI/CD.\"},\""}
+{"route":"/api/v1/gov/eta","method":"GET","methods":"","status":400,"ms":6459,"body":"{\"error\":\"Missing query params: taxId, name\"}"}
+{"route":"/api/v1/gov/nosi","method":"GET","methods":"","status":400,"ms":517,"body":"{\"error\":\"Missing query params: nationalId, name\"}"}
+{"route":"/api/v1/gov/gafi","method":"GET","methods":"","status":400,"ms":1307,"body":"{\"error\":\"Missing query params: crNumber, name\"}"}
+{"route":"/api/v1/cre/validate","method":"GET","methods":"","status":405,"ms":538,"body":"null"}
+{"route":"/api/v1/cre/policies","method":"GET","methods":"","status":200,"ms":508,"body":"{\"engineVersion\":\"CRE-TS-1.0\",\"totalPolicies\":18,\"policies\":[{\"name\":\"zero_custody\",\"regoFile\":\"zero_custody.rego\",\"description\":\"Blocks any transfer to an AURIENTA-owned account (Non-amendable Rule I"}
+{"route":"/api/v1/enterprise/street-bites/data","method":"GET","methods":"GET,OPTIONS","status":401,"ms":876,"body":"{\"error\":\"Missing API key. Provide ?key=xxx\",\"code\":\"MISSING_API_KEY\"}"}
+{"route":"/api/v1/regulatory/fra/dashboard","method":"GET","methods":"","status":401,"ms":527,"body":"{\"error\":\"Unauthorized — FRA access required\"}"}
+{"route":"/api/v1/ipfs/pin","method":"GET","methods":"","status":405,"ms":526,"body":"null"}
+{"route":"/api/v1/intelligence/conflicts","method":"GET","methods":"","status":400,"ms":3574,"body":"{\"error\":\"Missing query params: userId, enterpriseId\"}"}
+{"route":"/api/v1/webhook/payment","method":"GET","methods":"","status":405,"ms":590,"body":"null"}
+{"route":"/api/auth/register","method":"GET","methods":"","status":405,"ms":605,"body":"null"}
+{"route":"/api/auth/signout","method":"GET","methods":"","status":405,"ms":626,"body":"null"}
+{"route":"/api/auth","method":"GET","methods":"","status":405,"ms":658,"body":"null"}
+{"route":"/api/auth/passkey/register/finish","method":"GET","methods":"","status":405,"ms":2583,"body":"null"}
+{"route":"/api/auth/passkey/register/start","method":"GET","methods":"","status":405,"ms":727,"body":"null"}
+{"route":"/api/auth/passkey/authenticate/finish","method":"GET","methods":"","status":405,"ms":677,"body":"null"}
+{"route":"/api/auth/passkey/authenticate/start","method":"GET","methods":"","status":405,"ms":674,"body":"null"}
+{"route":"/api/auth/passkey/list","method":"GET","methods":"","status":401,"ms":675,"body":"{\"error\":\"unauthorized\"}"}
+{"route":"/api/auth/passkey/delete","method":"GET","methods":"","status":405,"ms":697,"body":"null"}
+{"route":"/api/documents/test-id-000/sign","method":"POST","methods":"POST","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/legal-templates/test-id-000","method":"GET","methods":"","status":404,"ms":953,"body":"{\"error\":\"Template not found\"}"}
+{"route":"/api/legal-templates/test-id-000/render","method":"GET","methods":"","status":405,"ms":2088,"body":"null"}
+{"route":"/api/legal-templates","method":"GET","methods":"","status":200,"ms":749,"body":"{\"total\":18,\"templates\":[{\"id\":\"tpl-constitutional-pledge\",\"appendix\":\"N\",\"title\":\"Constitutional Pledge\",\"jurisdiction\":\"Egypt\",\"category\":\"constitutional\",\"variables\":[\"founderName\",\"nationalId\",\"en"}
+{"route":"/api/ready","method":"GET","methods":"GET","status":503,"ms":2514,"body":"{\"status\":\"down\",\"uptimeMs\":1828,\"checks\":[{\"name\":\"database\",\"status\":\"ok\",\"latencyMs\":1196},{\"name\":\"cre_config\",\"status\":\"ok\",\"latencyMs\":0},{\"name\":\"ai_providers\",\"status\":\"down\",\"latencyMs\":1,\"de"}
+{"route":"/api/trade-documents","method":"GET","methods":"","status":405,"ms":2007,"body":"null"}
+{"route":"/api/priority-allocation/rankings","method":"GET","methods":"","status":401,"ms":695,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/priority-allocation/al1","method":"GET","methods":"","status":405,"ms":1093,"body":"null"}
+{"route":"/api/priority-allocation","method":"GET","methods":"","status":401,"ms":716,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api","method":"GET","methods":"","status":404,"ms":657,"body":"{\"error\":\"Not found — use a specific API endpoint. See /api/health for status.\"}"}
+{"route":"/api/solvency","method":"GET","methods":"","status":401,"ms":714,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/tasks/tk1","method":"GET","methods":"","status":405,"ms":2598,"body":"null"}
+{"route":"/api/erp/tasks","method":"GET","methods":"","status":401,"ms":821,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/timesheets","method":"GET","methods":"","status":401,"ms":733,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/timesheets/ts1","method":"GET","methods":"","status":405,"ms":1179,"body":"null"}
+{"route":"/api/erp/integration/logs","method":"GET","methods":"","status":401,"ms":578,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/erp/integration","method":"GET","methods":"","status":401,"ms":552,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/erp/integration/sync","method":"GET","methods":"","status":405,"ms":1964,"body":"null"}
+{"route":"/api/erp/projects/pj1","method":"GET","methods":"","status":401,"ms":1156,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/projects","method":"GET","methods":"","status":401,"ms":659,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/quality-checks/ck1","method":"GET","methods":"","status":405,"ms":1090,"body":"null"}
+{"route":"/api/erp/quality-checks","method":"GET","methods":"","status":401,"ms":1086,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/inventory/i1/movement","method":"GET","methods":"","status":405,"ms":759,"body":"null"}
+{"route":"/api/erp/inventory","method":"GET","methods":"","status":401,"ms":228,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/assets/as1","method":"GET","methods":"","status":405,"ms":650,"body":"null"}
+{"route":"/api/erp/assets","method":"GET","methods":"","status":401,"ms":239,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/purchase-orders/po1","method":"GET","methods":"","status":401,"ms":667,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/purchase-orders","method":"GET","methods":"","status":401,"ms":246,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/production-orders/o1","method":"GET","methods":"","status":405,"ms":671,"body":"null"}
+{"route":"/api/erp/production-orders","method":"GET","methods":"","status":401,"ms":261,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/resources","method":"GET","methods":"","status":401,"ms":252,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/erp/resources/r1/allocate","method":"GET","methods":"","status":405,"ms":717,"body":"null"}
+{"route":"/api/profit-sharing/a1","method":"GET","methods":"","status":401,"ms":681,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/profit-sharing","method":"GET","methods":"","status":401,"ms":286,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/export-readiness","method":"GET","methods":"","status":401,"ms":277,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/soulbound/verify","method":"GET","methods":"","status":405,"ms":273,"body":"null"}
+{"route":"/api/soulbound/revoke","method":"GET","methods":"","status":405,"ms":243,"body":"null"}
+{"route":"/api/soulbound","method":"GET","methods":"","status":401,"ms":253,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/api-keys/test-id-000","method":"DELETE","methods":"DELETE","status":403,"ms":9,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/api-keys","method":"POST","methods":"POST,GET","status":403,"ms":9,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/gaas/organizations","method":"GET","methods":"GET,POST","status":401,"ms":297,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/gaas/organizations/[orgId]/decisions","method":"GET","methods":"GET,POST","status":401,"ms":672,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/gaas/organizations/[orgId]/policies","method":"GET","methods":"GET,POST","status":401,"ms":739,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/risk-disclosure","method":"POST","methods":"POST,PATCH","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/proxies/test-id-000/revoke","method":"GET","methods":"","status":405,"ms":791,"body":"null"}
+{"route":"/api/proxies","method":"GET","methods":"","status":401,"ms":312,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/enterprise-updates","method":"GET","methods":"GET,POST","status":401,"ms":353,"body":"{\"error\":\"not_authenticated\"}"}
+{"route":"/api/salary-to-equity","method":"GET","methods":"OPTIONS","status":401,"ms":290,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/metrics","method":"GET","methods":"GET","status":200,"ms":2348,"body":"(non-json)"}
+{"route":"/api/syndicates/test-id-000/join","method":"POST","methods":"POST","status":403,"ms":10,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/syndicates","method":"GET","methods":"","status":401,"ms":325,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/reality-sync","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/employees","method":"GET","methods":"GET,POST","status":401,"ms":346,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/copilot","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/expenses/test-id-000/approve","method":"GET","methods":"","status":405,"ms":691,"body":"null"}
+{"route":"/api/expenses/test-id-000/reject","method":"GET","methods":"","status":405,"ms":882,"body":"null"}
+{"route":"/api/expenses","method":"GET","methods":"GET,POST","status":401,"ms":499,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/expenses/budget","method":"GET","methods":"","status":401,"ms":425,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/discovery","method":"GET","methods":"GET,POST","status":401,"ms":342,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/discovery/m1","method":"PATCH","methods":"PATCH","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/terms/acceptance","method":"GET","methods":"","status":200,"ms":358,"body":"{\"accepted\":false,\"authenticated\":false}"}
+{"route":"/api/ai/multilingual","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/annual-report","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/succession","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/graduation-coach","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/precedent","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/anomaly","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/salary/override","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/salary","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/charter-diff","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/evidence-verification","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/ir","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/tax","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/diagnose","method":"GET","methods":"GET","status":200,"ms":333,"body":"{\"timestamp\":\"2026-11-01T20:11:44.088Z\",\"providers\":{\"groq\":{\"status\":\"not_configured\"},\"nvidia\":{\"status\":\"not_configured\"},\"huggingface\":{\"status\":\"not_configured\"},\"openrouter\":{\"status\":\"not_confi"}
+{"route":"/api/ai/survival-drill","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/salary-engine","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/explain","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/board-briefing","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/triage","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/feasibility","method":"POST","methods":"POST,GET","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/milestone-designer","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/partner-insights","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/pitch-deck","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/graduation-simulator","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/eve","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/share-message","method":"POST","methods":"POST","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/drift","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/ai/brain-status","method":"GET","methods":"","status":401,"ms":940,"body":"{\"error\":\"unauthorized\"}"}
+{"route":"/api/ai/mentor-matching","method":"POST","methods":"POST","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/appeals","method":"POST","methods":"POST,GET","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/verification/kyc","method":"GET","methods":"","status":405,"ms":406,"body":"null"}
+{"route":"/api/verification/test-id-000","method":"GET","methods":"OPTIONS","status":401,"ms":791,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/verification","method":"GET","methods":"OPTIONS","status":401,"ms":392,"body":"{\"error\":\"Not authenticated\"}"}
+{"route":"/api/qa/test-id-000/answer","method":"POST","methods":"POST","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/qa","method":"POST","methods":"POST,GET","status":403,"ms":5,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/evidence/bafytest","method":"GET","methods":"OPTIONS","status":404,"ms":1603,"body":"{\"error\":\"Evidence not found\"}"}
+{"route":"/api/evidence","method":"GET","methods":"OPTIONS","status":200,"ms":1254,"body":"{\"count\":0,\"items\":[]}"}
+{"route":"/api/whistleblower/test-id-000/resolve","method":"GET","methods":"","status":405,"ms":779,"body":"null"}
+{"route":"/api/whistleblower","method":"POST","methods":"POST,GET","status":403,"ms":9,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/benchmark","method":"GET","methods":"GET","status":401,"ms":467,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/quadratic-voting/p1","method":"GET","methods":"","status":401,"ms":879,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/quadratic-voting","method":"GET","methods":"","status":401,"ms":449,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/arei","method":"GET","methods":"","status":401,"ms":457,"body":"{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}"}
+{"route":"/api/arei/compute","method":"GET","methods":"","status":405,"ms":458,"body":"null"}
+{"route":"/api/public/registry","method":"GET","methods":"","status":200,"ms":2639,"body":"{\"enterprises\":[{\"slug\":\"smartfarm-egypt\",\"name\":\"SmartFarm Egypt\",\"tagline\":\"AI-irrigated agriculture — from Tier C to a sovereign EGX listing\",\"sector\":\"agriculture\",\"tier\":\"F\",\"stage\":\"graduated\",\""}
+{"route":"/api/public/stats","method":"GET","methods":"OPTIONS","status":200,"ms":1295,"body":"{\"constitutionalHash\":\"0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A0F2C5B9E7D1A\",\"zeroCustody\":{\"aurientaHeldEgp\":0,\"escrowTotalEgp\":16780000,\"firms\":[{\"id\":\"cmvlgz40x0000j6q9pn76nn4t\",\"name\":\"Nile Legal — Const"}
+{"route":"/api/public/enterprise/street-bites","method":"GET","methods":"","status":200,"ms":1412,"body":"{\"id\":\"cmvlgz6fy0009j6q9n1i1ndhi\",\"slug\":\"street-bites\",\"name\":\"Street Bites\",\"tagline\":\"Constitutional street food — Cairo's first token-free food network\",\"description\":\"A Tier A microenterprise ser"}
+{"route":"/api/public/enterprise/street-bites/transparency","method":"GET","methods":"","status":200,"ms":2129,"body":"{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\"},\"score\":20,\"tier\":\"Bronze\",\"storedScore\":0,\"breakdown\":[{\"key\":\"quarterly_reports\",\"label\":\"Quarterly reports filed (last 12 months)\",\"point"}
+{"route":"/api/public/enterprise/street-bites/trades","method":"GET","methods":"","status":200,"ms":2190,"body":"{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\",\"equityUnitPriceEgp\":50},\"trades\":[],\"pagination\":{\"count\":0,\"hasMore\":false,\"nextCursor\":null,\"limit\":50},\"totalTrades\":0,\"uniquePartners\":0"}
+{"route":"/api/public/enterprise/street-bites/cre-decisions","method":"GET","methods":"GET","status":200,"ms":1289,"body":"{\"enterprise\":{\"slug\":\"street-bites\",\"name\":\"Street Bites\"},\"decisions\":[],\"pagination\":{\"count\":0,\"hasMore\":false,\"nextCursor\":null,\"limit\":50},\"constitutionalHash\":\"0xB4F8D3E2F6A0B5D9E7F2A1C4B8E3D6A"}
+{"route":"/api/drip","method":"GET","methods":"GET,POST","status":401,"ms":495,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/cooperative/transactions/t1","method":"GET","methods":"","status":405,"ms":852,"body":"null"}
+{"route":"/api/cooperative/transactions","method":"GET","methods":"","status":401,"ms":482,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/trades/match","method":"GET","methods":"","status":405,"ms":488,"body":"null"}
+{"route":"/api/enterprises/test-id-000/health","method":"GET","methods":"","status":401,"ms":820,"body":"{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}"}
+{"route":"/api/enterprises/test-id-000/profile","method":"PATCH","methods":"PATCH,GET","status":403,"ms":7,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/enterprises/test-id-000/milestones","method":"POST","methods":"POST,GET","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/enterprises/test-id-000/list","method":"POST","methods":"POST","status":403,"ms":6,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/enterprises/test-id-000/close-capital-formation","method":"GET","methods":"","status":405,"ms":860,"body":"null"}
+{"route":"/api/enterprises","method":"POST","methods":"POST,GET","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
+{"route":"/api/reservations/test-id-000/confirm","method":"GET","methods":"","status":405,"ms":897,"body":"null"}
+{"route":"/api/reservations","method":"POST","methods":"POST","status":403,"ms":8,"body":"{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}"}
