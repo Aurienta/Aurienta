@@ -619,7 +619,7 @@ model AiArtifact {
   entityId      String?  // generic FK (proposalId, expenseId, milestoneId, etc.)
   content       String   // the AI-generated text
   payload       String   @default("{}") // JSON — structured data
-  modelVersion  String   @default("glm-4.6")
+  modelVersion  String   @default("multi-consensus")
   confidence    Float    @default(0.85)
   createdAt     DateTime @default(now())
 

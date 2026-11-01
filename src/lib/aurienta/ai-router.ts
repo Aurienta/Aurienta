@@ -1,16 +1,11 @@
 // AURIENTA Brain AI — Multi-Model Consensus Orchestrator (AI-REBUILD)
 //
-// 4 native AI providers with multiple models each — all work in CONSENSUS:
-//   1. Groq         — llama-3.3-70b-versatile (reasoning, 70B)
-//                     llama-3.1-8b-instant (fast, 8B)
-//   2. NVIDIA NIM   — nvidia/llama-3.1-nemotron-51b-instruct (enterprise)
-//                     google/gemma-3-12b-it (balanced)
-//                     mistralai/mistral-large-2-instruct (large)
-//   3. Google Gemini— gemini-3.5-flash (fast)
-//                     gemini-3.8-pro (balanced)
-//   4. HuggingFace  — meta-llama/Meta-Llama-3.1-8B-Instruct (general)
-//                     mistralai/Mistral-7B-Instruct-v0.3 (fast)
-//                     HuggingFaceH4/zephyr-7b-beta (lightweight)
+// 5 AI providers with multiple models each — all work in CONSENSUS:
+//   1. Groq         — openai/gpt-oss-20b (fast) + openai/gpt-oss-120b (reasoning)
+//   2. NVIDIA NIM   — enterprise models (nemotron, gemma, mistral)
+//   3. Google Gemini— gemini-3.5-flash + pro variants
+//   4. HuggingFace  — general/fast/lightweight open models
+//   5. OpenRouter   — aggregated access to additional models (7 entries)
 //
 // CONSENSUS MODE: For every task, the Brain queries 3+ models from DIFFERENT
 // providers in PARALLEL via Promise.allSettled() and synthesizes their
@@ -20,7 +15,7 @@
 // models to a consensus (e.g. NVIDIA nemotron-51b + NVIDIA gemma-3-12b for
 // enterprise reasoning) when that yields the best coverage.
 //
-// NO OpenRouter. 4 native AI providers only.
+// All 5 providers are wired; consensus tasks draw 4-5 models across providers.
 //
 // ROBUST CONSENSUS (AI-REBUILD):
 //   - All configured models are queried in parallel via Promise.allSettled.

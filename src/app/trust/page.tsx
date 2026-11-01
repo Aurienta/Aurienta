@@ -40,14 +40,10 @@ export const metadata: Metadata = {
 // an ideal ISR candidate — no cookies/headers/dynamic APIs are read here.
 export const revalidate = 300;
 
-// ── Mock AI health metrics ──
-const AI_HEALTH = {
-  hallucinationRate: 0.004, // 0.4%
-  biasDisparity: 0.12, // 12%
-  driftKl: 0.06,
-  oversightModel: "Gemma 2 7B",
-  enforcementModel: "Multi-Model Consensus (5 providers)",
-};
+// ── AI health (REAL — computed at render, no fabricated telemetry) ──
+// The evaluation harness for hallucination / bias / drift is roadmap work;
+// until it exists this page reports only what is actually measurable:
+// produced artifacts, their average confidence, and CRE decisions issued.
 
 // ── Compliance integrations (mock statuses — each is API-connected) ──
 const COMPLIANCE_INTEGRATIONS = [
@@ -111,16 +107,8 @@ function kpiCard(
   );
 }
 
-function aiMetricColor(value: number, ok: number, warn: number, inverted = true) {
-  if (inverted) {
-    if (value <= ok) return "green";
-    if (value <= warn) return "amber";
-    return "red";
-  }
-  if (value >= ok) return "green";
-  if (value >= warn) return "amber";
-  return "red";
-}
+// (aiMetricColor removed with the fabricated telemetry cards — AI health now
+// reports only real, measurable data.)
 
 export default async function TrustPage() {
   // ── Data fetch ──
@@ -182,6 +170,17 @@ export default async function TrustPage() {
     select: { id: true, slug: true },
   });
   const slugByEntId = new Map(gradEnterprises.map((e) => [e.id, e.slug]));
+
+  // Real AI/CRE health metrics (see AI_HEALTH note above).
+  const [aiArtifactsTotal, aiConfidence, creDecisionsIssued] = await Promise.all([
+    db.aiArtifact.count(),
+    db.aiArtifact.aggregate({ _avg: { confidence: true } }),
+    db.creDecision.count(),
+  ]);
+  const avgConfidencePct =
+    aiConfidence._avg.confidence !== null
+      ? Math.round(aiConfidence._avg.confidence * 1000) / 10
+      : null;
 
   // ── Aggregations ──
   const escrowTotalEgp = enterprises.reduce((s, e) => s + e.lawFirmClientAccountBalanceEgp, 0);
@@ -564,7 +563,7 @@ export default async function TrustPage() {
               <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/20 bg-gold/5 px-4 py-1.5">
                 <Cpu className="h-3 w-3 text-gold" />
                 <span className="font-sans text-[11px] font-medium uppercase tracking-[0.22em] text-gold-light/90">
-                  AI Health · Gemma 2 7B Oversight
+                  AI Health · Multi-Model Consensus
                 </span>
               </div>
               <h2 id="ai-health-title" className="mt-5 font-serif text-3xl font-semibold sm:text-4xl">
@@ -572,15 +571,16 @@ export default async function TrustPage() {
               </h2>
               <p className="mt-4 font-sans text-base text-muted-foreground">
                 The CRE validates every action against Rego policies. AI advises;
-                it cannot override. Independent oversight models run continuous
-                fairness, hallucination, and drift audits on the enforcement models.
+                it cannot override. Every advisory response is produced by a
+                multi-model consensus across independent providers, and every
+                decision is signed and ledgered.
               </p>
               <div className="mt-5 flex flex-wrap gap-2 font-mono text-xs">
                 <span className="rounded-full border border-gold/20 bg-background/50 px-3 py-1 text-gold-light/80">
-                  Oversight: {AI_HEALTH.oversightModel}
+                  Enforcement: Deterministic CRE (52 policies)
                 </span>
                 <span className="rounded-full border border-gold/20 bg-background/50 px-3 py-1 text-gold-light/80">
-                  Enforcement: {AI_HEALTH.enforcementModel}
+                  Advisory: Multi-Model Consensus (5 providers)
                 </span>
               </div>
             </div>
@@ -588,22 +588,22 @@ export default async function TrustPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               {[
                 {
-                  label: "Hallucination rate",
-                  value: `${(AI_HEALTH.hallucinationRate * 100).toFixed(1)}%`,
-                  detail: "Sampled 10k outputs · 30-day rolling",
-                  status: aiMetricColor(AI_HEALTH.hallucinationRate, 0.005, 0.01),
+                  label: "AI artifacts produced",
+                  value: aiArtifactsTotal.toLocaleString(),
+                  detail: "Consensus advisory outputs persisted + ledgered",
+                  status: "green" as const,
                 },
                 {
-                  label: "Bias disparity",
-                  value: `${(AI_HEALTH.biasDisparity * 100).toFixed(0)}%`,
-                  detail: "Across gender · age · region cohorts",
-                  status: aiMetricColor(AI_HEALTH.biasDisparity, 0.15, 0.25),
+                  label: "Average AI confidence",
+                  value: avgConfidencePct !== null ? `${avgConfidencePct}%` : "—",
+                  detail: "Self-reported model confidence, all artifacts",
+                  status: (avgConfidencePct === null ? "amber" : avgConfidencePct >= 70 ? "green" : "amber") as "green" | "amber",
                 },
                 {
-                  label: "Drift (KL divergence)",
-                  value: AI_HEALTH.driftKl.toFixed(2),
-                  detail: "Distribution shift vs. baseline",
-                  status: aiMetricColor(AI_HEALTH.driftKl, 0.1, 0.2),
+                  label: "CRE decisions issued",
+                  value: creDecisionsIssued.toLocaleString(),
+                  detail: "Ed25519-signed · verifiable on the public ledger",
+                  status: "green" as const,
                 },
               ].map((m) => {
                 const color =

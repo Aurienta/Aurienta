@@ -28,6 +28,7 @@ import { getCurrentUser } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { rateLimit, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,6 +67,9 @@ type ApiKeyRecord = {
  * Returns the actual key value ONCE. Subsequent GET requests never
  * include the key value — only the PlatformSetting.id + metadata.
  */
+// Credential issuance is sensitive — 10 key generations per minute per user.
+const apiKeyLimiter = rateLimit({ windowMs: 60_000, max: 10, key: "api_keys" });
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -75,6 +79,9 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
+
+    const rl = apiKeyLimiter(user.id);
+    if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
 
     const body = await req.json().catch(() => ({}));
     const parsed = CreateSchema.safeParse(body);

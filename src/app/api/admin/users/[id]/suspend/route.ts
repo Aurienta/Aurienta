@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { rateLimit, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 /**
  * POST /api/admin/users/[id]/suspend
@@ -16,12 +17,19 @@ import { logger } from "@/lib/aurienta/logger";
  * The previous verification level is preserved in the audit metadata so the
  * user can be restored by re-patching their verificationLevel via PATCH.
  */
+// Admin mutations: 30/min per actor (rep-only + audit-logged, this guards
+// against scripted abuse of privileged endpoints).
+const adminMutationLimiter = rateLimit({ windowMs: 60_000, max: 30, key: "admin_mutation" });
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const actor = await requireRole("aurienta_rep");
+
+    const rl = adminMutationLimiter(actor.id);
+    if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
     const { id } = await params;
 
     const body = await req.json().catch(() => ({})) as { reason?: string };

@@ -10,10 +10,13 @@ import { Award, GraduationCap } from "lucide-react";
 export const metadata = { title: "Alumni Hall · AURIENTA" };
 
 /**
- * P0 #15 (audit review): This page is INTENTIONALLY PUBLIC — it is a
- * read-only directory of graduated sovereign enterprises. No PII is exposed.
- * Only enterprise name, tier, graduation date, and sector are shown.
- * This is by design (Vol 15 §15.5 — Alumni Hall is public).
+ * Alumni Hall — read-only directory of graduated sovereign enterprises.
+ * No PII is exposed: only enterprise name, tier, graduation date, and sector.
+ *
+ * NOTE: although the content is public-grade, this page lives under
+ * /dashboard whose layout enforces authentication — so in practice it is
+ * authenticated-access. Public graduated-enterprise data is also available
+ * via /registry and /api/public/registry.
  */
 export default async function AlumniPage() {
   // Public, read-only directory of graduated sovereign enterprises.

@@ -1,5 +1,4 @@
-// AURIENTA env validation — 4 native AI providers (Groq, NVIDIA, Gemini, HuggingFace).
-// NO OpenRouter. 4 native AI providers only.
+// AURIENTA env validation — 5 AI providers (Groq, NVIDIA, Gemini, HuggingFace, OpenRouter).
 
 type EnvShape = {
   databaseUrl: string;

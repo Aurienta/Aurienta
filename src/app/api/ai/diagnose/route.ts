@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/aurienta/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // GET /api/ai/diagnose
 // Diagnostic endpoint: lists available models from each AI provider.
-// Temporary — can be removed after diagnosis is complete.
+// SECURITY: restricted to aurienta_rep (platform steward) — the response
+// includes provider configuration state and account identity, which must
+// not be publicly disclosed.
 export async function GET(req: NextRequest) {
+  const user = await getCurrentUser();
+  const isRep = user && user.memberships?.some((m: { role: string }) => m.role === "aurienta_rep");
+  if (!isRep) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  }
+
   const results: Record<string, any> = {};
 
   // 1. Groq — list models

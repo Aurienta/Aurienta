@@ -169,7 +169,7 @@ export async function signInAs(email: string) {
 export const DEMO_USERS = [
   { email: "layla@streetbites.eg", name: "Layla Mostafa", role: "Capital Partner · Founding Operator", note: "The blueprint's Cairo student — multi-role partner" },
   { email: "ahmed@ecopack.eg", name: "Ahmed Khaled", role: "Founding Operator · Manager", note: "EcoPack founder, Tier C growth" },
-  { email: "sarah@Capital Partner.eg", name: "Sarah Ibrahim", role: "Capital Partner", note: "Active Capital Partner across 3 enterprises" },
+  { email: "sarah@investor.eg", name: "Sarah Ibrahim", role: "Capital Partner", note: "Active Capital Partner across 3 enterprises" },
   { email: "mohamed@smartfarm.eg", name: "Mohamed Adel", role: "Founding Operator (graduated)", note: "SmartFarm — sovereign JSC" },
   { email: "khalil@holding.eg", name: "Khalil Mansour", role: "Company Owner · Board Member", note: "Nile Brew owner, Tier D → graduation" },
 ];

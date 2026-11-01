@@ -603,11 +603,12 @@ function SidebarContent({
   // REMED-1D: Role-based nav FILTERING (not just reorder). Compute the set of
   // groups the user is allowed to see based on their role set, then intersect
   // with `groupOrder` so the operator reordering (Enterprise first) still wins
-  // for users who can see that group. A pure capital_partner sees only the 5
-  // universal groups (Workspace / Capital & Workforce / Intelligence /
-  // Compliance & Transparency / Institutional Services) — a subset of all
-  // routes defined in nav-config.ts. Counts are computed dynamically from
-  // NAV, so do not hardcode them here.
+  // for users who can see that group. A pure capital_partner sees only the 7
+  // universal groups (My Workspace / Capital / Capital & Workforce /
+  // Intelligence / Compliance & Transparency / Institutional Services + the
+  // subset their seats grant) — a subset of all routes defined in
+  // nav-config.ts. Counts are computed dynamically from NAV, so do not
+  // hardcode them here.
   const userRoles = React.useMemo(
     () => new Set(user.memberships.map((m) => m.role)),
     [user.memberships]

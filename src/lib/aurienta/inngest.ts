@@ -112,6 +112,9 @@ export async function sendInngestEvent(
 const disputeResolutionFn = (() => {
   const client = getInngest() as any;
   if (!client) return null;
+  // Defensive: an invalid/placeholder signing key makes the SDK throw at
+  // function-creation time (module load) — degrade to null (sandbox) instead.
+  try {
   return client.createFunction(
     {
       id: "dispute-resolution-timer",
@@ -217,6 +220,10 @@ const disputeResolutionFn = (() => {
       return { completed: true, caseId: data.caseId };
     }
   );
+  } catch (e) {
+    if (typeof logger !== "undefined") logger.warn("inngest_function_creation_failed", { err: e instanceof Error ? e.message : String(e) });
+    return null;
+  }
 })();
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -232,6 +239,9 @@ const disputeResolutionFn = (() => {
 const verificationSlaFn = (() => {
   const client = getInngest() as any;
   if (!client) return null;
+  // Defensive: an invalid/placeholder signing key makes the SDK throw at
+  // function-creation time (module load) — degrade to null (sandbox) instead.
+  try {
   return client.createFunction(
     {
       id: "verification-sla-48h",
@@ -302,6 +312,10 @@ const verificationSlaFn = (() => {
       return { completed: true, userId: data.userId };
     }
   );
+  } catch (e) {
+    if (typeof logger !== "undefined") logger.warn("inngest_function_creation_failed", { err: e instanceof Error ? e.message : String(e) });
+    return null;
+  }
 })();
 
 // ── Exported function list for the serve handler ──

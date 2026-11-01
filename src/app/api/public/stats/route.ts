@@ -10,14 +10,6 @@ import { withErrorHandler } from "@/lib/aurienta/api-handler";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const AI_HEALTH = {
-  hallucinationRate: 0.004, // 0.4%
-  biasDisparity: 0.12, // 12%
-  driftKl: 0.06,
-};
-
-const CRE_UPTIME_PCT = 99.95;
-
 export const GET = withErrorHandler(async () => {
   // ── Enterprises ──
   const enterprises = await db.enterprise.findMany({
@@ -90,6 +82,21 @@ export const GET = withErrorHandler(async () => {
   // ── Graduations ──
   const graduatedCount = await db.graduationRecord.count();
 
+  // ── CRE + AI health (REAL, computed — no fabricated metrics) ──
+  // CRE is a deterministic in-process engine: it is operational whenever the
+  // app is serving. We report issued decisions (verifiable in the ledger),
+  // not a made-up uptime percentage.
+  const creDecisionsIssued = await db.creDecision.count();
+
+  // AI consensus health — REAL data from persisted artifacts: total count +
+  // average confidence (both stored on every artifact). Precise hallucination /
+  // bias / drift evaluation requires an eval harness that is not yet
+  // implemented; we do not publish numbers we cannot measure.
+  const [aiArtifactsTotal, aiAggregate] = await Promise.all([
+    db.aiArtifact.count(),
+    db.aiArtifact.aggregate({ _avg: { confidence: true } }),
+  ]);
+
   const payload = {
     constitutionalHash: CONSTITUTIONAL_HASH,
     zeroCustody: {
@@ -111,8 +118,18 @@ export const GET = withErrorHandler(async () => {
     },
     partners,
     jobsCreated,
-    creUptimePct: CRE_UPTIME_PCT,
-    aiHealth: AI_HEALTH,
+    cre: {
+      status: "operational",
+      decisionsIssued: creDecisionsIssued,
+      note: "Deterministic in-process engine — operational whenever the platform is serving. Decision tokens are Ed25519-signed and verifiable against the public ledger.",
+    },
+    aiHealth: {
+      artifactsTotal: aiArtifactsTotal,
+      avgConfidence: aiAggregate._avg.confidence !== null
+        ? Math.round(aiAggregate._avg.confidence * 1000) / 1000
+        : null,
+      note: "Hallucination / bias / drift telemetry requires the evaluation harness (roadmap) — not yet measured, so not published.",
+    },
     lastUpdated: new Date().toISOString(),
   };
 

@@ -3,6 +3,7 @@ import { requireRole, revokeAllSessions } from "@/lib/aurienta/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { logger } from "@/lib/aurienta/logger";
+import { rateLimit, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 const ALLOWED_ROLES = new Set([
   "capital_partner",
@@ -29,12 +30,19 @@ const ALLOWED_ROLES = new Set([
  *
  * Every change is audit-logged.
  */
+// Admin mutations: 30/min per actor (rep-only + audit-logged, this guards
+// against scripted abuse of privileged endpoints).
+const adminMutationLimiter = rateLimit({ windowMs: 60_000, max: 30, key: "admin_mutation" });
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const actor = await requireRole("aurienta_rep");
+
+    const rl = adminMutationLimiter(actor.id);
+    if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
     const { id } = await params;
 
     const body = await req.json().catch(() => ({})) as {

@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/aurienta/auth";
+import { requireCronToken } from "@/lib/aurienta/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,10 +20,23 @@ let requestCount = 0;
  * Prometheus-format metrics endpoint.
  * Scraped by Prometheus for Grafana dashboards + alerting.
  *
- * NOTE: This is a minimal implementation. Full implementation (prom-client)
- * is Workstream 4 — installed when the observability stack is provisioned.
+ * SECURITY: platform counts (users / enterprises / sessions) are operational
+ * data — access is limited to the internal scraper (CRON_SECRET bearer token)
+ * or an authenticated aurienta_rep (steward).
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Auth: a valid CRON_SECRET bearer token (internal scraper) OR an
+  // authenticated aurienta_rep session (platform steward).
+  const cronAuth = await requireCronToken(req);
+  if (cronAuth) {
+    // No valid scraper token — fall back to rep-session auth.
+    const user = await getCurrentUser();
+    const isRep = user && user.memberships?.some((m: { role: string }) => m.role === "aurienta_rep");
+    if (!isRep) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+    }
+  }
+
   let userCount = 0;
   let enterpriseCount = 0;
   let ledgerCount = 0;

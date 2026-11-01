@@ -247,6 +247,26 @@ export const NAV_I18N: Record<string, string> = {
   "Fixed Assets": "nav.erpAssets",
   "Manufacturing": "nav.erpProduction",
   "Quality Control": "nav.erpQuality",
+  "Enterprise Discovery": "nav.enterpriseDiscovery",
+  "Profit-Sharing Agreements": "nav.profitSharing",
+  "Productive EGP": "nav.productiveEgp",
+  "STS Priority Allocation": "nav.priorityAllocation",
+  "Soulbound Credential": "nav.soulbound",
+  "Constitutional Wages": "nav.wages",
+  "Constitutional Endorsement": "nav.endorsements",
+  "Cooperative Network": "nav.cooperative",
+  "Tasks (WBS)": "nav.erpTasks",
+  "ERP Integration": "nav.erpIntegration",
+  "Enterprise Genome": "nav.genome",
+  "Real-Economy Index": "nav.arei",
+  "Quadratic Voting": "nav.quadraticVoting",
+  "Constitutional Zeitgeist": "nav.zeitgeist",
+  "AI Consensus Oracle": "nav.oracle",
+  "Succession Declaration": "nav.successionDeclaration",
+  "Graduation Bond": "nav.graduationBond",
+  "Governance-as-a-Service": "nav.gaas",
+  "Standalone Succession": "nav.standaloneSuccession",
+  "Risk Profile API": "nav.riskProfile",
 };
 
 /** Group translation map: group name → i18n key. */
@@ -446,7 +466,8 @@ export function groupOrderForRoles(roles: Set<string>): string[] {
     return [
       "Enterprise",
       "ERP",
-      "Workspace",
+      "My Workspace",
+      "Capital",
       "Intelligence",
       "Capital & Workforce",
       "Compliance & Transparency",
@@ -481,8 +502,11 @@ export function visibleGroupsForRoles(roles: Set<string>): Set<string> {
   const has = (r: string) => roles.has(r);
 
   // Universal groups — every signed-in partner gets these.
+  // NOTE: group names MUST match NAV_GROUPS exactly ("My Workspace", "Capital") —
+  // a mismatch silently hides the group from the sidebar for every user.
   const visible = new Set<string>([
-    "Workspace",
+    "My Workspace",
+    "Capital",
     "Capital & Workforce",
     "Intelligence",
     "Compliance & Transparency",

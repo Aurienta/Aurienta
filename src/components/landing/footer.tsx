@@ -28,10 +28,10 @@ const FOOTER_COLUMNS = [
 ];
 
 const SOCIAL_ICONS = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Twitter, href: "/trust", label: "Trust Dashboard" },
+  { icon: Linkedin, href: "/registry", label: "Enterprise Registry" },
+  { icon: Github, href: "https://github.com/Aurienta/Aurienta", label: "GitHub" },
+  { icon: Youtube, href: "/legal", label: "Legal" },
 ];
 
 export function LandingFooter() {
@@ -93,8 +93,8 @@ export function LandingFooter() {
         <div className="mt-12 flex flex-col items-center justify-between border-t border-white/10 pt-8 sm:flex-row">
           <p className="font-sans text-[12px] text-slate-500">© 2026 AURIENTA. Constitutional Enterprise Infrastructure.</p>
           <div className="mt-4 flex items-center gap-6 sm:mt-0">
-            <Link href="/legal" className="font-sans text-[12px] text-slate-500 hover:text-slate-300">Privacy Policy</Link>
-            <Link href="/legal" className="font-sans text-[12px] text-slate-500 hover:text-slate-300">Terms of Service</Link>
+            <Link href="/legal/privacy" className="font-sans text-[12px] text-slate-500 hover:text-slate-300">Privacy Policy</Link>
+            <Link href="/legal/terms" className="font-sans text-[12px] text-slate-500 hover:text-slate-300">Terms of Service</Link>
             <p className="font-mono text-[10px] text-slate-600">0xB4F8…E7D1A</p>
           </div>
         </div>

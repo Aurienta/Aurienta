@@ -402,7 +402,7 @@ CREATE TABLE "AiArtifact" (
     "entityId" TEXT,
     "content" TEXT NOT NULL,
     "payload" TEXT NOT NULL DEFAULT '{}',
-    "modelVersion" TEXT NOT NULL DEFAULT 'glm-4.6',
+    "modelVersion" TEXT NOT NULL DEFAULT 'multi-consensus',
     "confidence" REAL NOT NULL DEFAULT 0.85,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "AiArtifact_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,

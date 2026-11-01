@@ -20,8 +20,25 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const { enterpriseId, position, department, experienceYears } = body as {
-    enterpriseId: string; position: string; department?: string; experienceYears?: number;
+    enterpriseId?: unknown; position?: unknown; department?: unknown; experienceYears?: unknown;
   };
+
+  // Input validation (aligned with /api/ai/salary rigor — no blind destructuring).
+  if (typeof enterpriseId !== "string" || enterpriseId.length < 10 || enterpriseId.length > 64) {
+    return NextResponse.json({ error: "enterpriseId must be a valid id string" }, { status: 400 });
+  }
+  if (typeof position !== "string" || position.trim().length < 2 || position.length > 120) {
+    return NextResponse.json({ error: "position must be 2-120 characters" }, { status: 400 });
+  }
+  if (department !== undefined && (typeof department !== "string" || department.length > 120)) {
+    return NextResponse.json({ error: "department must be a string ≤120 characters" }, { status: 400 });
+  }
+  if (
+    experienceYears !== undefined &&
+    (typeof experienceYears !== "number" || !Number.isFinite(experienceYears) || experienceYears < 0 || experienceYears > 60)
+  ) {
+    return NextResponse.json({ error: "experienceYears must be a number 0-60" }, { status: 400 });
+  }
 
   const ent = await db.enterprise.findUnique({
     where: { id: enterpriseId },

@@ -4,15 +4,23 @@ import { db } from "@/lib/db";
 import { audit } from "@/lib/aurienta/audit";
 import { appendLedgerEvent } from "@/lib/aurienta/cre";
 import { logger } from "@/lib/aurienta/logger";
+import { rateLimit, rateLimitedResponse } from "@/lib/aurienta/rate-limit";
 
 type Params = { params: Promise<{ id: string }> };
 
 // POST /api/admin/enterprises/[id]/unfreeze
 // Body: { reason?: string }
 // Lifts the emergency freeze — sets status="active" + clears frozenAt.
+// Admin mutations: 30/min per actor (rep-only + audit-logged, this guards
+// against scripted abuse of privileged endpoints).
+const adminMutationLimiter = rateLimit({ windowMs: 60_000, max: 30, key: "admin_mutation" });
+
 export async function POST(req: NextRequest, { params }: Params) {
   try {
     const user = await requireRole("aurienta_rep");
+
+    const rl = adminMutationLimiter(user.id);
+    if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
     const { id } = await params;
 
     const body = await req.json().catch(() => ({}));
