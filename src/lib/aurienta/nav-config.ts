@@ -429,6 +429,7 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/industry", label: "Industry Modules", icon: "FlaskConical", group: "Platform Admin", subGroup: "Ecosystem" },
   { href: "/dashboard/federation", label: "Federation", icon: "Network", group: "Platform Admin", subGroup: "Ecosystem" },
   { href: "/dashboard/credentials", label: "VC Wallet", icon: "KeyRound", group: "Platform Admin", subGroup: "Ecosystem" },
+  { href: "/dashboard/egypt-market", label: "Egyptian Market DB", icon: "Globe", group: "Platform Admin", subGroup: "Ecosystem" },
 ];
 
 // ─── Groups ─────────────────────────────────────────────────────────────
