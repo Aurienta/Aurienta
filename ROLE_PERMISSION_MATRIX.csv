@@ -1,0 +1,90 @@
+Resource,Action,RequiredRole,UIHiddenFor,BackendEnforced,TestUser,TestResult,Evidence
+/signin,GET,public,N/A,N/A,anonymous,200 OK,Public page; no auth required
+/register,GET,public,N/A,N/A,anonymous,200 OK,Public page; no auth required
+/dashboard,GET,authenticated only,N/A,getCurrentUser (layout.tsx),layla,200 OK renders overview,/dashboard/layout.tsx line 20-22
+/dashboard/manager,GET,manager OR founding_operator OR company_owner,non-operators (sidebar hidden),getCurrentUser only (NO role gate in page),sarah@investor.eg (capital_partner),200 OK renders empty state,page.tsx renders empty state for users without manager memberships; no AccessRestricted
+/dashboard/admin-panel,GET,aurienta_rep,non-aurienta_reps (sidebar hidden),getCurrentUser + AccessRestricted (client-side role check),sarah,200 OK AccessRestricted rendered,page.tsx line 22-25 renders <AccessRestricted> for non-aurienta_rep
+/dashboard/admin-panel,GET,aurienta_rep,N/A,server-side role check,sarah,AccessRestricted rendered (correct denial),page.tsx line 22-25
+/dashboard/graduation,GET,authenticated only,N/A,getCurrentUser only (NO role gate),sarah (capital_partner),200 OK renders Governance empty state,page.tsx — renders even for users without graduation-eligible roles
+/dashboard/governance,GET,authenticated only,N/A,getCurrentUser only (NO role gate),sarah,200 OK renders Governance empty state,page.tsx — shows proposals for user's enterprises only
+/dashboard/fra,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,khalil (company_owner),AccessRestricted rendered,fra/page.tsx uses <AccessRestricted requiredRole=aurienta_rep>
+/dashboard/company-owner,GET,company_owner,non-company_owners,server-side role check + AccessRestricted,sarah,AccessRestricted rendered,company-owner/page.tsx
+/dashboard/law-firm,GET,law_firm_rep,non-law_firm_reps,server-side role check + AccessRestricted,khalil,AccessRestricted rendered,law-firm/page.tsx
+/dashboard/accounting,GET,accounting_firm_rep,non-accounting_firm_reps,server-side role check + AccessRestricted,khalil,AccessRestricted rendered,accounting/page.tsx
+/dashboard/university,GET,university_rep,non-university_reps,server-side role check + AccessRestricted,khalil,AccessRestricted rendered,university/page.tsx
+/dashboard/steward,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,khalil,AccessRestricted rendered,steward/page.tsx
+/dashboard/admin/users,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,sarah,AccessRestricted rendered,admin/users/page.tsx
+/dashboard/admin/enterprises,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,sarah,AccessRestricted rendered,admin/enterprises/page.tsx
+/dashboard/admin/audit,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,sarah,AccessRestricted rendered,admin/audit/page.tsx
+/dashboard/admin/settings,GET,aurienta_rep,non-aurienta_reps,server-side role check + AccessRestricted,sarah,AccessRestricted rendered,admin/settings/page.tsx
+/api/auth POST signin,password (verified server-side),N/A,getCurrentUser + verifyPassword (scrypt),sarah@investor.eg / aurienta2026,200 OK user JSON,api/auth/route.ts line 22 (uses scrypt NOT Argon2id)
+/api/auth POST signin (BAD password),N/A,N/A,recordFailedAttempt NOT called (GAP),sarah,401 invalid_credentials ×7 attempts; NO 423 lockout,api/auth/route.ts — lockout module never imported
+/api/auth POST signin (10 attempts / 60s / IP),N/A,N/A,limiters.signin (in-memory),12 rapid attempts,12 × 401; no 429 due to in-memory + serverless cold starts,rate-limit.ts line 53-55 + Vercel serverless = per-instance buckets
+/api/auth/register POST,public (any role),N/A,getCurrentUser not required; hashPassword (scrypt),anonymous,200 OK creates user,api/auth/register/route.ts line 24 imports hashPassword (scrypt NOT Argon2id)
+/api/auth/signout POST,authenticated,N/A,getCurrentUser + signOut,layla,200 OK clears cookie,api/auth/signout/route.ts
+/api/auth/passkey/register/start POST,authenticated,N/A,getCurrentUser,layla,401 if not authed; 200 otherwise,passkey/register/start/route.ts line 35
+/api/auth/passkey/register/finish POST,authenticated,N/A,getCurrentUser + verifyRegistration,layla,200 OK on valid WebAuthn attestation,passkey/register/finish/route.ts line 36
+/api/auth/passkey/authenticate/start POST,public,N/A,no auth required,anonymous,200 OK returns options,passkey/authenticate/start/route.ts
+/api/auth/passkey/authenticate/finish POST,public,N/A,verifyAuthentication + resetLockout,anonymous,200 OK on valid WebAuthn assertion,passkey/authenticate/finish/route.ts line 119-123
+/api/auth/passkey/list GET,authenticated,N/A,getCurrentUser + listPasskeys(userId),layla,200 OK own passkeys,passkey/list/route.ts
+/api/auth/passkey/delete POST,authenticated (own passkey only),N/A,getCurrentUser + deletePasskey(userId,credentialId),layla,200 OK; ownership verified server-side,passkey/delete/route.ts line 46
+/api/expenses POST,manager+ OR founding_operator OR company_owner OR accounting_firm_rep OR board_member (CRE-gated),non-members,N/A — sidebar only filters; route enforces,sarah (capital_partner) POST to /api/expenses,200 with 404 (no demo enterprise in prod) — code path: 401 if not authed; 404 if no enterprise; 403 if not member; CRE denies if role insufficient,api/expenses/route.ts line 150-276 + cre.ts enforceExpenseAuthority (lines 40-77)
+/api/expenses POST (<1% solo auto-approve),manager OR founding_operator,N/A,enforceExpenseAuthority + membership check,N/A (code review),N/A — code path correct,cre.ts line 48-58
+/api/expenses POST (1-10% dual signature),manager + accounting_firm_rep (DUAL SIG),N/A,CRE-enforced dual-sig,N/A (code review),N/A — code path correct,cre.ts line 59-67
+/api/expenses POST (>10% board approval),board_member,N/A,CRE-enforced,N/A (code review),N/A — code path correct,cre.ts line 68-76
+/api/expenses/[id]/approve POST,manager / board_member / accounting_firm_rep / founding_operator,N/A,membership + role check + CRE,code review,403 if submitter tries self-approve,api/expenses/[id]/approve/route.ts line 73-92
+/api/expenses/[id]/reject POST,manager / board_member / accounting_firm_rep / founding_operator,N/A,membership + role check + CRE,code review,403 if unauthorized,api/expenses/[id]/reject/route.ts
+/api/proposals POST,authenticated member (any role),N/A,membership check,code review,403 if not a member of the enterprise,api/proposals/route.ts
+/api/proposals/[id]/vote POST,authenticated member with voting power,N/A,membership + ownershipRecord check,code review,403 if not member; 403 if 0 voting power,api/proposals/[id]/vote/route.ts line 49-79
+/api/proxies POST,authenticated member with voting power,N/A,membership + ownershipRecord check,code review,403 if not member; 400 if 0 voting power,api/proxies/route.ts
+/api/proxies/[id]/revoke POST,authenticated delegator only,N/A,getCurrentUser + db lookup,code review,403 if not original delegator,api/proxies/[id]/revoke/route.ts
+/api/admin/users GET,aurienta_rep,N/A,requireRole(aurienta_rep),sarah,403 Forbidden: requires aurienta_rep,api/admin/users/route.ts line 32
+/api/admin/users/[id] GET,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/users/[id]/route.ts line 36
+/api/admin/users/[id] PATCH,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/users/[id]/route.ts line 190
+/api/admin/users/[id]/suspend POST,aurienta_rep,N/A,requireRole(aurienta_rep) + self-suspend block,code review,400 if self-suspend,api/admin/users/[id]/suspend/route.ts line 24-55
+/api/admin/users/[id]/role POST,aurienta_rep,N/A,requireRole(aurienta_rep),sarah (capital_partner),403 Forbidden,api/admin/users/[id]/role/route.ts line 37
+/api/admin/enterprises GET,aurienta_rep,N/A,requireRole(aurienta_rep),sarah,403 Forbidden: requires one of aurienta_rep,api/admin/enterprises/route.ts line 12
+/api/admin/enterprises/[id] GET,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/enterprises/[id]/route.ts line 15
+/api/admin/enterprises/[id] PATCH,aurienta_rep,N/A,requireRole(aurienta_rep) + CRE status_transition + tier_migration,code review,400 if CRE violation,api/admin/enterprises/[id]/route.ts line 108
+/api/admin/enterprises/[id]/freeze POST,aurienta_rep,N/A,requireRole(aurienta_rep) + CRE enforceEmergencyFreeze,code review,400 if CRE denies,api/admin/enterprises/[id]/freeze/route.ts line 16
+/api/admin/enterprises/[id]/unfreeze POST,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/enterprises/[id]/unfreeze/route.ts
+/api/admin/audit GET,aurienta_rep,N/A,requireRole(aurienta_rep),sarah,403 Forbidden: requires one of aurienta_rep,api/admin/audit/route.ts line 37
+/api/admin/audit/export GET,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/audit/export/route.ts line 36
+/api/admin/settings GET,aurienta_rep,N/A,requireRole(aurienta_rep),anonymous,401 unauthenticated,api/admin/settings/route.ts line 76
+/api/admin/settings PATCH,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/admin/settings/route.ts line 120
+/api/soulbound POST,authenticated,N/A,getCurrentUser + CRE mintCredential,sarah,200 OK minted credential (correct),api/soulbound/route.ts
+/api/soulbound/revoke POST,aurienta_rep,N/A,requireRole(aurienta_rep),code review,403 if not aurienta_rep,api/soulbound/revoke/route.ts line 28
+/api/vault POST (CONCERN),authenticated only (NO membership check),N/A,getCurrentUser only — no membership or role check,code review (no live test — no enterprise in prod),200 OK with ledger entry — ANY authenticated user can contribute to ANY enterprise vault,api/vault/route.ts line 92-174 — no memberships.filter(...) guard
+/api/vault GET,authenticated only,N/A,getCurrentUser only (no membership check),code review,200 OK reads vault for any enterprise,api/vault/route.ts line 38-87
+/api/vault/loan POST,authenticated (probably should be manager+),N/A,getCurrentUser only (no membership/role check),code review,POTENTIAL GAP — needs verification,api/vault/loan/route.ts
+/api/whistleblower POST,authenticated,N/A,getCurrentUser + AI triage,code review,201 OK files report,api/whistleblower/route.ts line 42
+/api/whistleblower GET,authenticated (member-scoped),N/A,getCurrentUser + membership filter (LEAK FIX),code review,200 OK returns only caller's enterprise reports (was leaking all reports),api/whistleblower/route.ts line 169-189
+/api/screening POST,founding_operator / manager / board_member,N/A,getCurrentUser + SCREENING_AUTHORITY_ROLES check,code review,403 if missing authority role,api/screening/route.ts line 13-17 + 112-132
+/api/skill-equity POST,authenticated (owner of employee record),N/A,getCurrentUser + employee ownership check + tenure ≥24mo,code review,403 if employee belongs to another user,api/skill-equity/route.ts line 116-128
+/api/skill-equity/[id]/review POST,board_member / company_owner / founding_operator / aurienta_rep,N/A,membership + role check + CRE enforceSalaryToEquity,code review,403 if not authorized reviewer,api/skill-equity/[id]/review/route.ts line 64-78
+/api/graduation GET,authenticated (any member of enterprise),N/A,getCurrentUser + membership check,code review,403 if not a member,api/graduation/route.ts line 80-98
+/api/graduation/execute POST,founding_operator / company_owner / board_member,N/A,membership + ALLOWED_ROLES check + CRE readiness gate (≥7/9 gates),code review,403 if role not authorized,api/graduation/execute/route.ts line 117-144
+/api/enterprises/[id]/close-capital-formation POST,founding_operator OR company_owner,N/A,membership + role check,code review,403 if not authorized,api/enterprises/[id]/close-capital-formation/route.ts line 63-74
+/api/enterprises/[id]/list POST,founding_operator / company_owner / aurienta_rep,N/A,membership + role check,code review,403 if not authorized,api/enterprises/[id]/list/route.ts line 47-50
+/api/enterprises/[id]/milestones GET,authenticated (member implied),N/A,getCurrentUser only,code review,POTENTIAL GAP — no explicit membership check,api/enterprises/[id]/milestones/route.ts
+/api/enterprises/[id]/milestones POST,founding_operator / company_owner / manager,N/A,membership + role check,code review,403 if unauthorized,api/enterprises/[id]/milestones/route.ts line 172+
+/api/enterprises/[id]/profile GET,authenticated (no membership check),N/A,getCurrentUser only,code review,POTENTIAL GAP — any authenticated user can read any enterprise profile,api/enterprises/[id]/profile/route.ts line 22
+/api/enterprises/[id]/health GET (CRITICAL),UNAUTHENTICATED,N/A,NONE — no auth at all,anonymous,200 OK returns halt status for any enterprise ID,api/enterprises/[id]/health/route.ts — no getCurrentUser call
+/api/circuit-breaker/[enterpriseId] GET (CONCERN),UNAUTHENTICATED,N/A,NONE — no auth at all,anonymous,200 OK returns halt status for any enterprise ID,api/circuit-breaker/[enterpriseId]/route.ts — no getCurrentUser call
+/api/legal-templates GET,UNAUTHENTICATED,N/A,NONE — no auth,anonymous,200 OK returns full template list,api/legal-templates/route.ts — public metadata only; full content via /api/legal-templates/[id] also public
+/api/legal-templates/[id] GET,UNAUTHENTICATED,N/A,NONE — no auth,anonymous,200 OK returns full template content,api/legal-templates/[id]/route.ts — public access
+/api/legal-templates/[id]/render POST,UNAUTHENTICATED,N/A,NONE — no auth,anonymous,200 OK renders template with provided variables,api/legal-templates/[id]/render/route.ts — public
+/api/risk-profile/[enterpriseId] GET,API-key authenticated (X-Risk-Profile-Api-Key),N/A,API key hash lookup + disclaimer header required,code review,401 if no API key; 403 if no disclaimer header,api/risk-profile/[enterpriseId]/route.ts
+/api/risk-profile/keys POST,authenticated,N/A,getCurrentUser,code review,200 OK issues API key,api/risk-profile/keys/route.ts
+/api/v1/webhook/payment POST,law firm Ed25519 signature,N/A,X-LawFirm-Signature + X-LawFirm-Id + Ed25519 verify,code review,401 if no/bad signature,api/v1/webhook/payment/route.ts line 15-54
+/api/oracle/consensus POST,API key in body,N/A,api-key auth + audit + exempt from CSRF (middleware),code review,200 OK on valid key,api/oracle/consensus/route.ts
+/api/cron/* GET,Vercel Cron token (?token=),N/A,exempt from CSRF; token check in handler,code review,200 OK on valid cron invocation,api/cron/* routes — middleware excludes them
+/api/inngest POST,Inngest signature,N/A,Inngest SDK verifies signature,code review,200 OK on valid signature,api/inngest/route.ts
+/api/public/registry GET,public,N/A,N/A,anonymous,200 OK returns enterprise registry,api/public/registry/route.ts
+/api/public/stats GET,public,N/A,N/A,anonymous,200 OK returns aggregate stats,api/public/stats/route.ts
+/api/public/enterprise/[slug] GET,public,N/A,N/A,anonymous,200 OK returns public enterprise detail,api/public/enterprise/[slug]/route.ts
+/api/public/enterprise/[slug]/transparency GET,public,N/A,N/A,anonymous,200 OK returns transparency data,api/public/enterprise/[slug]/transparency/route.ts
+/api/public/enterprise/[slug]/cre-decisions GET,public,N/A,N/A,anonymous,200 OK returns CRE decision log,api/public/enterprise/[slug]/cre-decisions/route.ts
+/api/public/enterprise/[slug]/trades GET,public,N/A,N/A,anonymous,200 OK returns public trade log,api/public/enterprise/[slug]/trades/route.ts
+/api/genome GET,authenticated,N/A,getCurrentUser,layla,200 OK lists top genomes,api/genome/route.ts
+/api/genome/[enterpriseId] GET,authenticated (NO membership check),N/A,getCurrentUser only,code review,POTENTIAL GAP — any authenticated user can read any enterprise genome,api/genome/[enterpriseId]/route.ts

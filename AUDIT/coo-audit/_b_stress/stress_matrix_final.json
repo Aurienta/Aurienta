@@ -1,0 +1,4764 @@
+{
+  "matrix": [
+    {
+      "path": "/api/health",
+      "domain": "health",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 16,
+          "body": "{\"status\":\"ok\",\"uptime\":19,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-10-28T12:18:49.514Z\"}",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 13,
+          "body": "{\"status\":\"ok\",\"uptime\":35,\"uptime_human\":\"0s\",\"db\":\"connected\",\"service\":\"aurienta\",\"version\":\"0.2.0\",\"timestamp\":\"2026-10-28T12:18:49.530Z\"}",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/metrics",
+      "domain": "metrics",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 1316,
+          "body": "# HELP aurenta_uptime_seconds Time since process start\\n# TYPE aurenta_uptime_seconds counter\\naurenta_uptime_seconds 0.014\\n\\n# HELP aurenta_users_total Total ",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 149,
+          "body": "# HELP aurenta_uptime_seconds Time since process start\\n# TYPE aurenta_uptime_seconds counter\\naurenta_uptime_seconds 0.166\\n\\n# HELP aurenta_users_total Total ",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api",
+      "domain": "route.ts",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 1569,
+          "body": "{\"message\":\"Hello, world!\"}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 without auth"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 101,
+          "body": "{\"message\":\"Hello, world!\"}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 without auth"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/platform-health",
+      "domain": "platform-health",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 2600,
+          "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:18:56.574Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"S",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 without auth"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 112,
+          "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:18:56.682Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Aurienta/Aurienta\",\"branch\":\"main\",\"note\":\"S",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 without auth"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/auth",
+      "domain": "auth",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 3321,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 23,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 52,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"}]}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 400,
+          "ms": 149,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T5_wrong_ct": {
+          "code": 400,
+          "ms": 54,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 18,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"}]}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/auth/register",
+      "domain": "auth",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 1682,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 15,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 49,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"},{\"p",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 400,
+          "ms": 142,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T5_wrong_ct": {
+          "code": 400,
+          "ms": 44,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Body must be valid JSON\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 17,
+          "body": "{\"error\":\"invalid_body\",\"message\":\"Request body failed validation\",\"issues\":[{\"path\":\"email\",\"message\":\"Invalid input: expected string, received undefined\"},{\"p",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/auth/signout",
+      "domain": "auth",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 307,
+          "ms": 14514,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T2_invalid_auth": {
+          "code": 307,
+          "ms": 975,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T3_empty_body": {
+          "code": 307,
+          "ms": 41,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T4_malformed_body": {
+          "code": 307,
+          "ms": 11,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T5_wrong_ct": {
+          "code": 307,
+          "ms": 11,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T6_huge_payload": {
+          "code": 307,
+          "ms": 43,
+          "body": "",
+          "verdict": "pass_redirect",
+          "detail": "HTTP 307 redirect"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/auth/passkey/authenticate/start",
+      "domain": "auth",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 3320,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"H3FWNFkPH9Mgm9kQKaWNF7NUx8YrFl8yy912oeTQ9r0\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 14,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"K1tGiUEku-1MEhy1Nb-XmfeKFLI58Fw-aKajsljmYJo\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": 200,
+          "ms": 13,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"4dUxyTB-Z3QtS3a2aJvenuzFhktDRn8QijDpbBQympA\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T4_malformed_body": {
+          "code": 200,
+          "ms": 12,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"lqwJI0rmYhhL8B9fNcWxdfspX28GeQ1Uy9KM2psVFu8\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T5_wrong_ct": {
+          "code": 200,
+          "ms": 10,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"dyMg4sDpPZXDocyysjU327TZMeqOaXqd4qtsRKfsDY8\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T6_huge_payload": {
+          "code": 200,
+          "ms": 13,
+          "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"6tXys0iWGHIFSpfJTzUzy-K7IRm_EdymdxdJ-y4eE1A\",\"allowCredentials\":[],\"timeout\":300000,\"userVerification\":\"preferred\"}}",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/auth/passkey/list",
+      "domain": "auth",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 2260,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 60,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/enterprises",
+      "domain": "enterprises",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 110,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 14927,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 324,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 48,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 21,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 15,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/enterprises/[id]/profile",
+      "domain": "enterprises",
+      "methods": [
+        "PATCH",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 51,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 3219,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 89,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 26,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 46,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 29,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": 401,
+          "ms": 69,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T8_path_traversal": {
+          "code": 401,
+          "ms": 43,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        }
+      }
+    },
+    {
+      "path": "/api/enterprises/[id]/health",
+      "domain": "enterprises",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 3256,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 118,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": 401,
+          "ms": 74,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T8_path_traversal": {
+          "code": 401,
+          "ms": 50,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        }
+      }
+    },
+    {
+      "path": "/api/enterprises/[id]/milestones",
+      "domain": "enterprises",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 109,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 4184,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 93,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 23,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 53,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 74,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": 401,
+          "ms": 48,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T8_path_traversal": {
+          "code": 401,
+          "ms": 74,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        }
+      }
+    },
+    {
+      "path": "/api/admin/users",
+      "domain": "admin",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 2644,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 324,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/admin/audit",
+      "domain": "admin",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 1663,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 276,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/admin/settings",
+      "domain": "admin",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 60,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1517,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 184,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 928,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 63,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 34,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/vault",
+      "domain": "vault",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 47,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1526,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 199,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 69,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 34,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 29,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/dividends",
+      "domain": "dividends",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 26,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1475,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 124,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 54,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 18,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 30,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/proposals",
+      "domain": "proposals",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 695,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1423,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 235,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 62,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 22,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 21,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/expenses",
+      "domain": "expenses",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 22,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1840,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 210,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 31,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 61,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 29,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/erp/inventory",
+      "domain": "erp",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 13,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1538,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 417,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 47,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 72,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 62,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/erp/integration",
+      "domain": "erp",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 393,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1309,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 15,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 14,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 17,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 49,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/erp/integration/sync",
+      "domain": "erp",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 328,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 826,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 22,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 18,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 15,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/ai/explain",
+      "domain": "ai",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 49,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1277,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 267,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 36,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 20,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 37,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/ai/feasibility",
+      "domain": "ai",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 32,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1235,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 192,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 51,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 28,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/ai/graduation-coach",
+      "domain": "ai",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 18,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1376,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 194,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 22,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 46,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/ai/brain-status",
+      "domain": "ai",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 3109,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 171,
+          "body": "{\"error\":\"unauthorized\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/graduation-bond/issue",
+      "domain": "graduation-bond",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 76,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1236,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 15,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 20,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 17,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 13,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/graduation-bond/verify/[bondId]",
+      "domain": "graduation-bond",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 404,
+          "ms": 1713,
+          "body": "{\"valid\":false,\"reason\":\"Bond not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T2_invalid_auth": {
+          "code": 404,
+          "ms": 92,
+          "body": "{\"valid\":false,\"reason\":\"Bond not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": 404,
+          "ms": 125,
+          "body": "{\"valid\":false,\"reason\":\"Bond not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T8_path_traversal": {
+          "code": 404,
+          "ms": 160,
+          "body": "{\"valid\":false,\"reason\":\"Bond not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        }
+      }
+    },
+    {
+      "path": "/api/verification/kyc",
+      "domain": "verification",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 87,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1961,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 223,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 173,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 35,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 59,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/verification",
+      "domain": "verification",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 54,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 4175,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 181,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 22,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 48,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/oracle/consensus",
+      "domain": "oracle",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 1771,
+          "body": "{\"error\":\"Invalid JSON body\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 60,
+          "body": "{\"error\":\"Invalid JSON body\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 14,
+          "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"query\":[\"Invalid input: expected string, received undefined\"],\"apiKey\":[\"Invalid inpu",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 400,
+          "ms": 111,
+          "body": "{\"error\":\"Invalid JSON body\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T5_wrong_ct": {
+          "code": 400,
+          "ms": 9,
+          "body": "{\"error\":\"Invalid JSON body\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 12,
+          "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"query\":[\"Invalid input: expected string, received undefined\"],\"apiKey\":[\"Invalid inpu",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/oracle/keys",
+      "domain": "oracle",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 61,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 9620,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 261,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 36,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 96,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 99,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/fx",
+      "domain": "fx",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 1141,
+          "body": "{\"error\":\"missing_param\",\"message\":\"'from' query parameter is required\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 22,
+          "body": "{\"error\":\"missing_param\",\"message\":\"'from' query parameter is required\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/fx/consensus",
+      "domain": "fx",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 838,
+          "body": "{\"from\":\"USD\",\"to\":\"EGP\",\"rate\":48.3581,\"sources\":[{\"source\":\"cbe\",\"rate\":48.3467,\"timestamp\":\"2026-10-28T12:17:27.111Z\"},{\"source\":\"ecb\",\"rate\":48.5153,\"timest",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 25,
+          "body": "{\"from\":\"USD\",\"to\":\"EGP\",\"rate\":48.3581,\"sources\":[{\"source\":\"cbe\",\"rate\":48.3467,\"timestamp\":\"2026-10-28T12:17:27.111Z\"},{\"source\":\"ecb\",\"rate\":48.5153,\"timest",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/fx/refresh",
+      "domain": "fx",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 21,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1345,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 37,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 72,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 57,
+          "body": "{\"error\":\"Not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/soulbound",
+      "domain": "soulbound",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 18,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 1158,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 68,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 31,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 24,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 42,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/soulbound/verify",
+      "domain": "soulbound",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 65,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 1327,
+          "body": "{\"error\":\"credentialId is required\",\"code\":\"missing_credential_id\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 125,
+          "body": "{\"error\":\"credentialId is required\",\"code\":\"missing_credential_id\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 400,
+          "ms": 164,
+          "body": "{\"error\":\"credentialId is required\",\"code\":\"missing_credential_id\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T5_wrong_ct": {
+          "code": 400,
+          "ms": 25,
+          "body": "{\"error\":\"credentialId is required\",\"code\":\"missing_credential_id\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 40,
+          "body": "{\"error\":\"credentialId is required\",\"code\":\"missing_credential_id\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/legal-templates",
+      "domain": "legal-templates",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 1297,
+          "body": "{\"total\":18,\"templates\":[{\"id\":\"tpl-constitutional-pledge\",\"appendix\":\"N\",\"title\":\"Constitutional Pledge\",\"jurisdiction\":\"Egypt\",\"category\":\"constitutional\",\"va",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 95,
+          "body": "{\"total\":18,\"templates\":[{\"id\":\"tpl-constitutional-pledge\",\"appendix\":\"N\",\"title\":\"Constitutional Pledge\",\"jurisdiction\":\"Egypt\",\"category\":\"constitutional\",\"va",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/legal-templates/[id]",
+      "domain": "legal-templates",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 404,
+          "ms": 2546,
+          "body": "{\"error\":\"Template not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T2_invalid_auth": {
+          "code": 404,
+          "ms": 69,
+          "body": "{\"error\":\"Template not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": 404,
+          "ms": 38,
+          "body": "{\"error\":\"Template not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        },
+        "T8_path_traversal": {
+          "code": 404,
+          "ms": 26,
+          "body": "{\"error\":\"Template not found\"}",
+          "verdict": "pass",
+          "detail": "HTTP 404"
+        }
+      }
+    },
+    {
+      "path": "/api/legal-templates/[id]/render",
+      "domain": "legal-templates",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 29,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 500,
+          "ms": 2485,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 86,
+          "body": "{\"error\":\"Template not found: [id]\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 500,
+          "ms": 22,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T5_wrong_ct": {
+          "code": 500,
+          "ms": 11,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 10,
+          "body": "{\"error\":\"Template not found: [id]\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": 403,
+          "ms": 8,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T8_path_traversal": {
+          "code": 403,
+          "ms": 76,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/health-rating",
+      "domain": "cron",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 3001,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 436,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": 503,
+          "ms": 38,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T4_malformed_body": {
+          "code": 0,
+          "ms": 268,
+          "body": "",
+          "verdict": "fail_HANG",
+          "detail": "conn_err: ReadError: [Errno 104] Connection reset by peer"
+        },
+        "T5_wrong_ct": {
+          "code": 0,
+          "ms": 23,
+          "body": "",
+          "verdict": "fail_HANG",
+          "detail": "conn_err: ReadError: [Errno 104] Connection reset by peer"
+        },
+        "T6_huge_payload": {
+          "code": 503,
+          "ms": 487,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/verification-sla",
+      "domain": "cron",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 144,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 11,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": 503,
+          "ms": 7,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T4_malformed_body": {
+          "code": 503,
+          "ms": 7,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T5_wrong_ct": {
+          "code": 503,
+          "ms": 7,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T6_huge_payload": {
+          "code": 503,
+          "ms": 7,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/crcica-arbitration",
+      "domain": "cron",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 146,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 8,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T4_malformed_body": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T5_wrong_ct": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T6_huge_payload": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/stage-transition",
+      "domain": "cron",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 257,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 5,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T4_malformed_body": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T5_wrong_ct": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T6_huge_payload": {
+          "code": 503,
+          "ms": 4,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/proposal-expiry",
+      "domain": "cron",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 170,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 5,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cron/reservation-expiry",
+      "domain": "cron",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 164,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 5,
+          "body": "{\"error\":\"Server misconfiguration: CRON_SECRET is not set. Refusing to authenticate cron request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/regulatory/fra/dashboard",
+      "domain": "v1/regulatory",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 503,
+          "ms": 158,
+          "body": "{\"error\":\"Server misconfiguration: FRA_ACCESS_TOKEN is not set. Refusing to authenticate FRA request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T2_invalid_auth": {
+          "code": 503,
+          "ms": 9,
+          "body": "{\"error\":\"Server misconfiguration: FRA_ACCESS_TOKEN is not set. Refusing to authenticate FRA request.\"}",
+          "verdict": "pass",
+          "detail": "HTTP 503 (fail-closed config)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/cre/policies",
+      "domain": "v1/cre",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 200,
+          "ms": 186,
+          "body": "{\"engineVersion\":\"CRE-TS-1.0\",\"totalPolicies\":18,\"policies\":[{\"name\":\"zero_custody\",\"regoFile\":\"zero_custody.rego\",\"description\":\"Blocks any transfer to an AURI",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 12,
+          "body": "{\"engineVersion\":\"CRE-TS-1.0\",\"totalPolicies\":18,\"policies\":[{\"name\":\"zero_custody\",\"regoFile\":\"zero_custody.rego\",\"description\":\"Blocks any transfer to an AURI",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/cre/validate",
+      "domain": "v1/cre",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 12,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 500,
+          "ms": 193,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T3_empty_body": {
+          "code": 400,
+          "ms": 11,
+          "body": "{\"error\":\"Missing required fields: policy, params\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T4_malformed_body": {
+          "code": 500,
+          "ms": 10,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T5_wrong_ct": {
+          "code": 500,
+          "ms": 10,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T6_huge_payload": {
+          "code": 400,
+          "ms": 21,
+          "body": "{\"error\":\"Missing required fields: policy, params\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/ipfs/pin",
+      "domain": "v1/ipfs",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 200,
+          "ms": 212,
+          "body": "{\"cid\":\"bafyreiafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\",\"size\":0,\"pinnedAt\":\"2026-10-28T12:28:14.951Z\",\"pinService\":\"sandbox-local\",\"pinned\":",
+          "verdict": "pass_public",
+          "detail": "HTTP 200 (public-by-design)"
+        },
+        "T3_empty_body": {
+          "code": 200,
+          "ms": 11,
+          "body": "{\"cid\":\"bafyreiafybeicecnx2gvntm6fbcrvnc336qze6st5u7qq7457igegamd3bzkx7ri\",\"size\":2,\"pinnedAt\":\"2026-10-28T12:28:14.963Z\",\"pinService\":\"sandbox-local\",\"pinned\":",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T4_malformed_body": {
+          "code": 500,
+          "ms": 10,
+          "body": "{\"error\":\"Internal server error\"}",
+          "verdict": "fail_RELIABILITY",
+          "detail": "HTTP 500"
+        },
+        "T5_wrong_ct": {
+          "code": 200,
+          "ms": 10,
+          "body": "{\"cid\":\"bafyreiafybeiebucqgkny3bc5zpm2fdoattdt5kcyky36ksbd6ort362eefcovyq\",\"size\":28,\"pinnedAt\":\"2026-10-28T12:28:14.984Z\",\"pinService\":\"sandbox-local\",\"pinned\"",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T6_huge_payload": {
+          "code": 200,
+          "ms": 11,
+          "body": "{\"cid\":\"bafyreiafybeieztagvxzefaggwgg3kweddw4v22i7i2z7nkzhffilqwxijgmqpbq\",\"size\":10008,\"pinnedAt\":\"2026-10-28T12:28:14.995Z\",\"pinService\":\"sandbox-local\",\"pinn",
+          "verdict": "fail_SECURITY",
+          "detail": "HTTP 200 silently accepted bad input"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/webhook/payment",
+      "domain": "v1/webhook",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "signature",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 233,
+          "body": "{\"error\":\"Missing X-LawFirm-Signature or X-LawFirm-Id header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Missing X-LawFirm-Signature or X-LawFirm-Id header\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Missing X-LawFirm-Signature or X-LawFirm-Id header\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Missing X-LawFirm-Signature or X-LawFirm-Id header\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Missing X-LawFirm-Signature or X-LawFirm-Id header\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/gov/gafi",
+      "domain": "v1/gov",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 233,
+          "body": "{\"error\":\"Missing query params: crNumber, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 11,
+          "body": "{\"error\":\"Missing query params: crNumber, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/gov/nosi",
+      "domain": "v1/gov",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 224,
+          "body": "{\"error\":\"Missing query params: nationalId, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 11,
+          "body": "{\"error\":\"Missing query params: nationalId, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/v1/gov/eta",
+      "domain": "v1/gov",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 209,
+          "body": "{\"error\":\"Missing query params: taxId, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 9,
+          "body": "{\"error\":\"Missing query params: taxId, name\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/cooperative/transactions",
+      "domain": "cooperative",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 767,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/wages/bands",
+      "domain": "wages",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 7,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 408,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 13,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/wages/benchmarks",
+      "domain": "wages",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "none",
+      "cases": {
+        "T1_no_auth": {
+          "code": 400,
+          "ms": 284,
+          "body": "{\"error\":\"sector query param is required\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T2_invalid_auth": {
+          "code": 400,
+          "ms": 11,
+          "body": "{\"error\":\"sector query param is required\"}",
+          "verdict": "pass",
+          "detail": "HTTP 400"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/gaas/organizations",
+      "domain": "gaas",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 7,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 330,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/graduation",
+      "domain": "graduation",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 622,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 20,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/graduation/execute",
+      "domain": "graduation",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 868,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/takaful/claims",
+      "domain": "takaful",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 412,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/syndicates",
+      "domain": "syndicates",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 8,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 379,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 9,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/discovery",
+      "domain": "discovery",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 7,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 333,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/discovery/[matchId]",
+      "domain": "discovery",
+      "methods": [
+        "PATCH"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 7,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 817,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 27,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 14,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 15,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 21,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"UNAUTHORIZED\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": 403,
+          "ms": 14,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T8_path_traversal": {
+          "code": 403,
+          "ms": 23,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        }
+      }
+    },
+    {
+      "path": "/api/whistleblower",
+      "domain": "whistleblower",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "auth_kind": "session",
+      "validation": "zod",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 7,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 382,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 11,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 10,
+          "body": "{\"error\":\"Not authenticated\",\"code\":\"unauthenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T8_path_traversal": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        }
+      }
+    },
+    {
+      "path": "/api/notifications/[id]/read",
+      "domain": "notifications",
+      "methods": [
+        "POST"
+      ],
+      "auth_kind": "session",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 753,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": 401,
+          "ms": 25,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T4_malformed_body": {
+          "code": 401,
+          "ms": 12,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T5_wrong_ct": {
+          "code": 401,
+          "ms": 16,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T6_huge_payload": {
+          "code": 401,
+          "ms": 13,
+          "body": "{\"error\":\"not authenticated\"}",
+          "verdict": "pass_auth_short",
+          "detail": "HTTP 401 (auth short-circuit)"
+        },
+        "T7_sql_injection": {
+          "code": 403,
+          "ms": 10,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        },
+        "T8_path_traversal": {
+          "code": 403,
+          "ms": 6,
+          "body": "{\"error\":\"csrf_validation_failed\",\"message\":\"Request must be same-origin or include a valid X-CSRF-Token header\"}",
+          "verdict": "pass",
+          "detail": "HTTP 403"
+        }
+      }
+    },
+    {
+      "path": "/api/risk-profile/[enterpriseId]",
+      "domain": "risk-profile",
+      "methods": [
+        "GET"
+      ],
+      "auth_kind": "none",
+      "validation": "manual",
+      "cases": {
+        "T1_no_auth": {
+          "code": 401,
+          "ms": 771,
+          "body": "{\"error\":\"X-Risk-Profile-Api-Key header is required (issue a key via POST /api/risk-profile/keys)\",\"disclaimer\":\"AURIENTA does NOT underwrite insurance. This AP",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T2_invalid_auth": {
+          "code": 401,
+          "ms": 22,
+          "body": "{\"error\":\"X-Risk-Profile-Api-Key header is required (issue a key via POST /api/risk-profile/keys)\",\"disclaimer\":\"AURIENTA does NOT underwrite insurance. This AP",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T3_empty_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T4_malformed_body": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T5_wrong_ct": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T6_huge_payload": {
+          "code": null,
+          "ms": null,
+          "body": "",
+          "verdict": "skip",
+          "detail": "skipped"
+        },
+        "T7_sql_injection": {
+          "code": 401,
+          "ms": 20,
+          "body": "{\"error\":\"X-Risk-Profile-Api-Key header is required (issue a key via POST /api/risk-profile/keys)\",\"disclaimer\":\"AURIENTA does NOT underwrite insurance. This AP",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        },
+        "T8_path_traversal": {
+          "code": 401,
+          "ms": 21,
+          "body": "{\"error\":\"X-Risk-Profile-Api-Key header is required (issue a key via POST /api/risk-profile/keys)\",\"disclaimer\":\"AURIENTA does NOT underwrite insurance. This AP",
+          "verdict": "pass",
+          "detail": "HTTP 401"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "endpoints_probed": 68,
+    "total_cells": 544,
+    "cells_probed": 330,
+    "cells_passed": 310,
+    "overall_pass_rate_pct": 93.9,
+    "verdict_counts": {
+      "pass_public": 13,
+      "skip": 214,
+      "fail_SECURITY": 11,
+      "pass": 167,
+      "pass_redirect": 6,
+      "pass_auth_short": 124,
+      "fail_RELIABILITY": 7,
+      "fail_HANG": 2
+    },
+    "per_case_pass_rate": {
+      "T1_no_auth": {
+        "probed": 68,
+        "passed": 66,
+        "pct": 97.1
+      },
+      "T2_invalid_auth": {
+        "probed": 68,
+        "passed": 64,
+        "pct": 94.1
+      },
+      "T3_empty_body": {
+        "probed": 44,
+        "passed": 42,
+        "pct": 95.5
+      },
+      "T4_malformed_body": {
+        "probed": 44,
+        "passed": 39,
+        "pct": 88.6
+      },
+      "T5_wrong_ct": {
+        "probed": 44,
+        "passed": 39,
+        "pct": 88.6
+      },
+      "T6_huge_payload": {
+        "probed": 44,
+        "passed": 42,
+        "pct": 95.5
+      },
+      "T7_sql_injection": {
+        "probed": 9,
+        "passed": 9,
+        "pct": 100.0
+      },
+      "T8_path_traversal": {
+        "probed": 9,
+        "passed": 9,
+        "pct": 100.0
+      }
+    },
+    "security_defects": [
+      {
+        "path": "/api",
+        "case": "T1_no_auth",
+        "code": 200,
+        "body": "{\"message\":\"Hello, world!\"}"
+      },
+      {
+        "path": "/api",
+        "case": "T2_invalid_auth",
+        "code": 200,
+        "body": "{\"message\":\"Hello, world!\"}"
+      },
+      {
+        "path": "/api/platform-health",
+        "case": "T1_no_auth",
+        "code": 200,
+        "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:18:56.574Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Auri"
+      },
+      {
+        "path": "/api/platform-health",
+        "case": "T2_invalid_auth",
+        "code": 200,
+        "body": "{\"overall\":\"operational\",\"checkedAt\":\"2026-10-28T12:18:56.682Z\",\"platforms\":{\"github\":{\"status\":\"connected\",\"repo\":\"Auri"
+      },
+      {
+        "path": "/api/auth/passkey/authenticate/start",
+        "case": "T3_empty_body",
+        "code": 200,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"4dUxyTB-Z3QtS3a2aJvenuzFhktDRn8QijDpbBQympA\",\"allowCredentials\":[],\"timeout\""
+      },
+      {
+        "path": "/api/auth/passkey/authenticate/start",
+        "case": "T4_malformed_body",
+        "code": 200,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"lqwJI0rmYhhL8B9fNcWxdfspX28GeQ1Uy9KM2psVFu8\",\"allowCredentials\":[],\"timeout\""
+      },
+      {
+        "path": "/api/auth/passkey/authenticate/start",
+        "case": "T5_wrong_ct",
+        "code": 200,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"dyMg4sDpPZXDocyysjU327TZMeqOaXqd4qtsRKfsDY8\",\"allowCredentials\":[],\"timeout\""
+      },
+      {
+        "path": "/api/auth/passkey/authenticate/start",
+        "case": "T6_huge_payload",
+        "code": 200,
+        "body": "{\"options\":{\"rpId\":\"localhost\",\"challenge\":\"6tXys0iWGHIFSpfJTzUzy-K7IRm_EdymdxdJ-y4eE1A\",\"allowCredentials\":[],\"timeout\""
+      },
+      {
+        "path": "/api/v1/ipfs/pin",
+        "case": "T3_empty_body",
+        "code": 200,
+        "body": "{\"cid\":\"bafyreiafybeicecnx2gvntm6fbcrvnc336qze6st5u7qq7457igegamd3bzkx7ri\",\"size\":2,\"pinnedAt\":\"2026-10-28T12:28:14.963Z"
+      },
+      {
+        "path": "/api/v1/ipfs/pin",
+        "case": "T5_wrong_ct",
+        "code": 200,
+        "body": "{\"cid\":\"bafyreiafybeiebucqgkny3bc5zpm2fdoattdt5kcyky36ksbd6ort362eefcovyq\",\"size\":28,\"pinnedAt\":\"2026-10-28T12:28:14.984"
+      },
+      {
+        "path": "/api/v1/ipfs/pin",
+        "case": "T6_huge_payload",
+        "code": 200,
+        "body": "{\"cid\":\"bafyreiafybeieztagvxzefaggwgg3kweddw4v22i7i2z7nkzhffilqwxijgmqpbq\",\"size\":10008,\"pinnedAt\":\"2026-10-28T12:28:14."
+      }
+    ],
+    "reliability_defects": [
+      {
+        "path": "/api/legal-templates/[id]/render",
+        "case": "T2_invalid_auth",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/legal-templates/[id]/render",
+        "case": "T4_malformed_body",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/legal-templates/[id]/render",
+        "case": "T5_wrong_ct",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/v1/cre/validate",
+        "case": "T2_invalid_auth",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/v1/cre/validate",
+        "case": "T4_malformed_body",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/v1/cre/validate",
+        "case": "T5_wrong_ct",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      },
+      {
+        "path": "/api/v1/ipfs/pin",
+        "case": "T4_malformed_body",
+        "code": 500,
+        "body": "{\"error\":\"Internal server error\"}"
+      }
+    ],
+    "hang_defects": [
+      {
+        "path": "/api/cron/health-rating",
+        "case": "T4_malformed_body",
+        "err": "ReadError: [Errno 104] Connection reset by peer"
+      },
+      {
+        "path": "/api/cron/health-rating",
+        "case": "T5_wrong_ct",
+        "err": "ReadError: [Errno 104] Connection reset by peer"
+      }
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
 import { logger } from "@/lib/aurienta/logger";
+import { fxCache, cacheAside } from "@/lib/aurienta/cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +16,10 @@ export const dynamic = "force-dynamic";
 // preserves the sandbox's "always-works" guarantee without silently
 // masking real-API failures (the deprecation note is returned in the
 // response payload so callers know which path served the rate).
+//
+// PERFORMANCE: FX rates are cached for 60s per pair — the 4-source fetch
+// takes 1-3s but rates don't move meaningfully within a minute, so we
+// serve from cache on subsequent calls.
 export const GET = withErrorHandler(async (req: NextRequest) => {
   const url = new URL(req.url);
   const from = (url.searchParams.get("from") ?? "USD").toUpperCase().trim();
@@ -27,15 +32,20 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
     );
   }
 
-  // ── PRIMARY: real oracle ──
+  const cacheKey = `fx:${from}:${to}`;
+
+  // ── PRIMARY: real oracle (with 60s cache) ──
   try {
-    const { getLatestConsensusReal } = await import("@/lib/aurienta/fx-oracle-real");
-    const result = await getLatestConsensusReal(from, to);
+    const result = await cacheAside(fxCache, cacheKey, async () => {
+      const { getLatestConsensusReal } = await import("@/lib/aurienta/fx-oracle-real");
+      return getLatestConsensusReal(from, to);
+    }, 60_000);
+
     return NextResponse.json({
       ...result,
       oracle: "real",
       oracleNote:
-        "Fetched live from CBE / ECB / CoinGecko (Chainlink proxy) / Binance with 10s timeouts. Median is taken of the responding sources; spread < 2% of median = consensus healthy.",
+        "Fetched live from CBE / ECB / CoinGecko (Chainlink proxy) / Binance with 10s timeouts. Median is taken of the responding sources; spread < 2% of median = consensus healthy. Result cached for 60s per pair.",
     });
   } catch (e) {
     // ── FALLBACK: mocked oracle ──
@@ -44,6 +54,9 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
       to,
       err: e instanceof Error ? e.message : String(e),
     });
+
+    // Clear the cache entry since the real oracle failed
+    fxCache.delete(cacheKey);
 
     const { getLatestConsensus } = await import("@/lib/aurienta/fx-oracle");
     const result = await getLatestConsensus(from, to);

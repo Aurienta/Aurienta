@@ -1,0 +1,4699 @@
+[
+  {
+    "path": "/api/admin/audit/export",
+    "file": "admin/audit/export/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/audit/export",
+    "lines": 172
+  },
+  {
+    "path": "/api/admin/audit",
+    "file": "admin/audit/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/audit",
+    "lines": 190
+  },
+  {
+    "path": "/api/admin/enterprises/[id]/freeze",
+    "file": "admin/enterprises/[id]/freeze/route.ts",
+    "domain": "admin",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/admin/enterprises/[id]/freeze",
+    "lines": 131
+  },
+  {
+    "path": "/api/admin/enterprises/[id]",
+    "file": "admin/enterprises/[id]/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/enterprises/[id]",
+    "lines": 298
+  },
+  {
+    "path": "/api/admin/enterprises/[id]/unfreeze",
+    "file": "admin/enterprises/[id]/unfreeze/route.ts",
+    "domain": "admin",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/admin/enterprises/[id]/unfreeze",
+    "lines": 103
+  },
+  {
+    "path": "/api/admin/enterprises",
+    "file": "admin/enterprises/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 6,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/enterprises",
+    "lines": 121
+  },
+  {
+    "path": "/api/admin/settings",
+    "file": "admin/settings/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-typeof"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": true,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 196
+  },
+  {
+    "path": "/api/admin/users/[id]/role",
+    "file": "admin/users/[id]/role/route.ts",
+    "domain": "admin",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 6,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/admin/users/[id]/role",
+    "lines": 248
+  },
+  {
+    "path": "/api/admin/users/[id]",
+    "file": "admin/users/[id]/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/users/[id]",
+    "lines": 368
+  },
+  {
+    "path": "/api/admin/users/[id]/suspend",
+    "file": "admin/users/[id]/suspend/route.ts",
+    "domain": "admin",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/admin/users/[id]/suspend",
+    "lines": 124
+  },
+  {
+    "path": "/api/admin/users",
+    "file": "admin/users/route.ts",
+    "domain": "admin",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/admin/users",
+    "lines": 169
+  },
+  {
+    "path": "/api/ai/annual-report",
+    "file": "ai/annual-report/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 10,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/annual-report",
+    "lines": 379
+  },
+  {
+    "path": "/api/ai/anomaly",
+    "file": "ai/anomaly/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/anomaly",
+    "lines": 188
+  },
+  {
+    "path": "/api/ai/board-briefing",
+    "file": "ai/board-briefing/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/board-briefing",
+    "lines": 164
+  },
+  {
+    "path": "/api/ai/brain-status",
+    "file": "ai/brain-status/route.ts",
+    "domain": "ai",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Brain AI \u2014 Multi-Model Status Endpoint",
+    "lines": 59
+  },
+  {
+    "path": "/api/ai/charter-diff",
+    "file": "ai/charter-diff/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/charter-diff",
+    "lines": 181
+  },
+  {
+    "path": "/api/ai/drift",
+    "file": "ai/drift/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/drift",
+    "lines": 293
+  },
+  {
+    "path": "/api/ai/eve",
+    "file": "ai/eve/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse",
+      "manual-typeof",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Execution Verification Engine (EVE) \u2014 Blueprint \u00a711.2",
+    "lines": 439
+  },
+  {
+    "path": "/api/ai/evidence-verification",
+    "file": "ai/evidence-verification/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Brain AI \u2014 Evidence Verification Engine",
+    "lines": 64
+  },
+  {
+    "path": "/api/ai/explain",
+    "file": "ai/explain/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/explain",
+    "lines": 116
+  },
+  {
+    "path": "/api/ai/feasibility",
+    "file": "ai/feasibility/route.ts",
+    "domain": "ai",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Constitutional Project Evaluation Engine \u2014 REAL AI feasibility assessment.",
+    "lines": 601
+  },
+  {
+    "path": "/api/ai/graduation-coach",
+    "file": "ai/graduation-coach/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/graduation-coach",
+    "lines": 123
+  },
+  {
+    "path": "/api/ai/graduation-simulator",
+    "file": "ai/graduation-simulator/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/graduation-simulator",
+    "lines": 161
+  },
+  {
+    "path": "/api/ai/ir",
+    "file": "ai/ir/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 7,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/ir",
+    "lines": 211
+  },
+  {
+    "path": "/api/ai/mentor-matching",
+    "file": "ai/mentor-matching/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Brain AI \u2014 Mentor Matching Engine",
+    "lines": 79
+  },
+  {
+    "path": "/api/ai/milestone-designer",
+    "file": "ai/milestone-designer/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/milestone-designer",
+    "lines": 176
+  },
+  {
+    "path": "/api/ai/multilingual",
+    "file": "ai/multilingual/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/multilingual",
+    "lines": 107
+  },
+  {
+    "path": "/api/ai/partner-insights",
+    "file": "ai/partner-insights/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 7,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/partner-insights",
+    "lines": 349
+  },
+  {
+    "path": "/api/ai/pitch-deck",
+    "file": "ai/pitch-deck/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA AI Pitch Deck Generator \u2014 generates a constitutional Capital Partner pitch deck",
+    "lines": 263
+  },
+  {
+    "path": "/api/ai/precedent",
+    "file": "ai/precedent/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/precedent",
+    "lines": 255
+  },
+  {
+    "path": "/api/ai/salary-engine",
+    "file": "ai/salary-engine/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Brain AI \u2014 Salary Engine",
+    "lines": 58
+  },
+  {
+    "path": "/api/ai/salary/override",
+    "file": "ai/salary/override/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Compensation Intelligence \u2014 Salary Board Override API",
+    "lines": 129
+  },
+  {
+    "path": "/api/ai/salary",
+    "file": "ai/salary/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Compensation Intelligence \u2014 AI Salary Engine API",
+    "lines": 126
+  },
+  {
+    "path": "/api/ai/share-message",
+    "file": "ai/share-message/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/share-message",
+    "lines": 146
+  },
+  {
+    "path": "/api/ai/succession",
+    "file": "ai/succession/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/succession",
+    "lines": 207
+  },
+  {
+    "path": "/api/ai/survival-drill",
+    "file": "ai/survival-drill/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/survival-drill",
+    "lines": 229
+  },
+  {
+    "path": "/api/ai/tax",
+    "file": "ai/tax/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ai/tax",
+    "lines": 146
+  },
+  {
+    "path": "/api/ai/triage",
+    "file": "ai/triage/route.ts",
+    "domain": "ai",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "manual-typeof"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 211
+  },
+  {
+    "path": "/api/api-keys/[id]",
+    "file": "api-keys/[id]/route.ts",
+    "domain": "api-keys",
+    "methods": [
+      "DELETE"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "DELETE /api/api-keys/[id]",
+    "lines": 180
+  },
+  {
+    "path": "/api/api-keys",
+    "file": "api-keys/route.ts",
+    "domain": "api-keys",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Public API Key System (management endpoints)",
+    "lines": 376
+  },
+  {
+    "path": "/api/appeals",
+    "file": "appeals/route.ts",
+    "domain": "appeals",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 191
+  },
+  {
+    "path": "/api/arei/compute",
+    "file": "arei/compute/route.ts",
+    "domain": "arei",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 AREI manual recompute endpoint",
+    "lines": 87
+  },
+  {
+    "path": "/api/arei",
+    "file": "arei/route.ts",
+    "domain": "arei",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 AREI public read endpoint",
+    "lines": 88
+  },
+  {
+    "path": "/api/auth/passkey/authenticate/finish",
+    "file": "auth/passkey/authenticate/finish/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Passkey authentication \u2014 finish.",
+    "lines": 152
+  },
+  {
+    "path": "/api/auth/passkey/authenticate/start",
+    "file": "auth/passkey/authenticate/start/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Passkey authentication \u2014 start.",
+    "lines": 79
+  },
+  {
+    "path": "/api/auth/passkey/delete",
+    "file": "auth/passkey/delete/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Delete a passkey. Auth required. Body: { credentialId: <row cuid> }.",
+    "lines": 83
+  },
+  {
+    "path": "/api/auth/passkey/list",
+    "file": "auth/passkey/list/route.ts",
+    "domain": "auth",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "List current user's passkeys. Auth required.",
+    "lines": 32
+  },
+  {
+    "path": "/api/auth/passkey/register/finish",
+    "file": "auth/passkey/register/finish/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Passkey registration \u2014 finish.",
+    "lines": 140
+  },
+  {
+    "path": "/api/auth/passkey/register/start",
+    "file": "auth/passkey/register/start/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Passkey registration \u2014 start.",
+    "lines": 98
+  },
+  {
+    "path": "/api/auth/register",
+    "file": "auth/register/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA registration API \u2014 creates a Constitutional Partner with a real",
+    "lines": 155
+  },
+  {
+    "path": "/api/auth",
+    "file": "auth/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA auth API \u2014 Session-backed sign-in (REMED-1A).",
+    "lines": 287
+  },
+  {
+    "path": "/api/auth/signout",
+    "file": "auth/signout/route.ts",
+    "domain": "auth",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA sign-out \u2014 revokes the current Session row and clears the cookie.",
+    "lines": 36
+  },
+  {
+    "path": "/api/benchmark",
+    "file": "benchmark/route.ts",
+    "domain": "benchmark",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Enterprise Benchmarking API",
+    "lines": 294
+  },
+  {
+    "path": "/api/circuit-breaker/[enterpriseId]",
+    "file": "circuit-breaker/[enterpriseId]/route.ts",
+    "domain": "circuit-breaker",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/circuit-breaker/[enterpriseId]",
+    "lines": 44
+  },
+  {
+    "path": "/api/cooperative/transactions/[transactionId]",
+    "file": "cooperative/transactions/[transactionId]/route.ts",
+    "domain": "cooperative",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-4 Cooperative Network API \u00b7 PATCH /api/cooperative/transactions/[transactionId]",
+    "lines": 105
+  },
+  {
+    "path": "/api/cooperative/transactions",
+    "file": "cooperative/transactions/route.ts",
+    "domain": "cooperative",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-4 Cooperative Network API.",
+    "lines": 177
+  },
+  {
+    "path": "/api/copilot",
+    "file": "copilot/route.ts",
+    "domain": "copilot",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 216
+  },
+  {
+    "path": "/api/cron/crcica-arbitration",
+    "file": "cron/crcica-arbitration/route.ts",
+    "domain": "cron",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/cron/crcica-arbitration",
+    "lines": 133
+  },
+  {
+    "path": "/api/cron/health-rating",
+    "file": "cron/health-rating/route.ts",
+    "domain": "cron",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/cron/health-rating",
+    "lines": 27
+  },
+  {
+    "path": "/api/cron/proposal-expiry",
+    "file": "cron/proposal-expiry/route.ts",
+    "domain": "cron",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Cron: Proposal Expiry (DE-16)",
+    "lines": 130
+  },
+  {
+    "path": "/api/cron/reservation-expiry",
+    "file": "cron/reservation-expiry/route.ts",
+    "domain": "cron",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Cron: Reservation Expiry (DE-17)",
+    "lines": 128
+  },
+  {
+    "path": "/api/cron/stage-transition",
+    "file": "cron/stage-transition/route.ts",
+    "domain": "cron",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/cron/stage-transition",
+    "lines": 130
+  },
+  {
+    "path": "/api/cron/verification-sla",
+    "file": "cron/verification-sla/route.ts",
+    "domain": "cron",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/cron/verification-sla",
+    "lines": 58
+  },
+  {
+    "path": "/api/diaspora-corridor",
+    "file": "diaspora-corridor/route.ts",
+    "domain": "diaspora-corridor",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/diaspora-corridor",
+    "lines": 173
+  },
+  {
+    "path": "/api/diaspora",
+    "file": "diaspora/route.ts",
+    "domain": "diaspora",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/diaspora",
+    "lines": 177
+  },
+  {
+    "path": "/api/discovery/[matchId]",
+    "file": "discovery/[matchId]/route.ts",
+    "domain": "discovery",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Enterprise Discovery Match API (Roadmap Phase 1)",
+    "lines": 143
+  },
+  {
+    "path": "/api/discovery",
+    "file": "discovery/route.ts",
+    "domain": "discovery",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-typeof"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Validate a profile POST body. Returns null if valid, else first error.",
+    "lines": 232
+  },
+  {
+    "path": "/api/dividends/[distributionId]",
+    "file": "dividends/[distributionId]/route.ts",
+    "domain": "dividends",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Dividend Distribution Detail API",
+    "lines": 91
+  },
+  {
+    "path": "/api/dividends",
+    "file": "dividends/route.ts",
+    "domain": "dividends",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Dividend Distribution API",
+    "lines": 118
+  },
+  {
+    "path": "/api/documents/[id]/sign",
+    "file": "documents/[id]/sign/route.ts",
+    "domain": "documents",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Document E-Signature API",
+    "lines": 350
+  },
+  {
+    "path": "/api/drip",
+    "file": "drip/route.ts",
+    "domain": "drip",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 9,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/drip?enterpriseId=...",
+    "lines": 271
+  },
+  {
+    "path": "/api/employees",
+    "file": "employees/route.ts",
+    "domain": "employees",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "manual-number",
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 10,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/employees?enterpriseId=xxx",
+    "lines": 319
+  },
+  {
+    "path": "/api/endorsements/[endorsementId]",
+    "file": "endorsements/[endorsementId]/route.ts",
+    "domain": "endorsements",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "/api/endorsements/[endorsementId] \u2014 PATCH resolve an endorsement.",
+    "lines": 136
+  },
+  {
+    "path": "/api/endorsements/enterprise/[enterpriseId]",
+    "file": "endorsements/enterprise/[enterpriseId]/route.ts",
+    "domain": "endorsements",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "/api/endorsements/enterprise/[enterpriseId] \u2014 list an enterprise's",
+    "lines": 39
+  },
+  {
+    "path": "/api/endorsements",
+    "file": "endorsements/route.ts",
+    "domain": "endorsements",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "/api/endorsements \u2014 Constitutional Endorsement API.",
+    "lines": 112
+  },
+  {
+    "path": "/api/enterprise-updates",
+    "file": "enterprise-updates/route.ts",
+    "domain": "enterprise-updates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 9,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/enterprise-updates?enterpriseId=...&page=1&pageSize=20",
+    "lines": 380
+  },
+  {
+    "path": "/api/enterprises/[id]/close-capital-formation",
+    "file": "enterprises/[id]/close-capital-formation/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Capital Formation Close API \u2014 Blueprint \u00a75",
+    "lines": 165
+  },
+  {
+    "path": "/api/enterprises/[id]/health",
+    "file": "enterprises/[id]/health/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/enterprises/[id]/health",
+    "lines": 59
+  },
+  {
+    "path": "/api/enterprises/[id]/list",
+    "file": "enterprises/[id]/list/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Enterprise Listing Approval API",
+    "lines": 150
+  },
+  {
+    "path": "/api/enterprises/[id]/milestones",
+    "file": "enterprises/[id]/milestones/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/enterprises/[id]/milestones",
+    "lines": 187
+  },
+  {
+    "path": "/api/enterprises/[id]/profile",
+    "file": "enterprises/[id]/profile/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-typeof"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "PATCH /api/enterprises/[id]/profile",
+    "lines": 272
+  },
+  {
+    "path": "/api/enterprises",
+    "file": "enterprises/route.ts",
+    "domain": "enterprises",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "manual-number",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 7,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 360
+  },
+  {
+    "path": "/api/erp/assets/[assetId]",
+    "file": "erp/assets/[assetId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Asset Detail API",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/assets",
+    "file": "erp/assets/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Assets API",
+    "lines": 89
+  },
+  {
+    "path": "/api/erp/integration/logs",
+    "file": "erp/integration/logs/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 19
+  },
+  {
+    "path": "/api/erp/integration",
+    "file": "erp/integration/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 75
+  },
+  {
+    "path": "/api/erp/integration/sync",
+    "file": "erp/integration/sync/route.ts",
+    "domain": "erp",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 24
+  },
+  {
+    "path": "/api/erp/inventory/[inventoryId]/movement",
+    "file": "erp/inventory/[inventoryId]/movement/route.ts",
+    "domain": "erp",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Inventory Movement API",
+    "lines": 90
+  },
+  {
+    "path": "/api/erp/inventory",
+    "file": "erp/inventory/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Inventory API",
+    "lines": 91
+  },
+  {
+    "path": "/api/erp/production-orders/[orderId]",
+    "file": "erp/production-orders/[orderId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Production Order Detail API",
+    "lines": 88
+  },
+  {
+    "path": "/api/erp/production-orders",
+    "file": "erp/production-orders/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Production Orders API",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/projects/[projectId]",
+    "file": "erp/projects/[projectId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Project Detail API",
+    "lines": 98
+  },
+  {
+    "path": "/api/erp/projects",
+    "file": "erp/projects/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Projects API",
+    "lines": 109
+  },
+  {
+    "path": "/api/erp/purchase-orders/[poId]",
+    "file": "erp/purchase-orders/[poId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Purchase Order Detail API",
+    "lines": 126
+  },
+  {
+    "path": "/api/erp/purchase-orders",
+    "file": "erp/purchase-orders/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Purchase Orders API",
+    "lines": 93
+  },
+  {
+    "path": "/api/erp/quality-checks/[checkId]",
+    "file": "erp/quality-checks/[checkId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Quality Check Detail API",
+    "lines": 82
+  },
+  {
+    "path": "/api/erp/quality-checks",
+    "file": "erp/quality-checks/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Quality Checks API",
+    "lines": 86
+  },
+  {
+    "path": "/api/erp/resources/[resourceId]/allocate",
+    "file": "erp/resources/[resourceId]/allocate/route.ts",
+    "domain": "erp",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Resource Allocate API",
+    "lines": 77
+  },
+  {
+    "path": "/api/erp/resources",
+    "file": "erp/resources/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Resources API",
+    "lines": 87
+  },
+  {
+    "path": "/api/erp/tasks/[taskId]",
+    "file": "erp/tasks/[taskId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Task Detail API",
+    "lines": 70
+  },
+  {
+    "path": "/api/erp/tasks",
+    "file": "erp/tasks/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Tasks API",
+    "lines": 110
+  },
+  {
+    "path": "/api/erp/timesheets/[timesheetId]",
+    "file": "erp/timesheets/[timesheetId]/route.ts",
+    "domain": "erp",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Timesheet Detail API",
+    "lines": 103
+  },
+  {
+    "path": "/api/erp/timesheets",
+    "file": "erp/timesheets/route.ts",
+    "domain": "erp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 ERP Timesheets API",
+    "lines": 88
+  },
+  {
+    "path": "/api/evidence/[cid]",
+    "file": "evidence/[cid]/route.ts",
+    "domain": "evidence",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/evidence/[cid]",
+    "lines": 86
+  },
+  {
+    "path": "/api/evidence",
+    "file": "evidence/route.ts",
+    "domain": "evidence",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/evidence",
+    "lines": 195
+  },
+  {
+    "path": "/api/expenses/[id]/approve",
+    "file": "expenses/[id]/approve/route.ts",
+    "domain": "expenses",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/expenses/[id]/approve",
+    "lines": 310
+  },
+  {
+    "path": "/api/expenses/[id]/reject",
+    "file": "expenses/[id]/reject/route.ts",
+    "domain": "expenses",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/expenses/[id]/reject",
+    "lines": 229
+  },
+  {
+    "path": "/api/expenses/budget",
+    "file": "expenses/budget/route.ts",
+    "domain": "expenses",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Expenses Budget vs Actual API \u2014 Blueprint \u00a78.14",
+    "lines": 171
+  },
+  {
+    "path": "/api/expenses",
+    "file": "expenses/route.ts",
+    "domain": "expenses",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/expenses?enterpriseId=xxx",
+    "lines": 355
+  },
+  {
+    "path": "/api/export-readiness",
+    "file": "export-readiness/route.ts",
+    "domain": "export-readiness",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/export-readiness?enterpriseId=...",
+    "lines": 168
+  },
+  {
+    "path": "/api/fx/consensus",
+    "file": "fx/consensus/route.ts",
+    "domain": "fx",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "GET /api/fx/consensus?from=USD&to=EGP",
+    "lines": 59
+  },
+  {
+    "path": "/api/fx/refresh",
+    "file": "fx/refresh/route.ts",
+    "domain": "fx",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/fx/refresh",
+    "lines": 130
+  },
+  {
+    "path": "/api/fx",
+    "file": "fx/route.ts",
+    "domain": "fx",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/fx?from=USD&to=EGP",
+    "lines": 61
+  },
+  {
+    "path": "/api/gaas/organizations/[orgId]/decisions",
+    "file": "gaas/organizations/[orgId]/decisions/route.ts",
+    "domain": "gaas",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-typeof"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA GaaS API \u2014 /api/gaas/organizations/[orgId]/decisions",
+    "lines": 185
+  },
+  {
+    "path": "/api/gaas/organizations/[orgId]/policies",
+    "file": "gaas/organizations/[orgId]/policies/route.ts",
+    "domain": "gaas",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA GaaS API \u2014 /api/gaas/organizations/[orgId]/policies",
+    "lines": 174
+  },
+  {
+    "path": "/api/gaas/organizations",
+    "file": "gaas/organizations/route.ts",
+    "domain": "gaas",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA GaaS API \u2014 /api/gaas/organizations",
+    "lines": 157
+  },
+  {
+    "path": "/api/genome/[enterpriseId]",
+    "file": "genome/[enterpriseId]/route.ts",
+    "domain": "genome",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/genome/[enterpriseId] \u2014 fetch (or compute) a single enterprise genome.",
+    "lines": 73
+  },
+  {
+    "path": "/api/genome",
+    "file": "genome/route.ts",
+    "domain": "genome",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/genome \u2014 list top enterprise genomes by graduation probability.",
+    "lines": 60
+  },
+  {
+    "path": "/api/graduation-bond/[enterpriseId]",
+    "file": "graduation-bond/[enterpriseId]/route.ts",
+    "domain": "graduation-bond",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-6 Graduation Bond API \u00b7 GET /api/graduation-bond/[enterpriseId]",
+    "lines": 100
+  },
+  {
+    "path": "/api/graduation-bond/issue",
+    "file": "graduation-bond/issue/route.ts",
+    "domain": "graduation-bond",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-6 Graduation Bond API \u00b7 POST /api/graduation-bond/issue",
+    "lines": 87
+  },
+  {
+    "path": "/api/graduation-bond/verify/[bondId]",
+    "file": "graduation-bond/verify/[bondId]/route.ts",
+    "domain": "graduation-bond",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-6 Graduation Bond API \u00b7 GET /api/graduation-bond/verify/[bondId]",
+    "lines": 57
+  },
+  {
+    "path": "/api/graduation/execute",
+    "file": "graduation/execute/route.ts",
+    "domain": "graduation",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Graduation Execution API (Blueprint \u00a715.10 / \u00a716.4)",
+    "lines": 311
+  },
+  {
+    "path": "/api/graduation/export",
+    "file": "graduation/export/route.ts",
+    "domain": "graduation",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Graduation Export API (Blueprint \u00a715.11)",
+    "lines": 446
+  },
+  {
+    "path": "/api/graduation",
+    "file": "graduation/route.ts",
+    "domain": "graduation",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Graduation Readiness API (Blueprint \u00a715.10 / \u00a716.4)",
+    "lines": 160
+  },
+  {
+    "path": "/api/health",
+    "file": "health/route.ts",
+    "domain": "health",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/health",
+    "lines": 45
+  },
+  {
+    "path": "/api/inngest",
+    "file": "inngest/route.ts",
+    "domain": "inngest",
+    "methods": [],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 107
+  },
+  {
+    "path": "/api/ledger/sync",
+    "file": "ledger/sync/route.ts",
+    "domain": "ledger",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "manual-typeof"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/ledger/sync",
+    "lines": 72
+  },
+  {
+    "path": "/api/ledger/ticker",
+    "file": "ledger/ticker/route.ts",
+    "domain": "ledger",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/ledger/ticker?enterpriseId=...",
+    "lines": 167
+  },
+  {
+    "path": "/api/ledger/verify",
+    "file": "ledger/verify/route.ts",
+    "domain": "ledger",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/ledger/verify?enterpriseId=...",
+    "lines": 106
+  },
+  {
+    "path": "/api/legal-templates/[id]/render",
+    "file": "legal-templates/[id]/render/route.ts",
+    "domain": "legal-templates",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/legal-templates/[id]/render",
+    "lines": 34
+  },
+  {
+    "path": "/api/legal-templates/[id]",
+    "file": "legal-templates/[id]/route.ts",
+    "domain": "legal-templates",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/legal-templates/[id]",
+    "lines": 23
+  },
+  {
+    "path": "/api/legal-templates",
+    "file": "legal-templates/route.ts",
+    "domain": "legal-templates",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/legal-templates",
+    "lines": 17
+  },
+  {
+    "path": "/api/matching",
+    "file": "matching/route.ts",
+    "domain": "matching",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Constitutional Match Score API",
+    "lines": 482
+  },
+  {
+    "path": "/api/mentorship",
+    "file": "mentorship/route.ts",
+    "domain": "mentorship",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/mentorship",
+    "lines": 220
+  },
+  {
+    "path": "/api/metrics",
+    "file": "metrics/route.ts",
+    "domain": "metrics",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/metrics",
+    "lines": 81
+  },
+  {
+    "path": "/api/milestones/[id]/accountant-release",
+    "file": "milestones/[id]/accountant-release/route.ts",
+    "domain": "milestones",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Accountant milestone-release endpoint (Amendment IX).",
+    "lines": 226
+  },
+  {
+    "path": "/api/notifications/[id]/read",
+    "file": "notifications/[id]/read/route.ts",
+    "domain": "notifications",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/notifications/[id]/read",
+    "lines": 49
+  },
+  {
+    "path": "/api/oracle/consensus",
+    "file": "oracle/consensus/route.ts",
+    "domain": "oracle",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 AI Consensus Oracle Network \u00b7 public query endpoint",
+    "lines": 125
+  },
+  {
+    "path": "/api/oracle/keys",
+    "file": "oracle/keys/route.ts",
+    "domain": "oracle",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Oracle API Key generation endpoint (authed users only)",
+    "lines": 64
+  },
+  {
+    "path": "/api/orders",
+    "file": "orders/route.ts",
+    "domain": "orders",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 9,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/orders",
+    "lines": 554
+  },
+  {
+    "path": "/api/platform-health",
+    "file": "platform-health/route.ts",
+    "domain": "platform-health",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/platform-health",
+    "lines": 118
+  },
+  {
+    "path": "/api/priority-allocation/[allocationId]",
+    "file": "priority-allocation/[allocationId]/route.ts",
+    "domain": "priority-allocation",
+    "methods": [
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": true,
+    "stub": false,
+    "purpose": "PATCH /api/priority-allocation/[allocationId]",
+    "lines": 114
+  },
+  {
+    "path": "/api/priority-allocation/rankings",
+    "file": "priority-allocation/rankings/route.ts",
+    "domain": "priority-allocation",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/priority-allocation/rankings?enterpriseId=...&windowPhase=1|2|3",
+    "lines": 59
+  },
+  {
+    "path": "/api/priority-allocation",
+    "file": "priority-allocation/route.ts",
+    "domain": "priority-allocation",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/priority-allocation",
+    "lines": 106
+  },
+  {
+    "path": "/api/productive-egp/history",
+    "file": "productive-egp/history/route.ts",
+    "domain": "productive-egp",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-2 Productive EGP API \u00b7 GET /api/productive-egp/history",
+    "lines": 39
+  },
+  {
+    "path": "/api/productive-egp/snapshot",
+    "file": "productive-egp/snapshot/route.ts",
+    "domain": "productive-egp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-2 Productive EGP API.",
+    "lines": 94
+  },
+  {
+    "path": "/api/profit-sharing/[agreementId]",
+    "file": "profit-sharing/[agreementId]/route.ts",
+    "domain": "profit-sharing",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/profit-sharing/[agreementId]",
+    "lines": 197
+  },
+  {
+    "path": "/api/profit-sharing",
+    "file": "profit-sharing/route.ts",
+    "domain": "profit-sharing",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/profit-sharing",
+    "lines": 153
+  },
+  {
+    "path": "/api/proposals/[id]/vote",
+    "file": "proposals/[id]/vote/route.ts",
+    "domain": "proposals",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 7,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/proposals/[id]/vote",
+    "lines": 297
+  },
+  {
+    "path": "/api/proposals",
+    "file": "proposals/route.ts",
+    "domain": "proposals",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 6,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/proposals",
+    "lines": 439
+  },
+  {
+    "path": "/api/proxies/[id]/revoke",
+    "file": "proxies/[id]/revoke/route.ts",
+    "domain": "proxies",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Voting Proxy Revoke API \u2014 Blueprint \u00a716.2",
+    "lines": 79
+  },
+  {
+    "path": "/api/proxies",
+    "file": "proxies/route.ts",
+    "domain": "proxies",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Voting Proxy API \u2014 Blueprint \u00a716.2",
+    "lines": 205
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/cre-decisions",
+    "file": "public/enterprise/[slug]/cre-decisions/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/public/enterprise/[slug]/cre-decisions",
+    "lines": 139
+  },
+  {
+    "path": "/api/public/enterprise/[slug]",
+    "file": "public/enterprise/[slug]/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/public/enterprise/[slug]",
+    "lines": 79
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/trades",
+    "file": "public/enterprise/[slug]/trades/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/public/enterprise/[slug]/trades",
+    "lines": 145
+  },
+  {
+    "path": "/api/public/enterprise/[slug]/transparency",
+    "file": "public/enterprise/[slug]/transparency/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 6,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/public/enterprise/[slug]/transparency",
+    "lines": 180
+  },
+  {
+    "path": "/api/public/registry",
+    "file": "public/registry/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/public/registry",
+    "lines": 159
+  },
+  {
+    "path": "/api/public/stats",
+    "file": "public/stats/route.ts",
+    "domain": "public",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 140
+  },
+  {
+    "path": "/api/qa/[id]/answer",
+    "file": "qa/[id]/answer/route.ts",
+    "domain": "qa",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/qa/[id]/answer",
+    "lines": 244
+  },
+  {
+    "path": "/api/qa",
+    "file": "qa/route.ts",
+    "domain": "qa",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/qa \u2014 Ask a question.",
+    "lines": 364
+  },
+  {
+    "path": "/api/quadratic-voting/[proposalId]",
+    "file": "quadratic-voting/[proposalId]/route.ts",
+    "domain": "quadratic-voting",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "safeParse",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET  /api/quadratic-voting/[proposalId] \u2014 proposal results + caller's allocation",
+    "lines": 206
+  },
+  {
+    "path": "/api/quadratic-voting",
+    "file": "quadratic-voting/route.ts",
+    "domain": "quadratic-voting",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/quadratic-voting \u2014 list the current user's vote allocations.",
+    "lines": 62
+  },
+  {
+    "path": "/api/ready",
+    "file": "ready/route.ts",
+    "domain": "ready",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/ready",
+    "lines": 130
+  },
+  {
+    "path": "/api/reality-sync",
+    "file": "reality-sync/route.ts",
+    "domain": "reality-sync",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Reality Synchronisation Engine (Blueprint \u00a711.8)",
+    "lines": 480
+  },
+  {
+    "path": "/api/reservations/[id]/confirm",
+    "file": "reservations/[id]/confirm/route.ts",
+    "domain": "reservations",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 9,
+    "false_success": false,
+    "stub": false,
+    "purpose": "Reservation Confirmation API \u2014 Law firm confirms receipt of funds",
+    "lines": 295
+  },
+  {
+    "path": "/api/reservations",
+    "file": "reservations/route.ts",
+    "domain": "reservations",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/reservations",
+    "lines": 510
+  },
+  {
+    "path": "/api/risk-disclosure",
+    "file": "risk-disclosure/route.ts",
+    "domain": "risk-disclosure",
+    "methods": [
+      "PATCH",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/risk-disclosure",
+    "lines": 133
+  },
+  {
+    "path": "/api/risk-profile/[enterpriseId]",
+    "file": "risk-profile/[enterpriseId]/route.ts",
+    "domain": "risk-profile",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": false,
+    "auth_header": true,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Risk Profile API \u00b7 GET /api/risk-profile/[enterpriseId]",
+    "lines": 138
+  },
+  {
+    "path": "/api/risk-profile/keys",
+    "file": "risk-profile/keys/route.ts",
+    "domain": "risk-profile",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Risk Profile API Key generation endpoint (authed users only)",
+    "lines": 80
+  },
+  {
+    "path": "/api/route.ts",
+    "file": "route.ts",
+    "domain": "route.ts",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 6
+  },
+  {
+    "path": "/api/salary-to-equity",
+    "file": "salary-to-equity/route.ts",
+    "domain": "salary-to-equity",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 6,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/salary-to-equity",
+    "lines": 438
+  },
+  {
+    "path": "/api/screening",
+    "file": "screening/route.ts",
+    "domain": "screening",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/screening?enterpriseId=...",
+    "lines": 215
+  },
+  {
+    "path": "/api/skill-equity/[id]/review",
+    "file": "skill-equity/[id]/review/route.ts",
+    "domain": "skill-equity",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 7,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/skill-equity/[id]/review",
+    "lines": 335
+  },
+  {
+    "path": "/api/skill-equity",
+    "file": "skill-equity/route.ts",
+    "domain": "skill-equity",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/skill-equity",
+    "lines": 211
+  },
+  {
+    "path": "/api/solvency",
+    "file": "solvency/route.ts",
+    "domain": "solvency",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Proof-of-Solvency (Blueprint \u00a75.5)",
+    "lines": 305
+  },
+  {
+    "path": "/api/soulbound/revoke",
+    "file": "soulbound/revoke/route.ts",
+    "domain": "soulbound",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-length",
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Soulbound Credential Revocation API",
+    "lines": 75
+  },
+  {
+    "path": "/api/soulbound",
+    "file": "soulbound/route.ts",
+    "domain": "soulbound",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Soulbound Credential API",
+    "lines": 67
+  },
+  {
+    "path": "/api/soulbound/verify",
+    "file": "soulbound/verify/route.ts",
+    "domain": "soulbound",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Soulbound Credential Verification API",
+    "lines": 39
+  },
+  {
+    "path": "/api/standalone-succession/[caseId]",
+    "file": "standalone-succession/[caseId]/route.ts",
+    "domain": "standalone-succession",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "GET /api/standalone-succession/[caseId]",
+    "lines": 151
+  },
+  {
+    "path": "/api/standalone-succession",
+    "file": "standalone-succession/route.ts",
+    "domain": "standalone-succession",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/standalone-succession",
+    "lines": 140
+  },
+  {
+    "path": "/api/succession/[id]/activate",
+    "file": "succession/[id]/activate/route.ts",
+    "domain": "succession",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/succession/[id]/activate",
+    "lines": 263
+  },
+  {
+    "path": "/api/succession/[id]/execute",
+    "file": "succession/[id]/execute/route.ts",
+    "domain": "succession",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/succession/[id]/execute",
+    "lines": 332
+  },
+  {
+    "path": "/api/succession",
+    "file": "succession/route.ts",
+    "domain": "succession",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 8,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/succession",
+    "lines": 333
+  },
+  {
+    "path": "/api/supply-chain/advances/[advanceId]",
+    "file": "supply-chain/advances/[advanceId]/route.ts",
+    "domain": "supply-chain",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Supply Chain Finance Detail API",
+    "lines": 165
+  },
+  {
+    "path": "/api/supply-chain/advances",
+    "file": "supply-chain/advances/route.ts",
+    "domain": "supply-chain",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Supply Chain Finance API",
+    "lines": 124
+  },
+  {
+    "path": "/api/syndicates/[id]/join",
+    "file": "syndicates/[id]/join/route.ts",
+    "domain": "syndicates",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/syndicates/[id]/join",
+    "lines": 187
+  },
+  {
+    "path": "/api/syndicates",
+    "file": "syndicates/route.ts",
+    "domain": "syndicates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/syndicates",
+    "lines": 179
+  },
+  {
+    "path": "/api/takaful/claims/[claimId]",
+    "file": "takaful/claims/[claimId]/route.ts",
+    "domain": "takaful",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Takaful Claim Detail API",
+    "lines": 170
+  },
+  {
+    "path": "/api/takaful/claims",
+    "file": "takaful/claims/route.ts",
+    "domain": "takaful",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Takaful Pool Claims API",
+    "lines": 116
+  },
+  {
+    "path": "/api/terms/acceptance",
+    "file": "terms/acceptance/route.ts",
+    "domain": "terms",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA Terms Acceptance API",
+    "lines": 180
+  },
+  {
+    "path": "/api/trade-documents",
+    "file": "trade-documents/route.ts",
+    "domain": "trade-documents",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/trade-documents",
+    "lines": 177
+  },
+  {
+    "path": "/api/trade-instruments/[id]",
+    "file": "trade-instruments/[id]/route.ts",
+    "domain": "trade-instruments",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/trade-instruments/[id]",
+    "lines": 56
+  },
+  {
+    "path": "/api/trade-instruments",
+    "file": "trade-instruments/route.ts",
+    "domain": "trade-instruments",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/trade-instruments?enterpriseId=...",
+    "lines": 247
+  },
+  {
+    "path": "/api/trades/match",
+    "file": "trades/match/route.ts",
+    "domain": "trades",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Secondary Market Trade Matching API",
+    "lines": 55
+  },
+  {
+    "path": "/api/v1/cre/policies",
+    "file": "v1/cre/policies/route.ts",
+    "domain": "cre",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/cre/policies",
+    "lines": 129
+  },
+  {
+    "path": "/api/v1/cre/validate",
+    "file": "v1/cre/validate/route.ts",
+    "domain": "cre",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/v1/cre/validate",
+    "lines": 177
+  },
+  {
+    "path": "/api/v1/enterprise/[slug]/data",
+    "file": "v1/enterprise/[slug]/data/route.ts",
+    "domain": "enterprise",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 5,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Public v1 Enterprise Data API (API-key gated, NO session auth)",
+    "lines": 424
+  },
+  {
+    "path": "/api/v1/gov/eta",
+    "file": "v1/gov/eta/route.ts",
+    "domain": "gov",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/gov/eta?taxId=...&name=...&period=...",
+    "lines": 31
+  },
+  {
+    "path": "/api/v1/gov/gafi",
+    "file": "v1/gov/gafi/route.ts",
+    "domain": "gov",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/gov/gafi?crNumber=...&name=...",
+    "lines": 29
+  },
+  {
+    "path": "/api/v1/gov/nosi",
+    "file": "v1/gov/nosi/route.ts",
+    "domain": "gov",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/gov/nosi?nationalId=...&name=...",
+    "lines": 29
+  },
+  {
+    "path": "/api/v1/intelligence/conflicts",
+    "file": "v1/intelligence/conflicts/route.ts",
+    "domain": "intelligence",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/intelligence/conflicts?userId=...&enterpriseId=...",
+    "lines": 44
+  },
+  {
+    "path": "/api/v1/ipfs/pin",
+    "file": "v1/ipfs/pin/route.ts",
+    "domain": "ipfs",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/v1/ipfs/pin",
+    "lines": 33
+  },
+  {
+    "path": "/api/v1/regulatory/fra/dashboard",
+    "file": "v1/regulatory/fra/dashboard/route.ts",
+    "domain": "regulatory",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 12,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/v1/regulatory/fra/dashboard",
+    "lines": 108
+  },
+  {
+    "path": "/api/v1/webhook/payment",
+    "file": "v1/webhook/payment/route.ts",
+    "domain": "webhook",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/v1/webhook/payment",
+    "lines": 178
+  },
+  {
+    "path": "/api/vault/loan/[id]",
+    "file": "vault/loan/[id]/route.ts",
+    "domain": "vault",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 10,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Vault Loan Lifecycle (Blueprint \u00a75.4.3)",
+    "lines": 484
+  },
+  {
+    "path": "/api/vault/loan",
+    "file": "vault/loan/route.ts",
+    "domain": "vault",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Anti-Fragility Vault Loan Request (Blueprint \u00a75.4.3)",
+    "lines": 206
+  },
+  {
+    "path": "/api/vault",
+    "file": "vault/route.ts",
+    "domain": "vault",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 Anti-Fragility Insurance Vault (Blueprint \u00a75.4)",
+    "lines": 200
+  },
+  {
+    "path": "/api/verification/[id]",
+    "file": "verification/[id]/route.ts",
+    "domain": "verification",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 3,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/verification/[id]",
+    "lines": 383
+  },
+  {
+    "path": "/api/verification/kyc",
+    "file": "verification/kyc/route.ts",
+    "domain": "verification",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": true,
+    "prisma_hits": 1,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/verification/kyc",
+    "lines": 77
+  },
+  {
+    "path": "/api/verification",
+    "file": "verification/route.ts",
+    "domain": "verification",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-parse",
+      "safeParse",
+      "zod"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/verification",
+    "lines": 371
+  },
+  {
+    "path": "/api/wages/bands",
+    "file": "wages/bands/route.ts",
+    "domain": "wages",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": true,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-5 Constitutional Wages API.",
+    "lines": 148
+  },
+  {
+    "path": "/api/wages/benchmarks",
+    "file": "wages/benchmarks/route.ts",
+    "domain": "wages",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": false,
+    "auth_call": false,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "AURIENTA \u2014 REC-5 Constitutional Wages API \u00b7 GET /api/wages/benchmarks",
+    "lines": 30
+  },
+  {
+    "path": "/api/whistleblower/[id]/resolve",
+    "file": "whistleblower/[id]/resolve/route.ts",
+    "domain": "whistleblower",
+    "methods": [
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": true,
+    "validation_kinds": [
+      "manual-number",
+      "manual-parse"
+    ],
+    "prisma": true,
+    "prisma_hits": 4,
+    "false_success": false,
+    "stub": false,
+    "purpose": "POST /api/whistleblower/[id]/resolve",
+    "lines": 211
+  },
+  {
+    "path": "/api/whistleblower",
+    "file": "whistleblower/route.ts",
+    "domain": "whistleblower",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": false,
+    "validation": true,
+    "validation_kinds": [
+      "parseBody"
+    ],
+    "prisma": true,
+    "prisma_hits": 2,
+    "false_success": false,
+    "stub": false,
+    "purpose": "(no comment)",
+    "lines": 193
+  },
+  {
+    "path": "/api/zeitgeist",
+    "file": "zeitgeist/route.ts",
+    "domain": "zeitgeist",
+    "methods": [
+      "GET"
+    ],
+    "has_auth": true,
+    "auth_call": true,
+    "auth_header": false,
+    "with_error_handler": true,
+    "validation": false,
+    "validation_kinds": [],
+    "prisma": false,
+    "prisma_hits": 0,
+    "false_success": false,
+    "stub": false,
+    "purpose": "GET /api/zeitgeist \u2014 latest snapshot + history.",
+    "lines": 74
+  }
+]

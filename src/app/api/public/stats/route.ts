@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { CONSTITUTIONAL_HASH } from "@/lib/aurienta/constants";
 import { withErrorHandler } from "@/lib/aurienta/api-handler";
+import { publicCache, cacheAside } from "@/lib/aurienta/cache";
 
 // Open Constitutional API — #32
 // Public, read-only aggregate platform health (no PII).
@@ -11,134 +12,141 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const GET = withErrorHandler(async () => {
-  // ── Enterprises ──
-  const enterprises = await db.enterprise.findMany({
-    select: {
-      id: true,
-      tier: true,
-      status: true,
-      raisedEgp: true,
-      employeeCount: true,
-      lawFirmClientAccountBalanceEgp: true,
-      lawFirmId: true,
-    },
-  });
-
-  const activeStatuses = new Set([
-    "fundraising_active",
-    "fundraising_closed",
-    "active",
-    "graduation_pending",
-  ]);
-  const active = enterprises.filter((e) => activeStatuses.has(e.status));
-  const graduated = enterprises.filter((e) => e.status === "graduated");
-
-  // byTier — count every enterprise per tier
-  const byTier: Record<string, number> = {};
-  for (const e of enterprises) {
-    byTier[e.tier] = (byTier[e.tier] ?? 0) + 1;
-  }
-
-  const capitalDeployedEgp = enterprises.reduce((s, e) => s + e.raisedEgp, 0);
-  const jobsCreated = enterprises.reduce((s, e) => s + e.employeeCount, 0);
-
-  // ── Zero-custody proof ──
-  // AURIENTA-held = 0 (constitutional rule). Capital held in Law Firm Client Accounts = sum of enterprise lawFirmClientAccountBalanceEgp.
-  const escrowTotalEgp = enterprises.reduce((s, e) => s + e.lawFirmClientAccountBalanceEgp, 0);
-
-  // Per-law-firm breakdown
-  const lawFirms = await db.lawFirm.findMany({
-    select: {
-      id: true,
-      name: true,
-      frLicenseNumber: true,
-      insuranceEgp: true,
-      expertiseScore: true,
-      status: true,
-    },
-  });
-
-  // Aggregate Law Firm Client Account balances per firm from enterprises
-  const escrowByFirmId = new Map<string, number>();
-  for (const e of enterprises) {
-    if (!e.lawFirmId) continue;
-    escrowByFirmId.set(e.lawFirmId, (escrowByFirmId.get(e.lawFirmId) ?? 0) + e.lawFirmClientAccountBalanceEgp);
-  }
-
-  const firms = lawFirms.map((f) => ({
-    id: f.id,
-    name: f.name,
-    frLicenseNumber: f.frLicenseNumber,
-    insuranceEgp: f.insuranceEgp,
-    expertiseScore: f.expertiseScore,
-    status: f.status,
-    escrowHeldEgp: escrowByFirmId.get(f.id) ?? 0,
-    activeEnterprises: enterprises.filter((e) => e.lawFirmId === f.id).length,
-  }));
-
-  // ── Partners (constitutional partners = registered users) ──
-  const partners = await db.user.count();
-
-  // ── Graduations ──
-  const graduatedCount = await db.graduationRecord.count();
-
-  // ── CRE + AI health (REAL, computed — no fabricated metrics) ──
-  // CRE is a deterministic in-process engine: it is operational whenever the
-  // app is serving. We report issued decisions (verifiable in the ledger),
-  // not a made-up uptime percentage.
-  const creDecisionsIssued = await db.creDecision.count();
-
-  // AI consensus health — REAL data from persisted artifacts: total count +
-  // average confidence (both stored on every artifact). Precise hallucination /
-  // bias / drift evaluation requires an eval harness that is not yet
-  // implemented; we do not publish numbers we cannot measure.
-  const [aiArtifactsTotal, aiAggregate] = await Promise.all([
-    db.aiArtifact.count(),
-    db.aiArtifact.aggregate({ _avg: { confidence: true } }),
-  ]);
-
-  const payload = {
-    constitutionalHash: CONSTITUTIONAL_HASH,
-    zeroCustody: {
-      aurientaHeldEgp: 0,
-      escrowTotalEgp,
-      firms,
-      lastReconciliation: {
-        at: new Date().toISOString(),
-        result: "verified",
-        note: "Per-enterprise Law Firm Client Account balance reconciled against law-firm trust accounts.",
+  // Cache the entire payload for 30s — public stats change rarely and this
+  // endpoint receives heavy traffic from the public registry page.
+  const payload = await cacheAside(publicCache, "public:stats", async () => {
+    // ── Enterprises ──
+    const enterprises = await db.enterprise.findMany({
+      select: {
+        id: true,
+        tier: true,
+        status: true,
+        raisedEgp: true,
+        employeeCount: true,
+        lawFirmClientAccountBalanceEgp: true,
+        lawFirmId: true,
       },
-    },
-    capitalDeployedEgp,
-    enterprises: {
-      total: enterprises.length,
-      active: active.length,
-      graduated: graduatedCount || graduated.length,
-      byTier,
-    },
-    partners,
-    jobsCreated,
-    cre: {
-      status: "operational",
-      decisionsIssued: creDecisionsIssued,
-      note: "Deterministic in-process engine — operational whenever the platform is serving. Decision tokens are Ed25519-signed and verifiable against the public ledger.",
-    },
-    aiHealth: {
-      artifactsTotal: aiArtifactsTotal,
-      avgConfidence: aiAggregate._avg.confidence !== null
-        ? Math.round(aiAggregate._avg.confidence * 1000) / 1000
-        : null,
-      note: "Hallucination / bias / drift telemetry requires the evaluation harness (roadmap) — not yet measured, so not published.",
-    },
-    lastUpdated: new Date().toISOString(),
-  };
+    });
+
+    const activeStatuses = new Set([
+      "fundraising_active",
+      "fundraising_closed",
+      "active",
+      "graduation_pending",
+    ]);
+    const active = enterprises.filter((e) => activeStatuses.has(e.status));
+    const graduated = enterprises.filter((e) => e.status === "graduated");
+
+    // byTier — count every enterprise per tier
+    const byTier: Record<string, number> = {};
+    for (const e of enterprises) {
+      byTier[e.tier] = (byTier[e.tier] ?? 0) + 1;
+    }
+
+    const capitalDeployedEgp = enterprises.reduce((s, e) => s + e.raisedEgp, 0);
+    const jobsCreated = enterprises.reduce((s, e) => s + e.employeeCount, 0);
+
+    // ── Zero-custody proof ──
+    // AURIENTA-held = 0 (constitutional rule). Capital held in Law Firm Client Accounts = sum of enterprise lawFirmClientAccountBalanceEgp.
+    const escrowTotalEgp = enterprises.reduce((s, e) => s + e.lawFirmClientAccountBalanceEgp, 0);
+
+    // Per-law-firm breakdown
+    const lawFirms = await db.lawFirm.findMany({
+      select: {
+        id: true,
+        name: true,
+        frLicenseNumber: true,
+        insuranceEgp: true,
+        expertiseScore: true,
+        status: true,
+      },
+    });
+
+    // Aggregate Law Firm Client Account balances per firm from enterprises
+    const escrowByFirmId = new Map<string, number>();
+    for (const e of enterprises) {
+      if (!e.lawFirmId) continue;
+      escrowByFirmId.set(e.lawFirmId, (escrowByFirmId.get(e.lawFirmId) ?? 0) + e.lawFirmClientAccountBalanceEgp);
+    }
+
+    const firms = lawFirms.map((f) => ({
+      id: f.id,
+      name: f.name,
+      frLicenseNumber: f.frLicenseNumber,
+      insuranceEgp: f.insuranceEgp,
+      expertiseScore: f.expertiseScore,
+      status: f.status,
+      escrowHeldEgp: escrowByFirmId.get(f.id) ?? 0,
+      activeEnterprises: enterprises.filter((e) => e.lawFirmId === f.id).length,
+    }));
+
+    // ── Partners (constitutional partners = registered users) ──
+    const partners = await db.user.count();
+
+    // ── Graduations ──
+    const graduatedCount = await db.graduationRecord.count();
+
+    // ── CRE + AI health (REAL, computed — no fabricated metrics) ──
+    // CRE is a deterministic in-process engine: it is operational whenever the
+    // app is serving. We report issued decisions (verifiable in the ledger),
+    // not a made-up uptime percentage.
+    const creDecisionsIssued = await db.creDecision.count();
+
+    // AI consensus health — REAL data from persisted artifacts: total count +
+    // average confidence (both stored on every artifact). Precise hallucination /
+    // bias / drift evaluation requires an eval harness that is not yet
+    // implemented; we do not publish numbers we cannot measure.
+    const [aiArtifactsTotal, aiAggregate] = await Promise.all([
+      db.aiArtifact.count(),
+      db.aiArtifact.aggregate({ _avg: { confidence: true } }),
+    ]);
+
+    return {
+      constitutionalHash: CONSTITUTIONAL_HASH,
+      zeroCustody: {
+        aurientaHeldEgp: 0,
+        escrowTotalEgp,
+        firms,
+        lastReconciliation: {
+          at: new Date().toISOString(),
+          result: "verified",
+          note: "Per-enterprise Law Firm Client Account balance reconciled against law-firm trust accounts.",
+        },
+      },
+      capitalDeployedEgp,
+      enterprises: {
+        total: enterprises.length,
+        active: active.length,
+        graduated: graduatedCount || graduated.length,
+        byTier,
+      },
+      partners,
+      jobsCreated,
+      cre: {
+        status: "operational",
+        decisionsIssued: creDecisionsIssued,
+        note: "Deterministic in-process engine — operational whenever the platform is serving. Decision tokens are Ed25519-signed and verifiable against the public ledger.",
+      },
+      aiHealth: {
+        artifactsTotal: aiArtifactsTotal,
+        avgConfidence: aiAggregate._avg.confidence !== null
+          ? Math.round(aiAggregate._avg.confidence * 1000) / 1000
+          : null,
+        note: "Hallucination / bias / drift telemetry requires the evaluation harness (roadmap) — not yet measured, so not published.",
+      },
+      // lastUpdated is set at cache-write time, so within 30s freshness
+      lastUpdated: new Date().toISOString(),
+    };
+  }, 30_000);
 
   return NextResponse.json(payload, {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
-      "Cache-Control": "no-store",
+      // Public data — allow browser/CDN caching for 10s, revalidate after 30s
+      "Cache-Control": "public, max-age=10, stale-while-revalidate=30",
+      "X-Cache": "aurienta-public",
     },
   });
 }, "GET /api/public/stats");

@@ -12,6 +12,44 @@ import { PrismaLibSql } from '@prisma/adapter-libsql'
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
   prismaFallback: boolean | undefined
+  pragmasApplied: boolean | undefined
+}
+
+/**
+ * Apply SQLite performance pragmas via the Prisma client's own connection.
+ * libsql's local file mode uses a single long-lived Database connection,
+ * so pragmas applied via $executeRawUnsafe persist for all subsequent queries.
+ *
+ * Performance impact (vs defaults):
+ *   - journal_mode=WAL: concurrent readers + single writer (biggest win)
+ *   - synchronous=NORMAL: skip fsync on every commit (10-100x faster writes)
+ *   - cache_size=-65536: 64MB page cache (default 2MB → 32x larger)
+ *   - mmap_size=268435456: 256MB memory-mapped I/O for reads
+ *   - temp_store=MEMORY: temp tables + indices in RAM
+ *   - busy_timeout=5000: 5s wait instead of immediate SQLITE_BUSY error
+ *
+ * NOTE: journal_mode=WAL persists in the DB file itself. The other pragmas
+ * are connection-scoped and must be re-applied on each new Prisma client.
+ */
+async function applySqlitePragmas(client: PrismaClient): Promise<void> {
+  if (globalForPrisma.pragmasApplied) return
+  const url = process.env.DATABASE_URL ?? ''
+  if (!url.startsWith('file:')) return // Only local SQLite needs pragmas
+  try {
+    // Apply pragmas via Prisma's own connection (single long-lived libsql Database)
+    await client.$executeRawUnsafe('PRAGMA journal_mode=WAL')
+    await client.$executeRawUnsafe('PRAGMA synchronous=NORMAL')
+    await client.$executeRawUnsafe('PRAGMA cache_size=-65536')
+    await client.$executeRawUnsafe('PRAGMA mmap_size=268435456')
+    await client.$executeRawUnsafe('PRAGMA temp_store=MEMORY')
+    await client.$executeRawUnsafe('PRAGMA busy_timeout=5000')
+    globalForPrisma.pragmasApplied = true
+    // eslint-disable-next-line no-console
+    console.log('[db] SQLite pragmas applied via Prisma connection (WAL, 64MB cache, 256MB mmap)')
+  } catch (e) {
+    // Non-fatal — pragmas are optimizations, not requirements
+    console.warn('[db] Failed to apply SQLite pragmas:', e instanceof Error ? e.message : e)
+  }
 }
 
 function createPrismaClient(): PrismaClient {
@@ -41,11 +79,16 @@ function createPrismaClient(): PrismaClient {
     : 'file:./prisma/.provider-placeholder.db'
 
   try {
-    const adapter = new PrismaLibSql({ url: localUrl })
-    return new PrismaClient({
+    const adapter = new PrismaLibSql({ url: localUrl, intMode: 'number' })
+    const client = new PrismaClient({
       adapter,
       log: ['error', 'warn'],
     })
+    // Apply performance pragmas asynchronously via Prisma's own connection.
+    // Non-blocking — first request may run before pragmas are applied,
+    // but subsequent requests benefit from the tuned connection.
+    void applySqlitePragmas(client).catch(() => { /* logged inside */ })
+    return client
   } catch (e) {
     console.error('[db] Local adapter creation failed:', e)
     // Last resort: create a client without adapter (may not work in Prisma 7
