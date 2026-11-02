@@ -10,13 +10,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Building2, Banknote, Landmark, Factory, TrendingUp, Scale,
   Wallet, FileText, LineChart, Map, Search, Loader2, Database,
-  Users, HardHat, Globe, ShieldCheck,
+  Users, HardHat, Globe, ShieldCheck, Activity,
 } from "lucide-react";
 
 type Dataset =
   | "overview" | "sectors" | "governorates" | "projects"
   | "regulatory" | "banks" | "benchmarks" | "salary-bands"
-  | "legal-forms" | "fx-history";
+  | "legal-forms" | "fx-history" | "macro";
 
 const DATASET_LABELS: Record<Dataset, string> = {
   overview: "Overview",
@@ -29,6 +29,7 @@ const DATASET_LABELS: Record<Dataset, string> = {
   "salary-bands": "Salary Bands (780)",
   "legal-forms": "Legal Forms (15)",
   "fx-history": "FX History (120)",
+  macro: "Macro Live (FRED)",
 };
 
 const DATASET_ICONS: Record<Dataset, React.ComponentType<{ className?: string }>> = {
@@ -42,6 +43,7 @@ const DATASET_ICONS: Record<Dataset, React.ComponentType<{ className?: string }>
   "salary-bands": Wallet,
   "legal-forms": Scale,
   "fx-history": LineChart,
+  macro: Activity,
 };
 
 interface OverviewData {
@@ -76,7 +78,11 @@ export default function EgyptMarketPage() {
   useEffect(() => {
     setLoading(true);
     setData(null);
-    fetch(`/api/v1/egypt?dataset=${dataset}`)
+    // Macro indicators live on a separate endpoint (FRED-backed, live data)
+    const url = dataset === "macro"
+      ? "/api/v1/macro"
+      : `/api/v1/egypt?dataset=${dataset}`;
+    fetch(url)
       .then((r) => r.json())
       .then((d) => setData(d))
       .finally(() => setLoading(false));
@@ -196,6 +202,10 @@ export default function EgyptMarketPage() {
             {!loading && filtered && dataset === "fx-history" && (
               <FxHistoryView data={filtered as { rates: FxRate[]; count: number }} />
             )}
+
+            {!loading && filtered && dataset === "macro" && (
+              <MacroView data={filtered as { indicators: MacroIndicator[]; count: number; configured: boolean; source?: string }} />
+            )}
           </TabsContent>
         </Tabs>
 
@@ -225,6 +235,7 @@ function getArrayKey(dataset: Dataset): string {
     "salary-bands": "bands",
     "legal-forms": "legalForms",
     "fx-history": "rates",
+    macro: "indicators",
   };
   return map[dataset];
 }
@@ -754,6 +765,132 @@ function LegalFormsView({ data }: { data: { legalForms: LegalForm[]; count: numb
           </Card>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── FxHistoryView is defined above; MacroView below ────────────────────
+
+interface MacroIndicator {
+  seriesId: string;
+  date: string;
+  value: number;
+  name: string;
+  category: "egypt" | "us_rates" | "us_inflation" | "us_labor";
+  unit: string;
+  frequency: string;
+  description: string;
+  higherIsBetter?: boolean;
+  fetchedAt: string;
+}
+
+function formatMacroValue(v: number, unit: string): string {
+  if (unit === "US$") {
+    if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
+    if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
+    return `$${v.toFixed(2)}`;
+  }
+  if (unit === "persons") {
+    return `${(v / 1e6).toFixed(2)}M`;
+  }
+  if (unit === "index") {
+    return v.toFixed(3);
+  }
+  return v.toFixed(2);
+}
+
+const MACRO_CATEGORY_META: Record<string, { title: string; icon: React.ComponentType<{ className?: string }>; description: string }> = {
+  egypt: {
+    title: "Egypt Macro Indicators",
+    icon: Globe,
+    description: "IMF/World Bank data via FRED — annual. Context for feasibility studies, pricing, and market sizing.",
+  },
+  us_rates: {
+    title: "US Interest Rates (EGP Drivers)",
+    icon: Landmark,
+    description: "The Fed's policy rate and the 10Y treasury. Higher US rates pull capital out of emerging markets like Egypt, pressuring EGP.",
+  },
+  us_inflation: {
+    title: "US Inflation",
+    icon: TrendingUp,
+    description: "US inflation drives Fed policy and USD strength — the anchor for global pricing.",
+  },
+  us_labor: {
+    title: "US Labor Market",
+    icon: Users,
+    description: "Strong US labor = hawkish Fed = EGP pressure.",
+  },
+};
+
+function MacroView({ data }: { data: { indicators: MacroIndicator[]; count: number; configured: boolean; source?: string } }) {
+  if (!data.configured) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <Activity className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+          <p className="text-muted-foreground">FRED_API_KEY not configured. Add it to .env to enable live macro indicators.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const categories = Array.from(new Set(data.indicators.map((i) => i.category)));
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="text-sm text-muted-foreground">
+          {data.count} live indicators · <Badge variant="secondary" className="ml-1">LIVE</Badge>
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Source: {data.source ?? "St. Louis Fed FRED API"} · Cached 60 min
+        </div>
+      </div>
+
+      {categories.map((cat) => {
+        const meta = MACRO_CATEGORY_META[cat] ?? { title: cat, icon: Activity, description: "" };
+        const Icon = meta.icon;
+        const items = data.indicators.filter((i) => i.category === cat);
+        return (
+          <Card key={cat}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Icon className="w-5 h-5 text-primary" />
+                {meta.title}
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">{meta.description}</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map((ind) => (
+                  <div key={ind.seriesId} className="p-4 rounded-lg border bg-muted/30 space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="text-sm font-medium leading-tight">{ind.name}</div>
+                      <Activity className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums">
+                      {formatMacroValue(ind.value, ind.unit)}
+                      {ind.unit === "%" && <span className="text-base font-normal text-muted-foreground ml-0.5">%</span>}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(ind.date).toLocaleDateString()} · {ind.frequency}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-snug">{ind.description}</p>
+                    <a
+                      href={`https://fred.stlouisfed.org/series/${ind.seriesId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-primary hover:underline"
+                    >
+                      FRED: {ind.seriesId} →
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

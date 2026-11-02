@@ -89,6 +89,19 @@ export async function POST(req: NextRequest) {
   if (body instanceof NextResponse) return body;
 
   const evaluationId = `eval_${Date.now().toString(36)}_${user.id.slice(-6)}`;
+
+  // ── MACRO CONTEXT (FRED live data — cached 60 min) ──
+  // Gives the AI real Egypt inflation + US rates so feasibility scores
+  // reflect the actual macro environment. Degrades gracefully if FRED
+  // is unreachable (empty string).
+  let macroContext = "";
+  try {
+    const { getMacroContextForAI } = await import("@/lib/aurienta/fred");
+    macroContext = await getMacroContextForAI();
+  } catch {
+    // FRED not configured or unreachable — proceed without macro context
+  }
+
   const report: FeasibilityReport = {
     evaluationId,
     feasibilityScore: 0,
@@ -146,7 +159,9 @@ export async function POST(req: NextRequest) {
   const runwayMonths = monthlyExpenses > 0 ? Math.floor(body.fundraisingGoalEgp / monthlyExpenses) : 99;
   const contingencyFlag = contingencyPct < 5;
 
-  const step2Context = `ENTERPRISE: ${body.name}
+  const step2Context = `${macroContext}
+
+ENTERPRISE: ${body.name}
 Sector: ${body.sector} (Tier ${body.tier})
 Capital Formation goal: ${body.fundraisingGoalEgp.toLocaleString()} EGP
 Monthly expenses (projected): ${monthlyExpenses.toLocaleString()} EGP
@@ -157,6 +172,7 @@ Description: ${body.description}`;
   const step2Ai = await askConstitutionalAI({
     systemPrompt: `You are the AURIENTA Constitutional Project Evaluation Engine — Step 2: Expense Feasibility.
 Evaluate the enterprise's 1-year expense projection for reasonableness, runway (≥12 months minimum), and red flags (missing contingency <5%, unrealistic salaries).
+Use the provided MACRO CONTEXT: Egypt inflation erodes purchasing power (adjust salary/expense realism), US rates set the opportunity cost of capital.
 Output a JSON object: {"score": 0-100, "justification": "one paragraph", "redFlags": ["array of strings"]}.
 Score 70+ = strong; 50-69 = acceptable; 35-49 = marginal; <35 = reject.`,
     userMessage: "Evaluate this enterprise's expense feasibility. Return ONLY a JSON object, no other text.",
