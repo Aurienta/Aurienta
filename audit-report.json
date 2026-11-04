@@ -1,0 +1,52 @@
+[
+  {
+    "email": "layla@streetbites.eg",
+    "name": "Layla Mostafa",
+    "slug": "layla",
+    "memberships": "",
+    "login": "OK",
+    "dashboard_url": "http://localhost:3000/dashboard",
+    "role_switcher": "static-badge",
+    "status": "OK"
+  },
+  {
+    "email": "ahmed@ecopack.eg",
+    "name": "Ahmed Khaled",
+    "slug": "ahmed",
+    "memberships": "",
+    "login": "OK",
+    "dashboard_url": "http://localhost:3000/dashboard",
+    "role_switcher": "dropdown",
+    "status": "OK"
+  },
+  {
+    "email": "sarah@investor.eg",
+    "name": "Sarah Ibrahim",
+    "slug": "sarah",
+    "memberships": "",
+    "login": "OK",
+    "dashboard_url": "http://localhost:3000/dashboard",
+    "role_switcher": "static-badge",
+    "status": "OK"
+  },
+  {
+    "email": "mohamed@smartfarm.eg",
+    "name": "Mohamed Adel",
+    "slug": "mohamed",
+    "memberships": "",
+    "login": "OK",
+    "dashboard_url": "http://localhost:3000/dashboard",
+    "role_switcher": "static-badge",
+    "status": "OK"
+  },
+  {
+    "email": "khalil@holding.eg",
+    "name": "Khalil Mansour",
+    "slug": "khalil",
+    "memberships": "",
+    "login": "OK",
+    "dashboard_url": "http://localhost:3000/dashboard",
+    "role_switcher": "static-badge",
+    "status": "OK"
+  }
+]

@@ -304,6 +304,16 @@ export function FirstTimeUserExperience({ userRole }: { userRole?: string }) {
                   />
                 ))}
               </div>
+              {/* COO-FIX-1: Prominent "Skip tour" button — always visible, lets users
+                  dismiss the modal instantly and see their dashboard.
+                  Accessibility: keyboard-reachable, clearly labeled. */}
+              <button
+                onClick={handleClose}
+                className="rounded-lg px-3 py-1.5 font-sans text-xs font-medium text-muted-foreground transition-colors hover:text-gold hover:bg-gold/5"
+                aria-label="Skip onboarding tour and go to dashboard"
+              >
+                Skip tour →
+              </button>
               <div className="flex items-center gap-2">
                 {step > 0 && (
                   <button

@@ -6,6 +6,8 @@ import { TaskList } from "@/components/dashboard/task-list";
 import { QuickStartCards, StarterBanner } from "@/components/dashboard/ux/empty-states";
 import { QuickActions } from "@/components/dashboard/ux/quick-actions";
 import { LiveLedgerTicker } from "@/components/dashboard/live-ticker";
+import { NeedsAttention, type AttentionItem } from "@/components/dashboard/needs-attention";
+import { JargonInfo } from "@/components/dashboard/jargon-info";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GoldStar } from "@/components/aurienta-logo";
@@ -73,6 +75,54 @@ export default async function OverviewPage() {
   const recentNotifications = user.notifications;
   const userSts = stsLevel(user.sovereignTrustScore);
 
+  // ── COO-FIX-2: Build "Needs your attention" items ──
+  // Surfaces urgent tasks, unread notifications, and security gaps at the TOP
+  // of the dashboard so users see what needs action immediately.
+  const attentionItems: AttentionItem[] = [];
+  for (const task of urgentTasks) {
+    if (task.done) continue;
+    const isUrgent = task.priority === "urgent" || task.priority === "high";
+    attentionItems.push({
+      id: `task-${task.id}`,
+      kind: isUrgent ? "urgent" : "soon",
+      category: "task",
+      title: task.title,
+      description: task.description || undefined,
+      href: task.ctaHref ?? "/dashboard",
+      dueIn: task.dueAt ? `Due ${timeAgo(task.dueAt)}` : undefined,
+    });
+  }
+  for (const n of recentNotifications.slice(0, 3)) {
+    const isUrgent = n.aiPriority === "urgent" || n.aiPriority === "high";
+    attentionItems.push({
+      id: `notif-${n.id}`,
+      kind: isUrgent ? "urgent" : "info",
+      category: "notification",
+      title: n.title,
+      description: n.body,
+      href: n.href ?? "/dashboard/notifications",
+    });
+  }
+  // Security gap: MFA not enrolled for sensitive roles
+  const sensitiveRoles = user.memberships.filter((m) =>
+    ["founding_operator", "manager", "company_owner", "board_member", "law_firm_rep", "accounting_firm_rep", "aurienta_rep"].includes(m.role)
+  );
+  if (sensitiveRoles.length > 0 && !user.totpSecretEnc) {
+    attentionItems.push({
+      id: "mfa-enrollment",
+      kind: "urgent",
+      category: "security",
+      title: "Set up multi-factor authentication (MFA)",
+      description: "Your role can move money or sign documents — phishing-resistant MFA is required.",
+      href: "/dashboard/profile",
+    });
+  }
+  // Sort: urgent first, then soon, then info
+  attentionItems.sort((a, b) => {
+    const order = { urgent: 0, soon: 1, info: 2 };
+    return order[a.kind] - order[b.kind];
+  });
+
   // ── Big module cards (restaurant-style management system) ──
   const MODULES = [
     { href: "/dashboard/portfolio", icon: Wallet, title: "Holdings", desc: "Your Equity Units, allocation & dividend history", stat: `${holdings.length} holding${holdings.length === 1 ? "" : "s"}`, color: "from-indigo-500/10 to-indigo-700/5" },
@@ -97,6 +147,10 @@ export default async function OverviewPage() {
     <div className="flex flex-col gap-6 sm:gap-8">
       {/* Welcome hero */}
       <OverviewHero user={user} portfolioValue={portfolioValue} />
+
+      {/* COO-FIX-2: "Needs your attention" — urgent items surfaced at the top */}
+      <NeedsAttention items={attentionItems} />
+
       <QuickActions />
 
       {/* Starter banner for new users (STS < 70) */}
@@ -226,11 +280,11 @@ export default async function OverviewPage() {
       {/* Footer */}
       <footer className="mt-2 flex flex-col items-start gap-2 border-t border-gold/8 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-muted-foreground/85">
-          <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-gold/60" /> Zero Custody</span>
+          <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-gold/60" /> <JargonInfo term="Zero Custody">Zero Custody</JargonInfo></span>
           <span className="hidden sm:inline text-gold/15">|</span>
-          <span className="inline-flex items-center gap-1"><Scale className="h-3 w-3 text-gold/60" /> CRE-enforced</span>
+          <span className="inline-flex items-center gap-1"><Scale className="h-3 w-3 text-gold/60" /> <JargonInfo term="CRE">CRE</JargonInfo>-enforced</span>
           <span className="hidden sm:inline text-gold/15">|</span>
-          <span className="inline-flex items-center gap-1"><GoldStar className="h-2.5 w-2.5 text-gold/60" /> Sovereign trust operationalised</span>
+          <span className="inline-flex items-center gap-1"><GoldStar className="h-2.5 w-2.5 text-gold/60" /> <JargonInfo term="Constitutional">Sovereign trust operationalised</JargonInfo></span>
         </div>
       </footer>
     </div>

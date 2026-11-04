@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { TIER_META, STAGE_META } from "@/lib/aurienta/constants";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { JargonInfo } from "@/components/dashboard/jargon-info";
 
 const ROLE_ICONS: Record<string, React.ElementType> = {
   capital_partner: Wallet,
@@ -105,7 +106,7 @@ export function RoleContextBar({
           <>
             <span className="text-gold/20">|</span>
             <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">{t("ui.tier") || "Tier"}:</span>
+              <span className="text-muted-foreground"><JargonInfo term="Tier">{t("ui.tier") || "Tier"}</JargonInfo>:</span>
               <Badge variant="outline" className="border-gold/20 px-1.5 py-0 text-[10px]">
                 {activeEnterprise.tier} — {tierMeta.name}
               </Badge>
@@ -130,7 +131,7 @@ export function RoleContextBar({
 
         {/* STS score */}
         <div className="ml-auto flex items-center gap-1.5">
-          <span className="text-muted-foreground">STS:</span>
+          <span className="text-muted-foreground"><JargonInfo term="STS">STS</JargonInfo>:</span>
           <span className="font-mono text-gold">{user.sovereignTrustScore}</span>
         </div>
       </div>
