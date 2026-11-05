@@ -53,8 +53,13 @@ export function DemoUserPicker() {
 
       const data = await res.json();
       if (data.user) {
-        // Login successful — navigate to dashboard
-        router.push("/dashboard");
+        // ROOT-CAUSE FIX: Use hard navigation (window.location.href) instead
+        // of router.push (soft navigation). Soft navigation can get stuck
+        // on the loading.tsx screen if the server is slow to render the
+        // dashboard route segment. Hard navigation forces a full page load
+        // which is more reliable and shows the browser's native loading
+        // indicator.
+        window.location.href = "/dashboard";
         return;
       }
 
