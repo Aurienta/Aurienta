@@ -2339,3 +2339,92 @@ model ErpSyncLog {
   @@index([status])
   @@index([startedAt])
 }
+
+// ───────────────────────────────────────────────────────────
+// E-SIGNATURE + DOCUMENT AUTOMATION (Law 15/2004)
+// ───────────────────────────────────────────────────────────
+/// Reusable document template with {{variable}} placeholders.
+/// Required signers are tracked by user ID; the document instance
+/// cannot reach `signed` status until every required signer has
+/// applied their Ed25519 signature. This is a SIMPLE e-signature
+/// under Egyptian Law 15/2004 (E-Signature Law), NOT a qualified
+/// electronic signature — see the existing TermsAcceptance model
+/// comment for the qualified-signature workflow boundary.
+model ESignatureTemplate {
+  id              String   @id @default(cuid())
+  title           String
+  body            String   // Template text with {{variable}} placeholders
+  variables       String   @default("[]") // JSON array of variable names: ["enterpriseName","founderName"]
+  requiredSigners String   @default("[]") // JSON array of user IDs that must sign
+  ownerId         String   // User who created the template
+  enterpriseId    String?  // Optional: enterprise scope
+  category        String   @default("general") // general, founding, board, vendor, nda, employment
+  jurisdiction    String   @default("EG")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  documents       ESignatureDocument[]
+
+  @@index([ownerId])
+  @@index([enterpriseId])
+  @@index([category])
+}
+
+/// Document instance created from a template, with variables filled in.
+/// The `filledBody` is the rendered template text; the `documentHash`
+/// is SHA3-256 over (templateId|filledBody|createdAt|ownerId) — this is
+/// the message that each signer's Ed25519 key signs.
+model ESignatureDocument {
+  id              String   @id @default(cuid())
+  templateId      String?
+  ownerId         String   // User who created the document instance
+  enterpriseId    String?
+  title           String
+  filledBody      String   // Rendered template body (variables substituted)
+  variablesUsed   String   @default("{}") // JSON of the variables map applied
+  documentHash    String   // SHA3-256 over (templateId|filledBody|createdAt|ownerId)
+  status          String   @default("draft") // draft, pending, signed, declined, expired, voided
+  // Anchored on the constitutional ledger: payloadHash of the LedgerEvent
+  // appended at creation. Any party can walk the chain from this anchor.
+  ledgerAnchorHash String? // LedgerEvent.payloadHash of the create event
+  ledgerSequence  Int?     // LedgerEvent.sequence for the create event
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  expiresAt       DateTime? // Optional signing deadline
+
+  template        ESignatureTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  signerRequests  ESignatureRequest[]
+
+  @@index([ownerId])
+  @@index([enterpriseId])
+  @@index([templateId])
+  @@index([status])
+}
+
+/// Per-signer signature request on a document. Each required signer
+/// gets one row; the row's status moves pending → signed (or → declined).
+/// The signature itself (base64 Ed25519 over documentHash) is stored in
+/// `signatureB64`; `signatureHash` is SHA3-256 over
+/// (documentHash|signatureB64|signerId|signedAt) — a tamper-evident
+/// envelope hash. Verification path:
+///   verifyUserSignature(signer.identityAnchor, documentHash, signatureB64)
+model ESignatureRequest {
+  id              String   @id @default(cuid())
+  documentId      String
+  signerId        String
+  status          String   @default("pending") // pending, signed, declined, expired
+  signatureB64    String?  // Ed25519 signature, base64 — null until signed
+  signatureHash   String?  // SHA3-256 envelope hash — null until signed
+  signedAt        DateTime?
+  declinedAt      DateTime?
+  declinedReason  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  document        ESignatureDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, signerId])
+  @@index([documentId])
+  @@index([signerId])
+  @@index([status])
+}

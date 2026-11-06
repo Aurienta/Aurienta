@@ -110,6 +110,7 @@ export type NavIconName =
   | "Receipt"
   | "BarChart3"
   | "Gauge"
+  | "PenLine"
   | "PieChart"
   | "CheckCircle2"
   | "Briefcase"
@@ -390,6 +391,15 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/gaas", label: "Governance-as-a-Service", icon: "Webhook", group: "Institutional Services" },
   { href: "/dashboard/standalone-succession", label: "Standalone Succession", icon: "HeartHandshake", group: "Institutional Services" },
   { href: "/dashboard/risk-profile", label: "Risk Profile API", icon: "Umbrella", group: "Institutional Services" },
+
+  // ══ New Competitor-Parity Modules (2026-11) ══
+  { href: "/dashboard/cap-table", label: "Cap Table", icon: "PieChart", group: "Capital" },
+  { href: "/dashboard/e-signature", label: "E-Signature", icon: "PenLine", group: "Capital" },
+  { href: "/dashboard/kyc", label: "KYC Verification", icon: "ShieldCheck", group: "Compliance & Transparency" },
+  { href: "/dashboard/payments", label: "Payments (Fawry/Paymob)", icon: "Banknote", group: "Treasury & Infrastructure" },
+  { href: "/dashboard/compliance-automation", label: "Compliance Automation", icon: "ShieldCheck", group: "Compliance & Transparency" },
+  { href: "/dashboard/investor-crm", label: "Investor CRM", icon: "Users", group: "Capital" },
+  { href: "/dashboard/ewa", label: "Earned Wage Access", icon: "Wallet", group: "Capital & Workforce" },
 
   // ══ Platform Admin (6 collapsible sub-groups) ══
   // ── Admin → Users & Enterprises ──
