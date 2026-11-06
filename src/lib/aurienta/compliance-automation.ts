@@ -1,8 +1,35 @@
 // AURIENTA — Compliance Automation Module
-// Checks Egyptian regulatory compliance: PDPL, FRA, ETA, NOSI.
+// ═══════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE — This is NOT legal advice:
+//
+// Under Law 17/1983 (Lawyers' Code) Art. 1, only licensed lawyers
+// admitted to the Egyptian Bar Association may provide legal advice.
+//
+// This module provides ADMINISTRATIVE CHECKLISTS, NOT legal advice:
+//   - It checks whether certain registrations HAVE BEEN OBTAINED
+//   - It does NOT interpret the law or provide legal opinions
+//   - It does NOT constitute legal counsel or attorney-client relationship
+//   - It does NOT replace the need for a licensed Egyptian lawyer
+//
+// Enterprises must consult a licensed Egyptian lawyer for:
+//   - Legal interpretation of any law cited herein
+//   - Specific legal advice about their situation
+//   - Regulatory strategy and compliance planning
+//   - Representation before government agencies
+//
+// The compliance scores and checklists are ADMINISTRATIVE TOOLS that
+// help track whether key registrations have been completed. A "compliant"
+// status does NOT constitute a legal opinion that the enterprise is
+// legally compliant — only that the listed administrative items have
+// been checked off.
+// ═══════════════════════════════════════════════════════════════
 
 import { db } from "@/lib/db";
 import { logger } from "./logger";
+
+export const COMPLIANCE_LEGAL_DISCLAIMER = `This compliance automation tool provides administrative checklists, NOT legal advice. Under Law 17/1983 (Lawyers' Code) Art. 1, only licensed lawyers admitted to the Egyptian Bar Association may provide legal advice. The compliance scores and checks herein are administrative tracking tools only. A "compliant" status does NOT constitute a legal opinion. Enterprises must consult a licensed Egyptian lawyer for legal interpretation, advice, and representation. AURIENTA is not a law firm and does not provide legal services.`;
+
+export const COMPLIANCE_LEGAL_BASIS = "Law 17/1983 Art. 1 (Lawyers' Code — legal advice restricted to licensed lawyers)";
 
 export type ComplianceCheck = {
   id: string;

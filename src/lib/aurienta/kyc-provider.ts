@@ -1,10 +1,45 @@
 // AURIENTA — KYC Provider Scaffold (Smile Identity API)
-// Provides identity verification for Egyptian users.
-// Smile Identity covers 15+ African countries including Egypt.
+// ═══════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE:
+//
+// 1. Personal Data Protection Law 151/2020 (PDPL):
+//    - Art. 2(5): Biometric data (facial images, fingerprints) is
+//      "sensitive personal data" — requires SEPARATE explicit consent
+//    - Art. 7: Processing personal data requires informed consent
+//    - Art. 13: Data subject has right to access, rectify, erase
+//    - Art. 17: Cross-border transfer requires adequate protection
+//    - Art. 24: Data breaches must be reported within 72 hours
+//
+// 2. AML Law 80/2002 + Law 78/2023:
+//    - Art. 1: Customer Due Diligence (CDD) is mandatory
+//    - Art. 2: Suspicious transactions must be reported to EMLCU
+//    - Art. 4: Enhanced Due Diligence for high-risk customers
+//
+// 3. Civil Registry Law 143/1994:
+//    - National ID numbers are issued by the Civil Registry
+//    - Verification against Civil Registry requires government authorization
+//    - AURIENTA only stores the LAST 4 DIGITS of the national ID
+//      (never the full number) — encrypted at rest with AES-GCM
+//
+// 4. Consumer Protection Law 67/2006:
+//    - Art. 3: Consumer has right to clear information about data use
+//    - Art. 6: No unfair contract terms
+//
+// CONSENT REQUIREMENTS:
+//    Before initiating KYC, the user must explicitly consent to:
+//    (a) Processing of their personal data (PDPL Art. 7)
+//    (b) Processing of biometric data — liveness scan (PDPL Art. 2(5))
+//    (c) Cross-border data transfer if Smile Identity processes outside Egypt
+//    (d) Reporting suspicious transactions to EMLCU (AML Law Art. 2)
+// ═══════════════════════════════════════════════════════════════
 
 import { db } from "@/lib/db";
 import { logger } from "./logger";
 import { audit } from "./audit";
+
+export const KYC_LEGAL_DISCLAIMER = `By initiating KYC verification, you consent to: (1) processing of your personal data under Law 151/2020 (PDPL) Art. 7; (2) processing of biometric data (facial liveness scan) as sensitive personal data under PDPL Art. 2(5); (3) cross-border data transfer to Smile Identity servers which may be located outside Egypt, per PDPL Art. 17; (4) reporting of suspicious transactions to the Egyptian Money Laundering Combating Unit (EMLCU) per Law 80/2002 Art. 2. Your national ID number is stored as the LAST 4 DIGITS ONLY, encrypted with AES-GCM. You have the right to access, rectify, and erase your data per PDPL Arts. 13-14.`;
+
+export const KYC_LEGAL_BASIS = "Law 151/2020 (PDPL) Arts. 2(5), 7, 13, 14, 17, 24 + Law 80/2002 (AML) + Law 143/1994 (Civil Registry) + Law 67/2006 (Consumer Protection)";
 
 export type KycStatus = "pending" | "verified" | "rejected" | "expired";
 

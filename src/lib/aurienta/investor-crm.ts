@@ -1,9 +1,39 @@
 // AURIENTA — Investor CRM Module
-// Tracks the fundraising pipeline from intro → diligence → wire.
+// ═══════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE — Capital Market Law 95/1992:
+//
+// This module is a RELATIONSHIP MANAGEMENT TOOL, NOT investment promotion.
+//
+// Under Egyptian Capital Market Law 95/1992 Art. 2:
+//   - "Investment promotion" requires an FRA license
+//   - "Public offering of securities" requires FRA authorization
+//   - "Investment advice" requires an FRA license
+//
+// AURIENTA's Investor CRM does NOT:
+//   - Promote or offer securities to the public
+//   - Solicit investments on behalf of enterprises
+//   - Provide investment advice or recommendations
+//   - Execute securities transactions
+//   - Act as a broker, dealer, or underwriter
+//
+// It ONLY tracks which investors the enterprise has CONTACTED and what
+// stage the relationship is in. The enterprise itself is responsible
+// for any securities offering compliance, including obtaining FRA
+// authorization for public offerings under Law 95/1992.
+//
+// Sending unsolicited investment offers through this CRM may violate:
+//   - Law 95/1992 Art. 2 (unlicensed securities promotion)
+//   - Law 67/2006 Art. 6 (unsolicited commercial communications)
+//   - PDPL Art. 7 (processing personal data without consent)
+// ═══════════════════════════════════════════════════════════════
 
 import { db } from "@/lib/db";
 import { logger } from "./logger";
 import { audit } from "./audit";
+
+export const INVESTOR_CRM_LEGAL_DISCLAIMER = `This CRM is a relationship management tool, NOT investment promotion. AURIENTA is NOT licensed by the FRA to promote securities under Capital Market Law 95/1992. This tool tracks investor contacts and pipeline stages only. It does NOT solicit investments, offer securities, or provide investment advice. Enterprises are solely responsible for complying with FRA requirements for any securities offering. Sending unsolicited investment offers may violate Law 95/1992 Art. 2, Law 67/2006 Art. 6, and PDPL Art. 7.`;
+
+export const INVESTOR_CRM_LEGAL_BASIS = "Capital Market Law 95/1992 Art. 2 (NOT investment promotion) + Law 67/2006 Art. 6 (Consumer Protection) + Law 151/2020 Art. 7 (PDPL consent)";
 
 export type InvestorStage = "intro" | "interested" | "diligence" | "committed" | "wired" | "passed";
 

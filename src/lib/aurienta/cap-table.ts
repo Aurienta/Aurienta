@@ -19,9 +19,31 @@
 //   • anchorCapTableSnapshot()  — CRE-sign + hash-anchor a snapshot
 //   • enforceVestingCliff()     — block transfer of unvested units
 //   • enforceDragAlong()        — 51% threshold gate
+//   • enforceSecuritiesTransferRestriction() — Tier F FRA check
 //   • computeWeightedAverageAdjustment() / computeFullRatchetAdjustment()
 //
 // All public query functions are READ-ONLY and side-effect free.
+//
+// ════════════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE — Capital Market Law 95/1992:
+//
+// Tier F (Joint Stock Company / JSC) Equity Units may constitute
+// "securities" under Capital Market Law 95/1992. Transfers of Tier F
+// securities are subject to FRA regulations:
+//   - Art. 2: Public offerings require prior FRA authorization
+//   - Art. 5: Private placements are exempt from registration
+//   - Art. 23: Secondary trading requires a licensed broker
+//   - Art. 27: Insider trading is prohibited
+//
+// AURIENTA enforces:
+//   - Tier A–E (LLCs/SPVs): transfers allowed per constitutional rules
+//   - Tier F (JSC): transfers BLOCKED unless FRA authorization verified
+//   - All transfers are logged with legal basis citation
+//
+// AURIENTA is NOT a licensed broker under Law 95/1992 Art. 23.
+// It does NOT execute securities trades — it only records ownership
+// changes that have been independently executed.
+// ════════════════════════════════════════════════════════════════════
 // All state-changing functions use `db.$transaction` so the ledger chain +
 // CreDecision rows commit atomically with the OwnershipRecord mutation.
 

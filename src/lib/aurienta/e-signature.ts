@@ -1,9 +1,38 @@
-// AURIENTA — E-Signature Module (Law 15/2004 compliant)
-// Simple electronic signatures using Ed25519. Hash-anchored on ledger.
+// AURIENTA — E-Signature Module
+// ═══════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE — Law 15/2004 (E-Signature Law):
+//
+// This module provides a SIMPLE ELECTRONIC SIGNATURE per Art. 14 of
+// Law 15/2004. It is NOT a QUALIFIED ELECTRONIC SIGNATURE per Art. 15.
+//
+// Key legal distinctions:
+//   - Simple e-signature (Art. 14): Ed25519 signature, valid as evidence
+//     but does NOT have the same legal weight as a handwritten signature.
+//     Cannot be used where Egyptian law requires a "written" signature.
+//   - Qualified e-signature (Art. 15): Requires an ITIDA-certified
+//     digital certificate from a licensed Certificate Authority (CA).
+//     Has the SAME legal weight as a handwritten signature.
+//
+// Where a qualified e-signature is legally required:
+//   - Real estate transfers (Law 119/1947)
+//   - Government filings
+//   - Court documents
+//   - Notarized documents
+//   - Public procurement contracts
+//   ...the user MUST use a separate ITIDA-certified workflow.
+//
+// AURIENTA's Ed25519 key is NOT an ITIDA-certified digital certificate.
+// ═══════════════════════════════════════════════════════════════
 
 import { db } from "@/lib/db";
 import { logger } from "./logger";
+import { audit } from "./audit";
 import { createHash } from "crypto";
+
+// ── Legal disclaimer attached to every e-signature ──
+export const ESIGNATURE_LEGAL_DISCLAIMER = `This electronic signature is a SIMPLE ELECTRONIC SIGNATURE under Article 14 of Law 15/2004 (E-Signature Law of the Arab Republic of Egypt). It is NOT a QUALIFIED ELECTRONIC SIGNATURE under Article 15 of the same law, as it is not backed by an ITIDA-certified digital certificate from a licensed Certificate Authority. Where Egyptian law requires a qualified electronic signature or a handwritten signature (e.g., real estate transfers, government filings, court documents, notarized documents), this signature is NOT sufficient and a separate ITIDA-certified workflow must be used. This signature is valid as evidence of the signer's intent per Art. 14 of Law 15/2004.`;
+
+export const ESIGNATURE_LEGAL_BASIS = "Law 15/2004 Art. 14 (Simple Electronic Signature) — NOT Art. 15 (Qualified Electronic Signature)";
 
 export type DocumentStatus = "draft" | "pending_signature" | "fully_signed" | "declined" | "expired";
 

@@ -1,10 +1,39 @@
 // AURIENTA — Egyptian Payments Provider Scaffold (Fawry + Paymob)
-// Integrates with Egyptian payment gateways for fund collection.
-// All funds go to law-firm escrow (Zero Custody principle).
+// ═══════════════════════════════════════════════════════════════
+// EGYPTIAN LAW COMPLIANCE:
+//
+// AURIENTA is NOT a Payment Service Provider (PSP) under any Egyptian law:
+//   - NOT a PSP under Law 194/2020 (Banking Law) Art. 1
+//   - NOT a PISP under Law 5/2022 (FinTech Law)
+//   - NOT an e-payment service under CBE Decree 2703/2020
+//
+// AURIENTA operates as a SOFTWARE VENDOR (outsourced software provider)
+// under Law 194/2020 Art. 3. It does NOT:
+//   - Hold, clear, or settle any funds
+//   - Operate any escrow account
+//   - Issue payment instruments
+//   - Execute payment orders
+//   - Hold client money
+//
+// All funds flow DIRECTLY from the payer to the law firm's client account
+// (escrow) at a CBE-regulated bank. The law firm is the fiduciary custodian
+// under Law 17/1983 (Lawyers' Code) Art. 47.
+//
+// Fawry and Paymob are used as PAYMENT ROUTING services — the payment
+// gateway routes funds to the law firm's bank account, NOT to AURIENTA.
+// AURIENTA never touches the money.
+//
+// This module generates payment REFERENCES and ROUTING instructions only.
+// It does NOT process, hold, or transfer any funds.
+// ═══════════════════════════════════════════════════════════════
 
 import { db } from "@/lib/db";
 import { logger } from "./logger";
 import { audit } from "./audit";
+
+export const PAYMENTS_LEGAL_DISCLAIMER = `AURIENTA is NOT a Payment Service Provider (PSP) under Law 194/2020 (Banking Law) or Law 5/2022 (FinTech Law). AURIENTA operates as a software vendor under Law 194/2020 Art. 3 and does NOT hold, clear, settle, or transfer any funds. All payments are routed DIRECTLY to the law firm's client account (escrow) at a CBE-regulated bank. The law firm is the fiduciary custodian under Law 17/1983 (Lawyers' Code) Art. 47. Fawry and Paymob are used as payment routing services — funds go to the law firm, NOT to AURIENTA.`;
+
+export const PAYMENTS_LEGAL_BASIS = "Law 194/2020 Art. 3 (Software Vendor — NOT PSP) + Law 17/1983 Art. 47 (Law Firm Escrow) + Law 5/2022 (FinTech exemption)";
 
 export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 
@@ -14,8 +43,11 @@ export type PaymentResult = {
   amount: number;
   currency: string;
   method: "fawry" | "paymob" | "bank_transfer";
-  payUrl?: string; // URL for user to complete payment
+  payUrl?: string;
   expiresAt?: Date;
+  routingDestination: string; // Law firm escrow account (NOT AURIENTA)
+  legalBasis: string;
+  disclaimer: string;
 };
 
 /**
