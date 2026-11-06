@@ -9,11 +9,13 @@ import {
   Infinity as InfinityIcon,
   AlertTriangle,
   PenLine,
+  Shield,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { GoldStar } from "@/components/aurienta-logo";
+import { LegalDisclaimerAgreement } from "@/components/legal/legal-disclaimer-agreement";
 import type { RegisterState } from "../register-types";
 
 interface StepPledgeProps {
@@ -88,6 +90,23 @@ accuracy, governance compliance, dispute resolution, and longevity.
 — Version 8.2 — Ready for sovereign implementation —`;
 
 export function StepPledge({ state, update }: StepPledgeProps) {
+  // ── Egyptian Legal Clauses modal state ──
+  const [showLegalModal, setShowLegalModal] = React.useState(false);
+  const [legalClausesAccepted, setLegalClausesAccepted] = React.useState(false);
+  const [acceptedClauseIds, setAcceptedClauseIds] = React.useState<string[]>([]);
+
+  const handleLegalAccept = async (clauseIds: string[]) => {
+    setAcceptedClauseIds(clauseIds);
+    setLegalClausesAccepted(true);
+    setShowLegalModal(false);
+    // Record acceptance via API (best-effort — registration hasn't happened
+    // yet, so this will fail until the user is authenticated. The clauses
+    // are re-accepted server-side during the registration API call.)
+    // The state.legalClausesAccepted flag is checked by the wizard's
+    // validateStep before allowing the user to proceed.
+    update({ legalClausesAccepted: true, acceptedClauseIds: clauseIds } as any);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Six pillars */}
@@ -165,6 +184,44 @@ export function StepPledge({ state, update }: StepPledgeProps) {
               . I understand that mandatory Egyptian law prevails over any internal platform rule.
             </>
           }
+        />
+
+        {/* ── EGYPTIAN LEGAL CLAUSES — Required by Egyptian Law ── */}
+        {/* Law 15/2004 (E-Signature), Law 151/2020 (PDPL), Law 67/2006 (Consumer),
+            Law 80/2002 (AML), Companies Law 159/1981, Capital Market Law 95/1992 */}
+        <div className="flex flex-col gap-2 rounded-lg border border-gold/20 bg-gold/[0.04] p-3">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-gold" />
+            <p className="font-sans text-xs font-semibold text-foreground">
+              Egyptian Law Compliance (Required)
+            </p>
+          </div>
+          <p className="font-sans text-[11px] text-muted-foreground">
+            Egyptian law requires explicit acceptance of specific legal clauses
+            covering identity verification, data protection, AML/KYC, securities,
+            labour, and tax. You must review and accept these before proceeding.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowLegalModal(true)}
+            className="inline-flex items-center gap-1.5 self-start rounded-lg border border-gold/30 bg-gold/10 px-3 py-1.5 font-sans text-xs font-semibold text-gold transition-colors hover:bg-gold/20"
+          >
+            <Shield className="h-3.5 w-3.5" />
+            Review Egyptian Legal Clauses
+          </button>
+          {legalClausesAccepted && (
+            <p className="font-sans text-[11px] text-emerald-600 flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              Egyptian legal clauses accepted ({acceptedClauseIds.length} clauses)
+            </p>
+          )}
+        </div>
+
+        <LegalDisclaimerAgreement
+          context="registration"
+          open={showLegalModal}
+          onAccept={handleLegalAccept}
+          onCancel={() => setShowLegalModal(false)}
         />
       </div>
 

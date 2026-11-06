@@ -81,6 +81,8 @@ export function RegisterWizard() {
             return "Acknowledge all three constitutional consents.";
           if (!state.acceptedTerms)
             return "You must accept the Platform Terms & Legal Disclaimer to continue.";
+          if (!(state as any).legalClausesAccepted)
+            return "You must review and accept the Egyptian Legal Clauses to continue.";
           if (!state.signature.trim() || state.signature.trim().toLowerCase() !== state.legalName.trim().toLowerCase())
             return "Sign by typing your full legal name exactly as entered in Step 1.";
           return null;
