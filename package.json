@@ -15,7 +15,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:status": "prisma migrate status",
     "db:migrate:resolve": "prisma migrate resolve",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "sync:free-data": "bun run scripts/ops/sync-free-data.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -41,7 +41,7 @@ import { logger } from "./logger";
 
 let GoogleGenerativeAI: any = null;
 
-export type AiProvider = "groq" | "nvidia" | "gemini" | "huggingface" | "openrouter";
+export type AiProvider = "groq" | "nvidia" | "gemini" | "huggingface" | "openrouter" | "pollinations";
 export type AiTaskKind =
   | "feasibility" | "pitch_deck" | "copilot" | "explain" | "anomaly" | "drift"
   | "fraud" | "sanity_check" | "triage" | "general" | "multilingual" | "advisory"
@@ -110,45 +110,53 @@ const M = {
   // ── Gemini (key valid; sandbox IP geo-blocked by Google) ──
   gemini_2_0:      { provider: "gemini" as const, model: "gemini-3.5-flash" },                                  // fast
   gemini_2_5:      { provider: "gemini" as const, model: "gemini-3.5-flash" },                                   // balanced
+
+  // ── Pollinations.AI (100% FREE, NO API KEY, open-source) ──
+  // Verified working 2026-11-05: returns Arabic + English text, 0.5s latency.
+  // Uses OpenAI-compatible API at https://text.pollinations.ai/openai
+  // No billing ever — community-funded, open-source project.
+  pollinations_default: { provider: "pollinations" as const, model: "openai" },   // GPT-4o-mini equivalent
+  pollinations_mistral: { provider: "pollinations" as const, model: "mistral" },  // Mistral 7B
+  pollinations_llama:    { provider: "pollinations" as const, model: "llama" },    // Llama 3.1
 };
 
 const TASK_CONFIG: Record<AiTaskKind, TaskConfig> = {
   // ── COMPLEX REASONING — largest models from 3+ providers (multi-model per provider) ──
-  feasibility:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
-  charter_diff:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
-  graduation_coach:      { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
-  graduation_simulation: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
-  board_briefing:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70], synthesize: true },
-  advisory:              { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
-  succession_plan:       { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
-  tax_suggestion:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
-  ir_answer:             { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70], synthesize: true },
-  sanity_check:          { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral], synthesize: true },
-  survival_drill:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
-  whistleblower_credibility: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70], synthesize: true },
-  precedent_match:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
-  skill_equity_review:   { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.hf_llama70, M.hf_qwen72], synthesize: true },
-  salary_engine:         { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral], synthesize: true },
-  evidence_verification: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70], synthesize: true },
-  mentor_matching:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72], synthesize: true },
+  feasibility:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70, M.pollinations_default], synthesize: true },
+  charter_diff:           { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70, M.pollinations_default], synthesize: true },
+  graduation_coach:      { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70, M.pollinations_default], synthesize: true },
+  graduation_simulation: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72, M.pollinations_default], synthesize: true },
+  board_briefing:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70, M.pollinations_default], synthesize: true },
+  advisory:              { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70, M.pollinations_default], synthesize: true },
+  succession_plan:       { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70, M.pollinations_default], synthesize: true },
+  tax_suggestion:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70, M.pollinations_default], synthesize: true },
+  ir_answer:             { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_gemma4, M.hf_llama70, M.pollinations_default], synthesize: true },
+  sanity_check:          { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral, M.pollinations_default], synthesize: true },
+  survival_drill:        { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70, M.pollinations_default], synthesize: true },
+  whistleblower_credibility: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_llama70, M.pollinations_default], synthesize: true },
+  precedent_match:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72, M.pollinations_default], synthesize: true },
+  skill_equity_review:   { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.hf_llama70, M.hf_qwen72, M.pollinations_default], synthesize: true },
+  salary_engine:         { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_mistral, M.pollinations_default], synthesize: true },
+  evidence_verification: { mode: "consensus", models: [M.or_claude_haiku, M.or_xing4, M.nvidia_nemo, M.nvidia_llama90, M.hf_llama70, M.pollinations_default], synthesize: true },
+  mentor_matching:       { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_mistral, M.hf_qwen72, M.pollinations_default], synthesize: true },
 
   // ── CREATIVE — diverse models for variety ──
-  pitch_deck:            { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr], synthesize: true },
-  milestone_design:      { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr], synthesize: true },
+  pitch_deck:            { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr, M.pollinations_default], synthesize: true },
+  milestone_design:      { mode: "consensus", models: [M.or_muse, M.or_xing4, M.nvidia_muse, M.nvidia_gemma, M.hf_zephyr, M.pollinations_default], synthesize: true },
 
   // ── MULTILINGUAL — Qwen + Gemma + Mistral (best multilingual models) ──
-  multilingual:          { mode: "consensus", models: [M.or_qwen_max, M.or_xing4, M.nvidia_gemma4, M.hf_qwen72, M.hf_mistral], synthesize: true },
+  multilingual:          { mode: "consensus", models: [M.or_qwen_max, M.or_xing4, M.nvidia_gemma4, M.hf_qwen72, M.hf_mistral, M.pollinations_default], synthesize: true },
 
   // ── FAST TASKS — small fast models, 2+ providers ──
-  explain:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
-  copilot:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
-  triage:                { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr], synthesize: true },
-  anomaly:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
-  drift:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr], synthesize: true },
-  fraud:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral], synthesize: true },
+  explain:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral, M.pollinations_default], synthesize: true },
+  copilot:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral, M.pollinations_default], synthesize: true },
+  triage:                { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr, M.pollinations_default], synthesize: true },
+  anomaly:               { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral, M.pollinations_default], synthesize: true },
+  drift:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_zephyr, M.pollinations_default], synthesize: true },
+  fraud:                 { mode: "fast", models: [M.or_xing4, M.nvidia_gemma, M.nvidia_deepseek, M.hf_mistral, M.pollinations_default], synthesize: true },
 
   // ── GENERAL — balanced consensus ──
-  general:                { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_llama], synthesize: true },
+  general:                { mode: "consensus", models: [M.or_xing4, M.nvidia_nemo, M.nvidia_gemma, M.hf_llama, M.pollinations_default], synthesize: true },
 };
 
 export type MultiModelResult = {
@@ -437,6 +445,43 @@ async function callOpenRouter(system: string, user: string, model: string = "xin
   };
 }
 
+// ── Pollinations.AI — 100% FREE, NO API KEY required (open-source) ──
+// Verified working 2026-11-05. Uses OpenAI-compatible API.
+// No billing ever — community-funded, open-source project.
+async function callPollinations(system: string, user: string, model: string = "openai"): Promise<MultiModelResult> {
+  const start = Date.now();
+  const response = await fetch("https://text.pollinations.ai/openai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      temperature: 0.7,
+      max_tokens: 4096,  // Increased from default to avoid output_token_limit_exceeded
+    }),
+  });
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`Pollinations API error: ${response.status}${txt ? ` — ${txt.slice(0, 200)}` : ""}`);
+  }
+  const data = await response.json();
+  const content = data?.choices?.[0]?.message?.content ?? "";
+  if (!content) throw new Error("Pollinations returned empty content");
+  return {
+    content,
+    provider: "pollinations",
+    model,
+    latencyMs: Date.now() - start,
+    fellBack: false,
+    error: null,
+    tokensIn: data?.usage?.prompt_tokens ?? null,
+    tokensOut: data?.usage?.completion_tokens ?? null,
+  };
+}
+
 // ── Provider dispatch table ──
 const PROVIDERS: Record<AiProvider, (system: string, user: string, model?: string) => Promise<MultiModelResult>> = {
   groq: callGroq,
@@ -444,6 +489,7 @@ const PROVIDERS: Record<AiProvider, (system: string, user: string, model?: strin
   gemini: callGemini,
   huggingface: callHuggingFace,
   openrouter: callOpenRouter,
+  pollinations: callPollinations,
 };
 
 // ── Continuous learning: retrieve relevant past interactions ──

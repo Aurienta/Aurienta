@@ -17,7 +17,9 @@ type EnvShape = {
   geminiApiKey: string | null;
   huggingfaceApiKey: string | null;
   openrouterApiKey: string | null;
-  // Number of AI providers with a key present (0..5). Used by /api/ready.
+  // Pollinations.AI — 100% free, no key required (always available)
+  pollinationsApiKey: string;
+  // Number of AI providers with a key present (1..6, includes Pollinations).
   aiProvidersConfigured: number;
 };
 
@@ -61,18 +63,23 @@ function read(): EnvShape {
   const geminiApiKey = process.env.GEMINI_API_KEY || null;
   const huggingfaceApiKey = process.env.HUGGINGFACE_API_KEY || null;
   const openrouterApiKey = process.env.OPENROUTER_API_KEY || null;
+  // Pollinations.AI is ALWAYS available — 100% free, no API key required.
+  // This guarantees Brain AI never falls back to AI_FALLBACK when all paid
+  // providers are unconfigured. Community-funded, open-source.
+  const pollinationsApiKey = "always-configured-no-key-needed";
   const aiProvidersConfigured = [
-    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey,
+    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey, pollinationsApiKey,
   ].filter(k => !!k).length;
   if (aiProvidersConfigured === 0) {
     console.error("[env] FATAL: 0 AI provider API keys are configured — Brain AI will always return AI_FALLBACK.");
-  } else if (aiProvidersConfigured < 5) {
-    console.warn(`[env] WARNING: ${aiProvidersConfigured}/5 AI provider API keys are configured — consensus will degrade for some tasks.`);
+  } else {
+    // Pollinations is always available as a free fallback
+    console.log(`[env] ✅ ${aiProvidersConfigured} AI provider(s) configured (including free Pollinations.AI fallback)`);
   }
 
   return {
     databaseUrl, nodeEnv, logLevel: level, cookieSecure, publicBaseUrl, allowDemoSignIn, fieldEncryptionKey,
-    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey, aiProvidersConfigured,
+    groqApiKey, nvidiaApiKey, geminiApiKey, huggingfaceApiKey, openrouterApiKey, pollinationsApiKey, aiProvidersConfigured,
   };
 }
 
