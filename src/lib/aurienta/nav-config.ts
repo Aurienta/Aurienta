@@ -75,6 +75,9 @@ export type NavIconName =
   | "Database"
   | "Vault"
   | "FileText"
+  | "FolderOpen"
+  | "Handshake"
+  | "Award"
   | "Gavel"
   | "Truck"
   | "Cpu"
@@ -400,6 +403,12 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/compliance-automation", label: "Compliance Automation", icon: "ShieldCheck", group: "Compliance & Transparency" },
   { href: "/dashboard/investor-crm", label: "Investor CRM", icon: "Users", group: "Capital" },
   { href: "/dashboard/ewa", label: "Earned Wage Access", icon: "Wallet", group: "Capital & Workforce" },
+
+  // ══ Additional Competitor-Parity Modules ══
+  { href: "/dashboard/data-room", label: "Data Room", icon: "FolderOpen", group: "Capital" },
+  { href: "/dashboard/tender-offer", label: "Tender Offers", icon: "Handshake", group: "Capital" },
+  { href: "/dashboard/bank-reconciliation", label: "Bank Reconciliation", icon: "Building2", group: "ERP" },
+  { href: "/dashboard/compliance-certs", label: "Compliance Certifications", icon: "Award", group: "Compliance & Transparency" },
 
   // ══ Platform Admin (6 collapsible sub-groups) ══
   // ── Admin → Users & Enterprises ──
