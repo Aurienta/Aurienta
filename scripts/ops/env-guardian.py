@@ -20,13 +20,9 @@ PROJECT = "/home/z/my-project"
 ENV_PATH = f"{PROJECT}/.env"
 CHECK_INTERVAL = 5  # seconds
 
-# The canonical .env content — must match what's in src/lib/db.ts ENV_DEFAULTS
-CANONICAL_ENV = """# AURIENTA — .env (Turso cloud is PRIMARY, local SQLite is fallback only)
-# Root-cause fix: DATABASE_URL points to Turso cloud, NOT a local file.
-# This eliminates the SQLITE_CANTOPEN error that occurred when the sandbox
-# wiped db/custom.db. Even if this .env is stripped, src/lib/db.ts has
-# embedded Turso credentials as a code-level fallback.
-DATABASE_URL=libsql://aurienta-fortleem.aws-us-east-1.turso.io
+# The canonical .env content — local SQLite is PRIMARY (fast, 0.03s per query).
+# Turso cloud is the fallback (used if local file is wiped, via src/lib/db.ts).
+CANONICAL_ENV = """DATABASE_URL=file:/home/z/my-project/db/custom.db
 TURSO_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODYzMjM5MjUsImlkIjoiMDE5ZmU5MzItZTIwMS03MzYwLWFkZTUtMTI2NThkNzZlMjkyIiwia2lkIjoiMlNGbjFBZlVSdTVMUXlrTGRzR3djNXdWV1V2VGVxV2FWODZRdlhST0MxYyIsInJpZCI6ImVjMzdiMjcyLTA5ZjItNDhlNy1iMWYxLTBkZWUxNjEzNjdkMSJ9.SWdaohrj5xtvI-NbLYYGaxvGEjCUbDOt15O2fxoa3V7I_WNoRGfTp1YkIFLmDWa0_sgdflC_Qy0-CQQPy9nODw
 SESSION_SECRET=aurienta-session-secret-2026-production-turso
 CRON_SECRET=aurienta-cron-secret-2026
@@ -91,10 +87,8 @@ def is_env_stripped():
     for key in REQUIRED_KEYS:
         if key not in content:
             return True  # Missing a required key
-    # Check if DATABASE_URL points to a local file (sandbox reset artifact)
-    for line in content.split("\n"):
-        if line.startswith("DATABASE_URL=") and "file:" in line:
-            return True  # DATABASE_URL was reset to local file
+    # .env is valid if it has all required keys — accept BOTH
+    # file: (local SQLite, fast) AND libsql:// (Turso cloud, fallback)
     return False
 
 def restore_env():

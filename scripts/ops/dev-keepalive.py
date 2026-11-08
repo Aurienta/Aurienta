@@ -41,10 +41,10 @@ def daemonize():
         os.dup2(f.fileno(), 1); os.dup2(f.fileno(), 2)
 
 def load_env():
-    """Load .env into a dict. ROOT-CAUSE FIX: uses Turso cloud as primary,
-    with embedded fallback credentials if .env is stripped."""
-    # Canonical env content — Turso cloud is PRIMARY (not local file)
-    CANONICAL_ENV = """DATABASE_URL=libsql://aurienta-fortleem.aws-us-east-1.turso.io
+    """Load .env into a dict. ROOT-CAUSE FIX: accepts BOTH local SQLite
+    (file:) AND Turso cloud (libsql://) as valid DATABASE_URL."""
+    # Canonical env content — local SQLite is PRIMARY (fast, 0.03s per query)
+    CANONICAL_ENV = """DATABASE_URL=file:/home/z/my-project/db/custom.db
 TURSO_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODYzMjM5MjUsImlkIjoiMDE5ZmU5MzItZTIwMS03MzYwLWFkZTUtMTI2NThkNzZlMjkyIiwia2lkIjoiMlNGbjFBZlVSdTVMUXlrTGRzR3djNXdWV1V2VGVxV2FWODZRdlhST0MxYyIsInJpZCI6ImVjMzdiMjcyLTA5ZjItNDhlNy1iMWYxLTBkZWUxNjEzNjdkMSJ9.SWdaohrj5xtvI-NbLYYGaxvGEjCUbDOt15O2fxoa3V7I_WNoRGfTp1YkIFLmDWa0_sgdflC_Qy0-CQQPy9nODw
 SESSION_SECRET=aurienta-session-secret-2026-production-turso
 CRON_SECRET=aurienta-cron-secret-2026
@@ -59,12 +59,12 @@ NODE_OPTIONS=--max-old-space-size=2048
 
     env = os.environ.copy()
 
-    # Check if .env exists and has all required keys
+    # Check if .env exists and has all required keys — accept BOTH file: and libsql://
     env_ok = False
     try:
         with open(f"{PROJECT}/.env") as f:
             content = f.read()
-        if all(k in content for k in REQUIRED_KEYS) and "libsql://" in content:
+        if all(k in content for k in REQUIRED_KEYS):
             env_ok = True
             for line in content.split("\n"):
                 line = line.strip()
