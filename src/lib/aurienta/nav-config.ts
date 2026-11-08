@@ -74,6 +74,8 @@ export type NavIconName =
   | "Landmark"
   | "Database"
   | "Vault"
+  | "Eye"
+  | "ScrollText"
   | "FileText"
   | "FolderOpen"
   | "Handshake"
@@ -403,6 +405,9 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/compliance-automation", label: "Compliance Automation", icon: "ShieldCheck", group: "Compliance & Transparency" },
   { href: "/dashboard/investor-crm", label: "Investor CRM", icon: "Users", group: "Capital" },
   { href: "/dashboard/ewa", label: "Earned Wage Access", icon: "Wallet", group: "Capital & Workforce" },
+
+  { href: "/dashboard/transparency/full", label: "Public Transparency Portal", icon: "Eye", group: "Compliance & Transparency" },
+  { href: "/dashboard/audit-trail", label: "Constitutional Audit Trail", icon: "ScrollText", group: "Compliance & Transparency" },
 
   // ══ Additional Competitor-Parity Modules ══
   { href: "/dashboard/data-room", label: "Data Room", icon: "FolderOpen", group: "Capital" },
