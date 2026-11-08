@@ -437,6 +437,9 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/admin-panel", label: "Platform Admin Panel", icon: "ShieldAlert", group: "Platform Admin", subGroup: "Platform Operations" },
   { href: "/dashboard/admin/settings", label: "Institutional Settings", icon: "SlidersHorizontal", group: "Platform Admin", subGroup: "Platform Operations" },
   { href: "/dashboard/constitutional-audit", label: "Constitutional Audit", icon: "CheckCircle2", group: "Platform Admin", subGroup: "Platform Operations" },
+  // ══ Platform Owner Control Center (State-of-the-art) ══
+  { href: "/dashboard/platform-owner", label: "Platform Owner Control", icon: "Shield", group: "Platform Admin", subGroup: "Platform Operations" },
+
   // ── Admin → Go-to-Market ──
   { href: "/dashboard/commercialization", label: "Commercialization (ACS)", icon: "Gauge", group: "Platform Admin", subGroup: "Go-to-Market" },
   { href: "/dashboard/production-readiness", label: "Production Readiness", icon: "Factory", group: "Platform Admin", subGroup: "Go-to-Market" },
