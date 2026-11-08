@@ -116,6 +116,8 @@ export type NavIconName =
   | "BarChart3"
   | "Gauge"
   | "PenLine"
+  | "Leaf"
+  | "Package"
   | "PieChart"
   | "CheckCircle2"
   | "Briefcase"
@@ -414,6 +416,12 @@ export const NAV: NavItem[] = [
   { href: "/dashboard/tender-offer", label: "Tender Offers", icon: "Handshake", group: "Capital" },
   { href: "/dashboard/bank-reconciliation", label: "Bank Reconciliation", icon: "Building2", group: "ERP" },
   { href: "/dashboard/compliance-certs", label: "Compliance Certifications", icon: "Award", group: "Compliance & Transparency" },
+
+  // ══ Years-Ahead Features (2026-11) ══
+  { href: "/dashboard/esg", label: "ESG Compliance", icon: "Leaf", group: "Compliance & Transparency" },
+  { href: "/dashboard/auto-invest", label: "Auto-Invest Loop", icon: "TrendingUp", group: "Capital" },
+  { href: "/dashboard/insurance-pricing", label: "Insurance & Bond Pricing", icon: "Shield", group: "Treasury & Infrastructure" },
+  { href: "/dashboard/succession-bundle", label: "Financial Bundle", icon: "Package", group: "My Workspace" },
 
   // ══ Platform Admin (6 collapsible sub-groups) ══
   // ── Admin → Users & Enterprises ──

@@ -137,3 +137,66 @@ export async function verifyPin(cid: string): Promise<{
 export function cidToGatewayUrl(cid: string, gateway: string = "https://gateway.pinata.cloud"): string {
   return `${gateway}/ipfs/${cid}`;
 }
+
+// ── Real IPFS Pinning (Web3.Storage — free, no billing) ──
+// Web3.Storage provides free IPFS pinning with 1TB storage.
+// Sign up at https://web3.storage to get a free API token.
+// Set WEB3_STORAGE_TOKEN in .env to enable real pinning.
+
+export async function pinToIPFS(content: string | Buffer): Promise<{ cid: string; pinned: boolean; service: string }> {
+  const token = process.env.WEB3_STORAGE_TOKEN;
+
+  if (!token) {
+    // Sandbox fallback: use deterministic CID (already implemented above)
+    const { computeDeterministicCid } = await import("./ipfs");
+    const cid = computeDeterministicCid(content);
+    return { cid, pinned: false, service: "sandbox-deterministic" };
+  }
+
+  // Production: pin to Web3.Storage
+  try {
+    const blob = new Blob([content]);
+    const formData = new FormData();
+    formData.append("file", blob, "aurienta-document.txt");
+
+    const res = await fetch("https://api.web3.storage/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error(`Web3.Storage API error: ${res.status}`);
+    const data = await res.json();
+    return { cid: data.cid, pinned: true, service: "web3.storage" };
+  } catch (e: any) {
+    logger.warn("Web3.Storage pinning failed, falling back to deterministic CID", { error: e.message });
+    const { computeDeterministicCid } = await import("./ipfs");
+    const cid = computeDeterministicCid(content);
+    return { cid, pinned: false, service: "sandbox-fallback" };
+  }
+}
+
+export async function retrieveFromIPFS(cid: string): Promise<string | null> {
+  try {
+    // Try multiple free IPFS gateways
+    const gateways = [
+      `https://dweb.link/ipfs/${cid}`,
+      `https://cloudflare-ipfs.com/ipfs/${cid}`,
+      `https://ipfs.io/ipfs/${cid}`,
+    ];
+
+    for (const gateway of gateways) {
+      try {
+        const res = await fetch(gateway, { signal: AbortSignal.timeout(10000) });
+        if (res.ok) {
+          return await res.text();
+        }
+      } catch {
+        // Try next gateway
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
